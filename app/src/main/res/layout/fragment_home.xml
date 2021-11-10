@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/defaultBackgroundColor">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/defaultBackgroundColor">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/episodesHeader"
+            fontPath="fonts/Poppins-Bold.ttf"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:text="Latest Episodes"
+            android:gravity="start|center_vertical"
+            android:textColor="@color/defaultContentColor"
+            android:layout_margin="16dp"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="18sp"
+            app:autoSizeMaxTextSize="24sp"
+            app:layout_constraintTop_toBottomOf="@id/banner"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/latestEpisodeRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintTop_toBottomOf="@id/episodesHeader"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/seriesHeader"
+            fontPath="fonts/Poppins-Bold.ttf"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            android:text="Latest Series"
+            android:gravity="start|center_vertical"
+            android:textColor="@color/defaultContentColor"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="18sp"
+            app:autoSizeMaxTextSize="24sp"
+            app:layout_constraintTop_toBottomOf="@id/latestEpisodeRecycler"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/allSeriesButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/allSeriesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:text="More..."
+            android:textColor="@color/defaultContentColor"
+            app:backgroundTint="@color/defaultBackgroundColor"
+            app:layout_constraintTop_toBottomOf="@id/latestEpisodeRecycler"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/seriesHeader" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/latestSeriesRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintTop_toBottomOf="@id/seriesHeader"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

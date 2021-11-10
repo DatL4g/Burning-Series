@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primaryColor">#ffffff</color>
+    <color name="primaryLightColor">#ffffff</color>
+    <color name="primaryDarkColor">#ffffff</color>
+    <color name="defaultBackgroundColor">#ffffffff</color>
+    <color name="defaultContentColor">#ff121212</color>
+    <color name="defaultContentColorHalfAlpha">#78121212</color>
+    <color name="bottomSheetBackground">#ffffff</color>
+    <color name="rippleColor">#40000000</color>
+    <color name="successBackgroundColor">#689957</color>
+    <color name="errorBackgroundColor">#db3236</color>
+    <color name="successContentColor">#ffffff</color>
+    <color name="errorContentColor">#ffffff</color>
+</resources>

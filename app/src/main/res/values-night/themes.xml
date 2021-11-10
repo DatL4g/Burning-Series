@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/primaryLightColor</item>
+        <item name="android:statusBarColor">@color/defaultBackgroundColor</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:navigationBarColor">@color/defaultBackgroundColor</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+        <item name="actionOverflowButtonStyle">@style/ActionButtonOverflow</item>
+        <item name="android:actionOverflowButtonStyle">@style/ActionButtonOverflow</item>
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialog</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+    </style>
+
+    <style name="ActionButtonOverflow" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">@color/defaultContentColor</item>
+        <item name="tint">@color/defaultContentColor</item>
+    </style>
+
+    <style name="BottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="android:backgroundTint">@color/bottomSheetBackground</item>
+        <item name="backgroundTint">@color/bottomSheetBackground</item>
+    </style>
+</resources>

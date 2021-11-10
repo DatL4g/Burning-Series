@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Burning-Series</string>
+    <string name="font_path" translatable="false">fonts/Poppins-Regular.ttf</string>
+</resources>
