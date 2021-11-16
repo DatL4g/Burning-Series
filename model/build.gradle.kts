@@ -4,6 +4,7 @@ plugins {
     id("kotlin-kapt")
     kotlin("plugin.serialization")
     id("kotlin-parcelize")
+    id("io.michaelrocks.paranoid")
 }
 
 android {

@@ -3,6 +3,7 @@ package de.datlag.network.m3o
 import com.hadiyarajesh.flower.ApiResponse
 import de.datlag.model.Constants
 import de.datlag.model.m3o.image.Convert
+import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.Flow
 import okhttp3.ResponseBody
 import retrofit2.http.Body
@@ -12,6 +13,7 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Url
 
+@Obfuscate
 interface Image {
 	
 	@Headers("Content-Type: ${Constants.MEDIATYPE_JSON}")

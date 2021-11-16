@@ -23,6 +23,7 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-serialization:1.5.31")
         classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.17")
         classpath("io.michaelrocks:paranoid-gradle-plugin:0.3.5")
+        classpath("com.klaxit.hiddensecrets:HiddenSecretsPlugin:0.1.2")
     }
 }
 

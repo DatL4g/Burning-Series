@@ -1,5 +1,8 @@
 package de.datlag.model
 
+import io.michaelrocks.paranoid.Obfuscate
+
+@Obfuscate
 object Constants {
 	const val PROTOCOL_HTTP = "http://"
 	const val PROTOCOL_HTTPS = "https://"
@@ -11,12 +14,13 @@ object Constants {
 	const val API_BS_TO_BASE = "${PROTOCOL_HTTPS}bs.to"
 	const val API_WRAP_API_BURNING_SERIES = "${PROTOCOL_HTTPS}wrapapi.com"
 	const val API_WRAP_API_PREFIX = "/use/DatLag/burning-series"
-	
-	const val API_WRAP_API_KEY = "nzwmJafQfIjik6O1h2T68JaDmQqj56oJ"
+
 	const val API_WRAP_API_HOME_VERSION = "0.1.0"
 	const val API_WRAP_API_ALL_VERSION = "0.1.0"
-	const val API_WRAP_API_SERIES_VERSION = "0.1.1"
-	
+	const val API_WRAP_API_SERIES_VERSION = "0.2.0"
+
+	const val DATABASE_BURNING_SERIES = "BurningSeriesDatabase"
+
 	const val NAMED_JSON = "JSON"
 	const val NAMED_JSON_CONVERTER = "JSON_CONVERTER"
 	const val NAMED_JSON_RETROFIT = "JSON_RETROFIT"

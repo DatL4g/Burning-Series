@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.View
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fede987.statusbaralert.StatusBarAlert
@@ -29,6 +30,7 @@ import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.home.LatestEpisode
+import de.datlag.model.burningseries.home.LatestSeries
 import io.michaelrocks.paranoid.Obfuscate
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -44,7 +46,12 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home), FragmentOptionsMe
 	private val latestSeriesRecyclerAdapter = LatestSeriesRecyclerAdapter()
 	
 	private var statusBarAlert: StatusBarAlert? = null
-	
+
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		combineCollapsingToolbarWithSearchView()
+	}
+
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		
@@ -92,12 +99,18 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home), FragmentOptionsMe
 				}
 			}
 		}
+		extendedFab?.let { fab ->
+			fab.show()
+			fab.text = "Favorites"
+			fab.setIconResource(R.drawable.ic_baseline_favorite_24)
+			fab.setOnClickListener {
+				findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToFavoritesFragment())
+			}
+		}
 	}
 	
 	override fun onCreateMenu(menu: Menu, inflater: MenuInflater): Boolean {
-		Timber.e("inflate menu")
 		toolbarSearchView?.let {
-			Timber.e("SearchView is present")
 			inflater.inflate(R.menu.home_menu, menu)
 			val searchItem = menu.findItem(R.id.action_search)
 			
@@ -106,7 +119,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home), FragmentOptionsMe
 		
 		return true
 	}
-	
+
 	private fun createStatusBarAlert() {
 		statusBarAlert = statusBarAlert {
 			autoHide(false)
@@ -125,6 +138,9 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home), FragmentOptionsMe
 		latestEpisodeRecyclerAdapter.setOnClickListener { _, item ->
 			Timber.e("Clicked")
 			Timber.e(item.toString())
+			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
+				latestEpisode = item
+			))
 		}
 		
 		latestEpisodeRecyclerAdapter.setOnLongClickListener { _, item ->
@@ -140,6 +156,14 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home), FragmentOptionsMe
 		
 		latestSeriesRecyclerAdapter.setOnClickListener { _, item ->
 			Timber.e(item.toString())
+			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
+				latestSeries = item
+			))
+		}
+
+		latestSeriesRecyclerAdapter.setOnLongClickListener { _, item ->
+			openInBrowser(item)
+			true
 		}
 	}
 	
@@ -148,6 +172,17 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home), FragmentOptionsMe
 		MaterialAlertDialogBuilder(safeContext)
 			.setTitle(title)
 			.setMessage("Do you want to open \"${episode}\" of \"${title}\" in browser?")
+			.setPositiveButton("Yes") { _, _ ->
+				Constants.getBurningSeriesLink(item.href).toUri().openInBrowser(safeContext)
+			}
+			.setNegativeButton("Cancel", null)
+			.create().show()
+	}
+
+	private fun openInBrowser(item: LatestSeries) {
+		MaterialAlertDialogBuilder(safeContext)
+			.setTitle(item.title)
+			.setMessage("Do you want to open \"${item.title}\" in browser?")
 			.setPositiveButton("Yes") { _, _ ->
 				Constants.getBurningSeriesLink(item.href).toUri().openInBrowser(safeContext)
 			}

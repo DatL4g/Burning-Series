@@ -65,4 +65,15 @@
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/extendedFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:textColor="@color/defaultBackgroundColor"
+        app:backgroundTint="@color/defaultContentColor"
+        app:iconTint="@color/defaultBackgroundColor"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

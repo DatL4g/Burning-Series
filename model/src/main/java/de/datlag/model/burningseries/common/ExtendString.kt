@@ -1,4 +1,8 @@
+@file:Obfuscate
+
 package de.datlag.model.burningseries.common
+
+import io.michaelrocks.paranoid.Obfuscate
 
 fun String.encodeToHref(): String {
 	val normalizedTitle = this.trim()

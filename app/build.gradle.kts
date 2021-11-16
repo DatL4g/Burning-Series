@@ -12,6 +12,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("com.google.protobuf")
     id("io.michaelrocks.paranoid")
+    id("com.klaxit.hiddensecrets")
 }
 
 android {
@@ -19,7 +20,7 @@ android {
     buildToolsVersion = Configuration.buildTools
 
     defaultConfig {
-        applicationId = "de.datlag.burning_series"
+        applicationId = "de.datlag.burningseries"
         minSdk = Configuration.minSdk
         targetSdk = Configuration.targetSdk
         versionCode = Configuration.versionCode
@@ -37,6 +38,12 @@ android {
 
     lint {
         isCheckDependencies = true
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+        }
     }
 
     buildTypes {

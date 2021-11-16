@@ -42,10 +42,8 @@ abstract class AdvancedActivity : AppCompatActivity {
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		val currentFragment = getCurrentNavFragment()
 		return if (currentFragment is FragmentOptionsMenu) {
-			Timber.e("Fragment implements options menu")
 			(currentFragment as FragmentOptionsMenu).onCreateMenu(menu, menuInflater)
 		} else {
-			Timber.e("Fragment does not implement options menu")
 			super.onCreateOptionsMenu(menu)
 		}
 	}

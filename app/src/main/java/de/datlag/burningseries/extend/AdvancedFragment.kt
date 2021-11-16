@@ -1,23 +1,22 @@
 package de.datlag.burningseries.extend
 
 import android.content.Context
-import android.view.Menu
-import android.view.MenuInflater
+import android.graphics.Color
 import android.widget.ImageView
 import androidx.annotation.LayoutRes
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
-import androidx.viewbinding.ViewBinding
-import by.kirich1409.viewbindingdelegate.viewBinding
 import com.ferfalk.simplesearchview.SimpleSearchView
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
-import de.datlag.burningseries.common.loadFileInternal
-import de.datlag.burningseries.common.safeActivity
-import de.datlag.burningseries.common.saveFileInternal
-import de.datlag.burningseries.ui.connector.ToolbarImage
-import de.datlag.burningseries.ui.connector.ToolbarSearch
+import de.datlag.burningseries.R
+import de.datlag.burningseries.common.*
+import de.datlag.burningseries.ui.connector.*
 import de.datlag.network.m3o.M3ORepository
 import io.michaelrocks.paranoid.Obfuscate
 import javax.inject.Inject
@@ -56,10 +55,58 @@ abstract class AdvancedFragment : Fragment {
 			}
 		}
 	}
-	
+
+	override fun onDestroy() {
+		unCombineCollapsingToolbarWithSearchView()
+		super.onDestroy()
+	}
+
+	fun combineCollapsingToolbarWithSearchView() {
+		toolbarSearchView?.setOnSearchViewListener(object : SimpleSearchView.SearchViewListener {
+			override fun onSearchViewShown() {
+				collapsingToolbar?.title = String()
+				collapsingToolbar?.setCollapsedTitleTextColor(Color.TRANSPARENT)
+				appBarLayout?.setExpanded(false, false)
+			}
+			override fun onSearchViewShownAnimation() {
+				collapsingToolbar?.title = String()
+				collapsingToolbar?.setCollapsedTitleTextColor(Color.TRANSPARENT)
+				appBarLayout?.setExpanded(false, true)
+			}
+
+			override fun onSearchViewClosed() {
+				collapsingToolbar?.title = getString(R.string.app_name)
+				collapsingToolbar?.setCollapsedTitleTextColor(safeContext.getColorCompat(R.color.defaultContentColor))
+				appBarLayout?.setExpanded(true, false)
+			}
+
+			override fun onSearchViewClosedAnimation() {
+				collapsingToolbar?.title = getString(R.string.app_name)
+				collapsingToolbar?.setCollapsedTitleTextColor(safeContext.getColorCompat(R.color.defaultContentColor))
+				appBarLayout?.setExpanded(true, true)
+			}
+		})
+	}
+
+	fun unCombineCollapsingToolbarWithSearchView() {
+		toolbarSearchView?.setOnSearchViewListener(null)
+	}
+
+	val appBarLayout: AppBarLayout?
+		get() = if (safeActivity is ToolbarContent) (safeActivity as ToolbarContent).appBarLayout else null
+
+	val toolbar: Toolbar?
+		get() = if (safeActivity is ToolbarContent) (safeActivity as ToolbarContent).toolbar else null
+
+	val collapsingToolbar: CollapsingToolbarLayout?
+		get() = if (safeActivity is ToolbarCollapsing) (safeActivity as ToolbarCollapsing).collapsingToolbar else null
+
 	val toolbarImage: ImageView?
 		get() = if (safeActivity is ToolbarImage) (safeActivity as ToolbarImage).imageView else null
 	
 	val toolbarSearchView: SimpleSearchView?
 		get() = if (safeActivity is ToolbarSearch) (safeActivity as ToolbarSearch).searchView else null
+
+	val extendedFab: ExtendedFloatingActionButton?
+		get() = if (safeActivity is FABExtended) (safeActivity as FABExtended).extendedFab else null
 }

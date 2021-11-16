@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.datlag.model.burningseries.home.HomeData
+import de.datlag.model.burningseries.series.SeriesData
 import de.datlag.model.m3o.image.Convert
 import de.datlag.network.burningseries.BurningSeriesRepository
 import de.datlag.network.m3o.M3ORepository
@@ -20,4 +21,6 @@ class BurningSeriesViewModel @Inject constructor(
 ): ViewModel() {
 	
 	val homeData: LiveData<Resource<HomeData>> = repository.getHomeData().asLiveData(viewModelScope.coroutineContext)
+
+	val favorites: LiveData<List<SeriesData>> = repository.getSeriesFavorites().asLiveData(viewModelScope.coroutineContext)
 }

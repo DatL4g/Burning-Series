@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import de.datlag.database.Converters
 import de.datlag.model.burningseries.series.SeriesData
+import io.michaelrocks.paranoid.Obfuscate
 
 @Database(
 	entities = [
@@ -13,6 +14,7 @@ import de.datlag.model.burningseries.series.SeriesData
 	version = 1
 )
 @TypeConverters(Converters::class)
+@Obfuscate
 abstract class BurningSeriesDatabase : RoomDatabase() {
 	
 	abstract fun getBurningSeriesDao(): BurningSeriesDao

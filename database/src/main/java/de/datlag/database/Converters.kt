@@ -3,8 +3,10 @@ package de.datlag.database
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.room.TypeConverter
+import io.michaelrocks.paranoid.Obfuscate
 import java.io.ByteArrayOutputStream
 
+@Obfuscate
 class Converters {
 	
 	@TypeConverter

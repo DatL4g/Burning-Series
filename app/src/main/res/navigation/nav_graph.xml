@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_homeFragment_to_seriesFragment"
             app:destination="@id/seriesFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
     </fragment>
     <fragment
         android:id="@+id/seriesFragment"
@@ -21,6 +24,25 @@
         tools:layout="@layout/fragment_series">
         <action
             android:id="@+id/action_seriesFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <argument
+            android:name="latestSeries"
+            app:argType="de.datlag.model.burningseries.home.LatestSeries"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="latestEpisode"
+            app:argType="de.datlag.model.burningseries.home.LatestEpisode"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="de.datlag.burningseries.ui.fragment.FavoritesFragment"
+        android:label="FavoritesFragment"
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_favoritesFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
 </navigation>

@@ -1,11 +1,14 @@
 package de.datlag.burningseries.module
 
+import android.content.Context
 import com.hadiyarajesh.flower.calladpater.FlowCallAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import de.datlag.burningseries.Secrets
 import de.datlag.model.Constants
 import de.datlag.network.burningseries.BurningSeries
 import de.datlag.network.m3o.Image
@@ -77,11 +80,6 @@ object NetworkModule {
 		.baseUrl(Constants.API_WRAP_API_BURNING_SERIES)
 		.build()
 		.create(BurningSeries::class.java)
-	
-	@Provides
-	@Singleton
-	@Named("m3oToken")
-	fun provideM3OToken(): String = ""
 	
 	@Provides
 	@Singleton

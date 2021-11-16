@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("kotlin-kapt")
+    id("io.michaelrocks.paranoid")
 }
 
 android {
@@ -34,7 +35,8 @@ android {
 
 dependencies {
     implementation(project(mapOf("path" to ":model")))
-    
+    implementation(project(mapOf("path" to ":database")))
+
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.3.1")
     implementation("com.google.android.material:material:1.4.0")
@@ -47,6 +49,7 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:3.14.9")
     api("com.squareup.okhttp3:logging-interceptor:3.14.9")
     implementation("javax.inject:javax.inject:1")
+    implementation("org.jsoup:jsoup:1.14.3")
     
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
