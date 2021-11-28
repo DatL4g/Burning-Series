@@ -68,8 +68,8 @@ class BurningSeriesRepository @Inject constructor(
 		val scrapeData = scraper.scrapeSeriesData(href)
 
 		if (scrapeData != null) {
-			saveSeriesData(scrapeData)
 			emitAll(burningSeriesDao.getSeriesWithInfoByHrefTitle(hrefTitle).map { Resource.success(it) })
+			saveSeriesData(scrapeData)
 		} else {
 			val currentRequest = Clock.System.now().epochSeconds
 			emitAll(networkBoundResource(
@@ -128,8 +128,8 @@ class BurningSeriesRepository @Inject constructor(
 		val scrapeData = scraper.scrapeAllSeries()
 
 		if (scrapeData.isNotEmpty()) {
-			saveGenreData(scrapeData)
 			emitAll(burningSeriesDao.getAllSeries().map { Resource.success(it) })
+			saveGenreData(scrapeData)
 		} else {
 			emitAll(networkBoundResource(
 				fetchFromLocal = {
