@@ -88,13 +88,15 @@ dependencies {
     
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
-    implementation("androidx.appcompat:appcompat:1.3.1")
+    implementation("androidx.appcompat:appcompat:1.4.0")
     implementation("com.google.android.material:material:1.4.0")
 
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.1.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.2")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("com.github.Ahmed3Elshaer:SelectionBottomSheet:0.1.0")
+    implementation("com.github.devendroid:ReadMoreOption:1.0.3")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
@@ -107,7 +109,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.activity:activity-ktx:1.4.0")
-    implementation("androidx.fragment:fragment-ktx:1.3.6")
+    implementation("androidx.fragment:fragment-ktx:1.4.0")
     implementation("androidx.room:room-ktx:2.3.0")
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
@@ -134,7 +136,7 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.12.0")
     kapt("com.github.bumptech.glide:compiler:4.12.0")
-    implementation("com.github.DatL4g:Coilifier-Android:1.1.2")
+    implementation("com.github.DatL4g:Coilifier-Android:1.1.3")
 
     implementation("androidx.datastore:datastore-core:1.0.0")
     implementation("com.google.protobuf:protobuf-javalite:3.19.1")

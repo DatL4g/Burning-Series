@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp"
+    android:background="@color/defaultBackgroundColor">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        app:cardBackgroundColor="@color/defaultBackgroundColor"
+        app:cardElevation="4dp"
+        app:cardPreventCornerOverlap="true"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/title">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/cover"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:background="@color/defaultBackgroundColor" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title"
+        fontPath="fonts/Poppins-Bold.ttf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="@color/defaultContentColor"
+        app:autoSizeMaxTextSize="20sp"
+        app:autoSizeMinTextSize="16sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintTop_toBottomOf="@id/card"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

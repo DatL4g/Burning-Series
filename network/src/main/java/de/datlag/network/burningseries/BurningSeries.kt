@@ -2,6 +2,7 @@ package de.datlag.network.burningseries
 
 import com.hadiyarajesh.flower.ApiResponse
 import de.datlag.model.Constants
+import de.datlag.model.burningseries.allseries.AllSeries
 import de.datlag.model.burningseries.home.Home
 import de.datlag.model.burningseries.series.Series
 import de.datlag.model.burningseries.series.SeriesData
@@ -23,10 +24,17 @@ interface BurningSeries {
 	): Flow<ApiResponse<Home>>
 
 	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
-	@GET("${Constants.API_WRAP_API_PREFIX}/serie/{version}")
+	@GET("${Constants.API_WRAP_API_PREFIX}/series/{version}")
 	fun getSeriesData(
 		@Path("version") version: String = Constants.API_WRAP_API_SERIES_VERSION,
 		@Query("wrapAPIKey") apiKey: String,
 		@Query("serie") series: String
 	): Flow<ApiResponse<Series>>
+
+	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
+	@GET("${Constants.API_WRAP_API_PREFIX}/all/{version}")
+	fun getAllSeries(
+		@Path("version") version: String = Constants.API_WRAP_API_ALL_VERSION,
+		@Query("wrapAPIKey") apiKey: String
+	): Flow<ApiResponse<AllSeries>>
 }

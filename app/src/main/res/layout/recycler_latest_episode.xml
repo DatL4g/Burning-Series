@@ -5,37 +5,66 @@
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:layout_marginBottom="16dp">
+    app:cardBackgroundColor="@color/defaultBackgroundColor"
+    android:background="@color/defaultBackgroundColor"
+    android:backgroundTint="@color/defaultBackgroundColor"
+    android:elevation="0dp"
+    app:cardElevation="0dp"
+    app:cardMaxElevation="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/defaultBackgroundColor">
+        android:background="@color/defaultBackgroundColor"
+        android:backgroundTint="@color/defaultBackgroundColor"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/icon"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:paddingStart="16dp"
+            app:srcCompat="@drawable/ic_baseline_movie_24"
+            app:tint="@color/defaultContentColor"
+            android:backgroundTint="@color/defaultBackgroundColor"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/title"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
             fontPath="fonts/Poppins-Bold.ttf"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:textColor="@color/defaultContentColor"
+            android:background="@color/defaultBackgroundColor"
             android:gravity="start|center_vertical"
             android:maxLines="1"
             android:singleLine="true"
             android:ellipsize="end"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/text"/>
+            app:layout_constraintBottom_toTopOf="@id/text"
+            app:layout_constraintStart_toEndOf="@id/icon"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:textColor="@color/defaultContentColor"
+            android:background="@color/defaultBackgroundColor"
             android:gravity="start|center_vertical"
             android:maxLines="1"
             android:singleLine="true"
             android:ellipsize="end"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"/>
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintStart_toEndOf="@id/icon"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

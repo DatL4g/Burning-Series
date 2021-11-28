@@ -12,4 +12,6 @@
     <color name="errorBackgroundColor">#db3236</color>
     <color name="successContentColor">#ffffff</color>
     <color name="errorContentColor">#ffffff</color>
+    <color name="favIconColorTrue">#db3236</color>
+    <color name="favIconColorFalse">@color/defaultContentColor</color>
 </resources>

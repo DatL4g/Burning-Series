@@ -1,16 +1,15 @@
 package de.datlag.burningseries.module
 
-import android.content.Context
 import com.hadiyarajesh.flower.calladpater.FlowCallAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import de.datlag.burningseries.Secrets
 import de.datlag.model.Constants
 import de.datlag.network.burningseries.BurningSeries
+import de.datlag.network.burningseries.BurningSeriesScraper
+import de.datlag.network.jsonbase.JsonBase
 import de.datlag.network.m3o.Image
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.serialization.json.Json
@@ -38,7 +37,7 @@ object NetworkModule {
 	private val loggingInterceptor = HttpLoggingInterceptor {
 		Timber.w(it)
 	}.apply {
-		level = HttpLoggingInterceptor.Level.NONE
+		level = HttpLoggingInterceptor.Level.BASIC
 	}
 	
 	@Provides
@@ -49,7 +48,7 @@ object NetworkModule {
 	@Singleton
 	@Named(Constants.NAMED_JSON_CONVERTER)
 	fun provideConverterFactory(
-		@Named("JSON") json: MediaType
+		@Named(Constants.NAMED_JSON) json: MediaType
 	): Converter.Factory = jsonBuilder.asConverterFactory(json)
 	
 	@Provides
@@ -80,6 +79,19 @@ object NetworkModule {
 		.baseUrl(Constants.API_WRAP_API_BURNING_SERIES)
 		.build()
 		.create(BurningSeries::class.java)
+
+	@Provides
+	@Singleton
+	fun provideJsonBaseService(
+		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
+	): JsonBase = builder
+		.baseUrl(Constants.API_JSONBASE)
+		.build()
+		.create(JsonBase::class.java)
+
+	@Provides
+	@Singleton
+	fun provideBurningSeriesScraper() = BurningSeriesScraper()
 	
 	@Provides
 	@Singleton

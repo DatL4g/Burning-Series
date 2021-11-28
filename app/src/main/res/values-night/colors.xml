@@ -5,4 +5,5 @@
     <color name="defaultContentColorHalfAlpha">#78ffffff</color>
     <color name="bottomSheetBackground">#353535</color>
     <color name="rippleColor">#40ffffff</color>
+    <color name="favIconColorFalse">@color/defaultContentColor</color>
 </resources>

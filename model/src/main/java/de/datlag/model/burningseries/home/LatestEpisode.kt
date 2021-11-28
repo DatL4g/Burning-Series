@@ -27,7 +27,15 @@ data class LatestEpisode(
 	}
 
 	fun getHrefTitle(): String {
-		val (title, episode) = getEpisodeAndSeries()
-		return title.encodeToHref()
+		val normHref = if (href.startsWith("/")) {
+			href.substring(1)
+		} else { href }
+		val match = Regex("(/(\\w|-)+)").find(normHref)
+		return match?.groupValues?.getOrNull(1)?.replace("/", "") ?: getEpisodeAndSeries().first.encodeToHref()
+	}
+
+	fun getHrefWithoutEpisode(): String {
+		val hrefSplit = href.split('/')
+		return hrefSplit.subList(0, 3).joinToString("/")
 	}
 }

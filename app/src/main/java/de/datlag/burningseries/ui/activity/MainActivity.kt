@@ -2,8 +2,11 @@ package de.datlag.burningseries.ui.activity
 
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fede987.statusbaralert.StatusBarAlert
+import com.fede987.statusbaralert.utils.statusBarAlert
 import com.ferfalk.simplesearchview.SimpleSearchView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
@@ -19,32 +22,26 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
-class MainActivity : AdvancedActivity(R.layout.activity_main), ToolbarContent, ToolbarImage,
-	ToolbarSearch, ToolbarCollapsing, FABExtended {
+class MainActivity : AdvancedActivity(R.layout.activity_main), FABExtended, StatusBarAlertProvider {
 
 	private val binding: ActivityMainBinding by viewBinding()
+	private lateinit var statusBarAlertProvided: StatusBarAlert
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
-		setSupportActionBar(binding.toolbar)
+		statusBarAlertProvided = statusBarAlert {
+			autoHide(false)
+			showProgress(false)
+			alertColor(R.color.defaultContentColor)
+			textColor(R.color.defaultBackgroundColor)
+			progressBarColor(R.color.defaultBackgroundColor)
+		}
 	}
-
-	override val appBarLayout: AppBarLayout
-		get() = binding.appBarLayout
-
-	override val toolbar: Toolbar
-		get() = binding.toolbar
-
-	override val collapsingToolbar: CollapsingToolbarLayout
-		get() = binding.collapsingToolbar
-
-	override val imageView: ImageView
-		get() = binding.expandedImage
-
-	override val searchView: SimpleSearchView
-		get() = binding.searchView
 
 	override val extendedFab: ExtendedFloatingActionButton
 		get() = binding.extendedFab
+
+	override val statusBarAlert: StatusBarAlert
+		get() = statusBarAlertProvided
 }

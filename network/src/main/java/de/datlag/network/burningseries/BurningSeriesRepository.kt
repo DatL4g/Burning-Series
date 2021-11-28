@@ -1,17 +1,26 @@
 package de.datlag.network.burningseries
 
+import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkBoundResource
 import com.hadiyarajesh.flower.networkResource
 import de.datlag.database.burningseries.BurningSeriesDao
+import de.datlag.model.Constants
+import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.allseries.relation.GenreWithItems
 import de.datlag.model.burningseries.home.HomeData
+import de.datlag.model.burningseries.home.LatestEpisode
+import de.datlag.model.burningseries.home.LatestSeries
+import de.datlag.model.burningseries.series.SeasonData
 import de.datlag.model.burningseries.series.SeriesData
+import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
+import de.datlag.model.burningseries.series.relation.SeriesWithInfo
+import de.datlag.network.common.mapInPlace
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.*
+import kotlinx.datetime.Clock
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -19,47 +28,135 @@ import javax.inject.Named
 class BurningSeriesRepository @Inject constructor(
 	private val service: BurningSeries,
 	@Named("wrapApiToken") val wrapApiToken: String,
-	private val burningSeriesDao: BurningSeriesDao
+	private val burningSeriesDao: BurningSeriesDao,
+	private val scraper: BurningSeriesScraper
 ) {
 
 	fun getHomeData(): Flow<Resource<HomeData>> = flow {
 		emit(Resource.loading(null))
-		networkResource(
-			fetchFromRemote = {
-				service.getHomeData(apiKey = wrapApiToken)
-			}
-		).collect {
-			if (it.status == Resource.Status.LOADING) {
-				emit(Resource.loading(it.data?.data))
-			} else {
-				if (it.data == null || !it.data!!.success) {
-					emit(Resource.error(it.message ?: "Data error", it.data?.data))
+		val scrapeData = scraper.scrapeHomeData()
+
+		if (scrapeData != null) {
+			emit(Resource.success(scrapeData))
+		} else {
+			networkResource(
+				fetchFromRemote = {
+					service.getHomeData(apiKey = wrapApiToken)
+				}
+			).collect {
+				if (it.status == Resource.Status.LOADING) {
+					emit(Resource.loading(it.data?.data))
 				} else {
-					emit(Resource.success(it.data?.data))
+					if (it.data == null || !it.data!!.success) {
+						emit(Resource.error(it.message ?: "Data error", it.data?.data))
+					} else {
+						emit(Resource.success(it.data?.data))
+					}
 				}
 			}
 		}
 	}.flowOn(Dispatchers.IO)
 
-	fun getSeriesData(hrefTitle: String): Flow<Resource<SeriesData>> = networkBoundResource(
-		fetchFromLocal = {
-			burningSeriesDao.getSeriesByHrefTitle(hrefTitle)
-		},
-		shouldFetchFromRemote = {
-			it == null
-		},
-		fetchFromRemote = {
-			service.getSeriesData(
-				apiKey = wrapApiToken,
-				series = hrefTitle
-			)
-		},
-		saveRemoteData = { series ->
-			if (series.success) {
-				series.data?.let { burningSeriesDao.insertSeriesData(it) }
+	fun getSeriesData(latestSeries: LatestSeries) = getSeriesData(latestSeries.href, latestSeries.getHrefTitle())
+
+	fun getSeriesData(latestEpisode: LatestEpisode) = getSeriesData(latestEpisode.getHrefWithoutEpisode(), latestEpisode.getHrefTitle())
+
+	fun getSeriesData(genreItem: GenreModel.GenreItem) = getSeriesData(genreItem.href, genreItem.getHrefTitle())
+
+	private fun getSeriesData(href: String, hrefTitle: String): Flow<Resource<SeriesWithInfo?>> = flow {
+		emit(Resource.loading(null))
+		val scrapeData = scraper.scrapeSeriesData(href)
+
+		if (scrapeData != null) {
+			saveSeriesData(scrapeData)
+			emitAll(burningSeriesDao.getSeriesWithInfoByHrefTitle(hrefTitle).map { Resource.success(it) })
+		} else {
+			val currentRequest = Clock.System.now().epochSeconds
+			emitAll(networkBoundResource(
+				fetchFromLocal = {
+					burningSeriesDao.getSeriesWithInfoByHrefTitle(hrefTitle)
+				},
+				shouldFetchFromRemote = {
+					it == null || (currentRequest - Constants.DAY_IN_MILLI) >= it.series.updatedAt || it.episodes.isEmpty()
+				},
+				fetchFromRemote = {
+					service.getSeriesData(
+						apiKey = wrapApiToken,
+						series = hrefTitle
+					)
+				},
+				saveRemoteData = { series ->
+					if (series.success) {
+						series.data?.let { saveSeriesData(it) }
+					}
+				}
+			))
+		}
+	}.flowOn(Dispatchers.IO)
+
+	suspend fun saveSeriesData(seriesData: SeriesData) {
+		val prevFavoriteSince = burningSeriesDao.getSeriesFavoriteSinceByHrefTitle(seriesData.hrefTitle).first() ?: 0L
+		seriesData.favoriteSince = prevFavoriteSince
+		val seriesId = burningSeriesDao.insertSeriesData(seriesData)
+		seriesData.infos.forEach {
+			it.seriesId = seriesId
+			burningSeriesDao.insertInfoData(it)
+		}
+		seriesData.seasons.forEach {
+			burningSeriesDao.insertSeasonData(SeasonData(it, seriesId))
+		}
+		seriesData.languages.forEach {
+			val langId = burningSeriesDao.addLanguageData(it)
+			burningSeriesDao.insertSeriesLanguagesCrossRef(SeriesLanguagesCrossRef(seriesId, langId))
+		}
+		seriesData.episodes.forEach { episode ->
+			episode.seriesId = seriesId
+			val episodeId = burningSeriesDao.insertEpisodeInfo(episode)
+			episode.hoster.forEach {
+				it.episodeId = episodeId
+				burningSeriesDao.insertHoster(it)
 			}
 		}
-	).flowOn(Dispatchers.IO)
+	}
 
-	fun getSeriesFavorites(): Flow<List<SeriesData>> = burningSeriesDao.getSeriesFavorites().flowOn(Dispatchers.IO)
+	suspend fun updateSeriesFavorite(seriesData: SeriesData) = burningSeriesDao.updateSeriesFavorite(seriesData.seriesId, seriesData.favoriteSince)
+
+	fun getSeriesFavorites(): Flow<List<SeriesWithInfo>> = burningSeriesDao.getSeriesFavorites().flowOn(Dispatchers.IO)
+
+	fun getAllSeries(): Flow<Resource<List<GenreWithItems>>> = flow {
+		emit(Resource.loading(null))
+		val scrapeData = scraper.scrapeAllSeries()
+
+		if (scrapeData.isNotEmpty()) {
+			saveGenreData(scrapeData)
+			emitAll(burningSeriesDao.getAllSeries().map { Resource.success(it) })
+		} else {
+			emitAll(networkBoundResource(
+				fetchFromLocal = {
+					burningSeriesDao.getAllSeries()
+				},
+				shouldFetchFromRemote = {
+					it == null
+				},
+				fetchFromRemote = {
+					service.getAllSeries(apiKey = wrapApiToken)
+				},
+				saveRemoteData = { all ->
+					if (all.success) {
+						saveGenreData(all.data)
+					}
+				}
+			))
+		}
+	}.flowOn(Dispatchers.IO)
+
+	suspend fun saveGenreData(genreList: List<GenreModel.GenreData>) {
+		genreList.forEach { genreData ->
+			val genreId: Long = burningSeriesDao.insertGenre(genreData)
+			genreData.items.forEach { item ->
+				item.genreId = genreId
+				burningSeriesDao.insertGenreItem(item)
+			}
+		}
+	}
 }

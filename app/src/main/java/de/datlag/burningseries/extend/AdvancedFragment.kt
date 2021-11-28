@@ -2,12 +2,18 @@ package de.datlag.burningseries.extend
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Bundle
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
+import com.fede987.statusbaralert.StatusBarAlert
 import com.ferfalk.simplesearchview.SimpleSearchView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
@@ -19,6 +25,8 @@ import de.datlag.burningseries.common.*
 import de.datlag.burningseries.ui.connector.*
 import de.datlag.network.m3o.M3ORepository
 import io.michaelrocks.paranoid.Obfuscate
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -56,57 +64,27 @@ abstract class AdvancedFragment : Fragment {
 		}
 	}
 
-	override fun onDestroy() {
-		unCombineCollapsingToolbarWithSearchView()
-		super.onDestroy()
+	fun extendedFabFavorite(directions: NavDirections) {
+		extendedFab?.let { fab ->
+			fab.show()
+			fab.text = safeContext.getString(R.string.favorites)
+			fab.setIconResource(R.drawable.ic_baseline_favorite_24)
+			fab.setOnClickListener {
+				findNavController().navigate(directions)
+			}
+		}
 	}
 
-	fun combineCollapsingToolbarWithSearchView() {
-		toolbarSearchView?.setOnSearchViewListener(object : SimpleSearchView.SearchViewListener {
-			override fun onSearchViewShown() {
-				collapsingToolbar?.title = String()
-				collapsingToolbar?.setCollapsedTitleTextColor(Color.TRANSPARENT)
-				appBarLayout?.setExpanded(false, false)
-			}
-			override fun onSearchViewShownAnimation() {
-				collapsingToolbar?.title = String()
-				collapsingToolbar?.setCollapsedTitleTextColor(Color.TRANSPARENT)
-				appBarLayout?.setExpanded(false, true)
-			}
-
-			override fun onSearchViewClosed() {
-				collapsingToolbar?.title = getString(R.string.app_name)
-				collapsingToolbar?.setCollapsedTitleTextColor(safeContext.getColorCompat(R.color.defaultContentColor))
-				appBarLayout?.setExpanded(true, false)
-			}
-
-			override fun onSearchViewClosedAnimation() {
-				collapsingToolbar?.title = getString(R.string.app_name)
-				collapsingToolbar?.setCollapsedTitleTextColor(safeContext.getColorCompat(R.color.defaultContentColor))
-				appBarLayout?.setExpanded(true, true)
-			}
-		})
+	override fun onDestroyView() {
+		statusBarAlert?.hide()
+		super.onDestroyView()
 	}
 
-	fun unCombineCollapsingToolbarWithSearchView() {
-		toolbarSearchView?.setOnSearchViewListener(null)
-	}
-
-	val appBarLayout: AppBarLayout?
-		get() = if (safeActivity is ToolbarContent) (safeActivity as ToolbarContent).appBarLayout else null
-
-	val toolbar: Toolbar?
-		get() = if (safeActivity is ToolbarContent) (safeActivity as ToolbarContent).toolbar else null
-
-	val collapsingToolbar: CollapsingToolbarLayout?
-		get() = if (safeActivity is ToolbarCollapsing) (safeActivity as ToolbarCollapsing).collapsingToolbar else null
-
-	val toolbarImage: ImageView?
-		get() = if (safeActivity is ToolbarImage) (safeActivity as ToolbarImage).imageView else null
-	
-	val toolbarSearchView: SimpleSearchView?
-		get() = if (safeActivity is ToolbarSearch) (safeActivity as ToolbarSearch).searchView else null
+	inline fun <T> Flow<T>.launchAndCollect(crossinline action: suspend CoroutineScope.(T) -> Unit) = this.launchAndCollectIn(viewLifecycleOwner, action = action)
 
 	val extendedFab: ExtendedFloatingActionButton?
 		get() = if (safeActivity is FABExtended) (safeActivity as FABExtended).extendedFab else null
+
+	val statusBarAlert: StatusBarAlert?
+		get() = if (safeActivity is StatusBarAlertProvider) (safeActivity as StatusBarAlertProvider).statusBarAlert else null
 }

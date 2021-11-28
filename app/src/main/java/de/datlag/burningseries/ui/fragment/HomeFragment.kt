@@ -2,30 +2,22 @@ package de.datlag.burningseries.ui.fragment
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.fede987.statusbaralert.StatusBarAlert
-import com.fede987.statusbaralert.utils.statusBarAlert
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.LatestEpisodeRecyclerAdapter
 import de.datlag.burningseries.adapter.LatestSeriesRecyclerAdapter
-import de.datlag.model.common.base64ToByteArray
-import de.datlag.burningseries.common.loadFileInternal
 import de.datlag.burningseries.common.openInBrowser
 import de.datlag.burningseries.common.safeContext
-import de.datlag.burningseries.common.saveFileInternal
 import de.datlag.burningseries.databinding.FragmentHomeBinding
 import de.datlag.burningseries.extend.AdvancedFragment
-import de.datlag.burningseries.ui.connector.FragmentOptionsMenu
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
@@ -37,33 +29,28 @@ import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 @Obfuscate
-class HomeFragment : AdvancedFragment(R.layout.fragment_home), FragmentOptionsMenu {
+class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	
 	private val binding: FragmentHomeBinding by viewBinding()
 	private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 	
 	private val latestEpisodeRecyclerAdapter = LatestEpisodeRecyclerAdapter()
 	private val latestSeriesRecyclerAdapter = LatestSeriesRecyclerAdapter()
-	
-	private var statusBarAlert: StatusBarAlert? = null
-
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		combineCollapsingToolbarWithSearchView()
-	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		
-		createStatusBarAlert()
+
+		extendedFab?.show()
 		initRecycler()
-		
-		burningSeriesViewModel.homeData.observe(viewLifecycleOwner) {
+
+		burningSeriesViewModel.homeData.launchAndCollect {
 			when (it.status) {
 				Resource.Status.LOADING -> {
-					statusBarAlert?.setText("Loading...")
-					statusBarAlert?.showProgress()
-					statusBarAlert?.show()
+					statusBarAlert?.hide {
+						statusBarAlert?.setText("Loading...")
+						statusBarAlert?.showProgress()
+						statusBarAlert?.show()
+					}
 				}
 				Resource.Status.SUCCESS -> {
 					latestSeriesRecyclerAdapter.submitList(it.data?.latestSeries ?: listOf())
@@ -91,43 +78,16 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home), FragmentOptionsMe
 				}
 			}
 		}
-		
-		toolbarImage?.let { image ->
-			loadImageAndSave("https://bs.to/public/images/header.png") {
-				it?.let { bytes ->
-					image.load<Drawable>(bytes)
-				}
-			}
-		}
-		extendedFab?.let { fab ->
-			fab.show()
-			fab.text = "Favorites"
-			fab.setIconResource(R.drawable.ic_baseline_favorite_24)
-			fab.setOnClickListener {
-				findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToFavoritesFragment())
-			}
-		}
-	}
-	
-	override fun onCreateMenu(menu: Menu, inflater: MenuInflater): Boolean {
-		toolbarSearchView?.let {
-			inflater.inflate(R.menu.home_menu, menu)
-			val searchItem = menu.findItem(R.id.action_search)
-			
-			it.setMenuItem(searchItem)
-		}
-		
-		return true
-	}
 
-	private fun createStatusBarAlert() {
-		statusBarAlert = statusBarAlert {
-			autoHide(false)
-			showProgress(false)
-			alertColor(R.color.defaultContentColor)
-			textColor(R.color.defaultBackgroundColor)
-			progressBarColor(R.color.defaultBackgroundColor)
+		loadImageAndSave("https://bs.to/public/images/header.png") {
+			binding.banner.load<Drawable>(it)
 		}
+
+		binding.allSeriesButton.setOnClickListener {
+			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAllSeriesFragment())
+		}
+
+		extendedFabFavorite(HomeFragmentDirections.actionHomeFragmentToFavoritesFragment())
 	}
 	
 	private fun initRecycler(): Unit = with(binding) {
@@ -136,15 +96,12 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home), FragmentOptionsMe
 		latestEpisodeRecycler.isNestedScrollingEnabled = false
 		
 		latestEpisodeRecyclerAdapter.setOnClickListener { _, item ->
-			Timber.e("Clicked")
-			Timber.e(item.toString())
 			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
 				latestEpisode = item
 			))
 		}
 		
 		latestEpisodeRecyclerAdapter.setOnLongClickListener { _, item ->
-			Timber.e("Long Clicked")
 			openInBrowser(item)
 			true
 		}

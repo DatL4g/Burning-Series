@@ -15,5 +15,11 @@ data class LatestSeries(
 	@SerialName("href") val href: String = String()
 ) : Parcelable {
 
-	fun getHrefTitle() = title.encodeToHref()
+	fun getHrefTitle(): String {
+		val normHref = if (href.startsWith("/")) {
+			href.substring(1)
+		} else { href }
+		val match = Regex("(/(\\w|-)+)").find(normHref)
+		return match?.groupValues?.getOrNull(1)?.replace("/", "") ?: title.encodeToHref()
+	}
 }

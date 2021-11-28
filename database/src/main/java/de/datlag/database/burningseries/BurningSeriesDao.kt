@@ -1,9 +1,15 @@
 package de.datlag.database.burningseries
 
 import androidx.room.*
-import de.datlag.model.burningseries.series.SeriesData
+import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.allseries.relation.GenreWithItems
+import de.datlag.model.burningseries.series.*
+import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
+import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
+import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 @Dao
 @Obfuscate
@@ -14,6 +20,10 @@ interface BurningSeriesDao {
     suspend fun insertSeriesData(seriesData: SeriesData): Long
 
     @Transaction
+    @Query("UPDATE SeriesTable SET favoriteSince = :favSeconds WHERE seriesId = :id")
+    suspend fun updateSeriesFavorite(id: Long, favSeconds: Long)
+
+    @Transaction
     @Delete
     suspend fun deleteSeriesData(seriesData: SeriesData)
 
@@ -22,6 +32,137 @@ interface BurningSeriesDao {
     fun getSeriesByHrefTitle(hrefTitle: String): Flow<SeriesData>
 
     @Transaction
-    @Query("SELECT * FROM SeriesTable WHERE isFavorite ORDER BY favoriteSince DESC")
-    fun getSeriesFavorites(): Flow<List<SeriesData>>
+    @Query("SELECT * FROM SeriesTable WHERE favoriteSince > 0 ORDER BY favoriteSince DESC")
+    fun getSeriesFavorites(): Flow<List<SeriesWithInfo>>
+
+    @Transaction
+    @Query("SELECT favoriteSince FROM SeriesTable WHERE hrefTitle = :hrefTitle LIMIT 1")
+    fun getSeriesFavoriteSinceByHrefTitle(hrefTitle: String): Flow<Long?>
+
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertInfoData(infoData: InfoData): Long
+
+    @Transaction
+    @Delete
+    suspend fun deleteInfoData(infoData: InfoData)
+
+    @Transaction
+    @Query("SELECT * FROM InfoTable")
+    fun getInfoData(): List<InfoData>
+
+    @Transaction
+    @Query("SELECT * FROM InfoTable WHERE seriesId = :seriesId")
+    fun getInfoDataBySeriesId(seriesId: Long): Flow<List<InfoData>>
+
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSeasonData(seasonData: SeasonData): Long
+
+    @Transaction
+    @Delete
+    suspend fun deleteSeasonData(seasonData: SeasonData)
+
+    @Transaction
+    @Query("SELECT * FROM SeasonTable")
+    fun getSeasonData(): List<SeasonData>
+
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLanguageData(languageData: LanguageData): Long
+
+    suspend fun addLanguageData(languageData: LanguageData): Long {
+        if (languageData.languageId > 0L) {
+            return languageData.languageId
+        }
+        val valueLang = getLanguageDataByValue(languageData.value).first()
+        if (valueLang != null && valueLang.languageId > 0L) {
+            return valueLang.languageId
+        }
+        return insertLanguageData(languageData)
+    }
+
+    @Transaction
+    @Delete
+    suspend fun deleteLanguageData(languageData: LanguageData)
+
+    @Transaction
+    @Query("SELECT * FROM LanguageTable")
+    fun getLanguageData(): List<LanguageData>
+
+    @Transaction
+    @Query("SELECT * FROM LanguageTable WHERE value = :value LIMIT 1")
+    fun getLanguageDataByValue(value: String): Flow<LanguageData?>
+
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSeriesLanguagesCrossRef(seriesLanguagesCrossRef: SeriesLanguagesCrossRef)
+
+    @Transaction
+    @Delete
+    suspend fun deleteSeriesLanguagesCrossRef(seriesLanguagesCrossRef: SeriesLanguagesCrossRef)
+
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEpisodeInfo(episodeInfo: EpisodeInfo): Long
+
+    @Transaction
+    @Delete
+    suspend fun deleteEpisodeInfo(episodeInfo: EpisodeInfo)
+
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertHoster(hosterData: HosterData): Long
+
+    @Transaction
+    @Delete
+    suspend fun deleteHoster(hosterData: HosterData)
+
+    @Transaction
+    @Query("SELECT * FROM EpisodeInfoTable")
+    fun getEpisodeWithHoster(): Flow<List<EpisodeWithHoster>>
+
+
+
+    @Transaction
+    @Query("SELECT * FROM SeriesTable WHERE hrefTitle = :hrefTitle LIMIT 1")
+    fun getSeriesWithInfoByHrefTitle(hrefTitle: String): Flow<SeriesWithInfo?>
+
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertGenre(genreData: GenreModel.GenreData): Long
+
+    @Transaction
+    @Delete
+    suspend fun deleteGenre(genreData: GenreModel.GenreData)
+
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertGenreItem(genreItem: GenreModel.GenreItem): Long
+
+    @Transaction
+    @Delete
+    suspend fun deleteGenreItem(genreItem: GenreModel.GenreItem)
+
+
+
+    @Transaction
+    @Query("SELECT * FROM GenreTable")
+    fun getAllSeries(): Flow<List<GenreWithItems>>
 }

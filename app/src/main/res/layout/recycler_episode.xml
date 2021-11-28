@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/defaultBackgroundColor">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/number"
+            fontPath="fonts/Poppins-Bold.ttf"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="match_parent"
+            android:textColor="@color/defaultContentColor"
+            android:gravity="center"
+            android:maxLines="1"
+            android:singleLine="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/title"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title"
+            fontPath="fonts/Poppins-Bold.ttf"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textColor="@color/defaultContentColor"
+            android:gravity="start|center_vertical"
+            android:maxLines="1"
+            android:singleLine="true"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintVertical_weight="2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/number"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

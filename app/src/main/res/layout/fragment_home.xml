@@ -36,8 +36,7 @@
             android:id="@+id/latestEpisodeRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:nestedScrollingEnabled="false"
             app:layout_constraintTop_toBottomOf="@id/episodesHeader"/>
 
         <com.google.android.material.textview.MaterialTextView
@@ -74,8 +73,7 @@
             android:id="@+id/latestSeriesRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:nestedScrollingEnabled="false"
             app:layout_constraintTop_toBottomOf="@id/seriesHeader"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
