@@ -36,7 +36,7 @@ interface BurningSeriesDao {
     fun getSeriesFavorites(): Flow<List<SeriesWithInfo>>
 
     @Transaction
-    @Query("SELECT favoriteSince FROM SeriesTable WHERE hrefTitle = :hrefTitle LIMIT 1")
+    @Query("SELECT favoriteSince FROM SeriesTable WHERE hrefTitle = :hrefTitle OR hrefTitle LIKE :hrefTitle || '%' LIMIT 1")
     fun getSeriesFavoriteSinceByHrefTitle(hrefTitle: String): Flow<Long?>
 
 
@@ -137,7 +137,7 @@ interface BurningSeriesDao {
 
 
     @Transaction
-    @Query("SELECT * FROM SeriesTable WHERE hrefTitle = :hrefTitle LIMIT 1")
+    @Query("SELECT * FROM SeriesTable WHERE hrefTitle = :hrefTitle OR hrefTitle LIKE :hrefTitle || '%' OR :hrefTitle LIKE hrefTitle || '%' LIMIT 1")
     fun getSeriesWithInfoByHrefTitle(hrefTitle: String): Flow<SeriesWithInfo?>
 
 
@@ -163,6 +163,10 @@ interface BurningSeriesDao {
 
 
     @Transaction
-    @Query("SELECT * FROM GenreTable")
-    fun getAllSeries(): Flow<List<GenreWithItems>>
+    @Query("SELECT * FROM GenreTable LIMIT 1 OFFSET :offset")
+    fun getAllSeries(offset: Long = 0): Flow<List<GenreWithItems>>
+
+    @Transaction
+    @Query("SELECT COUNT(genreId) FROM GenreTable")
+    fun getAllSeriesCount(): Flow<Long>
 }

@@ -66,6 +66,9 @@
         <action
             android:id="@+id/action_favoritesFragment_to_seriesFragment"
             app:destination="@id/seriesFragment" />
+        <action
+            android:id="@+id/action_favoritesFragment_to_allSeriesFragment"
+            app:destination="@id/allSeriesFragment" />
     </fragment>
     <fragment
         android:id="@+id/allSeriesFragment"
@@ -78,5 +81,8 @@
         <action
             android:id="@+id/action_allSeriesFragment_to_seriesFragment"
             app:destination="@id/seriesFragment" />
+        <action
+            android:id="@+id/action_allSeriesFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
     </fragment>
 </navigation>

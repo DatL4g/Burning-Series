@@ -3,4 +3,6 @@
     <string name="font_path" translatable="false">fonts/Poppins-Regular.ttf</string>
 
     <string name="favorites">Favorites</string>
+    <string name="search">Search</string>
+    <string name="all_series">All Series</string>
 </resources>

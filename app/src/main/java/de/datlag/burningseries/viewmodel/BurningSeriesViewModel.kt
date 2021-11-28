@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.allseries.relation.GenreWithItems
 import de.datlag.model.burningseries.home.HomeData
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
@@ -17,10 +18,10 @@ import de.datlag.network.jsonbase.JsonBaseRepository
 import de.datlag.network.m3o.M3ORepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +33,40 @@ class BurningSeriesViewModel @Inject constructor(
 	
 	val homeData = repository.getHomeData()
 	val favorites = repository.getSeriesFavorites()
-	val allSeries = repository.getAllSeries()
+
+	val allSeriesPagination: MutableStateFlow<Long> = MutableStateFlow(0)
+	val allSeriesPaginated: MutableSharedFlow<Resource<List<GenreWithItems>>> = MutableSharedFlow()
+	val allSeriesPaginatedFlat: MutableSharedFlow<List<GenreModel>> = MutableSharedFlow()
+
+	init {
+		viewModelScope.launch(Dispatchers.IO) {
+			allSeriesPaginated.collect {
+				it.data?.flatMap { item -> item.toGenreModel() }?.let { items -> allSeriesPaginatedFlat.emit(items) }
+			}
+		}
+	}
+
+	fun getAllSeriesNext() = viewModelScope.launch(Dispatchers.IO) {
+		val maxValue = repository.getAllSeriesCount().first()
+		if (allSeriesPagination.value + 1 < maxValue) {
+			allSeriesPagination.emit(allSeriesPagination.value + 1)
+		} else {
+			allSeriesPagination.emit(0)
+		}
+	}
+
+	fun getAllSeriesPrevious() = viewModelScope.launch(Dispatchers.IO) {
+		val maxValue = repository.getAllSeriesCount().first()
+		if (allSeriesPagination.value - 1 < 0) {
+			allSeriesPagination.emit(maxValue - 1)
+		} else {
+			allSeriesPagination.emit(allSeriesPagination.value -1)
+		}
+	}
+
+	fun getNewPaginationData() = viewModelScope.launch(Dispatchers.IO) {
+		allSeriesPaginated.emitAll(repository.getAllSeries(allSeriesPagination.value))
+	}
 
 	fun getSeriesData(latestSeries: LatestSeries) = repository.getSeriesData(latestSeries)
 	fun getSeriesData(latestEpisode: LatestEpisode) = repository.getSeriesData(latestEpisode)

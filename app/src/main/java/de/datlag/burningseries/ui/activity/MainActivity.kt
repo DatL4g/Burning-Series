@@ -1,9 +1,13 @@
 package de.datlag.burningseries.ui.activity
 
 import android.os.Bundle
+import android.view.Menu
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.fragment.app.FragmentContainerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fede987.statusbaralert.StatusBarAlert
 import com.fede987.statusbaralert.utils.statusBarAlert
@@ -11,6 +15,7 @@ import com.ferfalk.simplesearchview.SimpleSearchView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.Secrets
@@ -22,7 +27,7 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
-class MainActivity : AdvancedActivity(R.layout.activity_main), FABExtended, StatusBarAlertProvider {
+class MainActivity : AdvancedActivity(R.layout.activity_main), FABExtended, StatusBarAlertProvider, FABNavigation {
 
 	private val binding: ActivityMainBinding by viewBinding()
 	private lateinit var statusBarAlertProvided: StatusBarAlert
@@ -44,4 +49,11 @@ class MainActivity : AdvancedActivity(R.layout.activity_main), FABExtended, Stat
 
 	override val statusBarAlert: StatusBarAlert
 		get() = statusBarAlertProvided
+
+	override val previousFab: FloatingActionButton
+		get() = binding.previousFab
+
+	override val nextFab: FloatingActionButton
+		get() = binding.nextFab
+
 }

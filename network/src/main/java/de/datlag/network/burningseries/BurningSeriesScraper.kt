@@ -62,6 +62,7 @@ class BurningSeriesScraper {
 
     fun scrapeSeriesData(href: String): SeriesData? {
         val url = Constants.API_BS_TO_BASE + if (href.startsWith('/')) href else "/$href"
+        Log.e("scrape from", url)
         val doc: Document = try {
             Jsoup.connect(url).timeout(1000 * 60).get()
         } catch (ignored: Exception) {

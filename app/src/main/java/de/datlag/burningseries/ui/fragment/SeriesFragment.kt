@@ -16,10 +16,7 @@ import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.EpisodeRecyclerAdapter
-import de.datlag.burningseries.common.getColorCompat
-import de.datlag.burningseries.common.readMoreOption
-import de.datlag.burningseries.common.safeActivity
-import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
@@ -51,7 +48,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         super.onViewCreated(view, savedInstanceState)
 
         initRecycler()
-        extendedFab?.hide()
+
         readMoreOption = safeContext.readMoreOption {
             textLength(3)
             textLengthType(ReadMoreOption.TYPE_LINE)
@@ -77,6 +74,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             setViewData(it)
         }
         (navArgs.genreItem as? GenreModel.GenreItem?)?.let { item ->
+            Timber.e(item.toString())
             burningSeriesViewModel.getSeriesData(item).launchAndCollect {
                 seriesFlowCollect(it)
             }
@@ -87,6 +85,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         when (it.status) {
             Resource.Status.LOADING -> {
                 isLoading = true
+                it.data?.let { data -> setViewData(data) }
                 statusBarAlert?.hide {
                     statusBarAlert?.setAutoHide(false)
                     statusBarAlert?.setText("Loading...")
@@ -175,6 +174,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 }
         }
     }
+
     private fun favIconColorApply(isFav: Boolean): Unit = with(binding) {
         if (isFav) {
             favIcon.load<Drawable>(R.drawable.ic_baseline_favorite_24) {
@@ -193,5 +193,11 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 BlendModeCompat.SRC_IN
             )
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        extendedFab?.visibility = View.GONE
+        hideNavigationFabs()
     }
 }

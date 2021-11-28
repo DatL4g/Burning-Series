@@ -1,6 +1,8 @@
 package de.datlag.burningseries.ui.fragment
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -11,11 +13,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.AllSeriesRecyclerAdapter
 import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.show
 import de.datlag.burningseries.databinding.FragmentAllSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.model.burningseries.allseries.GenreModel
 import io.michaelrocks.paranoid.Obfuscate
+import kotlinx.coroutines.flow.collect
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -31,12 +35,17 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         super.onViewCreated(view, savedInstanceState)
 
         initRecycler()
-        burningSeriesViewModel.allSeries.launchAndCollect { res ->
-            if (res.status == Resource.Status.SUCCESS) {
-                res.data?.flatMap {
-                    it.toGenreModel()
-                }?.let { allSeriesRecyclerAdapter.submitList(it) }
-            }
+        burningSeriesViewModel.allSeriesPagination.launchAndCollect {
+            burningSeriesViewModel.getNewPaginationData()
+        }
+        burningSeriesViewModel.allSeriesPaginatedFlat.launchAndCollect {
+            allSeriesRecyclerAdapter.submitList(it)
+        }
+        nextFab?.setOnClickListener {
+            burningSeriesViewModel.getAllSeriesNext()
+        }
+        previousFab?.setOnClickListener {
+            burningSeriesViewModel.getAllSeriesPrevious()
         }
     }
 
@@ -50,5 +59,28 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
                 findNavController().navigate(AllSeriesFragmentDirections.actionAllSeriesFragmentToSeriesFragment(genreItem = item))
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.all_series_menu, menu)
+        val item = menu.findItem(R.id.action_search)
+        binding.searchView.setMenuItem(item)
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        extendedFabFavorite(AllSeriesFragmentDirections.actionAllSeriesFragmentToFavoritesFragment())
+        showNavigationFabs()
+        setSupportActionBar(binding.toolbar)
+        setHasOptionsMenu(true)
+        showToolbarBackButton(binding.toolbar)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        setSupportActionBar(null)
     }
 }

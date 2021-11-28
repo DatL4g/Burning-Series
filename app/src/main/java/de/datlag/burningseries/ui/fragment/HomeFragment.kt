@@ -14,6 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.LatestEpisodeRecyclerAdapter
 import de.datlag.burningseries.adapter.LatestSeriesRecyclerAdapter
+import de.datlag.burningseries.common.hide
 import de.datlag.burningseries.common.openInBrowser
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.FragmentHomeBinding
@@ -40,7 +41,6 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 
-		extendedFab?.show()
 		initRecycler()
 
 		burningSeriesViewModel.homeData.launchAndCollect {
@@ -122,6 +122,12 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 			openInBrowser(item)
 			true
 		}
+	}
+
+	override fun onResume() {
+		super.onResume()
+		extendedFab?.visibility = View.VISIBLE
+		hideNavigationFabs()
 	}
 	
 	private fun openInBrowser(item: LatestEpisode) {

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
+    android:layout_height="wrap_content"
     android:background="@color/defaultBackgroundColor"
     android:backgroundTint="@color/defaultBackgroundColor">
 
@@ -12,10 +12,11 @@
         android:id="@+id/title"
         fontPath="fonts/Poppins-Bold.ttf"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="?attr/actionBarSize"
         android:gravity="start|center_vertical"
         android:textColor="@color/defaultContentColor"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         app:autoSizeTextType="uniform"
         app:autoSizeMinTextSize="18sp"
         app:autoSizeMaxTextSize="24sp"/>
