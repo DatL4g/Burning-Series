@@ -64,18 +64,17 @@ class BurningSeriesRepository @Inject constructor(
 	fun getSeriesData(genreItem: GenreModel.GenreItem) = getSeriesData(genreItem.href, genreItem.getHrefTitle())
 
 	private fun getSeriesData(href: String, hrefTitle: String): Flow<Resource<SeriesWithInfo?>> = flow {
-		emit(Resource.loading(burningSeriesDao.getSeriesWithInfoByHrefTitle(hrefTitle).first()))
+		emit(Resource.loading(burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle).first()))
 		val scrapeData = scraper.scrapeSeriesData(href)
 
 		if (scrapeData != null) {
 			saveSeriesData(scrapeData)
-			emitAll(burningSeriesDao.getSeriesWithInfoByHrefTitle(hrefTitle).map { Resource.success(it) })
+			emitAll(burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle).map { Resource.success(it) })
 		} else {
-			Log.e("scrape data", "is null")
 			val currentRequest = Clock.System.now().epochSeconds
 			emitAll(networkBoundResource(
 				fetchFromLocal = {
-					burningSeriesDao.getSeriesWithInfoByHrefTitle(hrefTitle)
+					burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle)
 				},
 				shouldFetchFromRemote = {
 					it == null || (currentRequest - Constants.DAY_IN_MILLI) >= it.series.updatedAt || it.episodes.isEmpty()
@@ -96,7 +95,6 @@ class BurningSeriesRepository @Inject constructor(
 	}.flowOn(Dispatchers.IO)
 
 	suspend fun saveSeriesData(seriesData: SeriesData) {
-		Log.e("seriesData", seriesData.hrefTitle)
 		val prevFavoriteSince = burningSeriesDao.getSeriesFavoriteSinceByHrefTitle(seriesData.hrefTitle).first() ?: 0L
 		seriesData.favoriteSince = prevFavoriteSince
 		val seriesId = burningSeriesDao.insertSeriesData(seriesData)
@@ -125,6 +123,8 @@ class BurningSeriesRepository @Inject constructor(
 
 	fun getSeriesFavorites(): Flow<List<SeriesWithInfo>> = burningSeriesDao.getSeriesFavorites().flowOn(Dispatchers.IO)
 
+	fun searchSeriesFavorites(title: String): Flow<List<SeriesWithInfo>> = burningSeriesDao.searchFavorites(title).flowOn(Dispatchers.IO)
+
 	fun getAllSeries(pagination: Long): Flow<Resource<List<GenreWithItems>>> = flow {
 		if (pagination == 0) {
 			val first = burningSeriesDao.getAllSeries(pagination).first()
@@ -142,7 +142,7 @@ class BurningSeriesRepository @Inject constructor(
 							burningSeriesDao.getAllSeries(pagination)
 						},
 						shouldFetchFromRemote = {
-							it == null || it.any { item -> (currentRequest - Constants.DAY_IN_MILLI) >= item.genre.updatedAt }
+							it.isNullOrEmpty() || it.any { item -> (currentRequest - Constants.DAY_IN_MILLI) >= item.genre.updatedAt }
 						},
 						fetchFromRemote = {
 							service.getAllSeries(apiKey = wrapApiToken)
@@ -162,7 +162,9 @@ class BurningSeriesRepository @Inject constructor(
 		}
 	}.flowOn(Dispatchers.IO)
 
-	fun getAllSeriesCount() = burningSeriesDao.getAllSeriesCount()
+	fun getAllSeriesCount() = burningSeriesDao.getAllSeriesCount().flowOn(Dispatchers.IO)
+
+	fun searchAllSeries(title: String) = burningSeriesDao.searchAllSeries(title).flowOn(Dispatchers.IO)
 
 	suspend fun saveGenreData(genreList: List<GenreModel.GenreData>) {
 		genreList.sortedBy { it.genre }.forEach { genreData ->

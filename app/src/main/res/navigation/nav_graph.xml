@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_homeFragment_to_allSeriesFragment"
             app:destination="@id/allSeriesFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_helpImproveDialog"
+            app:destination="@id/helpImproveDialog" />
     </fragment>
     <fragment
         android:id="@+id/seriesFragment"
@@ -85,4 +88,13 @@
             android:id="@+id/action_allSeriesFragment_to_favoritesFragment"
             app:destination="@id/favoritesFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/helpImproveDialog"
+        android:name="de.datlag.burningseries.ui.dialog.HelpImproveDialog"
+        android:label="HelpImproveDialog"
+        tools:layout="@layout/dialog_help_improve">
+        <argument
+            android:name="count"
+            app:argType="long" />
+    </dialog>
 </navigation>

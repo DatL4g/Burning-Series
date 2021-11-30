@@ -133,9 +133,6 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
         episodeRecyclerAdapter.setOnClickListener { _, item ->
             item.hoster.forEach { hoster ->
-                burningSeriesViewModel.getBsHosterData(hoster).observe(viewLifecycleOwner) {
-                    Timber.e("${hoster.title}: ${it.data?.toString() ?: it.message}")
-                }
             }
         }
     }
@@ -150,6 +147,11 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         title.text = seriesData.series.title
         selectLanguage.text = seriesData.languages.getOrNull(0)?.text ?: "Languages"
         selectSeason.text = seriesData.series.season
+        if (seriesData.seasons.isLargerThan(1)) {
+            selectSeason.show()
+        } else {
+            selectSeason.hide()
+        }
         episodeRecyclerAdapter.submitList(seriesData.episodes)
         readMoreOption.addReadMoreTo(description, seriesData.series.description)
         favIconColorApply(seriesData.series.favoriteSince > 0L)

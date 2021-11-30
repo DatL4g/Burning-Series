@@ -70,6 +70,14 @@ abstract class AdvancedFragment : Fragment {
 		}
 	}
 
+	fun getBurningSeriesHosterCount(onLoaded: (Long) -> Unit) {
+		m3oRepository.getBurningSeriesHosterCount().launchAndCollect {
+			if (it != null) {
+				onLoaded.invoke(it)
+			}
+		}
+	}
+
 	fun extendedFabFavorite(directions: NavDirections) {
 		extendedFab?.let { fab ->
 			fab.visibility = View.VISIBLE

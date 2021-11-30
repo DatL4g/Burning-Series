@@ -97,6 +97,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("com.github.Ahmed3Elshaer:SelectionBottomSheet:0.1.0")
     implementation("com.github.devendroid:ReadMoreOption:1.0.3")
+    implementation("com.github.GoodieBag:Pinview:84f114b915")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

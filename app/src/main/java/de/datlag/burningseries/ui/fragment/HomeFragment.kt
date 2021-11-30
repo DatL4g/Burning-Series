@@ -27,6 +27,8 @@ import de.datlag.model.burningseries.home.LatestSeries
 import io.michaelrocks.paranoid.Obfuscate
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+import javax.inject.Named
 
 @AndroidEntryPoint
 @Obfuscate
@@ -42,6 +44,13 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		super.onViewCreated(view, savedInstanceState)
 
 		initRecycler()
+
+		if (!burningSeriesViewModel.showedHelpImprove) {
+			getBurningSeriesHosterCount {
+				burningSeriesViewModel.showedHelpImprove = true
+				findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToHelpImproveDialog(it))
+			}
+		}
 
 		burningSeriesViewModel.homeData.launchAndCollect {
 			when (it.status) {

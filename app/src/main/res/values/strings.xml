@@ -5,4 +5,12 @@
     <string name="favorites">Favorites</string>
     <string name="search">Search</string>
     <string name="all_series">All Series</string>
+    <string name="latest_episodes">Latest Episodes</string>
+    <string name="latest_series">Latest Series</string>
+    <string name="more">More…</string>
+    <string name="help_improve_header">Help Improve</string>
+    <string name="help_improve_text">In order for the app to work properly, it depends on YOUR help.\nVideos cannot always be viewed directly because of the captcha.\nIf a video is not available, please start it on the website (the app will automatically ask you for it). As soon as you have started it, it should also be available directly in the app.\nIt is also best to make sure that you use a host who does not redirect to another page.\nThe number below shows how many videos are available:</string>
+    <string name="i_understand">I understand</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 </resources>

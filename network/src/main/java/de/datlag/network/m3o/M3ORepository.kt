@@ -4,6 +4,7 @@ import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkResource
 import de.datlag.model.common.base64ToByteArray
+import de.datlag.model.m3o.db.Count
 import de.datlag.model.m3o.image.Convert
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
@@ -18,14 +19,15 @@ import javax.inject.Named
 
 @Obfuscate
 class M3ORepository @Inject constructor(
-	val service: Image,
+	val imageService: Image,
+	val dbService: DB,
 	@Named("m3oToken") val token: String
 ) {
 
 	private fun convertImageUrl(url: String): Flow<Resource<Convert>> {
 		return networkResource(
 			fetchFromRemote = {
-				service.convertURL("Bearer $token", Convert.RequestURL(url))
+				imageService.convertURL("Bearer $token", Convert.RequestURL(url))
 			}
 		).flowOn(Dispatchers.IO)
 	}
@@ -55,7 +57,7 @@ class M3ORepository @Inject constructor(
 		emit(Resource.loading(null))
 		networkResource(
 			fetchFromRemote = {
-				service.getImageFromURL(url)
+				imageService.getImageFromURL(url)
 			}
 		).collect { responseBody ->
 			when (responseBody.status) {
@@ -75,4 +77,15 @@ class M3ORepository @Inject constructor(
 			}
 		}
 	}.flowOn(Dispatchers.IO)
+
+	fun getBurningSeriesHosterCount(): Flow<Long?> = flow {
+		emit(null)
+		networkResource(
+			fetchFromRemote = {
+				dbService.countBurningSeries("Bearer $token", Count.Request("BurningSeries"))
+			}
+		).collect {
+			it.data?.count?.let { count -> emit(count) }
+		}
+	}
 }

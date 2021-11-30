@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/header"
+        fontPath="fonts/Poppins-Bold.ttf"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:text="@string/help_improve_header"
+        android:gravity="start|center_vertical"
+        android:textColor="@color/defaultContentColor"
+        android:layout_margin="16dp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="18sp"
+        app:autoSizeMaxTextSize="24sp"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/defaultContentColor"
+        android:text="@string/help_improve_text"
+        android:layout_margin="16dp"
+        app:layout_constraintTop_toBottomOf="@id/header" />
+
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/text">
+
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pin"
+            fontPath="fonts/Poppins-Bold.ttf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textColor="@color/defaultContentColor"
+            app:pinBackground="@drawable/pin_view_drawable"
+            app:cursorVisible="false"
+            app:forceKeyboard="false"
+            app:hint="0"
+            app:inputType="number"
+            app:password="false" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:clickable="true"/>
+    </FrameLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/closeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/i_understand"
+        android:textColor="@color/defaultBackgroundColor"
+        app:backgroundTint="@color/defaultContentColor"
+        app:layout_constraintTop_toBottomOf="@id/frame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

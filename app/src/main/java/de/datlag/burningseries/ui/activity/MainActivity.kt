@@ -2,6 +2,7 @@ package de.datlag.burningseries.ui.activity
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView

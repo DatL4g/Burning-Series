@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.ferfalk.simplesearchview.SimpleSearchView
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
@@ -35,10 +36,15 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         super.onViewCreated(view, savedInstanceState)
 
         initRecycler()
+        initSearchView()
         burningSeriesViewModel.allSeriesPagination.launchAndCollect {
             burningSeriesViewModel.getNewPaginationData()
         }
         burningSeriesViewModel.allSeriesPaginatedFlat.launchAndCollect {
+            binding.scrollView.post {
+                binding.scrollView.fling(0)
+                binding.scrollView.smoothScrollTo(0, 0)
+            }
             allSeriesRecyclerAdapter.submitList(it)
         }
         nextFab?.setOnClickListener {
@@ -59,6 +65,27 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
                 findNavController().navigate(AllSeriesFragmentDirections.actionAllSeriesFragmentToSeriesFragment(genreItem = item))
             }
         }
+    }
+
+    private fun initSearchView(): Unit = with(binding) {
+        searchView.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String): Boolean {
+                if (newText.length > 3) {
+                    burningSeriesViewModel.searchAllSeries(newText)
+                }
+                return false
+            }
+
+            override fun onQueryTextCleared(): Boolean {
+                burningSeriesViewModel.getNewPaginationData()
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                burningSeriesViewModel.searchAllSeries(query)
+                return false
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

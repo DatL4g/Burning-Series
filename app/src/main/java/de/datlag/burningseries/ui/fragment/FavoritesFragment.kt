@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.ferfalk.simplesearchview.SimpleSearchView
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.FavoriteRecyclerAdapter
@@ -30,10 +31,12 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
         super.onViewCreated(view, savedInstanceState)
 
         initRecycler()
+        initSearchView()
 
         burningSeriesViewModel.favorites.launchAndCollect {
             favoritesRecyclerAdapter.submitList(it)
         }
+        burningSeriesViewModel.getAllFavorites()
     }
 
     private fun initRecycler(): Unit = with(binding) {
@@ -44,6 +47,29 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
         favoritesRecyclerAdapter.setOnClickListener { _, item ->
             findNavController().navigate(FavoritesFragmentDirections.actionFavoritesFragmentToSeriesFragment(seriesWithInfo = item))
         }
+    }
+
+    private fun initSearchView(): Unit = with(binding) {
+        searchView.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String): Boolean {
+                if (newText.isNotEmpty()) {
+                    burningSeriesViewModel.searchFavorites(newText)
+                } else {
+                    burningSeriesViewModel.getAllFavorites()
+                }
+                return false
+            }
+
+            override fun onQueryTextCleared(): Boolean {
+                burningSeriesViewModel.getAllFavorites()
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                burningSeriesViewModel.searchFavorites(query)
+                return false
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

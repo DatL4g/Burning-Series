@@ -8,8 +8,7 @@ import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 
 @Dao
 @Obfuscate
@@ -137,8 +136,26 @@ interface BurningSeriesDao {
 
 
     @Transaction
-    @Query("SELECT * FROM SeriesTable WHERE hrefTitle = :hrefTitle OR hrefTitle LIKE :hrefTitle || '%' OR :hrefTitle LIKE hrefTitle || '%' LIMIT 1")
+    @Query("SELECT * FROM SeriesTable WHERE hrefTitle = :hrefTitle LIMIT 1")
     fun getSeriesWithInfoByHrefTitle(hrefTitle: String): Flow<SeriesWithInfo?>
+
+    @Transaction
+    @Query("SELECT * FROM SeriesTable WHERE :hrefTitle LIKE hrefTitle || '%' OR hrefTitle LIKE :hrefTitle || '%' LIMIT 1")
+    fun getSeriesWithInfoByLikeHrefTitle(hrefTitle: String): Flow<SeriesWithInfo?>
+
+    fun getSeriesWithInfoBestMatch(hrefTitle: String): Flow<SeriesWithInfo?> = flow {
+        getSeriesWithInfoByHrefTitle(hrefTitle).collect {
+            if (it != null) {
+                emit(it)
+            } else {
+                emitAll(getSeriesWithInfoByLikeHrefTitle(hrefTitle))
+            }
+        }
+    }
+
+    @Transaction
+    @Query("SELECT * FROM SeriesTable WHERE favoriteSince > 0 AND title LIKE '%' || :title || '%' ORDER BY favoriteSince DESC")
+    fun searchFavorites(title: String): Flow<List<SeriesWithInfo>>
 
 
 
@@ -164,9 +181,13 @@ interface BurningSeriesDao {
 
     @Transaction
     @Query("SELECT * FROM GenreTable LIMIT 1 OFFSET :offset")
-    fun getAllSeries(offset: Long = 0): Flow<List<GenreWithItems>>
+    fun getAllSeries(offset: Long = 0L): Flow<List<GenreWithItems>>
 
     @Transaction
     @Query("SELECT COUNT(genreId) FROM GenreTable")
     fun getAllSeriesCount(): Flow<Long>
+
+    @Transaction
+    @Query("SELECT * FROM GenreItemTable WHERE title LIKE '%' || :title || '%'")
+    fun searchAllSeries(title: String): Flow<List<GenreModel.GenreItem>>
 }

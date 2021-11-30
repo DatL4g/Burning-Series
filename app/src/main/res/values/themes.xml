@@ -21,11 +21,19 @@
 
     <style name="BottomSheetDialog" parent="Theme.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+        <item name="shapeAppearanceLargeComponent">@style/RoundedBottomSheetComponent</item>
     </style>
 
     <style name="BottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
         <item name="android:backgroundTint">@color/bottomSheetBackground</item>
         <item name="backgroundTint">@color/bottomSheetBackground</item>
+    </style>
+
+    <style name="RoundedBottomSheetComponent" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="android:radius">16dp</item>
     </style>
 
     <style name="TextAppearanceEmpty">
