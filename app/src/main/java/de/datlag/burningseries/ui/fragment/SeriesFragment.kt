@@ -138,7 +138,10 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             burningSeriesViewModel.getStream(item.hoster).launchAndCollect {
                 when (it.status) {
                     Resource.Status.LOADING -> { /* loading indicator */ }
-                    Resource.Status.ERROR -> { /* error indicator */ }
+                    Resource.Status.ERROR -> {
+                        /* error indicator */
+                        Timber.e("No video available")
+                    }
                     Resource.Status.SUCCESS -> {
                         val list = it.data!!
                         Timber.e(list.toString())
