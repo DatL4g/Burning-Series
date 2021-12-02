@@ -10,6 +10,7 @@ import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.HosterData
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.network.burningseries.BurningSeriesRepository
+import de.datlag.network.m3o.M3ORepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 @Obfuscate
 class BurningSeriesViewModel @Inject constructor(
-	val repository: BurningSeriesRepository
+	val repository: BurningSeriesRepository,
+	val m3ORepository: M3ORepository
 ): ViewModel() {
 
 	var showedHelpImprove: Boolean = false
@@ -81,4 +83,6 @@ class BurningSeriesViewModel @Inject constructor(
 	fun updateSeriesFavorite(seriesData: SeriesWithInfo) = viewModelScope.launch(Dispatchers.IO) {
 		repository.updateSeriesFavorite(seriesData.series)
 	}
+
+	fun getStream(list: List<HosterData>) = m3ORepository.getAnyStream(list)
 }

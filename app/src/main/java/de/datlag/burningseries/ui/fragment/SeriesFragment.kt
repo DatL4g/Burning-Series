@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -28,6 +29,8 @@ import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.series.SeasonData
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import io.michaelrocks.paranoid.Obfuscate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -132,7 +135,15 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         episodeRecycler.isNestedScrollingEnabled = false
 
         episodeRecyclerAdapter.setOnClickListener { _, item ->
-            item.hoster.forEach { hoster ->
+            burningSeriesViewModel.getStream(item.hoster).launchAndCollect {
+                when (it.status) {
+                    Resource.Status.LOADING -> { /* loading indicator */ }
+                    Resource.Status.ERROR -> { /* error indicator */ }
+                    Resource.Status.SUCCESS -> {
+                        val list = it.data!!
+                        Timber.e(list.toString())
+                    }
+                }
             }
         }
     }

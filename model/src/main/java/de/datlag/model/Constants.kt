@@ -11,6 +11,7 @@ object Constants {
 	
 	const val API_M3O = "${PROTOCOL_HTTPS}api.m3o.com"
 	const val API_JSONBASE = "${PROTOCOL_HTTPS}jsonbase.com"
+	const val API_JSONBASE_PREFIX = "/bs-decaptcha"
 	const val API_BS_TO_BASE = "${PROTOCOL_HTTPS}bs.to"
 	const val API_BS_TO_ALL = "${API_BS_TO_BASE}/andere-serien"
 	const val API_WRAP_API_BURNING_SERIES = "${PROTOCOL_HTTPS}wrapapi.com"

@@ -9,6 +9,7 @@ import dagger.hilt.components.SingletonComponent
 import de.datlag.model.Constants
 import de.datlag.network.burningseries.BurningSeries
 import de.datlag.network.burningseries.BurningSeriesScraper
+import de.datlag.network.jsonbase.JsonBase
 import de.datlag.network.m3o.DB
 import de.datlag.network.m3o.Image
 import io.michaelrocks.paranoid.Obfuscate
@@ -95,10 +96,19 @@ object NetworkModule {
 
 	@Provides
 	@Singleton
-	fun  provideM3ODBService(
+	fun provideM3ODBService(
 		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
 	): DB = builder
 		.baseUrl(Constants.API_M3O)
 		.build()
 		.create(DB::class.java)
+
+	@Provides
+	@Singleton
+	fun provideJsonBaseService(
+		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
+	): JsonBase = builder
+		.baseUrl(Constants.API_JSONBASE)
+		.build()
+		.create(JsonBase::class.java)
 }

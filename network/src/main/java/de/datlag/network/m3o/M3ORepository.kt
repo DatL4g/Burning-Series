@@ -3,16 +3,21 @@ package de.datlag.network.m3o
 import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkResource
+import de.datlag.model.burningseries.series.HosterData
 import de.datlag.model.common.base64ToByteArray
+import de.datlag.model.jsonbase.Stream
 import de.datlag.model.m3o.db.Count
+import de.datlag.model.m3o.db.create.BurningSeriesHoster
+import de.datlag.model.m3o.db.create.BurningSeriesHosterRecord
+import de.datlag.model.m3o.db.read.BurningSeriesHosterQuery
 import de.datlag.model.m3o.image.Convert
+import de.datlag.network.jsonbase.JsonBaseRepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.*
 import okhttp3.ResponseBody
 import javax.inject.Inject
 import javax.inject.Named
@@ -21,6 +26,7 @@ import javax.inject.Named
 class M3ORepository @Inject constructor(
 	val imageService: Image,
 	val dbService: DB,
+	val jsonBaseRepository: JsonBaseRepository,
 	@Named("m3oToken") val token: String
 ) {
 
@@ -87,5 +93,60 @@ class M3ORepository @Inject constructor(
 		).collect {
 			it.data?.count?.let { count -> emit(count) }
 		}
+	}.flowOn(Dispatchers.IO)
+
+	fun getAnyStream(list: List<HosterData>): Flow<Resource<List<Stream>>> = flow<Resource<List<Stream>>> {
+		emit(Resource.loading(null))
+		coroutineScope {
+			val completeList = list.map {
+				async { getStream(it.title, it.href).first() }
+			}.awaitAll().filterNotNull()
+
+			if (completeList.isEmpty()) {
+				emit(Resource.error("No Hoster"))
+			} else {
+				emit(Resource.success(completeList))
+			}
+		}
+	}.flowOn(Dispatchers.IO)
+
+	private fun getStream(hoster: String, href: String): Flow<Stream?> = flow {
+		networkResource(
+			fetchFromRemote = {
+				dbService.getStream("Bearer $token", BurningSeriesHosterQuery(href))
+			}
+		).collect {
+			when (it.status) {
+				Resource.Status.SUCCESS -> {
+					if (it.data?.records?.isNullOrEmpty() == true) {
+						emitAll(getJsonBaseStreamAndSave(hoster, href))
+					} else {
+						emit(it.data!!.records[0].toStream(hoster))
+					}
+				}
+				Resource.Status.ERROR -> {
+					emitAll(getJsonBaseStreamAndSave(hoster, href))
+				}
+				Resource.Status.LOADING -> {}
+			}
+		}
+	}.flowOn(Dispatchers.IO)
+
+	private fun getJsonBaseStreamAndSave(hoster: String, href: String): Flow<Stream?> = flow {
+		jsonBaseRepository.getStream(href).collect { stream ->
+			if (stream != null) {
+				saveStream(href, stream)
+				emit(stream.apply { this.hoster = hoster })
+			} else {
+				emit(null)
+			}
+		}
+	}.flowOn(Dispatchers.IO)
+
+	private fun saveStream(href: String, stream: Stream) {
+		dbService.saveStream(
+			"Bearer $token",
+			BurningSeriesHoster(record = BurningSeriesHosterRecord.fromStream(href, stream))
+		)
 	}
 }
