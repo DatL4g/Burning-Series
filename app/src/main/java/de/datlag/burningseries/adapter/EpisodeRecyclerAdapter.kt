@@ -6,9 +6,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.google.android.material.chip.Chip
 import de.datlag.burningseries.R
-import de.datlag.burningseries.common.context
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerEpisodeBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter

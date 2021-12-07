@@ -1,0 +1,41 @@
+package de.datlag.network.video
+
+import android.util.Log
+import de.datlag.model.video.VideoStream
+import de.datlag.network.common.getSrc
+import de.datlag.network.common.toInt
+import io.michaelrocks.paranoid.Obfuscate
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+
+@Obfuscate
+class VideoScraper {
+
+    fun scrapeVideosFrom(hoster: String, url: String): VideoStream? {
+        val doc: Document = try {
+            Jsoup.connect(url).get()
+        } catch (ignored: Exception) {
+            return null
+        }
+
+        val srcList: MutableSet<String> = mutableSetOf()
+        val videoElements = doc.select("video")
+        videoElements.forEach {
+            it.getSrc()?.let { src -> srcList.add(src) }
+        }
+        val html = doc.html()
+        val regex = Regex(
+            "http(s?)://\\S+\\.(mp4|m3u8|webm|mkv|flv|vob|drc|gifv|avi|((m?)(2?)ts)|mov|qt|wmv|yuv|rm((vb)?)|viv|asf|amv|m4p|m4v|mp2|mp((e)?)g|mpe|mpv|m2v|svi|3gp|3g2|mxf|roq|nsv|f4v|f4p|f4a|f4b)",
+            setOf(RegexOption.MULTILINE, RegexOption.IGNORE_CASE)
+        )
+        val matches = regex.findAll(html)
+
+        matches.forEach {
+            srcList.add(it.value)
+        }
+        if (srcList.isEmpty()) {
+            return null
+        }
+        return VideoStream(hoster, srcList.toList().sortedWith(compareByDescending { it.endsWith(".m3u8", true).toInt() }))
+    }
+}

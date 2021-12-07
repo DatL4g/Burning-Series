@@ -14,4 +14,9 @@
     <color name="errorContentColor">#ffffff</color>
     <color name="favIconColorTrue">#db3236</color>
     <color name="favIconColorFalse">@color/defaultContentColor</color>
+
+    <color name="black">#000000</color>
+
+    <color name="datlagColor">#db3236</color>
+    <color name="datlagContentColor">#ffffff</color>
 </resources>

@@ -14,7 +14,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.LatestEpisodeRecyclerAdapter
 import de.datlag.burningseries.adapter.LatestSeriesRecyclerAdapter
-import de.datlag.burningseries.common.hide
 import de.datlag.burningseries.common.openInBrowser
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.FragmentHomeBinding
@@ -27,8 +26,6 @@ import de.datlag.model.burningseries.home.LatestSeries
 import io.michaelrocks.paranoid.Obfuscate
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Named
 
 @AndroidEntryPoint
 @Obfuscate

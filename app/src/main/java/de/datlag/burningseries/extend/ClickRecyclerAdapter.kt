@@ -1,11 +1,7 @@
 package de.datlag.burningseries.extend
 
 import android.view.View
-import android.view.ViewGroup
-import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
-import de.datlag.burningseries.common.inflateView
 import io.michaelrocks.paranoid.Obfuscate
 
 @Obfuscate

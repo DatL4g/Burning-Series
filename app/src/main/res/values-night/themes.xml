@@ -23,4 +23,8 @@
         <item name="android:backgroundTint">@color/bottomSheetBackground</item>
         <item name="backgroundTint">@color/bottomSheetBackground</item>
     </style>
+
+    <style name="Widget.DialogSelection.Indicator" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/defaultContentColor</item>
+    </style>
 </resources>

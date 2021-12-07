@@ -4,6 +4,9 @@ package de.datlag.burningseries.common
 
 import android.app.Activity
 import android.content.Context
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import de.datlag.burningseries.extend.AdvancedFragment
 import io.michaelrocks.paranoid.Obfuscate
@@ -20,6 +23,9 @@ val Fragment.safeActivity: Activity?
 			else -> null
 		}
 	}
+
+fun Fragment.getCompatColor(@ColorRes resId: Int) = ContextCompat.getColor(safeContext, resId)
+fun Fragment.getCompatDrawable(@DrawableRes resId: Int) = ContextCompat.getDrawable(safeContext, resId)
 
 fun Fragment.saveFileInternal(name: String, bytes: ByteArray): Boolean {
 	return try {

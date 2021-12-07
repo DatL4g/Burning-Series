@@ -6,11 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.goodiebag.pinview.Pinview
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.datlag.burningseries.R
-import de.datlag.burningseries.common.getColorCompat
-import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.DialogHelpImproveBinding
 
 class HelpImproveDialog : BottomSheetDialogFragment() {

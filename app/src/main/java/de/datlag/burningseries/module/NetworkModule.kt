@@ -12,6 +12,7 @@ import de.datlag.network.burningseries.BurningSeriesScraper
 import de.datlag.network.jsonbase.JsonBase
 import de.datlag.network.m3o.DB
 import de.datlag.network.m3o.Image
+import de.datlag.network.video.VideoScraper
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
@@ -111,4 +112,8 @@ object NetworkModule {
 		.baseUrl(Constants.API_JSONBASE)
 		.build()
 		.create(JsonBase::class.java)
+
+	@Provides
+	@Singleton
+	fun provideVideoScraper() = VideoScraper()
 }

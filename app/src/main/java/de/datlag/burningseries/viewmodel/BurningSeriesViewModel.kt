@@ -1,6 +1,7 @@
 package de.datlag.burningseries.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.datlag.model.burningseries.allseries.GenreModel

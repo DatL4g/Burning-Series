@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/exoplayer_controls"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="bottom">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/controlsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@id/exo_rew"
+            android:tint="@color/datlagContentColor"
+            android:src="@drawable/ic_baseline_forward_10_24"
+            android:background="?attr/actionBarItemBackground"
+            style="@style/ExoMediaButton.Rewind" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@id/exo_play"
+            android:tint="@color/datlagContentColor"
+            android:background="?attr/actionBarItemBackground"
+            style="@style/ExoMediaButton.Play" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@id/exo_pause"
+            android:tint="@color/datlagContentColor"
+            android:background="?attr/actionBarItemBackground"
+            style="@style/ExoMediaButton.Pause" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@id/exo_ffwd"
+            android:tint="@color/datlagContentColor"
+            android:src="@drawable/ic_baseline_replay_10_24"
+            android:background="?attr/actionBarItemBackground"
+            style="@style/ExoMediaButton.FastForward" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@id/exo_position"
+        fontPath="fonts/Poppins-Bold.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:textColor="@color/datlagContentColor"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="?attr/actionBarSize"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="00:00" />
+
+    <com.github.rubensousa.previewseekbar.exoplayer.PreviewTimeBar
+        android:id="@+id/exo_progress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/exo_position"
+        app:layout_constraintEnd_toStartOf="@id/exo_duration"
+        app:layout_constraintStart_toEndOf="@+id/exo_position"
+        app:layout_constraintTop_toTopOf="@+id/exo_position"
+        app:previewAnimationEnabled="true"
+        app:previewFrameLayout="@id/previewFrameLayout"
+        app:played_color="@color/datlagColor"
+        app:scrubber_dragged_size="24dp"
+        app:scrubber_enabled_size="16dp"
+        app:scrubber_color="@color/datlagColor" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@id/exo_duration"
+        fontPath="fonts/Poppins-Bold.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:includeFontPadding="false"
+        android:textColor="@color/datlagContentColor"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBaseline_toBaselineOf="@id/exo_position"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="00:00" />
+
+    <FrameLayout
+        android:id="@+id/previewFrameLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/video_frame"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/exo_progress"
+        app:layout_constraintDimensionRatio="16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.35"
+        tools:visibility="visible">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:scaleType="fitXY"
+            app:shapeAppearance="@style/ShapeAppearance.ImageView.VideoFrame"/>
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

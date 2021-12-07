@@ -57,6 +57,9 @@
         <action
             android:id="@+id/action_seriesFragment_to_allSeriesFragment"
             app:destination="@id/allSeriesFragment" />
+        <action
+            android:id="@+id/action_seriesFragment_to_videoFragment"
+            app:destination="@id/videoFragment" />
     </fragment>
     <fragment
         android:id="@+id/favoritesFragment"
@@ -87,6 +90,18 @@
         <action
             android:id="@+id/action_allSeriesFragment_to_favoritesFragment"
             app:destination="@id/favoritesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/videoFragment"
+        android:name="de.datlag.burningseries.ui.fragment.VideoFragment"
+        android:label="VideoFragment"
+        tools:layout="@layout/fragment_video">
+        <action
+            android:id="@+id/action_videoFragment_to_seriesFragment"
+            app:destination="@id/seriesFragment" />
+        <argument
+            android:name="videoStream"
+            app:argType="de.datlag.model.video.VideoStream" />
     </fragment>
     <dialog
         android:id="@+id/helpImproveDialog"

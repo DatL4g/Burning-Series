@@ -3,15 +3,15 @@ package de.datlag.burningseries.ui.fragment
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.ahmed3elshaer.selectionbottomsheet.SelectionBuilder
+import com.ahmed3elshaer.selectionbottomsheet.selectionBottomSheet
 import com.devs.readmoreoption.ReadMoreOption
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,16 +21,16 @@ import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
+import de.datlag.burningseries.viewmodel.VideoViewModel
 import de.datlag.coilifier.PlaceholderScaling
 import de.datlag.coilifier.Scale
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
-import de.datlag.model.burningseries.series.SeasonData
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
+import de.datlag.model.jsonbase.Stream
+import de.datlag.model.video.VideoStream
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -42,6 +42,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     private val navArgs: SeriesFragmentArgs by navArgs()
     private val binding: FragmentSeriesBinding by viewBinding()
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
+    private val videoViewModel: VideoViewModel by viewModels()
 
     private val episodeRecyclerAdapter = EpisodeRecyclerAdapter()
     private lateinit var readMoreOption: ReadMoreOption
@@ -142,8 +143,8 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                         Timber.e("No video available")
                     }
                     Resource.Status.SUCCESS -> {
-                        val list = it.data!!
-                        Timber.e(list.toString())
+                        // Timber.e(it.data.toString())
+                        getVideoSources(it.data ?: listOf())
                     }
                 }
             }
@@ -180,13 +181,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         }
 
         selectSeason.setOnClickListener {
-            SelectionBuilder<SeasonData>(safeActivity as AppCompatActivity)
-                .list(seriesData.seasons)
-                .title("Select Season")
-                .itemBinder { it.title }
-                .show {
-                    Timber.e("Selected: $it")
-                }
+
         }
     }
 
@@ -207,6 +202,25 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 safeContext.getColorCompat(R.color.favIconColorFalse),
                 BlendModeCompat.SRC_IN
             )
+        }
+    }
+
+    private fun getVideoSources(list: List<Stream>) {
+        videoViewModel.getVideoSources(list).launchAndCollect {
+            selectionBottomSheet<VideoStream> {
+                dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
+                title("Select Hoster")
+                titleColor(getCompatColor(R.color.defaultContentColor))
+                list(it)
+                itemBinder { item -> item.hoster }
+                confirmText("Watch")
+                itemColor(getCompatColor(R.color.defaultContentColor))
+                selectionColor(getCompatColor(R.color.defaultContentColor))
+                selectionDrawable(getCompatDrawable(R.drawable.ic_baseline_play_arrow_24))
+                confirmListener { item ->
+                    findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(item))
+                }
+            }
         }
     }
 
