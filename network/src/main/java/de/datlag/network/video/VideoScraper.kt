@@ -1,5 +1,6 @@
 package de.datlag.network.video
 
+import android.net.Uri
 import android.util.Log
 import de.datlag.model.video.VideoStream
 import de.datlag.network.common.getSrc
@@ -11,11 +12,16 @@ import org.jsoup.nodes.Document
 @Obfuscate
 class VideoScraper {
 
-    fun scrapeVideosFrom(hoster: String, url: String): VideoStream? {
+    fun scrapeVideosFrom(url: String): List<String> {
+        val parsed = Uri.parse(url).buildUpon().appendQueryParameter("autoplay", "1").build()
         val doc: Document = try {
-            Jsoup.connect(url).get()
+            Jsoup.connect(parsed?.toString() ?: url).get()
         } catch (ignored: Exception) {
-            return null
+            try {
+                Jsoup.connect(url).get()
+            } catch (ignored: Exception) {
+                return emptyList()
+            }
         }
 
         val srcList: MutableSet<String> = mutableSetOf()
@@ -33,9 +39,6 @@ class VideoScraper {
         matches.forEach {
             srcList.add(it.value)
         }
-        if (srcList.isEmpty()) {
-            return null
-        }
-        return VideoStream(hoster, srcList.toList().sortedWith(compareByDescending { it.endsWith(".m3u8", true).toInt() }))
+        return srcList.toList()
     }
 }

@@ -14,12 +14,14 @@ object Constants {
 	const val API_JSONBASE_PREFIX = "/bs-decaptcha"
 	const val API_BS_TO_BASE = "${PROTOCOL_HTTPS}bs.to"
 	const val API_BS_TO_ALL = "${API_BS_TO_BASE}/andere-serien"
-	const val API_WRAP_API_BURNING_SERIES = "${PROTOCOL_HTTPS}wrapapi.com"
+	const val API_WRAP_API_BASE = "${PROTOCOL_HTTPS}wrapapi.com"
 	const val API_WRAP_API_PREFIX = "/use/DatLag/burning-series"
+	const val API_WRAP_API_VIDEO_PREFIX = "/use/DatLag/videofetcher"
 
 	const val API_WRAP_API_HOME_VERSION = "0.1.0"
-	const val API_WRAP_API_ALL_VERSION = "0.1.0"
-	const val API_WRAP_API_SERIES_VERSION = "0.2.1"
+	const val API_WRAP_API_ALL_VERSION = "0.1.1"
+	const val API_WRAP_API_SERIES_VERSION = "0.2.3"
+	const val API_WRAP_API_DOWNLOAD_VIDEO = "0.1.2"
 
 	const val DATABASE_BURNING_SERIES = "BurningSeriesDatabase"
 
@@ -32,9 +34,9 @@ object Constants {
 	fun getBurningSeriesLink(href: String): String {
 		return if (!href.matches("^\\w+?://.*".toRegex())) {
 			if (!href.startsWith("/")) {
-				"${PROTOCOL_HTTPS}bs.to/$href"
+				"${API_BS_TO_BASE}/$href"
 			} else {
-				"${PROTOCOL_HTTPS}bs.to${"(?!:|/{2,})(/.*)".toRegex().find(href)?.value}"
+				"${API_BS_TO_BASE}${"(?!:|/{2,})(/.*)".toRegex().find(href)?.value}"
 			}
 		} else {
 			href

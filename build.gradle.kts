@@ -11,9 +11,8 @@ buildscript {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
-        maven { url = uri("https://plugins.gradle.org/m2/") }
-        maven { url = uri("https://kotlin.bintray.com/kotlinx/") }
         maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://plugins.gradle.org/m2/") }
     }
     dependencies {
         classpath("com.android.tools.build:gradle:7.0.3")
@@ -21,7 +20,7 @@ buildscript {
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.3.5")
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.40")
         classpath("org.jetbrains.kotlin:kotlin-serialization:1.5.31")
-        classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.17")
+        classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.18")
         classpath("io.michaelrocks:paranoid-gradle-plugin:0.3.5")
         classpath("com.klaxit.hiddensecrets:HiddenSecretsPlugin:0.1.2")
     }
@@ -33,9 +32,8 @@ allprojects {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
-        maven { url = uri("https://plugins.gradle.org/m2/") }
-        maven { url = uri("https://kotlin.bintray.com/kotlinx/") }
         maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://plugins.gradle.org/m2/") }
     }
 }
 

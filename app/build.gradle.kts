@@ -3,6 +3,7 @@ import com.google.protobuf.gradle.generateProtoTasks
 import com.google.protobuf.gradle.protoc
 
 plugins {
+    id("idea")
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
@@ -85,6 +86,7 @@ dependencies {
     implementation(project(mapOf("path" to ":model")))
     implementation(project(mapOf("path" to ":database")))
     implementation(project(mapOf("path" to ":executor")))
+    implementation(project(mapOf("path" to ":datastore")))
     implementation("org.jetbrains.kotlin:kotlin-stdlib${CompileOptions.kotlinJdk}:1.5.31")
     
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
@@ -143,10 +145,9 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.12.0")
     kapt("com.github.bumptech.glide:compiler:4.12.0")
-    implementation("com.github.DatL4g:Coilifier-Android:1.1.3")
+    implementation("com.github.DATL4G:Coilifier-Android:1.2.0")
 
-    implementation("androidx.datastore:datastore-core:1.0.0")
-    implementation("com.google.protobuf:protobuf-javalite:3.19.1")
+    implementation("androidx.datastore:datastore:1.0.0")
     
     implementation("com.github.fede87:StatusBarAlert:2.0.0")
     implementation("com.github.Ferfalk:SimpleSearchView:0.2.0")
@@ -155,15 +156,5 @@ dependencies {
 protobuf.protobuf.run {
     protoc {
         artifact = "com.google.protobuf:protoc:3.19.1"
-    }
-
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                create("java") {
-                    option("lite")
-                }
-            }
-        }
     }
 }

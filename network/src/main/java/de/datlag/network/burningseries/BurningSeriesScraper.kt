@@ -61,7 +61,7 @@ class BurningSeriesScraper {
     }
 
     fun scrapeSeriesData(href: String): SeriesData? {
-        val url = Constants.API_BS_TO_BASE + if (href.startsWith('/')) href else "/$href"
+        val url = Constants.getBurningSeriesLink(href)
         Log.e("scrape from", url)
         val doc: Document = try {
             Jsoup.connect(url).timeout(1000 * 60).get()
@@ -74,13 +74,25 @@ class BurningSeriesScraper {
         val image = doc.selectFirst(".serie img")?.getSrc() ?: String()
         val seasons: List<String> = doc.select(".serie #seasons ul li").map { it.text() }
 
+        val selectedValue = doc.selectFirst(".series-language option[selected]")?.getValue()
+        var selectedLanguage: String? = null
         val languagesElements = doc.select(".series-language > option")
         val languages: MutableList<LanguageData> = mutableListOf()
         languagesElements.forEach {
             val value = it.getValue() ?: String()
             val text = it.text() ?: String()
+            val selected = it.selectFirst("option[selected]")?.getValue()
+            if (!selected.isNullOrEmpty() || (!selectedValue.isNullOrEmpty() && selectedValue == value)) {
+                selectedLanguage = value
+            }
             if (value.isNotEmpty() && text.isNotEmpty()) {
                 languages.add(LanguageData(value, text))
+            }
+        }
+        if (selectedLanguage.isNullOrEmpty()) {
+            selectedLanguage = selectedValue
+            if (selectedLanguage.isNullOrEmpty()) {
+                selectedLanguage = languages.first().value
             }
         }
 
@@ -151,6 +163,8 @@ class BurningSeriesScraper {
             try { splitTitle[1].trim() } catch (ignored: Exception) { seasons.firstOrNull() ?: String() },
             description,
             image,
+            href = href,
+            selectedLanguage = selectedLanguage ?: return null,
             infos = infoList,
             languages = languages,
             seasons = seasons,

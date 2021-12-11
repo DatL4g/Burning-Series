@@ -80,6 +80,7 @@ class BurningSeriesViewModel @Inject constructor(
 	fun getSeriesData(latestSeries: LatestSeries) = repository.getSeriesData(latestSeries)
 	fun getSeriesData(latestEpisode: LatestEpisode) = repository.getSeriesData(latestEpisode)
 	fun getSeriesData(genreItem: GenreModel.GenreItem) = repository.getSeriesData(genreItem)
+	fun getSeriesData(href: String, hrefTitle: String, forceLoad: Boolean = false) = repository.getSeriesData(href, hrefTitle, forceLoad)
 
 	fun updateSeriesFavorite(seriesData: SeriesWithInfo) = viewModelScope.launch(Dispatchers.IO) {
 		repository.updateSeriesFavorite(seriesData.series)

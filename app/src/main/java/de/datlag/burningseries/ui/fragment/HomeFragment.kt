@@ -93,6 +93,10 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAllSeriesFragment())
 		}
 
+		binding.settingsButton.setOnClickListener {
+			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToSettingsFragment())
+		}
+
 		extendedFabFavorite(HomeFragmentDirections.actionHomeFragmentToFavoritesFragment())
 	}
 	

@@ -19,4 +19,5 @@
 
     <color name="datlagColor">#db3236</color>
     <color name="datlagContentColor">#ffffff</color>
+    <color name="datlagColorHalfAlpha">#78db3236</color>
 </resources>

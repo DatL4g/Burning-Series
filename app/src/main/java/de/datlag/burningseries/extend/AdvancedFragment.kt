@@ -21,10 +21,12 @@ import de.datlag.burningseries.common.*
 import de.datlag.burningseries.ui.connector.FABExtended
 import de.datlag.burningseries.ui.connector.FABNavigation
 import de.datlag.burningseries.ui.connector.StatusBarAlertProvider
+import de.datlag.coilifier.ImageLoader
 import de.datlag.network.m3o.M3ORepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,21 +46,23 @@ abstract class AdvancedFragment : Fragment {
 	fun loadImageAndSave(
 		url: String,
 		name: String = url.substringAfterLast("/"),
-		onLoaded: (ByteArray?) -> Unit
+		onLoaded: (ImageLoader?) -> Unit
 	) {
-		loadFileInternal(name)?.let {
-			onLoaded.invoke(it)
-		} ?: run {
+		if (checkFileValid(name)) {
+			safeActivity?.let {
+				onLoaded.invoke(ImageLoader.create(File(it.filesDir, name)))
+			}
+		} else {
 			m3oRepository.getImageFromURL(url)
 				.asLiveData(lifecycleScope.coroutineContext)
 				.observe(viewLifecycleOwner) {
-				it.data?.let { bytes ->
-					saveFileInternal(name, bytes)
-					onLoaded.invoke(bytes)
-				} ?: run {
-					onLoaded.invoke(null)
+					it.data?.let { bytes ->
+						saveFileInternal(name, bytes)
+						onLoaded.invoke(ImageLoader.create(bytes))
+					} ?: run {
+						onLoaded.invoke(null)
+					}
 				}
-			}
 		}
 	}
 

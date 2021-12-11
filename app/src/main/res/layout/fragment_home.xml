@@ -21,7 +21,7 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/episodesHeader"
             fontPath="fonts/Poppins-Bold.ttf"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="?attr/actionBarSize"
             android:text="@string/latest_episodes"
             android:gravity="start|center_vertical"
@@ -30,7 +30,22 @@
             app:autoSizeTextType="uniform"
             app:autoSizeMinTextSize="18sp"
             app:autoSizeMaxTextSize="24sp"
-            app:layout_constraintTop_toBottomOf="@id/banner"/>
+            app:layout_constraintTop_toBottomOf="@id/banner"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/settingsButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/settingsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Settings"
+            android:textColor="@color/defaultBackgroundColor"
+            app:backgroundTint="@color/defaultContentColor"
+            app:layout_constraintTop_toBottomOf="@id/banner"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/episodesHeader" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/latestEpisodeRecycler"

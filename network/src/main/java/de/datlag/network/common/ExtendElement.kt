@@ -25,7 +25,8 @@ fun Element.getSrc(): String? {
     return if (this.hasAttr("src")) {
         this.attr("src")
     } else {
-        null
+        val sources = this.select("source")
+        sources.firstOrNull()?.getSrc()
     }
 }
 

@@ -41,11 +41,22 @@ fun Fragment.saveFileInternal(name: String, bytes: ByteArray): Boolean {
 	}
 }
 
+fun Fragment.checkFileValid(name: String): Boolean {
+	return try {
+	    safeActivity?.let {
+	    	val imageFile = File(it.filesDir, name)
+			imageFile.exists() && imageFile.isFile && imageFile.canRead()
+		} ?: run { false }
+	} catch (ignored: Exception) {
+		false
+	}
+}
+
 fun Fragment.loadFileInternal(name: String): ByteArray? {
 	return try {
 		safeActivity?.let {
 			val imageFile = File(it.filesDir, name)
-			if (imageFile.exists() && imageFile.isFile && imageFile.canRead()) {
+			if (checkFileValid(name)) {
 				imageFile.readBytes()
 			} else {
 				null

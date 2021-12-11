@@ -12,6 +12,7 @@ import de.datlag.network.burningseries.BurningSeriesScraper
 import de.datlag.network.jsonbase.JsonBase
 import de.datlag.network.m3o.DB
 import de.datlag.network.m3o.Image
+import de.datlag.network.video.DownloadVideo
 import de.datlag.network.video.VideoScraper
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.serialization.json.Json
@@ -78,7 +79,7 @@ object NetworkModule {
 	fun provideBurningSeriesService(
 		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
 	): BurningSeries = builder
-		.baseUrl(Constants.API_WRAP_API_BURNING_SERIES)
+		.baseUrl(Constants.API_WRAP_API_BASE)
 		.build()
 		.create(BurningSeries::class.java)
 
@@ -116,4 +117,13 @@ object NetworkModule {
 	@Provides
 	@Singleton
 	fun provideVideoScraper() = VideoScraper()
+
+	@Provides
+	@Singleton
+	fun provideDownloadVideoService(
+		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
+	): DownloadVideo = builder
+		.baseUrl(Constants.API_WRAP_API_BASE)
+		.build()
+		.create(DownloadVideo::class.java)
 }

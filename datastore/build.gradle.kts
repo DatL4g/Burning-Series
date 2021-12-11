@@ -1,7 +1,9 @@
+import com.google.protobuf.gradle.*
+
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("kotlin-kapt")
+    id("com.google.protobuf")
     id("io.michaelrocks.paranoid")
 }
 
@@ -34,24 +36,29 @@ android {
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":model")))
-    implementation(project(mapOf("path" to ":database")))
-    implementation(project(mapOf("path" to ":datastore")))
-
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.4.0")
     implementation("com.google.android.material:material:1.4.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    
-    api("io.github.hadiyarajesh:flower:2.0.0")
-    api("com.squareup.retrofit2:retrofit:2.9.0")
-    api("com.squareup.okhttp3:okhttp:3.14.9")
-    api("com.squareup.okhttp3:logging-interceptor:3.14.9")
-    implementation("javax.inject:javax.inject:1")
-    implementation("org.jsoup:jsoup:1.14.3")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    api("androidx.datastore:datastore-core:1.0.0")
+    api("com.google.protobuf:protobuf-javalite:3.19.1")
+}
+
+protobuf.protobuf.run {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.19.1"
+    }
+
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
 }

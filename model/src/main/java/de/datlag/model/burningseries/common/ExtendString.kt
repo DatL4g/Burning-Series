@@ -12,3 +12,12 @@ fun String.encodeToHref(): String {
 	val allMatches = regex.findAll(replaced).map { it.value }
 	return allMatches.joinToString("").replace(Regex("\\s+"), "-").replace("_", "-")
 }
+
+fun String.getDigitsOrNull(): String? {
+	val replaced = this.replace("\\D+".toRegex(), String())
+	return if (replaced.isEmpty()) {
+		null
+	} else {
+		replaced
+	}
+}

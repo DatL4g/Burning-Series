@@ -63,7 +63,7 @@ class BurningSeriesRepository @Inject constructor(
 
 	fun getSeriesData(genreItem: GenreModel.GenreItem) = getSeriesData(genreItem.href, genreItem.getHrefTitle())
 
-	private fun getSeriesData(href: String, hrefTitle: String): Flow<Resource<SeriesWithInfo?>> = flow {
+	fun getSeriesData(href: String, hrefTitle: String, forceLoad: Boolean = false): Flow<Resource<SeriesWithInfo?>> = flow {
 		emit(Resource.loading(burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle).first()))
 		val scrapeData = scraper.scrapeSeriesData(href)
 
@@ -77,7 +77,7 @@ class BurningSeriesRepository @Inject constructor(
 					burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle)
 				},
 				shouldFetchFromRemote = {
-					it == null || (currentRequest - Constants.DAY_IN_MILLI) >= it.series.updatedAt || it.episodes.isEmpty()
+					it == null || forceLoad || (currentRequest - Constants.DAY_IN_MILLI) >= it.series.updatedAt || it.episodes.isEmpty()
 				},
 				fetchFromRemote = {
 					service.getSeriesData(

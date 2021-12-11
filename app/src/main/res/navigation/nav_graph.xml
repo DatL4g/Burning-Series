@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_homeFragment_to_helpImproveDialog"
             app:destination="@id/helpImproveDialog" />
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/seriesFragment"
@@ -112,4 +115,13 @@
             android:name="count"
             app:argType="long" />
     </dialog>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="de.datlag.burningseries.ui.fragment.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/action_settingsFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 </navigation>

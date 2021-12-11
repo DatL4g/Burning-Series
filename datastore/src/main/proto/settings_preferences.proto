@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option java_package = "de.datlag.datastore";
+option java_multiple_files = true;
+
+message SettingsPreferences {
+  message Video {
+    bool advancedFetching = 1;
+    bool preferMp4 = 2;
+  }
+  Video video = 1;
+}

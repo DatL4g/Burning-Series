@@ -1,5 +1,6 @@
 package de.datlag.burningseries.ui.fragment
 
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
@@ -27,6 +28,8 @@ import de.datlag.coilifier.Scale
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.series.LanguageData
+import de.datlag.model.burningseries.series.SeasonData
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.model.jsonbase.Stream
 import de.datlag.model.video.VideoStream
@@ -74,11 +77,13 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 seriesFlowCollect(it)
             }
         }
-        navArgs.seriesWithInfo?.let {
-            setViewData(it)
+        navArgs.seriesWithInfo?.let { series ->
+            setViewData(series)
+            burningSeriesViewModel.getSeriesData(series.series.href, series.series.hrefTitle).launchAndCollect {
+                seriesFlowCollect(it)
+            }
         }
         (navArgs.genreItem as? GenreModel.GenreItem?)?.let { item ->
-            Timber.e(item.toString())
             burningSeriesViewModel.getSeriesData(item).launchAndCollect {
                 seriesFlowCollect(it)
             }
@@ -143,7 +148,6 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                         Timber.e("No video available")
                     }
                     Resource.Status.SUCCESS -> {
-                        // Timber.e(it.data.toString())
                         getVideoSources(it.data ?: listOf())
                     }
                 }
@@ -153,13 +157,14 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
     private fun setViewData(seriesData: SeriesWithInfo): Unit = with(binding) {
         loadImageAndSave(Constants.getBurningSeriesLink(seriesData.series.image)) { bytes ->
-            banner.load<Drawable>(bytes) {
+            binding.banner.load<Drawable>(bytes) {
                 scaleType(Scale.FIT_CENTER)
-                banner.drawable?.let { placeholder(it, PlaceholderScaling.fitCenter()) }
             }
         }
         title.text = seriesData.series.title
-        selectLanguage.text = seriesData.languages.getOrNull(0)?.text ?: "Languages"
+        selectLanguage.text = seriesData.languages.find {
+            it.value == seriesData.series.selectedLanguage
+        }?.text ?: seriesData.languages.getOrNull(0)?.text ?: "Language"
         selectSeason.text = seriesData.series.season
         if (seriesData.seasons.isLargerThan(1)) {
             selectSeason.show()
@@ -180,8 +185,56 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             favIconColorApply(!isFav)
         }
 
-        selectSeason.setOnClickListener {
+        selectLanguage.isEnabled = seriesData.languages.isLargerThan(1)
+        selectLanguage.setOnClickListener { _ ->
+            selectionBottomSheet<LanguageData> {
+                dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
+                title("Select Language")
+                titleColor(getCompatColor(R.color.defaultContentColor))
+                list(seriesData.languages)
+                itemBinder { it.text }
+                itemColor(getCompatColor(R.color.defaultContentColor))
+                selectionColor(getCompatColor(R.color.defaultContentColor))
+                selectionDrawable(getCompatDrawable(R.drawable.ic_baseline_language_24))
+                confirmListener { selected ->
+                    val newHref = seriesData.series.hrefBuilder(
+                        seriesData.series.currentSeason(seriesData.seasons),
+                        selected.value
+                    )
+                    burningSeriesViewModel.getSeriesData(newHref, seriesData.series.hrefTitle, true).launchAndCollect { newSeries ->
+                        seriesFlowCollect(newSeries)
+                    }
+                }
+            }
+        }
 
+        selectSeason.setOnClickListener {
+            selectionBottomSheet<SeasonData> {
+                dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
+                title("Select Season")
+                titleColor(getCompatColor(R.color.defaultContentColor))
+                list(seriesData.seasons)
+                itemBinder {
+                    val intOrNull = it.title.toIntOrNull()
+                    if (intOrNull != null) {
+                        "Season $intOrNull"
+                    } else {
+                        it.title
+                    }
+                }
+                itemColor(getCompatColor(R.color.defaultContentColor))
+                selectionColor(getCompatColor(R.color.defaultContentColor))
+                selectionDrawable(getCompatDrawable(R.drawable.ic_baseline_video_library_24))
+                confirmListener { selected ->
+                    val newHref = seriesData.series.hrefBuilder(
+                        selected.title,
+                        seriesData.series.selectedLanguage
+                    )
+                    burningSeriesViewModel.getSeriesData(newHref, seriesData.series.hrefTitle, true).launchAndCollect { newSeries ->
+                        seriesFlowCollect(newSeries)
+                    }
+                }
+            }
         }
     }
 
