@@ -79,6 +79,11 @@ Search on the internet if you face any problems. Don't ask for help here!
 
 The usage is pretty self explanatory the screenshots below show some examples.
 
+| Home | All | Favorites | Series | Settings |
+|---|---|---|---|---|
+| ![Home Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/media/screenshot_home_dark.jpg) | ![All Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/media/screenshot_all_dark.jpg) | ![Favorites Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/media/screenshot_favorites_dark.jpg) | ![Series Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/media/screenshot_series_dark.jpg) | ![Settings Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/media/screenshot_settings_dark.jpg) |
+| ![Home Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/media/screenshot_home_light.jpg) | ![All Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/media/screenshot_all_light.jpg) | ![Favorites Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/media/screenshot_favorites_light.jpg) | ![Series Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/media/screenshot_series_light.jpg) | ![Settings Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/media/screenshot_settings_light.jpg) |
+
 ## Contributing
 
 When you face any bugs or problems please open an [Issue](https://github.com/DATL4G/BurningSeries-Android/issues/new/choose).
