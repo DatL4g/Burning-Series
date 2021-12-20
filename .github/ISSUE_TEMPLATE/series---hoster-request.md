@@ -2,7 +2,7 @@
 name: Series / Hoster Request
 about: Suggest a series, episode or hoster that's not working
 title: "[Series / Hoster Request]"
-labels: enhancement
+labels: enhancement, low priority
 assignees: ''
 
 ---
