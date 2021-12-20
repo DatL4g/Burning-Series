@@ -38,7 +38,7 @@ class FavoriteRecyclerAdapter(private val fragment: AdvancedFragment) : ClickRec
         }
 
         override fun onClick(v: View?) {
-            clickListener?.invoke(v ?: itemView, differ.currentList[absoluteAdapterPosition])
+            clickListener?.invoke(differ.currentList[absoluteAdapterPosition])
         }
     }
 

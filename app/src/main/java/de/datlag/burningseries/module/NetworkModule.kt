@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import de.datlag.model.Constants
+import de.datlag.network.adblock.AdBlock
 import de.datlag.network.burningseries.BurningSeries
 import de.datlag.network.burningseries.BurningSeriesScraper
 import de.datlag.network.jsonbase.JsonBase
@@ -42,6 +43,10 @@ object NetworkModule {
 	}.apply {
 		level = HttpLoggingInterceptor.Level.BASIC
 	}
+
+	@Provides
+	@Singleton
+	fun provideJsonBuilder(): Json = jsonBuilder
 	
 	@Provides
 	@Named(Constants.NAMED_JSON)
@@ -126,4 +131,12 @@ object NetworkModule {
 		.baseUrl(Constants.API_WRAP_API_BASE)
 		.build()
 		.create(DownloadVideo::class.java)
+
+	@Provides
+	@Singleton
+	fun provideAdBlockService(
+		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
+	): AdBlock = builder
+		.build()
+		.create(AdBlock::class.java)
 }

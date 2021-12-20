@@ -24,5 +24,5 @@ interface DB {
 
     @Headers("Content-Type: ${Constants.MEDIATYPE_JSON}")
     @POST("/v1/db/Create")
-    fun saveStream(@Header("Authorization") token: String, @Body body: BurningSeriesHoster): Call<Unit>
+    fun saveStream(@Header("Authorization") token: String, @Body body: BurningSeriesHoster): Flow<ApiResponse<BurningSeriesHosterRecords>>
 }

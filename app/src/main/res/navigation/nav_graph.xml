@@ -63,6 +63,12 @@
         <action
             android:id="@+id/action_seriesFragment_to_videoFragment"
             app:destination="@id/videoFragment" />
+        <action
+            android:id="@+id/action_seriesFragment_to_scrapeHosterFragment"
+            app:destination="@id/scrapeHosterFragment" />
+        <action
+            android:id="@+id/action_seriesFragment_to_noStreamSourceDialog"
+            app:destination="@id/noStreamSourceDialog" />
     </fragment>
     <fragment
         android:id="@+id/favoritesFragment"
@@ -105,6 +111,23 @@
         <argument
             android:name="videoStream"
             app:argType="de.datlag.model.video.VideoStream" />
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_videoFragment_to_scrapeHosterFragment"
+            app:destination="@id/scrapeHosterFragment" />
+        <argument
+            android:name="bsUrl"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_videoFragment_to_streamUnavailableDialog"
+            app:destination="@id/streamUnavailableDialog" />
+        <argument
+            android:name="seriesWithInfo"
+            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
     </fragment>
     <dialog
         android:id="@+id/helpImproveDialog"
@@ -124,4 +147,70 @@
             android:id="@+id/action_settingsFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/scrapeHosterFragment"
+        android:name="de.datlag.burningseries.ui.fragment.ScrapeHosterFragment"
+        android:label="ScrapeHosterFragment"
+        tools:layout="@layout/fragment_scrape_hoster">
+        <argument
+            android:name="href"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_scrapeHosterFragment_to_saveScrapedDialog"
+            app:destination="@id/saveScrapedDialog" />
+        <argument
+            android:name="seriesWithInfo"
+            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
+    </fragment>
+    <dialog
+        android:id="@+id/saveScrapedDialog"
+        android:name="de.datlag.burningseries.ui.dialog.SaveScrapedDialog"
+        android:label="SaveScrapedDialog"
+        tools:layout="@layout/dialog_save_scraped">
+        <argument
+            android:name="saved"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_saveScrapedDialog_to_seriesFragment"
+            app:destination="@id/seriesFragment" />
+        <argument
+            android:name="seriesWithInfo"
+            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
+    </dialog>
+    <dialog
+        android:id="@+id/streamUnavailableDialog"
+        android:name="de.datlag.burningseries.ui.dialog.StreamUnavailableDialog"
+        android:label="StreamUnavailableDialog"
+        tools:layout="@layout/dialog_stream_unavailable">
+        <action
+            android:id="@+id/action_streamUnavailableDialog_to_scrapeHosterFragment"
+            app:destination="@id/scrapeHosterFragment" />
+        <action
+            android:id="@+id/action_streamUnavailableDialog_to_seriesFragment"
+            app:destination="@id/seriesFragment" />
+        <argument
+            android:name="seriesWithInfo"
+            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
+        <argument
+            android:name="href"
+            app:argType="string" />
+        <argument
+            android:name="bsUrl"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/noStreamSourceDialog"
+        android:name="de.datlag.burningseries.ui.dialog.NoStreamSourceDialog"
+        android:label="NoStreamSourceDialog"
+        tools:layout="@layout/dialog_no_stream_source">
+        <action
+            android:id="@+id/action_noStreamSourceDialog_to_scrapeHosterFragment"
+            app:destination="@id/scrapeHosterFragment" />
+        <argument
+            android:name="seriesWithInfo"
+            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
+        <argument
+            android:name="bsUrl"
+            app:argType="string" />
+    </dialog>
 </navigation>

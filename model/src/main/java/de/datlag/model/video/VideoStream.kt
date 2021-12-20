@@ -8,5 +8,6 @@ import kotlinx.parcelize.Parcelize
 @Obfuscate
 data class VideoStream(
     val hoster: String,
+    val defaultUrl: String,
     val url: List<String>
 ) : Parcelable

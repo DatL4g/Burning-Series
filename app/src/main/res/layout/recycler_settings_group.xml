@@ -19,5 +19,5 @@
         android:layout_marginEnd="16dp"
         app:autoSizeTextType="uniform"
         app:autoSizeMinTextSize="16sp"
-        app:autoSizeMaxTextSize="22sp"/>
+        app:autoSizeMaxTextSize="20sp"/>
 </androidx.appcompat.widget.LinearLayoutCompat>

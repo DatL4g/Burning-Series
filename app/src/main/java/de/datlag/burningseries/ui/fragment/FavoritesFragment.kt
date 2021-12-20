@@ -1,5 +1,6 @@
 package de.datlag.burningseries.ui.fragment
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -12,6 +13,8 @@ import com.ferfalk.simplesearchview.SimpleSearchView
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.FavoriteRecyclerAdapter
+import de.datlag.burningseries.common.isOrientation
+import de.datlag.burningseries.common.isTelevision
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.FragmentFavoritesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
@@ -40,11 +43,18 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
     }
 
     private fun initRecycler(): Unit = with(binding) {
-        favoritesRecycler.layoutManager = GridLayoutManager(safeContext, 3)
+        val gridSpanCount = if (isTelevision && isOrientation(Configuration.ORIENTATION_LANDSCAPE)) {
+            6
+        } else if (!isTelevision && isOrientation(Configuration.ORIENTATION_LANDSCAPE)) {
+            4
+        } else {
+            2
+        }
+        favoritesRecycler.layoutManager = GridLayoutManager(safeContext, gridSpanCount)
         favoritesRecycler.isNestedScrollingEnabled = false
         favoritesRecycler.adapter = favoritesRecyclerAdapter
 
-        favoritesRecyclerAdapter.setOnClickListener { _, item ->
+        favoritesRecyclerAdapter.setOnClickListener { item ->
             findNavController().navigate(FavoritesFragmentDirections.actionFavoritesFragmentToSeriesFragment(seriesWithInfo = item))
         }
     }

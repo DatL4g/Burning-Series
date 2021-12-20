@@ -9,6 +9,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import de.datlag.burningseries.helper.NightMode
 import de.datlag.datastore.SettingsPreferences
 import de.datlag.datastore.serializer.SettingsSerializer
 import io.michaelrocks.paranoid.Obfuscate
@@ -24,7 +25,7 @@ object DataStoreModule {
     fun provideSettingsDataStore(
         @ApplicationContext app: Context
     ): DataStore<SettingsPreferences> = DataStoreFactory.create(
-        SettingsSerializer(),
+        SettingsSerializer(NightMode.Helper(app).getMode().isDarkMode()),
         produceFile = { app.dataStoreFile("SettingsPreferences.pb") }
     )
 }

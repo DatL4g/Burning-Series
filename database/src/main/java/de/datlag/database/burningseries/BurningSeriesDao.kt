@@ -3,6 +3,8 @@ package de.datlag.database.burningseries
 import androidx.room.*
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
+import de.datlag.model.burningseries.home.LatestEpisode
+import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.*
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
@@ -13,6 +15,42 @@ import kotlinx.coroutines.flow.*
 @Dao
 @Obfuscate
 interface BurningSeriesDao {
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLatestEpisode(latestEpisode: LatestEpisode): Long
+
+    @Transaction
+    @Delete
+    suspend fun deleteLatestEpisode(latestEpisode: LatestEpisode)
+
+    @Transaction
+    @Query("DELETE FROM LatestEpisodeTable")
+    suspend fun deleteAllLatestEpisode()
+
+    @Transaction
+    @Query("SELECT * FROM LatestEpisodeTable")
+    fun getAllLatestEpisode(): Flow<List<LatestEpisode>>
+
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLatestSeries(latestSeries: LatestSeries): Long
+
+    @Transaction
+    @Delete
+    suspend fun deleteLatestSeries(latestSeries: LatestSeries)
+
+    @Transaction
+    @Query("DELETE FROM LatestSeriesTable")
+    suspend fun deleteAllLatestSeries()
+
+    @Transaction
+    @Query("SELECT * FROM LatestSeriesTable")
+    fun getAllLatestSeries(): Flow<List<LatestSeries>>
+
+
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)

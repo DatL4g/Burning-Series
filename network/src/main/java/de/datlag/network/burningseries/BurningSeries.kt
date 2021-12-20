@@ -32,6 +32,25 @@ interface BurningSeries {
 	): Flow<ApiResponse<Series>>
 
 	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
+	@GET("${Constants.API_WRAP_API_PREFIX}/series/{version}")
+	fun getSeriesData(
+		@Path("version") version: String = Constants.API_WRAP_API_SERIES_VERSION,
+		@Query("wrapAPIKey") apiKey: String,
+		@Query("serie") series: String,
+		@Query("season") season: String
+	): Flow<ApiResponse<Series>>
+
+	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
+	@GET("${Constants.API_WRAP_API_PREFIX}/series/{version}")
+	fun getSeriesData(
+		@Path("version") version: String = Constants.API_WRAP_API_SERIES_VERSION,
+		@Query("wrapAPIKey") apiKey: String,
+		@Query("serie") series: String,
+		@Query("season") season: String,
+		@Query("language") language: String
+	): Flow<ApiResponse<Series>>
+
+	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
 	@GET("${Constants.API_WRAP_API_PREFIX}/all/{version}")
 	fun getAllSeries(
 		@Path("version") version: String = Constants.API_WRAP_API_ALL_VERSION,

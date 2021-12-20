@@ -7,12 +7,16 @@ import java.io.InputStream
 import java.io.OutputStream
 
 @Obfuscate
-class SettingsSerializer : Serializer<SettingsPreferences> {
+class SettingsSerializer(defaultDarkMode: Boolean) : Serializer<SettingsPreferences> {
 
     override val defaultValue: SettingsPreferences = SettingsPreferences.newBuilder()
+        .setAppearance(SettingsPreferences.Appearance.newBuilder()
+            .setDarkMode(defaultDarkMode)
+            .setImproveDialog(true))
         .setVideo(SettingsPreferences.Video.newBuilder()
             .setAdvancedFetching(false)
-            .setPreferMp4(false))
+            .setPreferMp4(false)
+            .setPreviewEnabled(true))
         .build()
 
     override suspend fun readFrom(input: InputStream): SettingsPreferences {

@@ -12,12 +12,15 @@ import com.ferfalk.simplesearchview.SimpleSearchView
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.AllSeriesRecyclerAdapter
+import de.datlag.burningseries.common.hideLoadingDialog
 import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentAllSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.model.burningseries.allseries.GenreModel
 import io.michaelrocks.paranoid.Obfuscate
+import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
@@ -26,7 +29,9 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
     private val binding: FragmentAllSeriesBinding by viewBinding()
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 
-    private val allSeriesRecyclerAdapter = AllSeriesRecyclerAdapter()
+    private val allSeriesRecyclerAdapter by lazy {
+        AllSeriesRecyclerAdapter(extendedFab?.id, extendedFab?.id)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,14 +39,14 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         initRecycler()
         initSearchView()
         burningSeriesViewModel.allSeriesPagination.launchAndCollect {
+            showLoadingDialog()
             burningSeriesViewModel.getNewPaginationData()
         }
         burningSeriesViewModel.allSeriesPaginatedFlat.launchAndCollect {
-            binding.scrollView.post {
-                binding.scrollView.fling(0)
-                binding.scrollView.smoothScrollTo(0, 0)
+            allSeriesRecyclerAdapter.submitList(it) {
+                hideLoadingDialog()
             }
-            allSeriesRecyclerAdapter.submitList(it)
+            binding.allSeriesRecycler.smoothScrollToPosition(0)
         }
         nextFab?.setOnClickListener {
             burningSeriesViewModel.getAllSeriesNext()
@@ -54,9 +59,8 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
     private fun initRecycler(): Unit = with(binding) {
         allSeriesRecycler.layoutManager = LinearLayoutManager(safeContext)
         allSeriesRecycler.adapter = allSeriesRecyclerAdapter
-        allSeriesRecycler.isNestedScrollingEnabled = false
 
-        allSeriesRecyclerAdapter.setOnClickListener { _, item ->
+        allSeriesRecyclerAdapter.setOnClickListener { item ->
             if (item is GenreModel.GenreItem) {
                 findNavController().navigate(AllSeriesFragmentDirections.actionAllSeriesFragmentToSeriesFragment(genreItem = item))
             }

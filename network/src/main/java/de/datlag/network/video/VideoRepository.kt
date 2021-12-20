@@ -48,6 +48,7 @@ class VideoRepository @Inject constructor(
                         val preferMp4 = settingsDataStore.data.first().video.preferMp4
                         VideoStream(
                             it.hoster,
+                            it.url,
                             completeList.toList().map { Uri.parse(it).buildUpon().clearQuery().toString() }.sortedWith(compareByDescending {
                                 it.endsWith(if (preferMp4) ".mp4" else ".m3u8", true).toInt()
                             })

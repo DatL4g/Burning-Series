@@ -2,6 +2,7 @@ package de.datlag.burningseries.ui.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +13,7 @@ import de.datlag.burningseries.adapter.SettingsRecyclerAdapter
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.FragmentSettingsBinding
 import de.datlag.burningseries.extend.AdvancedFragment
+import de.datlag.burningseries.helper.NightMode
 import de.datlag.burningseries.model.SettingsModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import io.michaelrocks.paranoid.Obfuscate
@@ -31,7 +33,6 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Timber.e("Settings loaded")
         initRecycler()
         setSettingsData()
     }
@@ -44,22 +45,44 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
 
     private fun setSettingsData() = settingsViewModel.data.launchAndCollect {
         settingsAdapter.submitList(listOf(
-            SettingsModel.Group("Video"),
-            SettingsModel.Switch(
-                "Advanced fetching",
-                "More and maybe better results but takes longer",
+            SettingsModel.Group(0,safeContext.getString(R.string.appearance)),
+            SettingsModel.Switch(0,
+                safeContext.getString(R.string.dark_mode),
+                safeContext.getString(R.string.dark_mode_subtitle),
+                it.appearance.darkMode
+            ) { isChecked ->
+                val mode = if (isChecked) NightMode.Mode.DARK else NightMode.Mode.LIGHT
+                AppCompatDelegate.setDefaultNightMode(mode.toDelegateMode())
+                settingsViewModel.updateAppearanceDarkMode(isChecked)
+            },
+            SettingsModel.Switch(1,
+                safeContext.getString(R.string.display_improve_dialog),
+                safeContext.getString(R.string.display_improve_dialog_subtitle),
+                it.appearance.improveDialog
+            ) { isChecked ->
+                settingsViewModel.updateAppearanceImproveDialog(isChecked)
+            },
+            SettingsModel.Group(1, safeContext.getString(R.string.video)),
+            SettingsModel.Switch(2,
+                safeContext.getString(R.string.advanced_fetching),
+                safeContext.getString(R.string.advanced_fetching_subtitle),
                 it.video.advancedFetching
             ) { isChecked ->
-                Timber.e("Advanced fetching: $isChecked")
                 settingsViewModel.updateVideoAdvancedFetching(isChecked)
             },
-            SettingsModel.Switch(
-                "Prefer MP4",
-                "Usually m3u8 is used, could fix video issues on some devices",
+            SettingsModel.Switch(3,
+                safeContext.getString(R.string.prefer_mp4),
+                safeContext.getString(R.string.prefer_mp4_subtitle),
                 it.video.preferMp4
             ) { isChecked ->
-                Timber.e("Prefer mp4: $isChecked")
                 settingsViewModel.updateVideoPreferMp4(isChecked)
+            },
+            SettingsModel.Switch(4,
+                safeContext.getString(R.string.enable_preview),
+                safeContext.getString(R.string.enable_preview_subtitle),
+                it.video.previewEnabled
+            ) { isChecked ->
+                settingsViewModel.updateVideoPreview(isChecked)
             }
         ))
     }

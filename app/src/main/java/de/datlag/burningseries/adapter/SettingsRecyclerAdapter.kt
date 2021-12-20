@@ -20,23 +20,11 @@ class SettingsRecyclerAdapter : RecyclerAdapter<SettingsModel, SettingsRecyclerA
 
     override val diffCallback = object : DiffUtil.ItemCallback<SettingsModel>() {
         override fun areItemsTheSame(oldItem: SettingsModel, newItem: SettingsModel): Boolean {
-            return if (oldItem is SettingsModel.Group && newItem is SettingsModel.Group) {
-                oldItem.title == newItem.title
-            } else if (oldItem is SettingsModel.Switch && newItem is SettingsModel.Switch) {
-                oldItem.title == newItem.title
-            } else {
-                false
-            }
+            return oldItem.isSameItem(newItem)
         }
 
         override fun areContentsTheSame(oldItem: SettingsModel, newItem: SettingsModel): Boolean {
-            return if (oldItem is SettingsModel.Group && newItem is SettingsModel.Group) {
-                oldItem.hashCode() == newItem.hashCode()
-            } else if (oldItem is SettingsModel.Switch && newItem is SettingsModel.Switch) {
-                oldItem.hashCode() == newItem.hashCode()
-            } else {
-                false
-            }
+            return oldItem.isSameContent(newItem)
         }
     }
 

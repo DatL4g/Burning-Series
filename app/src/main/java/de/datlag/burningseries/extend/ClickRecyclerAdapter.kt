@@ -1,6 +1,5 @@
 package de.datlag.burningseries.extend
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -18,7 +17,13 @@ abstract class ClickRecyclerAdapter<ReturnType, VH : RecyclerView.ViewHolder> : 
 	fun setOnLongClickListener(listener: recyclerLongClickListener<ReturnType>) {
 		longClickListener = listener
 	}
+
+	fun performClickOn(predicate: (ReturnType) -> Boolean) {
+		differ.currentList.firstOrNull { predicate.invoke(it) }?.let {
+			clickListener?.invoke(it)
+		}
+	}
 }
 
-typealias recyclerClickListener<ReturnType> = (view: View, item: ReturnType) -> Unit
-typealias recyclerLongClickListener<ReturnType> = (view: View, item: ReturnType) -> Boolean
+typealias recyclerClickListener<ReturnType> = (item: ReturnType) -> Unit
+typealias recyclerLongClickListener<ReturnType> = (item: ReturnType) -> Boolean

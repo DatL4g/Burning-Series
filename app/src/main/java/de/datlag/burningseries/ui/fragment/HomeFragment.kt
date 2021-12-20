@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -14,16 +15,20 @@ import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.LatestEpisodeRecyclerAdapter
 import de.datlag.burningseries.adapter.LatestSeriesRecyclerAdapter
+import de.datlag.burningseries.common.hideLoadingDialog
 import de.datlag.burningseries.common.openInBrowser
 import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentHomeBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
+import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
 import io.michaelrocks.paranoid.Obfuscate
+import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -33,54 +38,33 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	
 	private val binding: FragmentHomeBinding by viewBinding()
 	private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
+	private val settingsViewModel: SettingsViewModel by viewModels()
 	
-	private val latestEpisodeRecyclerAdapter = LatestEpisodeRecyclerAdapter()
-	private val latestSeriesRecyclerAdapter = LatestSeriesRecyclerAdapter()
+	private val latestEpisodeRecyclerAdapter by lazy {
+		LatestEpisodeRecyclerAdapter(binding.allSeriesButton.id)
+	}
+	private val latestSeriesRecyclerAdapter by lazy {
+		LatestSeriesRecyclerAdapter(binding.allSeriesButton.id, extendedFab?.id)
+	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 
 		initRecycler()
-
-		if (!burningSeriesViewModel.showedHelpImprove) {
-			getBurningSeriesHosterCount {
-				burningSeriesViewModel.showedHelpImprove = true
-				findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToHelpImproveDialog(it))
-			}
-		}
+		listenImproveDialogSetting()
 
 		burningSeriesViewModel.homeData.launchAndCollect {
 			when (it.status) {
 				Resource.Status.LOADING -> {
-					statusBarAlert?.hide {
-						statusBarAlert?.setText("Loading...")
-						statusBarAlert?.showProgress()
-						statusBarAlert?.show()
-					}
+					showLoadingStatusBar()
 				}
 				Resource.Status.SUCCESS -> {
 					latestSeriesRecyclerAdapter.submitList(it.data?.latestSeries ?: listOf())
 					latestEpisodeRecyclerAdapter.submitList(it.data?.latestEpisodes ?: listOf())
-					statusBarAlert?.hide {
-						statusBarAlert?.setAutoHide(true)
-						statusBarAlert?.setDuration(2000)
-						statusBarAlert?.setText("Success")
-						statusBarAlert?.setAlertColor(R.color.successBackgroundColor)
-						statusBarAlert?.setTextColor(R.color.successContentColor)
-						statusBarAlert?.hideProgress()
-						statusBarAlert?.show()
-					}
+					showSuccessStatusBar()
 				}
 				Resource.Status.ERROR -> {
-					statusBarAlert?.hide {
-						statusBarAlert?.setAutoHide(true)
-						statusBarAlert?.setDuration(5, TimeUnit.SECONDS)
-						statusBarAlert?.setText("Error. Try again later")
-						statusBarAlert?.setAlertColor(R.color.errorBackgroundColor)
-						statusBarAlert?.setTextColor(R.color.errorContentColor)
-						statusBarAlert?.hideProgress()
-						statusBarAlert?.show()
-					}
+					showErrorStatusBar()
 				}
 			}
 		}
@@ -98,6 +82,18 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		}
 
 		extendedFabFavorite(HomeFragmentDirections.actionHomeFragmentToFavoritesFragment())
+		extendedFab?.id?.let { binding.allSeriesButton.nextFocusRightId = it }
+	}
+
+	private fun listenImproveDialogSetting() = settingsViewModel.data.map { it.appearance.improveDialog }.launchAndCollect {
+		if (it) {
+			if (!burningSeriesViewModel.showedHelpImprove) {
+				getBurningSeriesHosterCount { count ->
+					burningSeriesViewModel.showedHelpImprove = true
+					findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToHelpImproveDialog(count))
+				}
+			}
+		}
 	}
 	
 	private fun initRecycler(): Unit = with(binding) {
@@ -105,13 +101,13 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		latestEpisodeRecycler.adapter = latestEpisodeRecyclerAdapter
 		latestEpisodeRecycler.isNestedScrollingEnabled = false
 		
-		latestEpisodeRecyclerAdapter.setOnClickListener { _, item ->
+		latestEpisodeRecyclerAdapter.setOnClickListener { item ->
 			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
 				latestEpisode = item
 			))
 		}
 		
-		latestEpisodeRecyclerAdapter.setOnLongClickListener { _, item ->
+		latestEpisodeRecyclerAdapter.setOnLongClickListener { item ->
 			openInBrowser(item)
 			true
 		}
@@ -121,14 +117,13 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		latestSeriesRecycler.adapter = latestSeriesRecyclerAdapter
 		latestSeriesRecycler.isNestedScrollingEnabled = false
 		
-		latestSeriesRecyclerAdapter.setOnClickListener { _, item ->
-			Timber.e(item.toString())
+		latestSeriesRecyclerAdapter.setOnClickListener { item ->
 			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
 				latestSeries = item
 			))
 		}
 
-		latestSeriesRecyclerAdapter.setOnLongClickListener { _, item ->
+		latestSeriesRecyclerAdapter.setOnLongClickListener { item ->
 			openInBrowser(item)
 			true
 		}

@@ -14,7 +14,10 @@ import de.datlag.model.burningseries.allseries.GenreModel
 import io.michaelrocks.paranoid.Obfuscate
 
 @Obfuscate
-class AllSeriesRecyclerAdapter : ClickRecyclerAdapter<GenreModel, AllSeriesRecyclerAdapter.ViewHolder>() {
+class AllSeriesRecyclerAdapter(
+    private val rightFocusViewId: Int? = null,
+    private val belowFocusViewId: Int? = null
+) : ClickRecyclerAdapter<GenreModel, AllSeriesRecyclerAdapter.ViewHolder>() {
 
     override val diffCallback = object : DiffUtil.ItemCallback<GenreModel>() {
         override fun areItemsTheSame(oldItem: GenreModel, newItem: GenreModel): Boolean {
@@ -46,21 +49,29 @@ class AllSeriesRecyclerAdapter : ClickRecyclerAdapter<GenreModel, AllSeriesRecyc
             binding.title.text = item.genre
         }
 
-        private fun bindItem(item: GenreModel.GenreItem) {
+        private fun bindItem(item: GenreModel.GenreItem, position: Int) {
             val binding = RecyclerAllSeriesItemBinding.bind(itemView)
             binding.card.setOnClickListener(this)
             binding.title.text = item.title
+
+            if (rightFocusViewId != null) {
+                binding.card.nextFocusRightId = rightFocusViewId
+            }
+
+            if (position == differ.currentList.size - 1 && belowFocusViewId != null) {
+                binding.card.nextFocusDownId = belowFocusViewId
+            }
         }
 
-        fun bind(genreModel: GenreModel) {
+        fun bind(genreModel: GenreModel, position: Int) {
             when (genreModel) {
                 is GenreModel.GenreData -> bindHeader(genreModel)
-                is GenreModel.GenreItem -> bindItem(genreModel)
+                is GenreModel.GenreItem -> bindItem(genreModel, position)
             }
         }
 
         override fun onClick(v: View?) {
-            clickListener?.invoke(v ?: itemView, differ.currentList[absoluteAdapterPosition])
+            clickListener?.invoke(differ.currentList[absoluteAdapterPosition])
         }
     }
 
@@ -82,7 +93,7 @@ class AllSeriesRecyclerAdapter : ClickRecyclerAdapter<GenreModel, AllSeriesRecyc
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
-        bind(differ.currentList[position])
+        bind(differ.currentList[position], position)
     }
 
     companion object {

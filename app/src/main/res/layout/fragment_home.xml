@@ -42,6 +42,7 @@
             android:layout_marginTop="16dp"
             android:text="Settings"
             android:textColor="@color/defaultBackgroundColor"
+            android:nextFocusRight="@id/allSeriesButton"
             app:backgroundTint="@color/defaultContentColor"
             app:layout_constraintTop_toBottomOf="@id/banner"
             app:layout_constraintEnd_toEndOf="parent"
@@ -52,6 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
+            android:descendantFocusability="afterDescendants"
             app:layout_constraintTop_toBottomOf="@id/episodesHeader"/>
 
         <com.google.android.material.textview.MaterialTextView
@@ -79,6 +81,7 @@
             android:layout_marginTop="16dp"
             android:text="@string/more"
             android:textColor="@color/defaultBackgroundColor"
+            android:nextFocusLeft="@id/settingsButton"
             app:backgroundTint="@color/defaultContentColor"
             app:layout_constraintTop_toBottomOf="@id/latestEpisodeRecycler"
             app:layout_constraintEnd_toEndOf="parent"

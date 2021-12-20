@@ -18,6 +18,8 @@ object Constants {
 	const val API_WRAP_API_PREFIX = "/use/DatLag/burning-series"
 	const val API_WRAP_API_VIDEO_PREFIX = "/use/DatLag/videofetcher"
 
+	const val URL_ADBLOCK_LIST = "https://raw.githubusercontent.com/Openadblockserverlist/adblockserverlist/master/adblockserverlist.txt"
+
 	const val API_WRAP_API_HOME_VERSION = "0.1.0"
 	const val API_WRAP_API_ALL_VERSION = "0.1.1"
 	const val API_WRAP_API_SERIES_VERSION = "0.2.3"

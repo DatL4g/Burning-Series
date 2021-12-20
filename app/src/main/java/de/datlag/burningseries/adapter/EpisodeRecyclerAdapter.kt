@@ -42,7 +42,7 @@ class EpisodeRecyclerAdapter : ClickRecyclerAdapter<EpisodeWithHoster, EpisodeRe
         }
 
         override fun onClick(v: View?) {
-            clickListener?.invoke(v ?: itemView, differ.currentList[absoluteAdapterPosition])
+            clickListener?.invoke(differ.currentList[absoluteAdapterPosition])
         }
     }
 
@@ -56,4 +56,5 @@ class EpisodeRecyclerAdapter : ClickRecyclerAdapter<EpisodeWithHoster, EpisodeRe
         binding.number.text = item.episode.number
         binding.title.text = item.episode.title
     }
+
 }

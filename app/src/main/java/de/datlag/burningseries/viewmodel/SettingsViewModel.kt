@@ -20,9 +20,20 @@ class SettingsViewModel @Inject constructor(
 
     val data: Flow<SettingsPreferences> = dataStore.data.flowOn(Dispatchers.IO)
 
+    fun updateAppearanceDarkMode(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        dataStore.updateData {
+            it.toBuilder().setAppearance(it.appearance.toBuilder().setDarkMode(newValue).build()).build()
+        }
+    }
+
+    fun updateAppearanceImproveDialog(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        dataStore.updateData {
+            it.toBuilder().setAppearance(it.appearance.toBuilder().setImproveDialog(newValue).build()).build()
+        }
+    }
+
     fun updateVideoAdvancedFetching(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         dataStore.updateData {
-            it.video
             it.toBuilder().setVideo(it.video.toBuilder().setAdvancedFetching(newValue).build()).build()
         }
     }
@@ -30,6 +41,12 @@ class SettingsViewModel @Inject constructor(
     fun updateVideoPreferMp4(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         dataStore.updateData {
             it.toBuilder().setVideo(it.video.toBuilder().setPreferMp4(newValue).build()).build()
+        }
+    }
+
+    fun updateVideoPreview(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        dataStore.updateData {
+            it.toBuilder().setVideo(it.video.toBuilder().setPreviewEnabled(newValue).build()).build()
         }
     }
 }

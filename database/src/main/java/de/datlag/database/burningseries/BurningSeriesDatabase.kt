@@ -5,12 +5,17 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import de.datlag.database.Converters
 import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.home.LatestEpisode
+import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.*
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
 import io.michaelrocks.paranoid.Obfuscate
 
 @Database(
 	entities = [
+		LatestEpisode::class,
+		LatestSeries::class,
+
 		SeriesData::class,
 		InfoData::class,
 		SeasonData::class,

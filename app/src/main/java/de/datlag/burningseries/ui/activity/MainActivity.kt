@@ -1,18 +1,19 @@
 package de.datlag.burningseries.ui.activity
 
 import android.os.Bundle
+import android.view.KeyEvent
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fede987.statusbaralert.StatusBarAlert
 import com.fede987.statusbaralert.utils.statusBarAlert
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.databinding.ActivityMainBinding
 import de.datlag.burningseries.extend.AdvancedActivity
-import de.datlag.burningseries.ui.connector.FABExtended
-import de.datlag.burningseries.ui.connector.FABNavigation
-import de.datlag.burningseries.ui.connector.StatusBarAlertProvider
+import de.datlag.burningseries.ui.connector.*
+import de.datlag.burningseries.ui.dialog.LoadingDialog
 import io.michaelrocks.paranoid.Obfuscate
 
 @AndroidEntryPoint
@@ -32,6 +33,10 @@ class MainActivity : AdvancedActivity(R.layout.activity_main), FABExtended, Stat
 			textColor(R.color.defaultBackgroundColor)
 			progressBarColor(R.color.defaultBackgroundColor)
 		}
+	}
+
+	override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+		return (getCurrentNavFragment() as? KeyEventDispatcher?)?.dispatchKeyEvent(event) ?: super.dispatchKeyEvent(event)
 	}
 
 	override val extendedFab: ExtendedFloatingActionButton

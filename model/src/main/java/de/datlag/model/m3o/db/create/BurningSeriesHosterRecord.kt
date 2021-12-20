@@ -2,6 +2,7 @@ package de.datlag.model.m3o.db.create
 
 import android.os.Parcelable
 import de.datlag.model.jsonbase.Stream
+import de.datlag.model.video.ScrapeHoster
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -20,6 +21,10 @@ data class BurningSeriesHosterRecord(
     companion object {
         fun fromStream(href: String, stream: Stream): BurningSeriesHosterRecord {
             return BurningSeriesHosterRecord(href, stream.url, stream.embed)
+        }
+
+        fun fromScraped(scraped: ScrapeHoster): BurningSeriesHosterRecord {
+            return BurningSeriesHosterRecord(scraped.id, scraped.url, scraped.embed)
         }
     }
 }

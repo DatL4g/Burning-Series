@@ -8,6 +8,7 @@
     <color name="defaultContentColorHalfAlpha">#78121212</color>
     <color name="bottomSheetBackground">#ffffff</color>
     <color name="rippleColor">#40000000</color>
+    <color name="rippleColorInvert">#40ffffff</color>
     <color name="successBackgroundColor">#689957</color>
     <color name="errorBackgroundColor">#db3236</color>
     <color name="successContentColor">#ffffff</color>
@@ -16,6 +17,7 @@
     <color name="favIconColorFalse">@color/defaultContentColor</color>
 
     <color name="black">#000000</color>
+    <color name="blackHalfAlpha">#78000000</color>
 
     <color name="datlagColor">#db3236</color>
     <color name="datlagContentColor">#ffffff</color>

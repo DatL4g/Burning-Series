@@ -11,6 +11,7 @@ import de.datlag.model.m3o.db.create.BurningSeriesHoster
 import de.datlag.model.m3o.db.create.BurningSeriesHosterRecord
 import de.datlag.model.m3o.db.read.BurningSeriesHosterQuery
 import de.datlag.model.m3o.image.Convert
+import de.datlag.model.video.ScrapeHoster
 import de.datlag.network.jsonbase.JsonBaseRepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
@@ -143,10 +144,27 @@ class M3ORepository @Inject constructor(
 		}
 	}.flowOn(Dispatchers.IO)
 
-	private fun saveStream(href: String, stream: Stream) {
-		dbService.saveStream(
-			"Bearer $token",
-			BurningSeriesHoster(record = BurningSeriesHosterRecord.fromStream(href, stream))
-		)
+	suspend fun saveScrapedHoster(scraped: ScrapeHoster): Flow<Boolean> = flow {
+		networkResource(fetchFromRemote = {
+			dbService.saveStream(
+				"Bearer $token",
+				BurningSeriesHoster(record = BurningSeriesHosterRecord.fromScraped(scraped))
+			)
+		}).collect {
+			when (it.status) {
+				Resource.Status.SUCCESS -> emit(true)
+				Resource.Status.ERROR -> emit(false)
+				else -> {}
+			}
+		}
+	}.flowOn(Dispatchers.IO)
+
+	private suspend fun saveStream(href: String, stream: Stream) {
+		networkResource(fetchFromRemote = {
+			dbService.saveStream(
+				"Bearer $token",
+				BurningSeriesHoster(record = BurningSeriesHosterRecord.fromStream(href, stream))
+			)
+		}).collect { }
 	}
 }

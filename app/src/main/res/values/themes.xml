@@ -22,12 +22,28 @@
     <style name="BottomSheetDialog" parent="Theme.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
         <item name="shapeAppearanceLargeComponent">@style/RoundedBottomSheetComponent</item>
-        <item name="indicatorStyle">@style/Widget.DialogSelection.Indicator</item>
+        <item name="indicatorStyle">@style/Widget.Dialog.Indicator</item>
+        <item name="enableEdgeToEdge">true</item>
+
+        <item name="windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="windowMinWidthMinor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowIsFloating">true</item>
     </style>
 
     <style name="BottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
         <item name="android:backgroundTint">@color/bottomSheetBackground</item>
         <item name="backgroundTint">@color/bottomSheetBackground</item>
+        <item name="enableEdgeToEdge">true</item>
+
+        <item name="windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="windowMinWidthMinor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowIsFloating">true</item>
     </style>
 
     <style name="RoundedBottomSheetComponent" parent="ShapeAppearance.MaterialComponents.LargeComponent">
@@ -35,13 +51,18 @@
         <item name="cornerSize">16dp</item>
         <item name="cornerRadius">16dp</item>
         <item name="android:radius">16dp</item>
+        <item name="enableEdgeToEdge">true</item>
     </style>
 
-    <style name="Widget.DialogSelection.Indicator" parent="@style/Widget.MaterialComponents.CardView">
+    <style name="Widget.Dialog.Indicator" parent="@style/Widget.MaterialComponents.CardView">
         <item name="android:maxWidth">24dp</item>
         <item name="android:minWidth">24dp</item>
         <item name="android:maxHeight">4dp</item>
         <item name="android:minHeight">4dp</item>
+        <item name="android:width">24dp</item>
+        <item name="android:height">4dp</item>
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">4dp</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:layout_marginTop">8dp</item>
@@ -59,6 +80,17 @@
     <style name="ShapeAppearance.ImageView.VideoFrame" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerRadius">8dp</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.ImageView.Cover.Large" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeBottomLeft">16dp</item>
+        <item name="cornerSizeBottomRight">16dp</item>
+    </style>
+
+    <style name="ShapeAppearance.ImageView.Cover.Medium" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
         <item name="cornerSize">8dp</item>
     </style>
 </resources>

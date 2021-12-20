@@ -3,7 +3,6 @@ package de.datlag.network.burningseries
 import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkBoundResource
-import com.hadiyarajesh.flower.networkResource
 import de.datlag.database.burningseries.BurningSeriesDao
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
@@ -15,10 +14,8 @@ import de.datlag.model.burningseries.series.SeasonData
 import de.datlag.model.burningseries.series.SeriesData
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
-import de.datlag.network.common.mapInPlace
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
 import javax.inject.Inject
@@ -37,25 +34,81 @@ class BurningSeriesRepository @Inject constructor(
 		val scrapeData = scraper.scrapeHomeData()
 
 		if (scrapeData != null) {
+			saveHomeData(scrapeData)
 			emit(Resource.success(scrapeData))
 		} else {
-			networkResource(
+			val currentRequest = Clock.System.now().epochSeconds
+			networkBoundResource(
+				fetchFromLocal = {
+					flow<Pair<List<LatestEpisode>, List<LatestSeries>>> {
+						val emitEpisodes: MutableList<LatestEpisode> = burningSeriesDao.getAllLatestEpisode().first().toMutableList()
+						val emitSeries: MutableList<LatestSeries> = burningSeriesDao.getAllLatestSeries().first().toMutableList()
+						emit(Pair(emitEpisodes, emitSeries))
+
+						burningSeriesDao.getAllLatestEpisode().collect {
+							if (!emitEpisodes.containsAll(it)) {
+								emitEpisodes.clear()
+								emitEpisodes.addAll(it)
+								if (emitEpisodes.isNotEmpty() && emitSeries.isNotEmpty()) {
+									emit(Pair(emitEpisodes, emitSeries))
+								}
+							}
+						}
+						burningSeriesDao.getAllLatestSeries().collect {
+							if (!emitSeries.containsAll(it)) {
+								emitSeries.clear()
+								emitSeries.addAll(it)
+								if (emitEpisodes.isNotEmpty() && emitSeries.isNotEmpty()) {
+									emit(Pair(emitEpisodes, emitSeries))
+								}
+							}
+						}
+					}.flowOn(Dispatchers.IO)
+				},
+				shouldFetchFromRemote = {
+					it == null || it.first.isNullOrEmpty() || it.second.isNullOrEmpty() || it.first.any { episode ->
+						(currentRequest - Constants.DAY_IN_MILLI) >= episode.updatedAt
+					} || it.second.any { series ->
+						(currentRequest - Constants.DAY_IN_MILLI) >= series.updatedAt
+					}
+				},
 				fetchFromRemote = {
 					service.getHomeData(apiKey = wrapApiToken)
+				},
+				saveRemoteData = {
+					if (it.success && it.data.latestEpisodes.isNotEmpty() && it.data.latestSeries.isNotEmpty()) {
+						saveHomeData(it.data)
+					}
 				}
 			).collect {
-				if (it.status == Resource.Status.LOADING) {
-					emit(Resource.loading(it.data?.data))
-				} else {
-					if (it.data == null || !it.data!!.success) {
-						emit(Resource.error(it.message ?: "Data error", it.data?.data))
-					} else {
-						emit(Resource.success(it.data?.data))
+				when (it.status) {
+					Resource.Status.LOADING -> {
+						if (it.data != null) {
+							emit(Resource.loading(HomeData(it.data!!.first, it.data!!.second)))
+						}
 					}
+					Resource.Status.SUCCESS -> {
+						if (it.data != null) {
+							emit(Resource.success(HomeData(it.data!!.first, it.data!!.second)))
+						}
+					}
+					Resource.Status.ERROR -> emit(Resource.error<HomeData>(it.message ?: String()))
 				}
 			}
 		}
 	}.flowOn(Dispatchers.IO)
+
+	private suspend fun saveHomeData(home: HomeData) {
+		burningSeriesDao.deleteAllLatestEpisode()
+		burningSeriesDao.deleteAllLatestSeries()
+
+		home.latestEpisodes.forEach {
+			burningSeriesDao.insertLatestEpisode(it)
+		}
+		home.latestSeries.forEach {
+			burningSeriesDao.insertLatestSeries(it)
+		}
+	}
 
 	fun getSeriesData(latestSeries: LatestSeries) = getSeriesData(latestSeries.href, latestSeries.getHrefTitle())
 
@@ -80,21 +133,57 @@ class BurningSeriesRepository @Inject constructor(
 					it == null || forceLoad || (currentRequest - Constants.DAY_IN_MILLI) >= it.series.updatedAt || it.episodes.isEmpty()
 				},
 				fetchFromRemote = {
-					service.getSeriesData(
-						apiKey = wrapApiToken,
-						series = hrefTitle
-					)
+					val hrefData = hrefDataFromHref(href)
+
+					if (hrefData.second != null && hrefData.third != null) {
+						service.getSeriesData(
+							apiKey = wrapApiToken,
+							series = hrefData.first,
+							season = hrefData.second!!,
+							language = hrefData.third!!
+						)
+					} else if (hrefData.second != null && hrefData.third == null) {
+						service.getSeriesData(
+							apiKey = wrapApiToken,
+							series = hrefData.first,
+							season = hrefData.second!!
+						)
+					} else {
+						service.getSeriesData(
+							apiKey = wrapApiToken,
+							series = hrefData.first
+						)
+					}
 				},
 				saveRemoteData = { series ->
 					if (series.success) {
-						series.data?.let { saveSeriesData(it) }
+						series.data?.let {
+							saveSeriesData(it.apply {
+								this.href = href
+							})
+						}
 					}
 				}
 			))
 		}
 	}.flowOn(Dispatchers.IO)
 
-	suspend fun saveSeriesData(seriesData: SeriesData) {
+	private fun hrefDataFromHref(href: String): Triple<String, String?, String?> {
+		var newHref = href
+		if (newHref.startsWith('/')) {
+			newHref = newHref.substring(1)
+		}
+		val hrefSplit = newHref.split('/')
+		val season = try {
+			hrefSplit[2]
+		} catch (ignored: Exception) { null }
+		val language = try {
+			hrefSplit[3]
+		} catch (ignored: Exception) { null }
+		return Triple(hrefSplit[1], season, language)
+	}
+
+	private suspend fun saveSeriesData(seriesData: SeriesData) {
 		val prevFavoriteSince = burningSeriesDao.getSeriesFavoriteSinceByHrefTitle(seriesData.hrefTitle).first() ?: 0L
 		seriesData.favoriteSince = prevFavoriteSince
 		val seriesId = burningSeriesDao.insertSeriesData(seriesData)
@@ -166,7 +255,7 @@ class BurningSeriesRepository @Inject constructor(
 
 	fun searchAllSeries(title: String) = burningSeriesDao.searchAllSeries(title).flowOn(Dispatchers.IO)
 
-	suspend fun saveGenreData(genreList: List<GenreModel.GenreData>) {
+	private suspend fun saveGenreData(genreList: List<GenreModel.GenreData>) {
 		genreList.sortedBy { it.genre }.forEach { genreData ->
 			val genreId: Long = burningSeriesDao.insertGenre(genreData)
 			genreData.items.forEach { item ->

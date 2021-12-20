@@ -7,6 +7,21 @@
     android:layout_height="match_parent"
     android:layout_gravity="bottom">
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title"
+        fontPath="fonts/Poppins-Bold.ttf"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@drawable/video_control_title_background"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:gravity="start|center_vertical"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="18sp"
+        app:autoSizeMaxTextSize="22sp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/datlagContentColor"/>
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/controlsLayout"
         android:layout_width="match_parent"
@@ -20,7 +35,7 @@
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@id/exo_rew"
             android:tint="@color/datlagContentColor"
-            android:src="@drawable/ic_baseline_forward_10_24"
+            android:src="@drawable/ic_baseline_replay_10_24"
             android:background="?attr/actionBarItemBackground"
             style="@style/ExoMediaButton.Rewind" />
 
@@ -39,7 +54,7 @@
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@id/exo_ffwd"
             android:tint="@color/datlagContentColor"
-            android:src="@drawable/ic_baseline_replay_10_24"
+            android:src="@drawable/ic_baseline_forward_10_24"
             android:background="?attr/actionBarItemBackground"
             style="@style/ExoMediaButton.FastForward" />
 
@@ -56,8 +71,7 @@
         android:textStyle="bold"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="?attr/actionBarSize"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/exo_fullscreen"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="00:00" />
 
@@ -120,5 +134,15 @@
             android:scaleType="fitXY"
             app:shapeAppearance="@style/ShapeAppearance.ImageView.VideoFrame"/>
     </FrameLayout>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:id="@id/exo_fullscreen"
+        android:tint="@color/datlagContentColor"
+        android:background="?attr/actionBarItemBackground"
+        android:src="@drawable/ic_baseline_fullscreen_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

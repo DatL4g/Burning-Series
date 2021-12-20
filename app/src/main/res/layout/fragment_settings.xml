@@ -10,11 +10,28 @@
         android:layout_height="match_parent"
         android:background="@color/defaultBackgroundColor">
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/settingsHeader"
+            fontPath="fonts/Poppins-Bold.ttf"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:text="@string/settings"
+            android:gravity="center"
+            android:textColor="@color/defaultContentColor"
+            android:layout_margin="16dp"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="18sp"
+            app:autoSizeMaxTextSize="24sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/settingsRecycler"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintTop_toBottomOf="@id/settingsHeader"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

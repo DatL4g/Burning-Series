@@ -6,11 +6,23 @@ import io.michaelrocks.paranoid.Obfuscate
 
 fun String.encodeToHref(): String {
 	val normalizedTitle = this.trim()
-	val replaced = normalizedTitle.replace("(['`´’☆ō/]+)".toRegex(), "-")
+	var replaced = normalizedTitle.replace("(['`´’☆ōáÁ/]+)".toRegex(), "-")
+
+	if (replaced.startsWith("-")) {
+		replaced = replaced.substring(1)
+	}
+	replaced = replaced.replace("([ü]+)".toRegex(), "ue")
+	replaced = replaced.replace("([ö]+)".toRegex(), "oe")
+	replaced = replaced.replace("([ä]+)".toRegex(), "ae")
+
+	replaced = replaced.replace("([Ü]+)".toRegex(), "Ue")
+	replaced = replaced.replace("([Ö]+)".toRegex(), "Oe")
+	replaced = replaced.replace("([Ä]+)".toRegex(), "Ae")
 
 	val regex = Regex("\\w*\\s*[_-]*")
 	val allMatches = regex.findAll(replaced).map { it.value }
-	return allMatches.joinToString("").replace(Regex("\\s+"), "-").replace("_", "-")
+	val joinedMatches = allMatches.joinToString("").replace(Regex("\\s+"), "-").replace("_", "-")
+	return joinedMatches.replace("(?:(-))+".toRegex(), "-")
 }
 
 fun String.getDigitsOrNull(): String? {

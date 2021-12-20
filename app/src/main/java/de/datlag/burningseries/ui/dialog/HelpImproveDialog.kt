@@ -8,6 +8,10 @@ import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.datlag.burningseries.R
+import de.datlag.burningseries.common.expand
+import de.datlag.burningseries.common.getThemedLayoutInflater
+import de.datlag.burningseries.common.isTelevision
+import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.DialogHelpImproveBinding
 
 class HelpImproveDialog : BottomSheetDialogFragment() {
@@ -20,15 +24,21 @@ class HelpImproveDialog : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.dialog_help_improve, container, false)
+        if (safeContext.packageManager.isTelevision()) {
+            dialog?.setOnShowListener {
+                it.expand()
+            }
+        }
+
+        return getThemedLayoutInflater(inflater, R.style.BottomSheetDialog).inflate(R.layout.dialog_help_improve, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.pin.pinLength = navArgs.count.toString().length
-        binding.pin.value = navArgs.count.toString()
-        binding.pin.mClickListener = View.OnClickListener { }
+        binding.number.text = navArgs.count.toString()
         binding.closeButton.setOnClickListener { this.dismiss() }
     }
+
+    override fun getTheme(): Int = R.style.BottomSheetDialog
 }

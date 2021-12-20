@@ -98,9 +98,8 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.2")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
-    implementation("com.github.DATL4G:SelectionBottomSheet:1.0.0")
+    implementation("com.github.DATL4G:SelectionBottomSheet:1.3.1")
     implementation("com.github.devendroid:ReadMoreOption:1.0.3")
-    implementation("com.github.GoodieBag:Pinview:84f114b915")
 
     implementation("com.google.android.exoplayer:exoplayer:2.16.1")
     implementation("com.github.DATL4G.PreviewSeekBar:previewseekbar-exoplayer:3.0.1")
@@ -114,7 +113,7 @@ dependencies {
     implementation("androidx.multidex:multidex:2.0.1")
     implementation("com.jakewharton.timber:timber:5.0.1")
 
-    implementation("com.github.kirich1409:viewbindingpropertydelegate:1.5.2")
+    implementation("com.github.kirich1409:viewbindingpropertydelegate:1.5.3")
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.activity:activity-ktx:1.4.0")
@@ -149,7 +148,7 @@ dependencies {
 
     implementation("androidx.datastore:datastore:1.0.0")
     
-    implementation("com.github.fede87:StatusBarAlert:2.0.0")
+    implementation("com.github.DatL4g:StatusBarAlert:2.0.1")
     implementation("com.github.Ferfalk:SimpleSearchView:0.2.0")
 }
 

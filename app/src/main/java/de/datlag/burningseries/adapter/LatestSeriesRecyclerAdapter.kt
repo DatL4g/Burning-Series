@@ -14,7 +14,10 @@ import de.datlag.model.burningseries.home.LatestSeries
 import io.michaelrocks.paranoid.Obfuscate
 
 @Obfuscate
-class LatestSeriesRecyclerAdapter : ClickRecyclerAdapter<LatestSeries, LatestSeriesRecyclerAdapter.ViewHolder>() {
+class LatestSeriesRecyclerAdapter(
+	private val aboveFocusViewId: Int? = null,
+	private val belowFocusViewId: Int? = null
+) : ClickRecyclerAdapter<LatestSeries, LatestSeriesRecyclerAdapter.ViewHolder>() {
 	
 	override val diffCallback = object: DiffUtil.ItemCallback<LatestSeries>() {
 		override fun areItemsTheSame(oldItem: LatestSeries, newItem: LatestSeries): Boolean {
@@ -36,7 +39,7 @@ class LatestSeriesRecyclerAdapter : ClickRecyclerAdapter<LatestSeries, LatestSer
 		}
 		
 		override fun onClick(p0: View?) {
-			clickListener?.invoke(p0 ?: itemView, differ.currentList[absoluteAdapterPosition])
+			clickListener?.invoke(differ.currentList[absoluteAdapterPosition])
 		}
 	}
 	
@@ -48,5 +51,13 @@ class LatestSeriesRecyclerAdapter : ClickRecyclerAdapter<LatestSeries, LatestSer
 		val item = differ.currentList[position]
 		
 		binding.title.text = item.title
+
+		if (position == 0 && aboveFocusViewId != null) {
+			binding.card.nextFocusUpId = aboveFocusViewId
+		}
+
+		if (position == differ.currentList.size - 1 && belowFocusViewId != null) {
+			binding.card.nextFocusDownId = belowFocusViewId
+		}
 	}
 }

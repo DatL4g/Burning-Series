@@ -4,9 +4,15 @@ option java_package = "de.datlag.datastore";
 option java_multiple_files = true;
 
 message SettingsPreferences {
+  message Appearance {
+    bool darkMode = 1;
+    bool improveDialog = 2;
+  }
+  Appearance appearance = 1;
   message Video {
     bool advancedFetching = 1;
     bool preferMp4 = 2;
+    bool previewEnabled = 3;
   }
-  Video video = 1;
+  Video video = 2;
 }

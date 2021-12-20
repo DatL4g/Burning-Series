@@ -1,6 +1,7 @@
 package de.datlag.burningseries.extend
 
 import android.content.Context
+import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.ActionBar
@@ -95,9 +96,27 @@ abstract class AdvancedFragment : Fragment {
 		nextFab?.visibility = View.VISIBLE
 	}
 
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		hideLoadingDialog()
+	}
+
 	override fun onDestroyView() {
-		statusBarAlert?.hide()
 		super.onDestroyView()
+		statusBarAlert?.hide(false)
+		hideLoadingDialog()
+	}
+
+	override fun onResume() {
+		super.onResume()
+		statusBarAlert?.hide(false)
+		hideLoadingDialog()
+	}
+
+	override fun onPause() {
+		super.onPause()
+		statusBarAlert?.hide(false)
+		hideLoadingDialog()
 	}
 
 	fun setSupportActionBar(toolbar: Toolbar?) {
@@ -109,6 +128,24 @@ abstract class AdvancedFragment : Fragment {
 		supportActionBar?.setDisplayShowHomeEnabled(true)
 		toolbar.setNavigationOnClickListener { safeActivity?.onBackPressed() }
 	}
+
+	fun showLoadingStatusBar() = statusBarAlert?.showLoading(
+		safeContext.getString(R.string.loading),
+		R.color.defaultContentColor,
+		R.color.defaultBackgroundColor
+	)
+
+	fun showErrorStatusBar() = statusBarAlert?.showError(
+		safeContext.getString(R.string.error),
+		R.color.errorBackgroundColor,
+		R.color.errorContentColor
+	)
+
+	fun showSuccessStatusBar() = statusBarAlert?.showSuccess(
+		safeContext.getString(R.string.success),
+		R.color.successBackgroundColor,
+		R.color.successContentColor
+	)
 
 	inline fun <T> Flow<T>.launchAndCollect(crossinline action: suspend CoroutineScope.(T) -> Unit) = this.launchAndCollectIn(viewLifecycleOwner, action = action)
 
