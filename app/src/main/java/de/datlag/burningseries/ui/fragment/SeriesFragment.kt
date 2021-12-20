@@ -146,6 +146,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     }
 
     private fun setViewData(seriesData: SeriesWithInfo, episode: LatestEpisode? = null): Unit = with(binding) {
+        hideLoadingDialog()
         currentSeriesWithInfo = seriesData
         loadImageAndSave(Constants.getBurningSeriesLink(seriesData.series.image)) { bytes ->
             binding.banner.load<Drawable>(bytes) {
