@@ -33,6 +33,7 @@
                 app:cursorColor="@color/defaultContentColor"
                 app:hintColor="@color/defaultContentColor"
                 app:iconsTint="@color/defaultContentColor"
+                app:backIconTint="@color/defaultContentColor"
                 app:searchBackground="@color/defaultBackgroundColor" />
         </FrameLayout>
     </com.google.android.material.appbar.AppBarLayout>
