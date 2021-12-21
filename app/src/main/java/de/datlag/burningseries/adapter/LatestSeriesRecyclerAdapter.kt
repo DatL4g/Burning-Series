@@ -31,15 +31,20 @@ class LatestSeriesRecyclerAdapter(
 	
 	override val differ = AsyncListDiffer(this, diffCallback)
 	
-	inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+	inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
 		val binding: RecyclerLatestSeriesBinding by viewBinding()
 		
 		init {
 			binding.card.setOnClickListener(this)
+			binding.card.setOnLongClickListener(this)
 		}
 		
 		override fun onClick(p0: View?) {
 			clickListener?.invoke(differ.currentList[absoluteAdapterPosition])
+		}
+
+		override fun onLongClick(v: View?): Boolean {
+			return longClickListener?.invoke(differ.currentList[absoluteAdapterPosition]) ?: false
 		}
 	}
 	

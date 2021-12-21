@@ -59,8 +59,8 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         readMoreOption = safeContext.readMoreOption {
             textLength(3)
             textLengthType(ReadMoreOption.TYPE_LINE)
-            moreLabel("\tmore")
-            lessLabel("\tless")
+            moreLabel("\t${safeContext.getString(R.string.more)}")
+            lessLabel("\t${safeContext.getString(R.string.less)}")
             labelUnderLine(true)
             moreLabelColor(safeContext.getColorCompat(R.color.defaultContentColor))
             lessLabelColor(safeContext.getColorCompat(R.color.defaultContentColor))
@@ -143,6 +143,14 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 }
             }
         }
+
+        episodeRecyclerAdapter.setOnLongClickListener { item ->
+            findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToOpenInBrowserDialog(
+                Constants.getBurningSeriesLink(item.episode.href),
+                item.episode.title
+            ))
+            true
+        }
     }
 
     private fun setViewData(seriesData: SeriesWithInfo, episode: LatestEpisode? = null): Unit = with(binding) {
@@ -160,7 +168,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         } ?: seriesData.languages.getOrNull(0)
         val defaultSeason = seriesData.series.season
 
-        selectLanguage.text = defaultLanguage?.text ?: "Language"
+        selectLanguage.text = defaultLanguage?.text ?: safeContext.getString(R.string.language)
         selectSeason.text = defaultSeason
         if (seriesData.seasons.isLargerThan(1)) {
             selectSeason.show()
@@ -193,7 +201,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         selectLanguage.setOnClickListener { _ ->
             selectionBottomSheet<LanguageData> {
                 dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
-                title("Select Language")
+                title(safeContext.getString(R.string.select_language))
                 titleColor(getCompatColor(R.color.defaultContentColor))
                 list(seriesData.languages)
                 itemBinder { it.text }
@@ -223,13 +231,13 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         selectSeason.setOnClickListener {
             selectionBottomSheet<SeasonData> {
                 dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
-                title("Select Season")
+                title(safeContext.getString(R.string.select_season))
                 titleColor(getCompatColor(R.color.defaultContentColor))
                 list(seriesData.seasons)
                 itemBinder {
                     val intOrNull = it.title.toIntOrNull()
                     if (intOrNull != null) {
-                        "Season $intOrNull"
+                        safeContext.getString(R.string.season_placeholder, intOrNull)
                     } else {
                         it.title
                     }
@@ -291,11 +299,11 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             } else {
                 selectionBottomSheet<VideoStream> {
                     dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
-                    title("Select Hoster")
+                    title(safeContext.getString(R.string.select_hoster))
                     titleColor(getCompatColor(R.color.defaultContentColor))
                     list(it)
                     itemBinder { item -> item.hoster }
-                    confirmText("Watch")
+                    confirmText(safeContext.getString(R.string.watch))
                     defaultItemFirst()
                     defaultItemConfirmable()
                     itemColor(getCompatColor(R.color.defaultContentColor))

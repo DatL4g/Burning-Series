@@ -1,6 +1,7 @@
 package de.datlag.burningseries.ui.fragment
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -11,7 +12,9 @@ import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
+import de.datlag.burningseries.common.hideLoadingDialog
 import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentScrapeHosterBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.module.NetworkModule
@@ -35,7 +38,28 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
     private val binding: FragmentScrapeHosterBinding by viewBinding()
     private val viewModel: ScrapeHosterViewModel by activityViewModels()
     private val adBlockViewModel: AdBlockViewModel by activityViewModels()
-    private val adBlockWebViewClient = AdBlockWebViewClient(setOf("bs.to"))
+
+    private val loadingStartedListener = {
+        showLoadingDialog()
+    }
+
+    private val loadingFinishedListener = {
+        hideLoadingDialog()
+    }
+
+    private val lazyErrorListener: (Uri?) -> Unit by lazy {
+        {
+            hideLoadingDialog()
+            findNavController().navigate(ScrapeHosterFragmentDirections.actionScrapeHosterFragmentToWebViewErrorDialog(
+                it?.toString() ?: binding.webView.url ?: navArgs.href,
+                navArgs.seriesWithInfo
+            ))
+        }
+    }
+
+    private val adBlockWebViewClient by lazy {
+        AdBlockWebViewClient(setOf(Constants.HOST_BS_TO), loadingStartedListener, loadingFinishedListener, lazyErrorListener)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +104,7 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
                     }
                 }
             }
-            delay(5000)
+            delay(3000)
         }
     }
 

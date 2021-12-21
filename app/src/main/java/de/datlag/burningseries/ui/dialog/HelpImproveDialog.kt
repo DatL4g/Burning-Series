@@ -30,7 +30,7 @@ class HelpImproveDialog : BottomSheetDialogFragment() {
             }
         }
 
-        return getThemedLayoutInflater(inflater, R.style.BottomSheetDialog).inflate(R.layout.dialog_help_improve, container, false)
+        return inflater.inflate(R.layout.dialog_help_improve, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,6 +39,4 @@ class HelpImproveDialog : BottomSheetDialogFragment() {
         binding.number.text = navArgs.count.toString()
         binding.closeButton.setOnClickListener { this.dismiss() }
     }
-
-    override fun getTheme(): Int = R.style.BottomSheetDialog
 }

@@ -43,7 +43,7 @@ class AllSeriesRecyclerAdapter(
 
     override val differ = AsyncListDiffer(this, diffCallback)
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
         private fun bindHeader(item: GenreModel.GenreData) {
             val binding = RecyclerAllSeriesHeaderBinding.bind(itemView)
             binding.title.text = item.genre
@@ -52,6 +52,7 @@ class AllSeriesRecyclerAdapter(
         private fun bindItem(item: GenreModel.GenreItem, position: Int) {
             val binding = RecyclerAllSeriesItemBinding.bind(itemView)
             binding.card.setOnClickListener(this)
+            binding.card.setOnLongClickListener(this)
             binding.title.text = item.title
 
             if (rightFocusViewId != null) {
@@ -72,6 +73,10 @@ class AllSeriesRecyclerAdapter(
 
         override fun onClick(v: View?) {
             clickListener?.invoke(differ.currentList[absoluteAdapterPosition])
+        }
+
+        override fun onLongClick(v: View?): Boolean {
+            return longClickListener?.invoke(differ.currentList[absoluteAdapterPosition]) ?: false
         }
     }
 

@@ -34,15 +34,20 @@ class EpisodeRecyclerAdapter : ClickRecyclerAdapter<EpisodeWithHoster, EpisodeRe
 
     override val differ = AsyncListDiffer(this, diffCallback)
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
         val binding: RecyclerEpisodeBinding by viewBinding()
 
         init {
             binding.card.setOnClickListener(this)
+            binding.card.setOnLongClickListener(this)
         }
 
         override fun onClick(v: View?) {
             clickListener?.invoke(differ.currentList[absoluteAdapterPosition])
+        }
+
+        override fun onLongClick(v: View?): Boolean {
+            return longClickListener?.invoke(differ.currentList[absoluteAdapterPosition]) ?: false
         }
     }
 

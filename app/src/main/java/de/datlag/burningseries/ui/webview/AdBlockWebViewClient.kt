@@ -1,14 +1,16 @@
 package de.datlag.burningseries.ui.webview
 
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.graphics.Bitmap
+import android.net.Uri
+import android.webkit.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.ByteArrayInputStream
 
 class AdBlockWebViewClient(
-    private val allowedHosts: Set<String> = setOf()
+    private val allowedHosts: Set<String> = setOf(),
+    private val startedLoading: (() -> Unit)? = null,
+    private val finishedLoading: (() -> Unit)? = null,
+    private val receivedError: ((Uri?) -> Unit)? = null
 ) : WebViewClient() {
 
     val adBlockList: MutableStateFlow<Set<String>> = MutableStateFlow(setOf())
@@ -30,6 +32,25 @@ class AdBlockWebViewClient(
         } else {
             true
         }
+    }
+
+    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+        super.onPageStarted(view, url, favicon)
+        startedLoading?.invoke()
+    }
+
+    override fun onPageFinished(view: WebView?, url: String?) {
+        super.onPageFinished(view, url)
+        finishedLoading?.invoke()
+    }
+
+    override fun onReceivedError(
+        view: WebView?,
+        request: WebResourceRequest?,
+        error: WebResourceError?
+    ) {
+        super.onReceivedError(view, request, error)
+        receivedError?.invoke(request?.url)
     }
 
     companion object {

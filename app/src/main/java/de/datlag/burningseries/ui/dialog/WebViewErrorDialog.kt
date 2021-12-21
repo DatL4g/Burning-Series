@@ -12,12 +12,12 @@ import de.datlag.burningseries.R
 import de.datlag.burningseries.common.expand
 import de.datlag.burningseries.common.isTelevision
 import de.datlag.burningseries.common.safeContext
-import de.datlag.burningseries.databinding.DialogNoStreamSourceBinding
+import de.datlag.burningseries.databinding.DialogWebviewErrorBinding
 
-class NoStreamSourceDialog : BottomSheetDialogFragment() {
+class WebViewErrorDialog : BottomSheetDialogFragment() {
 
-    val binding: DialogNoStreamSourceBinding by viewBinding()
-    val navArgs: NoStreamSourceDialogArgs by navArgs()
+    private val binding: DialogWebviewErrorBinding by viewBinding()
+    private val navArgs: WebViewErrorDialogArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,18 +30,25 @@ class NoStreamSourceDialog : BottomSheetDialogFragment() {
             }
         }
 
-        return inflater.inflate(R.layout.dialog_no_stream_source, container, false)
+        return inflater.inflate(R.layout.dialog_webview_error, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.closeButton.setOnClickListener {
+        binding.text.text = safeContext.getString(R.string.error_loading_text, navArgs.href)
+        binding.backButton.setOnClickListener {
             dismiss()
+            findNavController().navigate(WebViewErrorDialogDirections.actionWebViewErrorDialogToSeriesFragment(
+                seriesWithInfo = navArgs.seriesWithInfo
+            ))
         }
-        binding.hosterButton.setOnClickListener {
+        binding.retryButton.setOnClickListener {
             dismiss()
-            findNavController().navigate(NoStreamSourceDialogDirections.actionNoStreamSourceDialogToScrapeHosterFragment(navArgs.bsUrl, navArgs.seriesWithInfo))
+            findNavController().navigate(WebViewErrorDialogDirections.actionWebViewErrorDialogToScrapeHosterFragment(
+                navArgs.href,
+                navArgs.seriesWithInfo
+            ))
         }
     }
 }

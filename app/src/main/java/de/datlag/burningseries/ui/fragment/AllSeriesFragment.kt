@@ -18,6 +18,7 @@ import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentAllSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
+import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
 import io.michaelrocks.paranoid.Obfuscate
 import timber.log.Timber
@@ -64,6 +65,15 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
             if (item is GenreModel.GenreItem) {
                 findNavController().navigate(AllSeriesFragmentDirections.actionAllSeriesFragmentToSeriesFragment(genreItem = item))
             }
+        }
+        allSeriesRecyclerAdapter.setOnLongClickListener { item ->
+            if (item is GenreModel.GenreItem) {
+                findNavController().navigate(AllSeriesFragmentDirections.actionAllSeriesFragmentToOpenInBrowserDialog(
+                    Constants.getBurningSeriesLink(item.href),
+                    item.title
+                ))
+            }
+            true
         }
     }
 

@@ -22,6 +22,7 @@ import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentHomeBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
+import de.datlag.burningseries.viewmodel.GitHubViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
@@ -39,6 +40,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	private val binding: FragmentHomeBinding by viewBinding()
 	private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 	private val settingsViewModel: SettingsViewModel by viewModels()
+	private val gitHubViewModel: GitHubViewModel by activityViewModels()
 	
 	private val latestEpisodeRecyclerAdapter by lazy {
 		LatestEpisodeRecyclerAdapter(binding.allSeriesButton.id)
@@ -69,7 +71,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 			}
 		}
 
-		loadImageAndSave("https://bs.to/public/images/header.png") {
+		loadImageAndSave(Constants.BS_TO_HEADER) {
 			binding.banner.load<Drawable>(it)
 		}
 
@@ -108,7 +110,11 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		}
 		
 		latestEpisodeRecyclerAdapter.setOnLongClickListener { item ->
-			openInBrowser(item)
+			val (title, episode) = item.getEpisodeAndSeries()
+			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToOpenInBrowserDialog(
+				Constants.getBurningSeriesLink(item.href),
+				"$episode ${safeContext.getString(R.string.of)} \"$title"
+			))
 			true
 		}
 		
@@ -124,7 +130,10 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		}
 
 		latestSeriesRecyclerAdapter.setOnLongClickListener { item ->
-			openInBrowser(item)
+			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToOpenInBrowserDialog(
+				Constants.getBurningSeriesLink(item.href),
+				item.title
+			))
 			true
 		}
 	}
@@ -133,28 +142,5 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		super.onResume()
 		extendedFab?.visibility = View.VISIBLE
 		hideNavigationFabs()
-	}
-	
-	private fun openInBrowser(item: LatestEpisode) {
-		val (title, episode) = item.getEpisodeAndSeries()
-		MaterialAlertDialogBuilder(safeContext)
-			.setTitle(title)
-			.setMessage("Do you want to open \"${episode}\" of \"${title}\" in browser?")
-			.setPositiveButton("Yes") { _, _ ->
-				Constants.getBurningSeriesLink(item.href).toUri().openInBrowser(safeContext)
-			}
-			.setNegativeButton("Cancel", null)
-			.create().show()
-	}
-
-	private fun openInBrowser(item: LatestSeries) {
-		MaterialAlertDialogBuilder(safeContext)
-			.setTitle(item.title)
-			.setMessage("Do you want to open \"${item.title}\" in browser?")
-			.setPositiveButton("Yes") { _, _ ->
-				Constants.getBurningSeriesLink(item.href).toUri().openInBrowser(safeContext)
-			}
-			.setNegativeButton("Cancel", null)
-			.create().show()
 	}
 }

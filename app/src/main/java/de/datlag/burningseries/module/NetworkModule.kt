@@ -10,6 +10,7 @@ import de.datlag.model.Constants
 import de.datlag.network.adblock.AdBlock
 import de.datlag.network.burningseries.BurningSeries
 import de.datlag.network.burningseries.BurningSeriesScraper
+import de.datlag.network.github.GitHub
 import de.datlag.network.jsonbase.JsonBase
 import de.datlag.network.m3o.DB
 import de.datlag.network.m3o.Image
@@ -139,4 +140,13 @@ object NetworkModule {
 	): AdBlock = builder
 		.build()
 		.create(AdBlock::class.java)
+
+	@Provides
+	@Singleton
+	fun provideGitHubService(
+		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
+	): GitHub = builder
+		.baseUrl(Constants.API_GITHUB)
+		.build()
+		.create(GitHub::class.java)
 }

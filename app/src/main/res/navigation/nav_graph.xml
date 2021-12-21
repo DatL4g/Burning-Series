@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_openInBrowserDialog"
+            app:destination="@id/openInBrowserDialog" />
     </fragment>
     <fragment
         android:id="@+id/seriesFragment"
@@ -69,6 +72,9 @@
         <action
             android:id="@+id/action_seriesFragment_to_noStreamSourceDialog"
             app:destination="@id/noStreamSourceDialog" />
+        <action
+            android:id="@+id/action_seriesFragment_to_openInBrowserDialog"
+            app:destination="@id/openInBrowserDialog" />
     </fragment>
     <fragment
         android:id="@+id/favoritesFragment"
@@ -99,6 +105,9 @@
         <action
             android:id="@+id/action_allSeriesFragment_to_favoritesFragment"
             app:destination="@id/favoritesFragment" />
+        <action
+            android:id="@+id/action_allSeriesFragment_to_openInBrowserDialog"
+            app:destination="@id/openInBrowserDialog" />
     </fragment>
     <fragment
         android:id="@+id/videoFragment"
@@ -161,6 +170,9 @@
         <argument
             android:name="seriesWithInfo"
             app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
+        <action
+            android:id="@+id/action_scrapeHosterFragment_to_webViewErrorDialog"
+            app:destination="@id/webViewErrorDialog" />
     </fragment>
     <dialog
         android:id="@+id/saveScrapedDialog"
@@ -212,5 +224,36 @@
         <argument
             android:name="bsUrl"
             app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/webViewErrorDialog"
+        android:name="de.datlag.burningseries.ui.dialog.WebViewErrorDialog"
+        android:label="WebViewErrorDialog"
+        tools:layout="@layout/dialog_webview_error">
+        <action
+            android:id="@+id/action_webViewErrorDialog_to_seriesFragment"
+            app:destination="@id/seriesFragment" />
+        <argument
+            android:name="href"
+            app:argType="string" />
+        <argument
+            android:name="seriesWithInfo"
+            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
+        <action
+            android:id="@+id/action_webViewErrorDialog_to_scrapeHosterFragment"
+            app:destination="@id/scrapeHosterFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/openInBrowserDialog"
+        android:name="de.datlag.burningseries.ui.dialog.OpenInBrowserDialog"
+        android:label="OpenInBrowserDialog"
+        tools:layout="@layout/dialog_open_in_browser">
+        <argument
+            android:name="href"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="true" />
     </dialog>
 </navigation>

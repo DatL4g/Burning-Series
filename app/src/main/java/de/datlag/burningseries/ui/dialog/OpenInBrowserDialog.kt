@@ -4,20 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
+import androidx.core.net.toUri
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.expand
 import de.datlag.burningseries.common.isTelevision
+import de.datlag.burningseries.common.openInBrowser
 import de.datlag.burningseries.common.safeContext
-import de.datlag.burningseries.databinding.DialogNoStreamSourceBinding
+import de.datlag.burningseries.databinding.DialogOpenInBrowserBinding
 
-class NoStreamSourceDialog : BottomSheetDialogFragment() {
+class OpenInBrowserDialog : BottomSheetDialogFragment() {
 
-    val binding: DialogNoStreamSourceBinding by viewBinding()
-    val navArgs: NoStreamSourceDialogArgs by navArgs()
+    private val binding: DialogOpenInBrowserBinding by viewBinding()
+    private val navArgs: OpenInBrowserDialogArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,18 +31,19 @@ class NoStreamSourceDialog : BottomSheetDialogFragment() {
             }
         }
 
-        return inflater.inflate(R.layout.dialog_no_stream_source, container, false)
+        return inflater.inflate(R.layout.dialog_open_in_browser, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.closeButton.setOnClickListener {
+        binding.text.text = safeContext.getString(R.string.open_in_browser_text, navArgs.title ?: navArgs.href)
+        binding.backButton.setOnClickListener {
             dismiss()
         }
-        binding.hosterButton.setOnClickListener {
+        binding.openButton.setOnClickListener {
             dismiss()
-            findNavController().navigate(NoStreamSourceDialogDirections.actionNoStreamSourceDialogToScrapeHosterFragment(navArgs.bsUrl, navArgs.seriesWithInfo))
+            navArgs.href.toUri().openInBrowser(safeContext)
         }
     }
 }
