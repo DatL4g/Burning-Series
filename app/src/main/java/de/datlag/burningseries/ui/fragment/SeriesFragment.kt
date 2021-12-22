@@ -174,12 +174,12 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         } else {
             selectSeason.hide()
         }
-        episodeRecyclerAdapter.submitList(seriesData.episodes)
-
-        if (episode != null) {
-            val (title, episodeTitle) = episode.getEpisodeAndSeries()
-            episodeRecyclerAdapter.performClickOn {
-                it.episode.href.equals(episode.href, true) || it.episode.title == episodeTitle
+        episodeRecyclerAdapter.submitList(seriesData.episodes) {
+            if (episode != null) {
+                val (title, episodeTitle) = episode.getEpisodeAndSeries()
+                episodeRecyclerAdapter.performClickOn {
+                    it.episode.href.equals(episode.href, true) || it.episode.title == episodeTitle
+                }
             }
         }
 
