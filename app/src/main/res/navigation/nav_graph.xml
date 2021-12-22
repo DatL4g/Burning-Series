@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
+    <include app:graph="@navigation/aboutlibs_navigation" />
 
     <fragment android:id="@+id/homeFragment"
         android:name="de.datlag.burningseries.ui.fragment.HomeFragment"
@@ -28,6 +29,9 @@
         <action
             android:id="@+id/action_homeFragment_to_openInBrowserDialog"
             app:destination="@id/openInBrowserDialog" />
+        <action
+            android:id="@+id/action_homeFragment_to_newReleaseDialog"
+            app:destination="@id/newReleaseDialog" />
     </fragment>
     <fragment
         android:id="@+id/seriesFragment"
@@ -155,6 +159,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_about_libraries"
+            app:destination="@id/about_libraries" />
     </fragment>
     <fragment
         android:id="@+id/scrapeHosterFragment"
@@ -255,5 +262,14 @@
             android:name="title"
             app:argType="string"
             app:nullable="true" />
+    </dialog>
+    <dialog
+        android:id="@+id/newReleaseDialog"
+        android:name="de.datlag.burningseries.ui.dialog.NewReleaseDialog"
+        android:label="NewReleaseDialog"
+        tools:layout="@layout/dialog_new_release">
+        <argument
+            android:name="release"
+            app:argType="de.datlag.model.github.Release" />
     </dialog>
 </navigation>

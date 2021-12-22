@@ -1,5 +1,3 @@
-import com.google.protobuf.gradle.builtins
-import com.google.protobuf.gradle.generateProtoTasks
 import com.google.protobuf.gradle.protoc
 
 plugins {
@@ -14,6 +12,7 @@ plugins {
     id("com.google.protobuf")
     id("io.michaelrocks.paranoid")
     id("com.klaxit.hiddensecrets")
+    id("com.mikepenz.aboutlibraries.plugin")
 }
 
 android {
@@ -100,6 +99,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("com.github.DATL4G:SelectionBottomSheet:1.3.1")
     implementation("com.github.devendroid:ReadMoreOption:1.0.3")
+    implementation("com.mikepenz:aboutlibraries:10.0.0-b06")
 
     implementation("com.google.android.exoplayer:exoplayer:2.16.1")
     implementation("com.github.DATL4G.PreviewSeekBar:previewseekbar-exoplayer:3.0.1")

@@ -3,22 +3,17 @@ package de.datlag.burningseries.ui.fragment
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
-import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.LatestEpisodeRecyclerAdapter
 import de.datlag.burningseries.adapter.LatestSeriesRecyclerAdapter
-import de.datlag.burningseries.common.hideLoadingDialog
-import de.datlag.burningseries.common.openInBrowser
 import de.datlag.burningseries.common.safeContext
-import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentHomeBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
@@ -26,12 +21,8 @@ import de.datlag.burningseries.viewmodel.GitHubViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
-import de.datlag.model.burningseries.home.LatestEpisode
-import de.datlag.model.burningseries.home.LatestSeries
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 @Obfuscate
@@ -54,6 +45,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 
 		initRecycler()
 		listenImproveDialogSetting()
+		listenNewVersionDialog()
 
 		burningSeriesViewModel.homeData.launchAndCollect {
 			when (it.status) {
@@ -95,6 +87,14 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 					findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToHelpImproveDialog(count))
 				}
 			}
+		} else {
+			burningSeriesViewModel.showedHelpImprove = true
+		}
+	}
+
+	private fun listenNewVersionDialog() = gitHubViewModel.getLatestRelease().launchAndCollect {
+		if (!gitHubViewModel.showedNewVersion && it != null && burningSeriesViewModel.showedHelpImprove) {
+			gitHubViewModel.showedNewVersion = true
 		}
 	}
 	

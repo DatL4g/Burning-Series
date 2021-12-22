@@ -16,7 +16,6 @@ data class Convert(
 	
 	@Parcelize
 	@Serializable
-	@Obfuscate
 	data class RequestURL(
 		@SerialName("url") val url: String,
 		@SerialName("name") val name: String = url.substringAfterLast('/'),
@@ -25,7 +24,6 @@ data class Convert(
 	
 	@Parcelize
 	@Serializable
-	@Obfuscate
 	data class RequestBase64(
 		@SerialName("base64") val base64: String,
 		@SerialName("name") val name: String = String(),

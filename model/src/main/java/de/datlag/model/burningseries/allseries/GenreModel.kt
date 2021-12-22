@@ -10,6 +10,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Obfuscate
 sealed class GenreModel {
     @Parcelize
     @Serializable
@@ -20,7 +21,6 @@ sealed class GenreModel {
             Index("genre", unique = true)
         ]
     )
-    @Obfuscate
     data class GenreData(
         @SerialName("genre") @ColumnInfo(name = "genre") val genre: String = String(),
         @ColumnInfo(name = "updatedAt") var updatedAt: Long = Clock.System.now().epochSeconds,
@@ -55,7 +55,6 @@ sealed class GenreModel {
             )
         ]
     )
-    @Obfuscate
     data class GenreItem(
         @SerialName("title") @ColumnInfo(name = "title") val title: String = String(),
         @SerialName("href") @ColumnInfo(name = "href") val href: String = String(),

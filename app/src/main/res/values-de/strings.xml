@@ -60,4 +60,6 @@
     <string name="view">Ansehen</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
+    <string name="opensource_libs">OpenSource Bibliotheken</string>
+    <string name="github_project">GitHub Projekt</string>
 </resources>

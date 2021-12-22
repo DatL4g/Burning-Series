@@ -16,7 +16,6 @@ import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.ui.dialog.LoadingDialog
 import io.michaelrocks.paranoid.Obfuscate
 import java.io.File
-import java.util.zip.Inflater
 
 val Fragment.safeContext: Context
 	get() = this.context ?: this.safeActivity ?: if (this is AdvancedFragment) appContext else requireContext()

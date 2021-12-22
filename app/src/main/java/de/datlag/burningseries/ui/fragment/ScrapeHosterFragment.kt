@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -17,7 +16,6 @@ import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentScrapeHosterBinding
 import de.datlag.burningseries.extend.AdvancedFragment
-import de.datlag.burningseries.module.NetworkModule
 import de.datlag.burningseries.ui.webview.AdBlockWebViewClient
 import de.datlag.burningseries.viewmodel.AdBlockViewModel
 import de.datlag.burningseries.viewmodel.ScrapeHosterViewModel
@@ -27,8 +25,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
 @Obfuscate
@@ -47,19 +43,15 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
         hideLoadingDialog()
     }
 
-    private val lazyErrorListener: (Uri?) -> Unit by lazy {
-        {
-            hideLoadingDialog()
-            findNavController().navigate(ScrapeHosterFragmentDirections.actionScrapeHosterFragmentToWebViewErrorDialog(
-                it?.toString() ?: binding.webView.url ?: navArgs.href,
-                navArgs.seriesWithInfo
-            ))
-        }
+    private val lazyErrorListener: (Uri?) -> Unit = {
+        hideLoadingDialog()
+        findNavController().navigate(ScrapeHosterFragmentDirections.actionScrapeHosterFragmentToWebViewErrorDialog(
+            it?.toString() ?: binding.webView.url ?: navArgs.href,
+            navArgs.seriesWithInfo
+        ))
     }
 
-    private val adBlockWebViewClient by lazy {
-        AdBlockWebViewClient(setOf(Constants.HOST_BS_TO), loadingStartedListener, loadingFinishedListener, lazyErrorListener)
-    }
+    private val adBlockWebViewClient = AdBlockWebViewClient(setOf(Constants.HOST_BS_TO), loadingStartedListener, loadingFinishedListener, lazyErrorListener)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +71,6 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView(): Unit = with(binding) {
         webView.webViewClient = adBlockWebViewClient
-        registerForContextMenu(webView)
 
         webView.settings.apply {
             allowFileAccess = false

@@ -1,4 +1,8 @@
+@file:Obfuscate
+
 package de.datlag.network.common
+
+import io.michaelrocks.paranoid.Obfuscate
 
 fun <T> MutableList<T>.mapInPlace(mutator: (T) -> T) {
     val iterate = this.listIterator()

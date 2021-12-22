@@ -1,10 +1,7 @@
 package de.datlag.model.burningseries.series
 
-import android.net.Uri
 import android.os.Parcelable
-import android.util.Log
 import androidx.room.*
-import de.datlag.model.Constants
 import de.datlag.model.burningseries.common.encodeToHref
 import de.datlag.model.burningseries.common.getDigitsOrNull
 import io.michaelrocks.paranoid.Obfuscate

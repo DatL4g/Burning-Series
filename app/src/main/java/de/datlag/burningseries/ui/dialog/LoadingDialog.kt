@@ -2,20 +2,14 @@ package de.datlag.burningseries.ui.dialog
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.expand
 import de.datlag.burningseries.common.isTelevision
-import de.datlag.burningseries.common.safeContext
-import java.lang.ref.WeakReference
+import io.michaelrocks.paranoid.Obfuscate
 import java.util.concurrent.atomic.AtomicReference
 
+@Obfuscate
 class LoadingDialog private constructor(context: Context) : BottomSheetDialog(context, R.style.BottomSheetDialog) {
 
     override fun onCreate(savedInstanceState: Bundle?) {

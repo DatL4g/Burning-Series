@@ -21,7 +21,6 @@ import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
 import io.michaelrocks.paranoid.Obfuscate
-import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate

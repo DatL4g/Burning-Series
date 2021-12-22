@@ -1,26 +1,14 @@
 package de.datlag.burningseries.extend
 
 import android.content.Context
-import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.datastore.core.DataStore
 import androidx.fragment.app.Fragment
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
-import de.datlag.burningseries.common.launchAndCollectIn
-import de.datlag.burningseries.helper.NightMode
-import de.datlag.datastore.SettingsPreferences
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @AndroidEntryPoint
 @Obfuscate

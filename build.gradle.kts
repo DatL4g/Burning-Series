@@ -23,6 +23,7 @@ buildscript {
         classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.18")
         classpath("io.michaelrocks:paranoid-gradle-plugin:0.3.5")
         classpath("com.klaxit.hiddensecrets:HiddenSecretsPlugin:0.1.2")
+        classpath("com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:10.0.0-b06")
     }
 }
 

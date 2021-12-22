@@ -1,6 +1,5 @@
 package de.datlag.network.jsonbase
 
-import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkResource
 import de.datlag.model.jsonbase.Stream

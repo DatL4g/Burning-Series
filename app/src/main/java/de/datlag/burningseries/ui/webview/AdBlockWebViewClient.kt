@@ -2,10 +2,14 @@ package de.datlag.burningseries.ui.webview
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.net.http.SslError
 import android.webkit.*
+import androidx.core.net.toUri
+import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.ByteArrayInputStream
 
+@Obfuscate
 class AdBlockWebViewClient(
     private val allowedHosts: Set<String> = setOf(),
     private val startedLoading: (() -> Unit)? = null,
@@ -50,6 +54,20 @@ class AdBlockWebViewClient(
         error: WebResourceError?
     ) {
         super.onReceivedError(view, request, error)
+        receivedError?.invoke(request?.url)
+    }
+
+    override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
+        super.onReceivedSslError(view, handler, error)
+        receivedError?.invoke(error?.url?.toUri())
+    }
+
+    override fun onReceivedHttpError(
+        view: WebView?,
+        request: WebResourceRequest?,
+        errorResponse: WebResourceResponse?
+    ) {
+        super.onReceivedHttpError(view, request, errorResponse)
         receivedError?.invoke(request?.url)
     }
 

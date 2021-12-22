@@ -11,6 +11,7 @@ object Constants {
 	const val MEDIATYPE_GITHUB_JSON = "application/vnd.github.v3+json"
 
 	const val HOST_BS_TO = "bs.to"
+	const val HOST_GITHUB = "github.com"
 
 	const val API_M3O = "${PROTOCOL_HTTPS}api.m3o.com"
 	const val API_JSONBASE = "${PROTOCOL_HTTPS}jsonbase.com"
@@ -20,7 +21,7 @@ object Constants {
 	const val API_WRAP_API_BASE = "${PROTOCOL_HTTPS}wrapapi.com"
 	const val API_WRAP_API_PREFIX = "/use/DatLag/burning-series"
 	const val API_WRAP_API_VIDEO_PREFIX = "/use/DatLag/videofetcher"
-	const val API_GITHUB = "${PROTOCOL_HTTPS}api.github.com"
+	const val API_GITHUB = "${PROTOCOL_HTTPS}api.${HOST_GITHUB}"
 
 	const val BS_TO_HEADER = "${API_BS_TO_BASE}/public/images/header.png"
 	const val URL_ADBLOCK_LIST = "https://raw.githubusercontent.com/Openadblockserverlist/adblockserverlist/master/adblockserverlist.txt"
@@ -40,6 +41,7 @@ object Constants {
 
 	const val GITHUB_OWNER = "DatL4g"
 	const val GITHUB_REPO = "BurningSeries-Android"
+	const val GITHUB_PROJECT = "${PROTOCOL_HTTPS}${HOST_GITHUB}/${GITHUB_OWNER}/${GITHUB_REPO}"
 	
 	fun getBurningSeriesLink(href: String): String {
 		return if (!href.matches("^\\w+?://.*".toRegex())) {

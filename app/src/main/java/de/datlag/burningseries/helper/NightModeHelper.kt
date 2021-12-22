@@ -29,6 +29,7 @@ object NightMode {
     }
 
     class Helper(private val context: Context, activity: Activity? = null) {
+        constructor(activity: Activity) : this(activity, activity)
         constructor(fragment: Fragment) : this(fragment.safeContext, fragment.safeActivity)
 
         private val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager

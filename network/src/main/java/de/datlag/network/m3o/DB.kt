@@ -8,8 +8,10 @@ import de.datlag.model.m3o.db.read.BurningSeriesHosterQuery
 import de.datlag.model.m3o.db.read.BurningSeriesHosterRecords
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.Flow
-import retrofit2.Call
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.Header
+import retrofit2.http.Headers
+import retrofit2.http.POST
 
 @Obfuscate
 interface DB {

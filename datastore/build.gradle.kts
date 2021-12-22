@@ -1,4 +1,6 @@
-import com.google.protobuf.gradle.*
+import com.google.protobuf.gradle.builtins
+import com.google.protobuf.gradle.generateProtoTasks
+import com.google.protobuf.gradle.protoc
 
 plugins {
     id("com.android.library")

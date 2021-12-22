@@ -1,6 +1,5 @@
 package de.datlag.network.burningseries
 
-import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkBoundResource
 import de.datlag.database.burningseries.BurningSeriesDao

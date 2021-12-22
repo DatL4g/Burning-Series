@@ -13,7 +13,9 @@ import de.datlag.burningseries.common.expand
 import de.datlag.burningseries.common.isTelevision
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.DialogWebviewErrorBinding
+import io.michaelrocks.paranoid.Obfuscate
 
+@Obfuscate
 class WebViewErrorDialog : BottomSheetDialogFragment() {
 
     private val binding: DialogWebviewErrorBinding by viewBinding()

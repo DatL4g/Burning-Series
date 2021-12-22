@@ -1,6 +1,5 @@
 package de.datlag.network.m3o
 
-import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkResource
 import de.datlag.model.burningseries.series.HosterData

@@ -1,9 +1,12 @@
+@file:Obfuscate
+
 package de.datlag.burningseries.common
 
 import android.content.DialogInterface
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import io.michaelrocks.paranoid.Obfuscate
 
 fun DialogInterface.expand() {
     if (this is BottomSheetDialog) {

@@ -9,10 +9,8 @@ import de.datlag.network.github.GitHubRepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +18,8 @@ import javax.inject.Inject
 class GitHubViewModel @Inject constructor(
     private val repository: GitHubRepository
 ) : ViewModel() {
+
+    var showedNewVersion: Boolean = false
 
     fun getLatestRelease(): Flow<Release?> = flow<Release?> {
         val installedVersion = BuildConfig.VERSION_NAME

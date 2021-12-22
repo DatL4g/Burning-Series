@@ -35,7 +35,6 @@ import de.datlag.model.jsonbase.Stream
 import de.datlag.model.video.VideoStream
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.datetime.Clock
-import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate

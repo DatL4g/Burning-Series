@@ -15,7 +15,9 @@ import de.datlag.burningseries.common.isTelevision
 import de.datlag.burningseries.common.openInBrowser
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.DialogStreamUnavailableBinding
+import io.michaelrocks.paranoid.Obfuscate
 
+@Obfuscate
 class StreamUnavailableDialog : BottomSheetDialogFragment() {
 
     private val binding: DialogStreamUnavailableBinding by viewBinding()

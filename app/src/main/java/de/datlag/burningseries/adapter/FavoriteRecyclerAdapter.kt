@@ -15,7 +15,9 @@ import de.datlag.burningseries.extend.ClickRecyclerAdapter
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
+import io.michaelrocks.paranoid.Obfuscate
 
+@Obfuscate
 class FavoriteRecyclerAdapter(private val fragment: AdvancedFragment) : ClickRecyclerAdapter<SeriesWithInfo, FavoriteRecyclerAdapter.ViewHolder>() {
 
     override val diffCallback = object : DiffUtil.ItemCallback<SeriesWithInfo>() {

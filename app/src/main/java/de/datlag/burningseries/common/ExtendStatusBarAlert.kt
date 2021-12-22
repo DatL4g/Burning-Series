@@ -1,6 +1,9 @@
+@file:Obfuscate
+
 package de.datlag.burningseries.common
 
 import com.fede987.statusbaralert.StatusBarAlert
+import io.michaelrocks.paranoid.Obfuscate
 import java.util.concurrent.TimeUnit
 
 fun StatusBarAlert.showLoading(loadingText: String, backgroundColor: Int, textColor: Int) = this.hide {

@@ -1,10 +1,7 @@
 package de.datlag.network.video
 
 import android.net.Uri
-import android.util.Log
-import de.datlag.model.video.VideoStream
 import de.datlag.network.common.getSrc
-import de.datlag.network.common.toInt
 import io.michaelrocks.paranoid.Obfuscate
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

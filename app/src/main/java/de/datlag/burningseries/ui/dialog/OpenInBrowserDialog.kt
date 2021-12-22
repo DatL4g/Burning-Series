@@ -14,7 +14,9 @@ import de.datlag.burningseries.common.isTelevision
 import de.datlag.burningseries.common.openInBrowser
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.DialogOpenInBrowserBinding
+import io.michaelrocks.paranoid.Obfuscate
 
+@Obfuscate
 class OpenInBrowserDialog : BottomSheetDialogFragment() {
 
     private val binding: DialogOpenInBrowserBinding by viewBinding()
@@ -43,7 +45,7 @@ class OpenInBrowserDialog : BottomSheetDialogFragment() {
         }
         binding.openButton.setOnClickListener {
             dismiss()
-            navArgs.href.toUri().openInBrowser(safeContext)
+            navArgs.href.toUri().openInBrowser(safeContext, navArgs.title)
         }
     }
 }

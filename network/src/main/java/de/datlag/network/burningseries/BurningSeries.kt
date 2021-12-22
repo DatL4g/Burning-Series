@@ -5,7 +5,6 @@ import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.AllSeries
 import de.datlag.model.burningseries.home.Home
 import de.datlag.model.burningseries.series.Series
-import de.datlag.model.burningseries.series.SeriesData
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.Flow
 import retrofit2.http.GET

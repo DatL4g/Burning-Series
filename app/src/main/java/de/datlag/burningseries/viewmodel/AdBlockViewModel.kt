@@ -8,7 +8,6 @@ import de.datlag.network.adblock.AdBlockRepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.InputStream

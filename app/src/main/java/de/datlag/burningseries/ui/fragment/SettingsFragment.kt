@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,13 +23,8 @@ import de.datlag.burningseries.helper.NightMode
 import de.datlag.burningseries.model.SettingsModel
 import de.datlag.burningseries.viewmodel.GitHubViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
+import de.datlag.model.Constants
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
@@ -47,6 +42,12 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
         initRecycler()
         setSettingsData()
         listenNewVersion()
+        binding.librariesCard.setOnClickListener {
+            findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToAboutLibraries())
+        }
+        binding.githubCard.setOnClickListener {
+            Constants.GITHUB_PROJECT.toUri().openInBrowser(safeContext, safeContext.getString(R.string.github_project))
+        }
     }
 
     private fun initRecycler(): Unit = with(binding) {
@@ -102,12 +103,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
     private fun listenNewVersion() = gitHubViewModel.getLatestRelease().launchAndCollect { release ->
         if (release != null) {
             binding.latestReleaseCard.show()
-            binding.date.text = if (release.publishedAtSeconds > 0L) {
-                val date = Instant.fromEpochSeconds(release.publishedAtSeconds).toLocalDateTime(TimeZone.currentSystemDefault()).date
-                "${date.year}-${date.monthNumber}-${date.dayOfMonth}"
-            } else {
-                release.publishedAt
-            }
+            binding.date.text = release.publishedAtIsoDate()
             binding.text.text = safeContext.getString(
                 R.string.new_release_text, release.tagName,
                 BuildConfig.VERSION_NAME,

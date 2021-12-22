@@ -3,6 +3,7 @@ package de.datlag.network.adblock
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkResource
 import de.datlag.model.Constants
+import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.flowOn
 import java.io.InputStream
 import javax.inject.Inject
 
+@Obfuscate
 class AdBlockRepository @Inject constructor(
     private val service: AdBlock
 ) {

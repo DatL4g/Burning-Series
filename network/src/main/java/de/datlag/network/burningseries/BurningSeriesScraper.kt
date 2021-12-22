@@ -1,9 +1,7 @@
 package de.datlag.network.burningseries
 
 import android.util.Log
-import androidx.core.text.parseAsHtml
 import de.datlag.model.Constants
-import de.datlag.model.burningseries.allseries.AllSeries
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.home.HomeData
 import de.datlag.model.burningseries.home.LatestEpisode
@@ -17,9 +15,6 @@ import io.michaelrocks.paranoid.Obfuscate
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import java.net.HttpURLConnection
-import java.net.URL
-import java.net.URLEncoder
 
 @Obfuscate
 class BurningSeriesScraper {

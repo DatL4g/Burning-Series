@@ -5,15 +5,16 @@ import android.view.KeyEvent
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fede987.statusbaralert.StatusBarAlert
 import com.fede987.statusbaralert.utils.statusBarAlert
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.databinding.ActivityMainBinding
 import de.datlag.burningseries.extend.AdvancedActivity
-import de.datlag.burningseries.ui.connector.*
-import de.datlag.burningseries.ui.dialog.LoadingDialog
+import de.datlag.burningseries.ui.connector.FABExtended
+import de.datlag.burningseries.ui.connector.FABNavigation
+import de.datlag.burningseries.ui.connector.KeyEventDispatcher
+import de.datlag.burningseries.ui.connector.StatusBarAlertProvider
 import io.michaelrocks.paranoid.Obfuscate
 
 @AndroidEntryPoint

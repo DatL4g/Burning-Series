@@ -4,22 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
+import androidx.core.net.toUri
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import de.datlag.burningseries.BuildConfig
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.expand
 import de.datlag.burningseries.common.isTelevision
+import de.datlag.burningseries.common.openInBrowser
 import de.datlag.burningseries.common.safeContext
-import de.datlag.burningseries.databinding.DialogSaveScrapedBinding
+import de.datlag.burningseries.databinding.DialogNewReleaseBinding
 import io.michaelrocks.paranoid.Obfuscate
 
 @Obfuscate
-class SaveScrapedDialog : BottomSheetDialogFragment() {
+class NewReleaseDialog : BottomSheetDialogFragment() {
 
-    private val binding: DialogSaveScrapedBinding by viewBinding()
-    private val navArgs: SaveScrapedDialogArgs by navArgs()
+    private val binding: DialogNewReleaseBinding by viewBinding()
+    private val navArgs: NewReleaseDialogArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,33 +34,24 @@ class SaveScrapedDialog : BottomSheetDialogFragment() {
             }
         }
 
-        return inflater.inflate(R.layout.dialog_save_scraped, container, false)
+        return inflater.inflate(R.layout.dialog_new_release, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (navArgs.saved) {
-            setSuccess()
-        } else {
-            setFailed()
-        }
-        binding.continueButton.setOnClickListener {
+        binding.text.text = safeContext.getString(
+            R.string.new_release_text,
+            navArgs.release.tagName,
+            BuildConfig.VERSION_NAME,
+            safeContext.getString(if (navArgs.release.isPreRelease) R.string.yes else R.string.no)
+        )
+        binding.viewButton.setOnClickListener {
             dismiss()
+            navArgs.release.htmlUrl.toUri().openInBrowser(safeContext, safeContext.getString(R.string.new_release))
         }
         binding.backButton.setOnClickListener {
             dismiss()
-            findNavController().navigate(SaveScrapedDialogDirections.actionSaveScrapedDialogToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
         }
-    }
-
-    private fun setSuccess(): Unit = with(binding) {
-        header.text = safeContext.getString(R.string.save_success)
-        text.text = safeContext.getString(R.string.scraped_save_success)
-    }
-
-    private fun setFailed(): Unit = with(binding) {
-        header.text = safeContext.getString(R.string.save_failed)
-        text.text = safeContext.getString(R.string.scraped_save_failed)
     }
 }

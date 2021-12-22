@@ -3,7 +3,10 @@ package de.datlag.model.github
 import android.os.Parcelable
 import de.datlag.model.burningseries.common.getDigitsOrNull
 import io.michaelrocks.paranoid.Obfuscate
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -27,4 +30,11 @@ data class Release(
 ) : Parcelable {
 
     fun tagAsNumberString() = tagName.getDigitsOrNull()
+
+    fun publishedAtIsoDate() = if (publishedAtSeconds > 0L) {
+        val date = Instant.fromEpochSeconds(publishedAtSeconds).toLocalDateTime(TimeZone.currentSystemDefault()).date
+        "${date.year}-${date.monthNumber}-${date.dayOfMonth}"
+    } else {
+        publishedAt
+    }
 }

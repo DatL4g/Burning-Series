@@ -1,7 +1,10 @@
+@file:Obfuscate
+
 package de.datlag.burningseries.common
 
 import android.content.pm.PackageManager
 import android.os.Build
+import io.michaelrocks.paranoid.Obfuscate
 
 fun PackageManager.isTelevision(): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

@@ -13,7 +13,9 @@ import de.datlag.burningseries.common.expand
 import de.datlag.burningseries.common.isTelevision
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.DialogNoStreamSourceBinding
+import io.michaelrocks.paranoid.Obfuscate
 
+@Obfuscate
 class NoStreamSourceDialog : BottomSheetDialogFragment() {
 
     val binding: DialogNoStreamSourceBinding by viewBinding()
