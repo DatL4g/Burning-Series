@@ -24,8 +24,8 @@ class ScrapeHosterViewModel @Inject constructor(
     fun saveIfNotPresent(callbackValue: String) = flow {
         val scraped = jsonBuilder.decodeFromString<ScrapeHoster>(callbackValue)
         if (!streamSet.contains(scraped)) {
-            emitAll(repository.saveScrapedHoster(scraped))
             streamSet.add(scraped)
+            emitAll(repository.saveScrapedHoster(scraped))
         }
     }.flowOn(Dispatchers.IO)
 }

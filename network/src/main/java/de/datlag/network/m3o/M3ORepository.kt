@@ -144,19 +144,35 @@ class M3ORepository @Inject constructor(
 	}.flowOn(Dispatchers.IO)
 
 	suspend fun saveScrapedHoster(scraped: ScrapeHoster): Flow<Boolean> = flow {
+		val entry = BurningSeriesHoster(record = BurningSeriesHosterRecord.fromScraped(scraped))
 		networkResource(fetchFromRemote = {
 			dbService.saveStream(
 				"Bearer $token",
-				BurningSeriesHoster(record = BurningSeriesHosterRecord.fromScraped(scraped))
+				entry
+			)
+		}).collect {
+			when (it.status) {
+				Resource.Status.SUCCESS -> emit(true)
+				Resource.Status.ERROR -> emitAll(updateScrapedHoster(entry))
+				else -> { }
+			}
+		}
+	}.flowOn(Dispatchers.IO)
+
+	private suspend fun updateScrapedHoster(entry: BurningSeriesHoster): Flow<Boolean> = flow {
+		networkResource(fetchFromRemote = {
+			dbService.updateStream(
+				"Bearer $token",
+				entry
 			)
 		}).collect {
 			when (it.status) {
 				Resource.Status.SUCCESS -> emit(true)
 				Resource.Status.ERROR -> emit(false)
-				else -> {}
+				else -> { }
 			}
 		}
-	}.flowOn(Dispatchers.IO)
+	}
 
 	private suspend fun saveStream(href: String, stream: Stream) {
 		networkResource(fetchFromRemote = {

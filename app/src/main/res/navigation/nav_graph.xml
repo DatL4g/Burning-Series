@@ -262,6 +262,14 @@
             android:name="title"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_openInBrowserDialog_to_scrapeHosterFragment"
+            app:destination="@id/scrapeHosterFragment" />
+        <argument
+            android:name="seriesWithInfo"
+            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </dialog>
     <dialog
         android:id="@+id/newReleaseDialog"

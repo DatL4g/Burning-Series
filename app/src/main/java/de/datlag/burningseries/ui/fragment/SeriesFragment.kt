@@ -146,7 +146,8 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         episodeRecyclerAdapter.setOnLongClickListener { item ->
             findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToOpenInBrowserDialog(
                 Constants.getBurningSeriesLink(item.episode.href),
-                item.episode.title
+                item.episode.title,
+                currentSeriesWithInfo
             ))
             true
         }

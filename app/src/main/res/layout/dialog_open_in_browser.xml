@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -38,6 +39,20 @@
         android:layout_margin="16dp"
         android:text="@string/open_in_browser_text"
         app:layout_constraintTop_toBottomOf="@id/header" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/hosterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/activate"
+        android:textColor="@color/defaultBackgroundColor"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:backgroundTint="@color/defaultContentColor"
+        app:layout_constraintTop_toBottomOf="@id/text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/openButton"

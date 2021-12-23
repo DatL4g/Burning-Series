@@ -54,21 +54,16 @@ class AdBlockWebViewClient(
         error: WebResourceError?
     ) {
         super.onReceivedError(view, request, error)
-        receivedError?.invoke(request?.url)
+        if (allowedHosts.contains(request?.url?.host)) {
+            receivedError?.invoke(request?.url)
+        }
     }
 
     override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
         super.onReceivedSslError(view, handler, error)
-        receivedError?.invoke(error?.url?.toUri())
-    }
-
-    override fun onReceivedHttpError(
-        view: WebView?,
-        request: WebResourceRequest?,
-        errorResponse: WebResourceResponse?
-    ) {
-        super.onReceivedHttpError(view, request, errorResponse)
-        receivedError?.invoke(request?.url)
+        if (allowedHosts.contains(error?.url?.toUri()?.host)) {
+            receivedError?.invoke(error?.url?.toUri())
+        }
     }
 
     companion object {
