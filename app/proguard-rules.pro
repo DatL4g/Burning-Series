@@ -81,3 +81,16 @@
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
 -dontwarn org.codehaus.mojo.animal_sniffer.*
+
+-keep class wseemann.media.**{ *; }
+-keep class wseemann.media.FFmpegMediaMetadataRetriever {
+    *** mNativeContext;
+}
+
+-keepclasseswithmembernames class wseemann.media.** {
+    native <methods>;
+}
+
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
