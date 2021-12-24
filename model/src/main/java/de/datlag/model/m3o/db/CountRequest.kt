@@ -11,6 +11,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Obfuscate
 @Keep
-data class Count(
-    @SerialName("count") val count: Long = 0L
+data class CountRequest(
+    @SerialName("table") val table: String
 ) : Parcelable

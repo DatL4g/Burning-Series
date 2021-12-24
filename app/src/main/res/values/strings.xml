@@ -63,4 +63,5 @@
     <string name="no">No</string>
     <string name="opensource_libs">OpenSource Libraries</string>
     <string name="github_project">GitHub Project</string>
+    <string name="confirm">Confirm</string>
 </resources>

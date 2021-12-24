@@ -38,7 +38,7 @@
     <string name="watch">Anschauen</string>
     <string name="help_improve_text">Damit die App richtig funktioniert, hängt es von DEINER Hilfe ab. Videos können aufgrund des Captchas nicht immer direkt angesehen werden. Sollte ein Video nicht verfügbar sein, starte es bitte auf der Website (die App fragt automatisch danach). Sobald du es gestartet hast, sollte es auch direkt in der App verfügbar sein. Die folgende Zahl zeigt an, wie viele Videos verfügbar sind:</string>
     <string name="scraped_save_success">Hoster erfolgreich gespeichert. Du kannst jetzt zurückgehen oder weiter surfen und weitere Hoster aktivieren :)</string>
-    <string name="scraped_save_failed">Hoster konnte nicht gespeichert werden. Vielleicht ist es bereits gespeichert, versuchen Sie es mit einem anderen Hoster oder gehen Sie zurück.</string>
+    <string name="scraped_save_failed">Hoster konnte nicht gespeichert werden. Vielleicht ist es bereits gespeichert, versuche es mit einem anderen Hoster oder gehe zurück.</string>
     <string name="stream_unavailable_text">Dieses Video kann nicht gestreamt werden. Hast du deine Netzwerkverbindung überprüft? Du kannst zurückgehen und einen anderen Hoster ausprobieren, das Video im Browser öffnen oder einen Hoster aktivieren, damit es in der App gestreamt werden kann.</string>
     <string name="no_stream_source_text">Anscheinend ist keine Stream Quelle verfügbar. Du kannst es später noch einmal versuchen oder selbst einen Hoster aktivieren. Bitte beachte, dass nicht von allen Hostern gestreamt werden kann.</string>
     <string name="loading_text">Bitte hab etwas Geduld, Daten werden geladen…</string>
@@ -62,4 +62,5 @@
     <string name="no">Nein</string>
     <string name="opensource_libs">OpenSource Bibliotheken</string>
     <string name="github_project">GitHub Projekt</string>
+    <string name="confirm">Bestätigen</string>
 </resources>

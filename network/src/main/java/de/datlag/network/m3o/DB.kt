@@ -8,6 +8,7 @@ import de.datlag.model.m3o.db.read.BurningSeriesHosterQuery
 import de.datlag.model.m3o.db.read.BurningSeriesHosterRecords
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.Flow
+import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.Headers
@@ -18,17 +19,17 @@ interface DB {
 
     @Headers("Content-Type: ${Constants.MEDIATYPE_JSON}")
     @POST("/v1/db/Count")
-    fun countBurningSeries(@Header("Authorization") token: String, @Body body: Count.Request): Flow<ApiResponse<Count>>
+    fun countBurningSeries(@Header("Authorization") token: String, @Body body: RequestBody): Flow<ApiResponse<Count>>
 
     @Headers("Content-Type: ${Constants.MEDIATYPE_JSON}")
     @POST("/v1/db/Read")
-    fun getStream(@Header("Authorization") token: String, @Body body: BurningSeriesHosterQuery): Flow<ApiResponse<BurningSeriesHosterRecords>>
+    fun getStream(@Header("Authorization") token: String, @Body body: RequestBody): Flow<ApiResponse<BurningSeriesHosterRecords>>
 
     @Headers("Content-Type: ${Constants.MEDIATYPE_JSON}")
     @POST("/v1/db/Create")
-    fun saveStream(@Header("Authorization") token: String, @Body body: BurningSeriesHoster): Flow<ApiResponse<BurningSeriesHosterRecords>>
+    fun saveStream(@Header("Authorization") token: String, @Body body: RequestBody): Flow<ApiResponse<BurningSeriesHosterRecords>>
 
     @Headers("Content-Type: ${Constants.MEDIATYPE_JSON}")
     @POST("/v1/db/Update")
-    fun updateStream(@Header("Authorization") token: String, @Body body: BurningSeriesHoster): Flow<ApiResponse<BurningSeriesHosterRecords>>
+    fun updateStream(@Header("Authorization") token: String, @Body body: RequestBody): Flow<ApiResponse<BurningSeriesHosterRecords>>
 }

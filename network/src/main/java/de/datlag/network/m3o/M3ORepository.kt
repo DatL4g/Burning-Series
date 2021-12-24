@@ -2,14 +2,17 @@ package de.datlag.network.m3o
 
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkResource
+import de.datlag.model.Constants
 import de.datlag.model.burningseries.series.HosterData
 import de.datlag.model.common.base64ToByteArray
 import de.datlag.model.jsonbase.Stream
 import de.datlag.model.m3o.db.Count
+import de.datlag.model.m3o.db.CountRequest
 import de.datlag.model.m3o.db.create.BurningSeriesHoster
 import de.datlag.model.m3o.db.create.BurningSeriesHosterRecord
 import de.datlag.model.m3o.db.read.BurningSeriesHosterQuery
 import de.datlag.model.m3o.image.Convert
+import de.datlag.model.m3o.image.ConvertRequestURL
 import de.datlag.model.video.ScrapeHoster
 import de.datlag.network.jsonbase.JsonBaseRepository
 import io.michaelrocks.paranoid.Obfuscate
@@ -18,6 +21,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import javax.inject.Inject
 import javax.inject.Named
@@ -27,13 +34,20 @@ class M3ORepository @Inject constructor(
 	val imageService: Image,
 	val dbService: DB,
 	val jsonBaseRepository: JsonBaseRepository,
-	@Named("m3oToken") val token: String
+	@Named("m3oToken") val token: String,
+	val jsonBuilder: Json
 ) {
 
 	private fun convertImageUrl(url: String): Flow<Resource<Convert>> {
 		return networkResource(
 			fetchFromRemote = {
-				imageService.convertURL("Bearer $token", Convert.RequestURL(url))
+				imageService.convertURL(
+					"Bearer $token",
+					RequestBody.create(
+						MediaType.get(Constants.MEDIATYPE_JSON),
+						jsonBuilder.encodeToString(ConvertRequestURL(url))
+					)
+				)
 			}
 		).flowOn(Dispatchers.IO)
 	}
@@ -88,7 +102,13 @@ class M3ORepository @Inject constructor(
 		emit(null)
 		networkResource(
 			fetchFromRemote = {
-				dbService.countBurningSeries("Bearer $token", Count.Request("BurningSeries"))
+				dbService.countBurningSeries(
+					"Bearer $token",
+					RequestBody.create(
+						MediaType.get(Constants.MEDIATYPE_JSON),
+						jsonBuilder.encodeToString(CountRequest("BurningSeries"))
+					)
+				)
 			}
 		).collect {
 			it.data?.count?.let { count -> emit(count) }
@@ -113,7 +133,13 @@ class M3ORepository @Inject constructor(
 	private fun getStream(hoster: String, href: String): Flow<Stream?> = flow {
 		networkResource(
 			fetchFromRemote = {
-				dbService.getStream("Bearer $token", BurningSeriesHosterQuery(href))
+				dbService.getStream(
+					"Bearer $token",
+					RequestBody.create(
+						MediaType.get(Constants.MEDIATYPE_JSON),
+						jsonBuilder.encodeToString(BurningSeriesHosterQuery(href))
+					)
+				)
 			}
 		).collect {
 			when (it.status) {
@@ -144,7 +170,10 @@ class M3ORepository @Inject constructor(
 	}.flowOn(Dispatchers.IO)
 
 	suspend fun saveScrapedHoster(scraped: ScrapeHoster): Flow<Boolean> = flow {
-		val entry = BurningSeriesHoster(record = BurningSeriesHosterRecord.fromScraped(scraped))
+		val entry = RequestBody.create(
+			MediaType.get(Constants.MEDIATYPE_JSON),
+			jsonBuilder.encodeToString(BurningSeriesHoster(record = BurningSeriesHosterRecord.fromScraped(scraped)))
+		)
 		networkResource(fetchFromRemote = {
 			dbService.saveStream(
 				"Bearer $token",
@@ -159,7 +188,7 @@ class M3ORepository @Inject constructor(
 		}
 	}.flowOn(Dispatchers.IO)
 
-	private suspend fun updateScrapedHoster(entry: BurningSeriesHoster): Flow<Boolean> = flow {
+	private suspend fun updateScrapedHoster(entry: RequestBody): Flow<Boolean> = flow {
 		networkResource(fetchFromRemote = {
 			dbService.updateStream(
 				"Bearer $token",
@@ -178,7 +207,10 @@ class M3ORepository @Inject constructor(
 		networkResource(fetchFromRemote = {
 			dbService.saveStream(
 				"Bearer $token",
-				BurningSeriesHoster(record = BurningSeriesHosterRecord.fromStream(href, stream))
+				RequestBody.create(
+					MediaType.get(Constants.MEDIATYPE_JSON),
+					jsonBuilder.encodeToString(BurningSeriesHoster(record = BurningSeriesHosterRecord.fromStream(href, stream)))
+				)
 			)
 		}).collect { }
 	}
