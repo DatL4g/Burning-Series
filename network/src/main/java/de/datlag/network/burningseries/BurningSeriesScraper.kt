@@ -66,7 +66,12 @@ class BurningSeriesScraper {
 
         val title = doc.selectFirst(".serie h2")?.wholeText() ?: String()
         val description = doc.selectFirst(".serie p")?.text() ?: String()
-        val image = doc.selectFirst(".serie img")?.getSrc() ?: String()
+        val allImages = doc.select(".serie img")
+
+        val coverImage = (allImages.filter {
+            it.hasAttr("alt") && it.attr("alt").equals("Cover", true)
+        }.firstOrNull() ?: allImages.first())?.getSrc() ?: String()
+
         val seasons: List<String> = doc.select(".serie #seasons ul li").map { it.text() }
 
         val selectedValue = doc.selectFirst(".series-language option[selected]")?.getValue()
@@ -157,7 +162,7 @@ class BurningSeriesScraper {
             normalizedTitle,
             try { splitTitle[1].trim() } catch (ignored: Exception) { seasons.firstOrNull() ?: String() },
             description,
-            image,
+            coverImage,
             href = href,
             selectedLanguage = selectedLanguage ?: return null,
             infos = infoList,
