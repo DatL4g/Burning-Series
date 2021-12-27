@@ -236,7 +236,13 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putLong(PLAYER_POSITION, exoPlayer.contentPosition)
+        var currentPos = exoPlayer.contentPosition
+        if (currentPos >= 3000) {
+            currentPos -= 3000
+        } else if (currentPos < 3000) {
+            currentPos = 0
+        }
+        outState.putLong(PLAYER_POSITION, currentPos)
         outState.putBoolean(PLAYER_PLAYING, exoPlayer.isPlaying)
         outState.putBoolean(PLAYER_FULLSCREEN, isFullscreen.value)
     }
