@@ -102,4 +102,10 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
     private fun saveScrapedData(data: String) = viewModel.saveIfNotPresent(data).launchAndCollect {
         findNavController().navigate(ScrapeHosterFragmentDirections.actionScrapeHosterFragmentToSaveScrapedDialog(it, navArgs.seriesWithInfo))
     }
+
+    override fun onResume() {
+        super.onResume()
+        extendedFab?.visibility = View.GONE
+        hideNavigationFabs()
+    }
 }

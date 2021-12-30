@@ -29,7 +29,7 @@ You can see the latest series and episodes, get an overview of all available ser
 
 This app is **NOT OFFICIAL** by [Burning Series](https://bs.to/)!!!
 
-This is a personal project and doesn't rely on any offical API by [Burning Series](https://bs.to/), that means it could break any time.
+This is a personal project and doesn't rely on any official API by [Burning Series](https://bs.to/), that means it could break any time.
 It's not guaranteed that this project will be maintained, especially not by any owner or developer of [Burning Series](https://bs.to/).
 If the app stops working don't report that in any form on [Burning Series](https://bs.to/), instead open an [Issue](https://github.com/DATL4G/BurningSeries-Android/issues/new/choose) or fix it yourself and create a pull request here.
 

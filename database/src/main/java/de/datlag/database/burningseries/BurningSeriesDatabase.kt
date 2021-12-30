@@ -1,9 +1,11 @@
 package de.datlag.database.burningseries
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import de.datlag.database.Converters
+import de.datlag.model.burningseries.allseries.search.GenreItemFTS
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
@@ -26,9 +28,15 @@ import io.michaelrocks.paranoid.Obfuscate
 		GenreModel.GenreData::class,
 		GenreModel.GenreItem::class,
 
-		SeriesLanguagesCrossRef::class
+		SeriesLanguagesCrossRef::class,
+
+		GenreItemFTS::class
 	],
-	version = 1
+	version = 2,
+	exportSchema = true,
+	autoMigrations = [
+		AutoMigration(from = 1, to = 2)
+	]
 )
 @TypeConverters(Converters::class)
 @Obfuscate

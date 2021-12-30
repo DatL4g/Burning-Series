@@ -1,5 +1,6 @@
 package de.datlag.network.burningseries
 
+import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkBoundResource
 import de.datlag.database.burningseries.BurningSeriesDao
@@ -13,6 +14,7 @@ import de.datlag.model.burningseries.series.SeasonData
 import de.datlag.model.burningseries.series.SeriesData
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
+import de.datlag.model.common.calculateScore
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -252,7 +254,19 @@ class BurningSeriesRepository @Inject constructor(
 
 	fun getAllSeriesCount() = burningSeriesDao.getAllSeriesCount().flowOn(Dispatchers.IO)
 
-	fun searchAllSeries(title: String) = burningSeriesDao.searchAllSeries(title).flowOn(Dispatchers.IO)
+	fun searchAllSeries(title: String): Flow<List<GenreModel>> = flow<List<GenreModel>> {
+		burningSeriesDao.searchAllSeries(escapeSearchQuery(title))
+		emitAll(burningSeriesDao.searchAllSeries(escapeSearchQuery(title)).map {
+			it.sortedByDescending { item -> item.matchInfo.calculateScore() }.map { item ->
+				item.genreItem
+			}
+		})
+	}.flowOn(Dispatchers.IO)
+
+	private fun escapeSearchQuery(query: String): String {
+		val queryWithEscapedQuotes = query.replace(Regex.fromLiteral("\""), "\"\"")
+		return "\"$queryWithEscapedQuotes\""
+	}
 
 	private suspend fun saveGenreData(genreList: List<GenreModel.GenreData>) {
 		genreList.sortedBy { it.genre }.forEach { genreData ->

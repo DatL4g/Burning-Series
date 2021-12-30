@@ -14,6 +14,12 @@ android {
         targetSdk = Configuration.targetSdk
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     buildTypes {
@@ -37,15 +43,15 @@ dependencies {
     implementation(project(mapOf("path" to ":model")))
 
     implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
+    implementation("androidx.appcompat:appcompat:1.4.0")
     implementation("com.google.android.material:material:1.4.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 
-    api("androidx.room:room-runtime:2.3.0")
-    api("androidx.room:room-ktx:2.3.0")
-    kapt("androidx.room:room-compiler:2.3.0")
+    api("androidx.room:room-runtime:2.4.0")
+    api("androidx.room:room-ktx:2.4.0")
+    kapt("androidx.room:room-compiler:2.4.0")
 
     implementation("javax.inject:javax.inject:1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")

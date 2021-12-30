@@ -3,6 +3,7 @@ package de.datlag.database.burningseries
 import androidx.room.*
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
+import de.datlag.model.burningseries.allseries.search.GenreItemWithMatchInfo
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.*
@@ -226,6 +227,6 @@ interface BurningSeriesDao {
     fun getAllSeriesCount(): Flow<Long>
 
     @Transaction
-    @Query("SELECT * FROM GenreItemTable WHERE title LIKE '%' || :title || '%'")
-    fun searchAllSeries(title: String): Flow<List<GenreModel.GenreItem>>
+    @Query("SELECT *, matchinfo(GenreItemFTS) as matchInfo FROM GenreItemTable AS item JOIN GenreItemFTS AS fts ON item.href = fts.href WHERE GenreItemFTS MATCH '*' || :query || '*'")
+    fun searchAllSeries(query: String): Flow<List<GenreItemWithMatchInfo>>
 }
