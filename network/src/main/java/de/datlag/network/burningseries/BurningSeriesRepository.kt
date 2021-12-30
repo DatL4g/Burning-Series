@@ -255,7 +255,6 @@ class BurningSeriesRepository @Inject constructor(
 	fun getAllSeriesCount() = burningSeriesDao.getAllSeriesCount().flowOn(Dispatchers.IO)
 
 	fun searchAllSeries(title: String): Flow<List<GenreModel>> = flow<List<GenreModel>> {
-		burningSeriesDao.searchAllSeries(escapeSearchQuery(title))
 		emitAll(burningSeriesDao.searchAllSeries(escapeSearchQuery(title)).map {
 			it.sortedByDescending { item -> item.matchInfo.calculateScore() }.map { item ->
 				item.genreItem
