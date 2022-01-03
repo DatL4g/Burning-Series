@@ -80,7 +80,7 @@ Search on the internet if you face any problems. Don't ask for help here!
 The usage is pretty self explanatory the screenshots below show some examples.
 
 | Home | All | Favorites | Series |
-|---|---|---|---|---|
+|---|---|---|---|
 | ![Home Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png) | ![All Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png) | ![Favorites Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/7.png) | ![Series Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/8.png) |
 | ![Home Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png) | ![All Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png) | ![Favorites Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png) | ![Series Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png) |
 
