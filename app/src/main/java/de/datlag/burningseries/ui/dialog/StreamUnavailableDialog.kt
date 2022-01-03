@@ -41,7 +41,6 @@ class StreamUnavailableDialog : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.hosterButton.setOnClickListener {
-            dismiss()
             findNavController().navigate(StreamUnavailableDialogDirections.actionStreamUnavailableDialogToScrapeHosterFragment(
                 navArgs.bsUrl,
                 navArgs.seriesWithInfo
@@ -52,7 +51,6 @@ class StreamUnavailableDialog : BottomSheetDialogFragment() {
             navArgs.href.toUri().openInBrowser(safeContext)
         }
         binding.backButton.setOnClickListener {
-            dismiss()
             findNavController().navigate(StreamUnavailableDialogDirections.actionStreamUnavailableDialogToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
         }
     }

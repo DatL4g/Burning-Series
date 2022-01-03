@@ -7,6 +7,7 @@ import de.datlag.database.burningseries.BurningSeriesDao
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
+import de.datlag.model.burningseries.allseries.search.GenreItemWithMatchInfo
 import de.datlag.model.burningseries.home.HomeData
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
@@ -15,10 +16,15 @@ import de.datlag.model.burningseries.series.SeriesData
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.model.common.calculateScore
+import de.datlag.network.common.toInt
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.DataInputStream
+import java.io.ObjectInputStream
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -256,7 +262,13 @@ class BurningSeriesRepository @Inject constructor(
 
 	fun searchAllSeries(title: String): Flow<List<GenreModel>> = flow<List<GenreModel>> {
 		emitAll(burningSeriesDao.searchAllSeries(escapeSearchQuery(title)).map {
-			it.sortedByDescending { item -> item.matchInfo.calculateScore() }.map { item ->
+			it.sortedWith(compareByDescending<GenreItemWithMatchInfo> { item ->
+				item.genreItem.title.equals(title, true).toInt()
+			}.thenByDescending { item ->
+				item.genreItem.title.startsWith(title, true).toInt()
+			}.thenByDescending { item ->
+				item.genreItem.title.contains(title, true).toInt()
+			}.thenByDescending { item -> item.matchInfo.calculateScore() }).map { item ->
 				item.genreItem
 			}
 		})

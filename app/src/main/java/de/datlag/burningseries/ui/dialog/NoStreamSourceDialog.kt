@@ -42,7 +42,6 @@ class NoStreamSourceDialog : BottomSheetDialogFragment() {
             dismiss()
         }
         binding.hosterButton.setOnClickListener {
-            dismiss()
             findNavController().navigate(NoStreamSourceDialogDirections.actionNoStreamSourceDialogToScrapeHosterFragment(navArgs.bsUrl, navArgs.seriesWithInfo))
         }
     }

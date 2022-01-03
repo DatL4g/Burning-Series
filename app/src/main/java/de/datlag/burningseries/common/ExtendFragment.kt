@@ -25,7 +25,7 @@ val Fragment.safeActivity: Activity?
 		return when {
 			this.activity != null -> this.activity
 			this.parentFragment != null -> this.requireParentFragment().safeActivity
-			else -> null
+			else -> this.context?.getActivity()
 		}
 	}
 
@@ -92,3 +92,5 @@ fun Fragment.getThemedLayoutInflater(
 
 fun Fragment.showLoadingDialog() = LoadingDialog.show(safeContext)
 fun Fragment.hideLoadingDialog() = LoadingDialog.dismiss()
+
+fun Fragment.hideKeyboard() = safeActivity?.hideKeyboard()

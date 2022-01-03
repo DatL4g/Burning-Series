@@ -7,20 +7,42 @@
     android:layout_height="match_parent"
     android:layout_gravity="bottom">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/title"
-        fontPath="fonts/Poppins-Bold.ttf"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@drawable/video_control_title_background"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:gravity="start|center_vertical"
-        app:autoSizeTextType="uniform"
-        app:autoSizeMinTextSize="18sp"
-        app:autoSizeMaxTextSize="22sp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textColor="@color/datlagContentColor"/>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_arrow_back_24"
+            android:tint="@color/datlagContentColor"
+            android:background="?attr/actionBarItemBackground"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/title"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title"
+            fontPath="fonts/Poppins-Bold.ttf"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="start|center_vertical"
+            app:layout_constraintHorizontal_weight="1"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="18sp"
+            app:autoSizeMaxTextSize="22sp"
+            app:layout_constraintStart_toEndOf="@id/backButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="@color/datlagContentColor"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/controlsLayout"
@@ -59,6 +81,19 @@
             style="@style/ExoMediaButton.FastForward" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/lockButton"
+        android:layout_width="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:src="@drawable/ic_baseline_lock_open_24"
+        android:tint="@color/datlagContentColor"
+        android:background="?attr/actionBarItemBackground"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@id/exo_position"

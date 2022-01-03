@@ -111,6 +111,7 @@ abstract class AdvancedFragment : Fragment {
 		super.onResume()
 		statusBarAlert?.hide(false)
 		hideLoadingDialog()
+		hideKeyboard()
 	}
 
 	override fun onPause() {

@@ -47,7 +47,6 @@ class SaveScrapedDialog : BottomSheetDialogFragment() {
             dismiss()
         }
         binding.backButton.setOnClickListener {
-            dismiss()
             findNavController().navigate(SaveScrapedDialogDirections.actionSaveScrapedDialogToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
         }
     }

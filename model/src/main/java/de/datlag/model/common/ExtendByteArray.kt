@@ -2,6 +2,7 @@
 
 package de.datlag.model.common
 
+import android.util.Log
 import io.michaelrocks.paranoid.Obfuscate
 
 fun ByteArray.toHex(): String {

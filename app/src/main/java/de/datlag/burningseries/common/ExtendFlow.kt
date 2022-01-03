@@ -8,8 +8,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 inline fun <T> Flow<T>.launchAndCollectIn(
     owner: LifecycleOwner,
@@ -19,6 +23,20 @@ inline fun <T> Flow<T>.launchAndCollectIn(
     owner.repeatOnLifecycle(minActiveState) {
         collect {
             action(it)
+        }
+    }
+}
+
+fun <T> MutableSharedFlow<T>.forceEmit(value: T, coroutineScope: CoroutineScope) {
+    val emitted = this.tryEmit(value)
+    if (!emitted) {
+        coroutineScope.launch(Dispatchers.Default) {
+            this@forceEmit.emit(value)
+            if (this@forceEmit is MutableStateFlow) {
+                withContext(Dispatchers.Main) {
+                    this@forceEmit.value = value
+                }
+            }
         }
     }
 }

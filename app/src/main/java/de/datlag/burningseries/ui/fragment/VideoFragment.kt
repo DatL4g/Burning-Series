@@ -29,6 +29,7 @@ import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.ui.connector.KeyEventDispatcher
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.VideoViewModel
+import de.datlag.coilifier.ImageLoader
 import de.datlag.coilifier.commons.load
 import de.datlag.coilifier.commons.loadBitmap
 import de.datlag.executor.Executor
@@ -38,6 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import wseemann.media.FFmpegMediaMetadataRetriever
 import javax.inject.Inject
 
@@ -47,10 +49,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
     private val navArgs: VideoFragmentArgs by navArgs()
     private val binding: FragmentVideoBinding by viewBinding()
-    private val controlsBinding: ExoplayerControlsBinding by lazy {
-        val videoControlView = binding.root.findViewById<View>(R.id.exoplayer_controls)
-        ExoplayerControlsBinding.bind(videoControlView)
-    }
+
     private val videoViewModel: VideoViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by viewModels()
     private lateinit var exoPlayer: ExoPlayer
@@ -58,7 +57,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
     private val positionState: MutableStateFlow<Long> = MutableStateFlow(0)
     private val playingState: MutableStateFlow<Boolean> = MutableStateFlow(true)
-    private val isFullscreen: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
 
     @Inject
     lateinit var executor: Executor
@@ -73,16 +72,10 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         listenVideoSourceState()
         listenPositionState()
         listenPlayingState()
-        listenFullscreen()
     }
 
     private fun initPlayer(): Unit = with(binding) {
         retriever = FFmpegMediaMetadataRetriever()
-        try {
-            retriever.setDataSource(navArgs.videoStream.url.first())
-        } catch (ignored: Exception) {
-            controlsBinding.exoProgress.isPreviewEnabled = false
-        }
 
         exoPlayer = ExoPlayer.Builder(safeContext).apply {
             setSeekBackIncrementMs(10000)
@@ -93,36 +86,38 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             playWhenReady = true
         }
         player.player = exoPlayer
-        if (navArgs.title != null) {
-            controlsBinding.title.text = navArgs.title
-            controlsBinding.title.show()
-        } else {
-            controlsBinding.title.hide()
-        }
-        controlsBinding.exoProgress.setPreviewLoader(this@VideoFragment)
-        controlsBinding.imageView.loadBitmap(getVideoFrame(-1L))
-        if (isTelevision) {
-            controlsBinding.exoFullscreen.invisible()
-            controlsBinding.exoFullscreen.isEnabled = false
-        } else {
-            controlsBinding.exoFullscreen.show()
-            controlsBinding.exoFullscreen.isEnabled = true
-        }
-        controlsBinding.exoFullscreen.setOnClickListener {
-            isFullscreen.tryEmit(!isFullscreen.value)
+
+        player.setTitle(navArgs.title)
+        player.setPreviewLoader(this@VideoFragment)
+        player.setPreviewImage(ImageLoader.create(getVideoFrame(-1L)))
+
+        player.setOnBackPressed {
+            findNavController().navigate(VideoFragmentDirections.actionVideoFragmentToSeriesFragment(
+                seriesWithInfo = navArgs.seriesWithInfo
+            ))
         }
     }
 
     private fun listenPreviewState() = settingsViewModel.data.launchAndCollect {
-        controlsBinding.exoProgress.isPreviewEnabled = it.video.previewEnabled
+        binding.player.setPreviewEnabled(it.video.previewEnabled)
     }
 
     private fun listenVideoSourceState() = videoViewModel.videoSourcePos.launchAndCollect {
         exoPlayer.setMediaItem(MediaItem.fromUri(navArgs.videoStream.url[it]))
         exoPlayer.prepare()
+
+        withContext(Dispatchers.IO) {
+            try {
+                retriever.setDataSource(navArgs.videoStream.url[it])
+            } catch (ignored: Exception) {
+                withContext(Dispatchers.Main) {
+                    binding.player.setPreviewEnabled(false)
+                }
+            }
+        }
     }
 
-    override fun loadPreview(currentPosition: Long, max: Long): Unit = with(controlsBinding) {
+    override fun loadPreview(currentPosition: Long, max: Long) {
         if (currentPosition > framePosStep + 2000 || currentPosition < framePosStep - 2000) {
             framePosStep = currentPosition
             lifecycleScope.launch(Dispatchers.IO) {
@@ -134,10 +129,10 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
                     val frameBitmap = getVideoFrame(currentPosition)
                     withContext(Dispatchers.Main) {
-                        imageView.loadBitmap(frameBitmap ?: surfaceBitmap) {
-                            placeholder(surfaceBitmap)
-                            error(surfaceBitmap)
-                        }
+                        binding.player.setPreviewImage(
+                            ImageLoader.create(frameBitmap ?: surfaceBitmap),
+                            surfaceBitmap
+                        )
                     }
                 }
             }
@@ -177,25 +172,6 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             exoPlayer.play()
         } else {
             exoPlayer.pause()
-        }
-    }
-
-    private fun listenFullscreen() = isFullscreen.launchAndCollect {
-        setFullScreen(it)
-    }
-
-    private fun setFullScreen(toFullScreen: Boolean) = with(controlsBinding) {
-        val controllerCompat = safeActivity?.window?.let { return@let WindowInsetsControllerCompat(it, it.decorView) }
-        if (toFullScreen) {
-            exoFullscreen.load<Drawable>(R.drawable.ic_baseline_fullscreen_exit_24)
-            controllerCompat?.hide(WindowInsetsCompat.Type.systemBars())
-            controllerCompat?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            safeActivity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        } else {
-            exoFullscreen.load<Drawable>(R.drawable.ic_baseline_fullscreen_24)
-            controllerCompat?.show(WindowInsetsCompat.Type.systemBars())
-            controllerCompat?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH
-            safeActivity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
     }
 
@@ -244,7 +220,6 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         }
         outState.putLong(PLAYER_POSITION, currentPos)
         outState.putBoolean(PLAYER_PLAYING, exoPlayer.isPlaying)
-        outState.putBoolean(PLAYER_FULLSCREEN, isFullscreen.value)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -252,7 +227,6 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         savedInstanceState?.let {
             positionState.tryEmit(it.getLong(PLAYER_POSITION))
             playingState.tryEmit(it.getBoolean(PLAYER_PLAYING))
-            isFullscreen.tryEmit(it.getBoolean(PLAYER_FULLSCREEN))
         }
     }
 
@@ -273,6 +247,5 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     companion object {
         const val PLAYER_POSITION = "PlayerPosition"
         const val PLAYER_PLAYING = "PlayerPlaying"
-        const val PLAYER_FULLSCREEN = "PlayerFullscreen"
     }
 }

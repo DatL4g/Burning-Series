@@ -9,6 +9,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import de.datlag.burningseries.common.isTelevision
 import de.datlag.burningseries.helper.NightMode
 import de.datlag.datastore.SettingsPreferences
 import de.datlag.datastore.serializer.SettingsSerializer
@@ -25,7 +26,7 @@ object DataStoreModule {
     fun provideSettingsDataStore(
         @ApplicationContext app: Context
     ): DataStore<SettingsPreferences> = DataStoreFactory.create(
-        SettingsSerializer(NightMode.Helper(app).getMode().isDarkMode()),
+        SettingsSerializer(app.packageManager.isTelevision(), NightMode.Helper(app).getMode().isDarkMode()),
         produceFile = { app.dataStoreFile("SettingsPreferences.pb") }
     )
 }

@@ -40,13 +40,11 @@ class WebViewErrorDialog : BottomSheetDialogFragment() {
 
         binding.text.text = safeContext.getString(R.string.error_loading_text, navArgs.href)
         binding.backButton.setOnClickListener {
-            dismiss()
             findNavController().navigate(WebViewErrorDialogDirections.actionWebViewErrorDialogToSeriesFragment(
                 seriesWithInfo = navArgs.seriesWithInfo
             ))
         }
         binding.retryButton.setOnClickListener {
-            dismiss()
             findNavController().navigate(WebViewErrorDialogDirections.actionWebViewErrorDialogToScrapeHosterFragment(
                 navArgs.href,
                 navArgs.seriesWithInfo
