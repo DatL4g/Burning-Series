@@ -22,7 +22,8 @@
         android:networkSecurityConfig="@xml/network_security"
         android:name=".App"
         android:theme="@style/AppTheme"
-        android:banner="@mipmap/tv_banner">
+        android:banner="@mipmap/tv_banner"
+        android:appCategory="video">
         <activity
             android:name=".ui.activity.MainActivity"
             android:exported="true">
