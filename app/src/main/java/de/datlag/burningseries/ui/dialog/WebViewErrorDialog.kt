@@ -11,6 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.expand
 import de.datlag.burningseries.common.isTelevision
+import de.datlag.burningseries.common.isTvOrLandscape
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.DialogWebviewErrorBinding
 import io.michaelrocks.paranoid.Obfuscate
@@ -26,7 +27,7 @@ class WebViewErrorDialog : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (safeContext.packageManager.isTelevision()) {
+        if (isTvOrLandscape()) {
             dialog?.setOnShowListener {
                 it.expand()
             }

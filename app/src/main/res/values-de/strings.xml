@@ -63,4 +63,6 @@
     <string name="opensource_libs">OpenSource Bibliotheken</string>
     <string name="github_project">GitHub Projekt</string>
     <string name="confirm">Bestätigen</string>
+    <string name="default_fullscreen">Vollbild standartmäßig</string>
+    <string name="default_fullscreen_subtitle">Automatisch zu Vollbild wechseln beim Video schauen</string>
 </resources>

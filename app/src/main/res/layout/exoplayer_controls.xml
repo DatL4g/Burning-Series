@@ -29,7 +29,7 @@
             android:id="@+id/title"
             fontPath="fonts/Poppins-Bold.ttf"
             android:layout_width="0dp"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="match_parent"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:gravity="start|center_vertical"

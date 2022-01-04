@@ -3,13 +3,10 @@ package de.datlag.burningseries.ui.fragment
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.TextureView
 import android.view.View
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -23,15 +20,12 @@ import com.google.android.exoplayer2.Player
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.*
-import de.datlag.burningseries.databinding.ExoplayerControlsBinding
 import de.datlag.burningseries.databinding.FragmentVideoBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.ui.connector.KeyEventDispatcher
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.VideoViewModel
 import de.datlag.coilifier.ImageLoader
-import de.datlag.coilifier.commons.load
-import de.datlag.coilifier.commons.loadBitmap
 import de.datlag.executor.Executor
 import de.datlag.executor.Schema
 import io.michaelrocks.paranoid.Obfuscate
@@ -39,7 +33,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import wseemann.media.FFmpegMediaMetadataRetriever
 import javax.inject.Inject
 
@@ -68,7 +61,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         super.onViewCreated(view, savedInstanceState)
 
         initPlayer()
-        listenPreviewState()
+        listenSettingsState()
         listenVideoSourceState()
         listenPositionState()
         listenPlayingState()
@@ -98,8 +91,11 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         }
     }
 
-    private fun listenPreviewState() = settingsViewModel.data.launchAndCollect {
+    private fun listenSettingsState() = settingsViewModel.data.launchAndCollect {
         binding.player.setPreviewEnabled(it.video.previewEnabled)
+        if (it.video.defaultFullscreen) {
+            binding.player.setFullscreenState(true)
+        }
     }
 
     private fun listenVideoSourceState() = videoViewModel.videoSourcePos.launchAndCollect {

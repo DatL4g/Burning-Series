@@ -13,6 +13,7 @@ message SettingsPreferences {
     bool advancedFetching = 1;
     bool preferMp4 = 2;
     bool previewEnabled = 3;
+    bool defaultFullscreen = 4;
   }
   Video video = 2;
 }

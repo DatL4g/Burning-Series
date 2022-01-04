@@ -25,7 +25,7 @@ class OpenInBrowserDialog : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (safeContext.packageManager.isTelevision()) {
+        if (isTvOrLandscape()) {
             dialog?.setOnShowListener {
                 it.expand()
             }

@@ -49,4 +49,10 @@ class SettingsViewModel @Inject constructor(
             it.toBuilder().setVideo(it.video.toBuilder().setPreviewEnabled(newValue).build()).build()
         }
     }
+
+    fun updateVideoFullscreen(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        dataStore.updateData {
+            it.toBuilder().setVideo(it.video.toBuilder().setDefaultFullscreen(newValue).build()).build()
+        }
+    }
 }

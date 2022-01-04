@@ -96,6 +96,13 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                 it.video.previewEnabled
             ) { isChecked ->
                 settingsViewModel.updateVideoPreview(isChecked)
+            },
+            SettingsModel.Switch(5,
+                getString(R.string.default_fullscreen),
+                getString(R.string.default_fullscreen_subtitle),
+                it.video.defaultFullscreen
+            ) { isChecked ->
+                settingsViewModel.updateVideoFullscreen(isChecked)
             }
         ))
     }

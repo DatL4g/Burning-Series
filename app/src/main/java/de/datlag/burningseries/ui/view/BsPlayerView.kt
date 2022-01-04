@@ -162,10 +162,7 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
         }
     }
 
-    private fun setLocked(toLocked: Boolean, exit: Boolean = false): Unit = with(controlsBinding) {
-        if (!exit) {
-            this@BsPlayerView.post { setLocked(toLocked, true) }
-        }
+    private fun setLocked(toLocked: Boolean): Unit = with(controlsBinding) {
         if (toLocked) {
             lockButton.load<Drawable>(R.drawable.ic_baseline_lock_24)
             exoFullscreen.invisible()

@@ -10,10 +10,7 @@ import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.datlag.burningseries.R
-import de.datlag.burningseries.common.expand
-import de.datlag.burningseries.common.isTelevision
-import de.datlag.burningseries.common.openInBrowser
-import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.DialogStreamUnavailableBinding
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -28,7 +25,7 @@ class StreamUnavailableDialog : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (safeContext.packageManager.isTelevision()) {
+        if (isTvOrLandscape()) {
             dialog?.setOnShowListener {
                 it.expand()
             }

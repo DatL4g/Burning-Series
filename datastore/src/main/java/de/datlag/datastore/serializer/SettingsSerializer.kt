@@ -16,7 +16,8 @@ class SettingsSerializer(isTelevision: Boolean, defaultDarkMode: Boolean) : Seri
         .setVideo(SettingsPreferences.Video.newBuilder()
             .setAdvancedFetching(false)
             .setPreferMp4(false)
-            .setPreviewEnabled(!isTelevision))
+            .setPreviewEnabled(!isTelevision)
+            .setDefaultFullscreen(true))
         .build()
 
     override suspend fun readFrom(input: InputStream): SettingsPreferences {

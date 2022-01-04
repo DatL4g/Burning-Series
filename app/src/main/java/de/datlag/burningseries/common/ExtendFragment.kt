@@ -4,6 +4,8 @@ package de.datlag.burningseries.common
 
 import android.app.Activity
 import android.content.Context
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import androidx.annotation.ColorRes
@@ -75,7 +77,7 @@ fun Fragment.loadFileInternal(name: String): ByteArray? {
 	}
 }
 
-fun Fragment.isOrientation(orientation: Int) = safeContext.resources.configuration.orientation == orientation
+fun Fragment.isOrientation(orientation: Int) = safeContext.resources.configuration.orientation == orientation || safeActivity?.requestedOrientation == orientation
 
 fun Fragment.getThemedLayoutInflater(
 	inflater: LayoutInflater = this.layoutInflater,
@@ -94,3 +96,5 @@ fun Fragment.showLoadingDialog() = LoadingDialog.show(safeContext)
 fun Fragment.hideLoadingDialog() = LoadingDialog.dismiss()
 
 fun Fragment.hideKeyboard() = safeActivity?.hideKeyboard()
+
+fun Fragment.isTvOrLandscape() = isTelevision || isOrientation(Configuration.ORIENTATION_LANDSCAPE) || isOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)

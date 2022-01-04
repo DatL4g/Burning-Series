@@ -24,7 +24,7 @@
     <string name="activate">Activate</string>
     <string name="browser">Browser</string>
     <string name="stream_unavailable">Stream Unavailable</string>
-    <string name="stream_unavailable_text">This Video can\'t be streamed. Have you checked your network connection? You can go back an try another hoster, open the Video in browser or activate a hoster, so it can be streamed in the app.</string>
+    <string name="stream_unavailable_text">This Video can\'t be streamed. Did you check your network connection? You can go back an try another hoster, open the Video in browser or activate a hoster, so it can be streamed in the app.</string>
     <string name="no_stream_source">No Stream Source</string>
     <string name="no_stream_source_text">Apparently there is no Stream source available. You can try it again later or activate some hoster yourself. Please note that not all Hosters can be streamed from.</string>
     <string name="loading">Loading</string>
@@ -50,7 +50,7 @@
     <string name="watch">Watch</string>
     <string name="loading_text">Please be patient, data is being loaded…</string>
     <string name="error_loading">Error during loading</string>
-    <string name="error_loading_text">An error occurred while loading %s.\nHave you checked your network connection? Maybe it\'s blocked in your DNS.\nYou can retry it or go back if the error remains.</string>
+    <string name="error_loading_text">An error occurred while loading %s.\nDid you check your network connection? Maybe it\'s blocked in your DNS.\nYou can retry it or go back if the error remains.</string>
     <string name="retry">Retry</string>
     <string name="open_in_browser">Open in Browser</string>
     <string name="open_in_browser_text">Do you want to open \"%s\" in a browser?</string>
@@ -64,4 +64,6 @@
     <string name="opensource_libs">OpenSource Libraries</string>
     <string name="github_project">GitHub Project</string>
     <string name="confirm">Confirm</string>
+    <string name="default_fullscreen">Default Fullscreen</string>
+    <string name="default_fullscreen_subtitle">Automatically switch to fullscreen mode when watching a video</string>
 </resources>

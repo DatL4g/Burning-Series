@@ -214,7 +214,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 confirmBackgroundColor(getCompatColor(R.color.defaultContentColor))
                 confirmTextColor(getCompatColor(R.color.defaultBackgroundColor))
                 confirmText(safeContext.getString(R.string.confirm))
-                setExpandState(ExpandState.ExpandOnTv)
+                setExpandState(ExpandState.ExpandCustom { isTvOrLandscape() })
                 confirmListener { selected ->
                     if (selected != null) {
                         val newHref = seriesData.series.hrefBuilder(
@@ -254,7 +254,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 confirmBackgroundColor(getCompatColor(R.color.defaultContentColor))
                 confirmTextColor(getCompatColor(R.color.defaultBackgroundColor))
                 confirmText(safeContext.getString(R.string.confirm))
-                setExpandState(ExpandState.ExpandOnTv)
+                setExpandState(ExpandState.ExpandCustom { isTvOrLandscape() })
                 confirmListener { selected ->
                     if (selected != null) {
                         val newHref = seriesData.series.hrefBuilder(
@@ -315,7 +315,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                     confirmDisabledTextColor(getCompatColor(R.color.defaultContentColor))
                     confirmBackgroundColor(getCompatColor(R.color.defaultContentColor))
                     confirmTextColor(getCompatColor(R.color.defaultBackgroundColor))
-                    setExpandState(ExpandState.ExpandOnTv)
+                    setExpandState(ExpandState.ExpandCustom { isTvOrLandscape() })
                     confirmListener { item ->
                         if (item != null) {
                             findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(item, title, bsUrl, currentSeriesWithInfo))

@@ -1,6 +1,7 @@
 package de.datlag.burningseries.ui.dialog
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import de.datlag.burningseries.R
@@ -15,7 +16,7 @@ class LoadingDialog private constructor(context: Context) : BottomSheetDialog(co
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (context.packageManager.isTelevision()) {
+        if (context.packageManager.isTelevision() || context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             setOnShowListener {
                 it.expand()
             }
