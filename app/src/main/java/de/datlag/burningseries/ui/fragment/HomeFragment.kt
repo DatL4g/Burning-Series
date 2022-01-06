@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.map
 @Obfuscate
 class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	
-	private val binding: FragmentHomeBinding by viewBinding()
+	private val binding: FragmentHomeBinding by viewBinding(FragmentHomeBinding::bind)
 	private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 	private val settingsViewModel: SettingsViewModel by viewModels()
 	private val gitHubViewModel: GitHubViewModel by activityViewModels()

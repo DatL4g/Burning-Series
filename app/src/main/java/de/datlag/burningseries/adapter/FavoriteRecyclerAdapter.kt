@@ -33,7 +33,7 @@ class FavoriteRecyclerAdapter(private val fragment: AdvancedFragment) : ClickRec
     override val differ = AsyncListDiffer(this, diffCallback)
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        val binding: RecyclerFavoriteBinding by viewBinding()
+        val binding: RecyclerFavoriteBinding by viewBinding(RecyclerFavoriteBinding::bind)
 
         init {
             binding.card.setOnClickListener(this)

@@ -19,7 +19,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 class NoStreamSourceDialog : BottomSheetDialogFragment() {
 
-    val binding: DialogNoStreamSourceBinding by viewBinding()
+    val binding: DialogNoStreamSourceBinding by viewBinding(DialogNoStreamSourceBinding::bind)
     val navArgs: NoStreamSourceDialogArgs by navArgs()
 
     override fun onCreateView(

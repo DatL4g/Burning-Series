@@ -17,7 +17,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 class NewReleaseDialog : BottomSheetDialogFragment() {
 
-    private val binding: DialogNewReleaseBinding by viewBinding()
+    private val binding: DialogNewReleaseBinding by viewBinding(DialogNewReleaseBinding::bind)
     private val navArgs: NewReleaseDialogArgs by navArgs()
 
     override fun onCreateView(

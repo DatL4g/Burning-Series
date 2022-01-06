@@ -5,7 +5,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -31,7 +33,7 @@ import kotlinx.coroutines.withContext
 class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
 
     private val navArgs: ScrapeHosterFragmentArgs by navArgs()
-    private val binding: FragmentScrapeHosterBinding by viewBinding()
+    private val binding: FragmentScrapeHosterBinding by viewBinding(FragmentScrapeHosterBinding::bind)
     private val viewModel: ScrapeHosterViewModel by activityViewModels()
     private val adBlockViewModel: AdBlockViewModel by activityViewModels()
 
@@ -88,10 +90,12 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
         val scrapeJsInput = safeContext.resources.openRawResource(R.raw.scrape_hoster)
         val jsText = String(scrapeJsInput.readBytes())
         while (true) {
-            withContext(Dispatchers.Main) {
-                binding.webView.evaluateJavascript(jsText) {
-                    if (it != null && it.isNotEmpty() && !it.equals("null", true)) {
-                        saveScrapedData(it)
+            if (view != null) {
+                withContext(Dispatchers.Main) {
+                    binding.webView.evaluateJavascript(jsText) {
+                        if (it != null && it.isNotEmpty() && !it.equals("null", true)) {
+                            saveScrapedData(it)
+                        }
                     }
                 }
             }

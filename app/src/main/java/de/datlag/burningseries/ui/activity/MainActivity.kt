@@ -21,7 +21,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 class MainActivity : AdvancedActivity(R.layout.activity_main), FABExtended, StatusBarAlertProvider, FABNavigation {
 
-	private val binding: ActivityMainBinding by viewBinding()
+	private val binding: ActivityMainBinding by viewBinding(ActivityMainBinding::bind)
 	private lateinit var statusBarAlertProvided: StatusBarAlert
 
 	override fun onCreate(savedInstanceState: Bundle?) {

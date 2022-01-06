@@ -41,7 +41,7 @@ import javax.inject.Inject
 class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, Player.Listener, KeyEventDispatcher {
 
     private val navArgs: VideoFragmentArgs by navArgs()
-    private val binding: FragmentVideoBinding by viewBinding()
+    private val binding: FragmentVideoBinding by viewBinding(FragmentVideoBinding::bind)
 
     private val videoViewModel: VideoViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by viewModels()

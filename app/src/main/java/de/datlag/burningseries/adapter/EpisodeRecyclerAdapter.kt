@@ -35,7 +35,7 @@ class EpisodeRecyclerAdapter : ClickRecyclerAdapter<EpisodeWithHoster, EpisodeRe
     override val differ = AsyncListDiffer(this, diffCallback)
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
-        val binding: RecyclerEpisodeBinding by viewBinding()
+        val binding: RecyclerEpisodeBinding by viewBinding(RecyclerEpisodeBinding::bind)
 
         init {
             binding.card.setOnClickListener(this)

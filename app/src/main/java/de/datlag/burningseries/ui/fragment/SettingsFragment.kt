@@ -30,7 +30,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
 
-    private val binding: FragmentSettingsBinding by viewBinding()
+    private val binding: FragmentSettingsBinding by viewBinding(FragmentSettingsBinding::bind)
     private val settingsViewModel: SettingsViewModel by viewModels()
     private val gitHubViewModel: GitHubViewModel by activityViewModels()
 

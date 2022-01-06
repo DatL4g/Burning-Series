@@ -26,7 +26,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
 
-    private val binding: FragmentAllSeriesBinding by viewBinding()
+    private val binding: FragmentAllSeriesBinding by viewBinding(FragmentAllSeriesBinding::bind)
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 
     private val allSeriesRecyclerAdapter by lazy {

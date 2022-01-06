@@ -19,7 +19,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 class WebViewErrorDialog : BottomSheetDialogFragment() {
 
-    private val binding: DialogWebviewErrorBinding by viewBinding()
+    private val binding: DialogWebviewErrorBinding by viewBinding(DialogWebviewErrorBinding::bind)
     private val navArgs: WebViewErrorDialogArgs by navArgs()
 
     override fun onCreateView(

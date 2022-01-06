@@ -18,7 +18,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 class HelpImproveDialog : BottomSheetDialogFragment() {
 
-    private val binding: DialogHelpImproveBinding by viewBinding()
+    private val binding: DialogHelpImproveBinding by viewBinding(DialogHelpImproveBinding::bind)
     private val navArgs: HelpImproveDialogArgs by navArgs()
 
     override fun onCreateView(

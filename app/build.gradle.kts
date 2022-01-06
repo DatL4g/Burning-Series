@@ -113,7 +113,7 @@ dependencies {
     implementation("androidx.multidex:multidex:2.0.1")
     implementation("com.jakewharton.timber:timber:5.0.1")
 
-    implementation("com.github.kirich1409:viewbindingpropertydelegate:1.5.3")
+    implementation("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.5")
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.activity:activity-ktx:1.4.0")

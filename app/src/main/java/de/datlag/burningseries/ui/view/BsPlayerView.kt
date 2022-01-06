@@ -64,7 +64,7 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
     private fun initViews(): Unit = with(controlsBinding) {
         if (context.packageManager.isTelevision()) {
             lockButton.hide()
-            exoFullscreen.hide()
+            exoFullscreen.invisible()
         } else {
             lockButton.show()
             exoFullscreen.show()
@@ -182,6 +182,9 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
             if (!context.packageManager.isTelevision()) {
                 exoFullscreen.show()
                 exoFullscreen.post { exoFullscreen.show() }
+            } else {
+                exoFullscreen.invisible()
+                exoFullscreen.post { exoFullscreen.invisible() }
             }
             backButton.show()
             backButton.post { backButton.show() }

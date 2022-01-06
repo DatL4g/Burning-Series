@@ -32,7 +32,7 @@ class LatestSeriesRecyclerAdapter(
 	override val differ = AsyncListDiffer(this, diffCallback)
 	
 	inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
-		val binding: RecyclerLatestSeriesBinding by viewBinding()
+		val binding: RecyclerLatestSeriesBinding by viewBinding(RecyclerLatestSeriesBinding::bind)
 		
 		init {
 			binding.card.setOnClickListener(this)

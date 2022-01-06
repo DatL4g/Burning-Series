@@ -41,7 +41,7 @@ import kotlinx.datetime.Clock
 class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
     private val navArgs: SeriesFragmentArgs by navArgs()
-    private val binding: FragmentSeriesBinding by viewBinding()
+    private val binding: FragmentSeriesBinding by viewBinding(FragmentSeriesBinding::bind)
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
     private val videoViewModel: VideoViewModel by viewModels()
 

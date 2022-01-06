@@ -17,7 +17,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 class StreamUnavailableDialog : BottomSheetDialogFragment() {
 
-    private val binding: DialogStreamUnavailableBinding by viewBinding()
+    private val binding: DialogStreamUnavailableBinding by viewBinding(DialogStreamUnavailableBinding::bind)
     private val navArgs: StreamUnavailableDialogArgs by navArgs()
 
     override fun onCreateView(

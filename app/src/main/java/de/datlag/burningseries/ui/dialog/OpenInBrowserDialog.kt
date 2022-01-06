@@ -17,7 +17,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 class OpenInBrowserDialog : BottomSheetDialogFragment() {
 
-    private val binding: DialogOpenInBrowserBinding by viewBinding()
+    private val binding: DialogOpenInBrowserBinding by viewBinding(DialogOpenInBrowserBinding::bind)
     private val navArgs: OpenInBrowserDialogArgs by navArgs()
 
     override fun onCreateView(

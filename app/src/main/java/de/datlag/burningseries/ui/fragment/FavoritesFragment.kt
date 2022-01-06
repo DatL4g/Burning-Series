@@ -25,7 +25,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
 
-    private val binding: FragmentFavoritesBinding by viewBinding()
+    private val binding: FragmentFavoritesBinding by viewBinding(FragmentFavoritesBinding::bind)
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 
     private val favoritesRecyclerAdapter = FavoriteRecyclerAdapter(this)

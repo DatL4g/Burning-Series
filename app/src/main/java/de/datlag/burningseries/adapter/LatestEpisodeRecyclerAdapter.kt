@@ -31,7 +31,7 @@ class LatestEpisodeRecyclerAdapter(private val belowFocusViewId: Int) : ClickRec
 	inner class ViewHolder(
 		itemView: View
 	) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
-		val binding: RecyclerLatestEpisodeBinding by viewBinding()
+		val binding: RecyclerLatestEpisodeBinding by viewBinding(RecyclerLatestEpisodeBinding::bind)
 		
 		init {
 			binding.card.setOnClickListener(this)
