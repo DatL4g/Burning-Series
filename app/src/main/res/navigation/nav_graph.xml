@@ -126,23 +126,18 @@
         <argument
             android:name="videoStream"
             app:argType="de.datlag.model.video.VideoStream" />
-        <argument
-            android:name="title"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
         <action
             android:id="@+id/action_videoFragment_to_scrapeHosterFragment"
             app:destination="@id/scrapeHosterFragment" />
-        <argument
-            android:name="bsUrl"
-            app:argType="string" />
         <action
             android:id="@+id/action_videoFragment_to_streamUnavailableDialog"
             app:destination="@id/streamUnavailableDialog" />
         <argument
             android:name="seriesWithInfo"
             app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
+        <argument
+            android:name="episodeInfo"
+            app:argType="de.datlag.model.burningseries.series.EpisodeInfo" />
     </fragment>
     <dialog
         android:id="@+id/helpImproveDialog"

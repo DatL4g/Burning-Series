@@ -158,6 +158,10 @@ interface BurningSeriesDao {
     @Delete
     suspend fun deleteEpisodeInfo(episodeInfo: EpisodeInfo)
 
+    @Transaction
+    @Update
+    fun updateEpisodeInfo(episodeInfo: EpisodeInfo)
+
 
 
     @Transaction

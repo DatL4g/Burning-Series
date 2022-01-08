@@ -1,5 +1,6 @@
 package de.datlag.burningseries.adapter
 
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -7,9 +8,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import de.datlag.burningseries.R
+import de.datlag.burningseries.common.hide
 import de.datlag.burningseries.common.inflateView
+import de.datlag.burningseries.common.show
 import de.datlag.burningseries.databinding.RecyclerEpisodeBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
+import de.datlag.coilifier.commons.load
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -60,6 +64,21 @@ class EpisodeRecyclerAdapter : ClickRecyclerAdapter<EpisodeWithHoster, EpisodeRe
 
         binding.number.text = item.episode.number
         binding.title.text = item.episode.title
+        val watchedProgress = item.episode.watchedPercentage()
+        when {
+            watchedProgress == 0F -> {
+                binding.progressIcon.load<Drawable>(null)
+                binding.progressIcon.hide()
+            }
+            watchedProgress >= 90F -> {
+                binding.progressIcon.load<Drawable>(R.drawable.ic_baseline_check_24)
+                binding.progressIcon.show()
+            }
+            watchedProgress > 0F -> {
+                binding.progressIcon.load<Drawable>(R.drawable.ic_baseline_play_arrow_24)
+                binding.progressIcon.show()
+            }
+        }
     }
 
 }

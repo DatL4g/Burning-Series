@@ -43,10 +43,20 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
             burningSeriesViewModel.getNewPaginationData()
         }
         burningSeriesViewModel.allSeriesPaginatedFlat.launchAndCollect {
-            allSeriesRecyclerAdapter.submitList(it) {
-                hideLoadingDialog()
+            if (it.isEmpty() && burningSeriesViewModel.allSeriesCount.value == 0L) {
+                showLoadingDialog()
+            } else {
+                showLoadingDialog()
+                allSeriesRecyclerAdapter.submitList(it) {
+                    hideLoadingDialog()
+                }
+                binding.allSeriesRecycler.smoothScrollToPosition(0)
             }
-            binding.allSeriesRecycler.smoothScrollToPosition(0)
+        }
+        burningSeriesViewModel.allSeriesCount.launchAndCollect {
+            if (it == 0L) {
+                showLoadingDialog()
+            }
         }
         nextFab?.setOnClickListener {
             burningSeriesViewModel.getAllSeriesNext()
@@ -79,7 +89,7 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
     private fun initSearchView(): Unit = with(binding) {
         searchView.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-                if (newText.length > 3) {
+                if (newText.isNotEmpty()) {
                     burningSeriesViewModel.searchAllSeries(newText)
                 }
                 return false

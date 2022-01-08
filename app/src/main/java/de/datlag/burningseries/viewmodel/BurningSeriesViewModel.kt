@@ -8,16 +8,14 @@ import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
+import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.HosterData
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.network.burningseries.BurningSeriesRepository
 import de.datlag.network.m3o.M3ORepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,6 +31,7 @@ class BurningSeriesViewModel @Inject constructor(
 	val homeData = repository.getHomeData()
 	val favorites: MutableSharedFlow<List<SeriesWithInfo>> = MutableSharedFlow()
 
+	val allSeriesCount: StateFlow<Long> = repository.getAllSeriesCount().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
 	val allSeriesPagination: MutableStateFlow<Long> = MutableStateFlow(0)
 	val allSeriesPaginated: MutableSharedFlow<Resource<List<GenreWithItems>>> = MutableSharedFlow()
 	val allSeriesPaginatedFlat: MutableSharedFlow<List<GenreModel>> = MutableSharedFlow()
@@ -87,6 +86,10 @@ class BurningSeriesViewModel @Inject constructor(
 
 	fun updateSeriesFavorite(seriesData: SeriesWithInfo) = viewModelScope.launch(Dispatchers.IO) {
 		repository.updateSeriesFavorite(seriesData.series)
+	}
+
+	fun updateEpisodeInfo(episodeInfo: EpisodeInfo) = viewModelScope.launch(Dispatchers.IO) {
+		repository.updateEpisodeInfo(episodeInfo)
 	}
 
 	fun getStream(list: List<HosterData>) = m3ORepository.getAnyStream(list)

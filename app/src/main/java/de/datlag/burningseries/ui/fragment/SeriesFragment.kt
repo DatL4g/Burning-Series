@@ -28,6 +28,7 @@ import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.home.LatestEpisode
+import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.LanguageData
 import de.datlag.model.burningseries.series.SeasonData
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
@@ -136,7 +137,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                                 item.episode.href
                             ))
                         } else {
-                            getVideoSources(item.episode.title, item.episode.href, list)
+                            getVideoSources(item.episode, list)
                         }
                     }
                 }
@@ -290,13 +291,13 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         }
     }
 
-    private fun getVideoSources(title: String, bsUrl: String, list: List<Stream>) {
+    private fun getVideoSources(episode: EpisodeInfo, list: List<Stream>) {
         videoViewModel.getVideoSources(list).launchAndCollect {
             hideLoadingDialog()
             if (it.isEmpty()) {
                 findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
                     currentSeriesWithInfo,
-                    bsUrl
+                    episode.href
                 ))
             } else {
                 selectionBottomSheet<VideoStream> {
@@ -318,7 +319,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                     setExpandState(ExpandState.ExpandCustom { isTvOrLandscape() })
                     confirmListener { item ->
                         if (item != null) {
-                            findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(item, title, bsUrl, currentSeriesWithInfo))
+                            findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(item, currentSeriesWithInfo, episode))
                         }
                     }
                 }

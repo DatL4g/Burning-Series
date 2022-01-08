@@ -52,11 +52,9 @@ class LoadingDialog private constructor(context: Context) : BottomSheetDialog(co
 
         fun show(context: Context) {
             val instance = getInstance(context)
-            if (instance.isShowing) {
-                dismiss()
-                instance.dismiss()
+            if (!instance.isShowing) {
+                instance.show()
             }
-            instance.show()
         }
 
         fun dismiss() {

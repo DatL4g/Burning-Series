@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "59d4a423c0839ce84d466da0d292b645",
+    "identityHash": "45b3b894600a92f8e37097dff4c95b86",
     "entities": [
       {
         "tableName": "LatestEpisodeTable",
@@ -396,7 +396,7 @@
       },
       {
         "tableName": "EpisodeInfoTable",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`number` TEXT NOT NULL, `title` TEXT NOT NULL, `href` TEXT NOT NULL, `seriesId` INTEGER NOT NULL, `episodeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`seriesId`) REFERENCES `SeriesTable`(`seriesId`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`number` TEXT NOT NULL, `title` TEXT NOT NULL, `href` TEXT NOT NULL, `seriesId` INTEGER NOT NULL, `currentWatchPos` INTEGER NOT NULL DEFAULT 0, `totalWatchPos` INTEGER NOT NULL DEFAULT 0, `episodeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`seriesId`) REFERENCES `SeriesTable`(`seriesId`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "number",
@@ -421,6 +421,20 @@
             "columnName": "seriesId",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "currentWatchPos",
+            "columnName": "currentWatchPos",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "totalWatchPos",
+            "columnName": "totalWatchPos",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "episodeId",
@@ -749,7 +763,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '59d4a423c0839ce84d466da0d292b645')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '45b3b894600a92f8e37097dff4c95b86')"
     ]
   }
 }

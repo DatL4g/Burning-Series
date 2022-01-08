@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.TextureView
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -23,6 +24,7 @@ import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentVideoBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.ui.connector.KeyEventDispatcher
+import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.VideoViewModel
 import de.datlag.coilifier.ImageLoader
@@ -30,9 +32,11 @@ import de.datlag.executor.Executor
 import de.datlag.executor.Schema
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import wseemann.media.FFmpegMediaMetadataRetriever
 import javax.inject.Inject
 
@@ -45,6 +49,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
     private val videoViewModel: VideoViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by viewModels()
+    private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
     private lateinit var exoPlayer: ExoPlayer
     private lateinit var retriever: FFmpegMediaMetadataRetriever
 
@@ -54,6 +59,9 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
     @Inject
     lateinit var executor: Executor
+
+    @Inject
+    lateinit var saveExecutor: Executor
 
     private var framePosStep: Long = 0L
 
@@ -80,7 +88,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         }
         player.player = exoPlayer
 
-        player.setTitle(navArgs.title)
+        player.setTitle(navArgs.episodeInfo.title)
         player.setPreviewLoader(this@VideoFragment)
         player.setPreviewImage(ImageLoader.create(getVideoFrame(-1L)))
 
@@ -111,6 +119,13 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
                 }
             }
         }
+
+        exoPlayer.seekTo(navArgs.episodeInfo.currentWatchPos)
+        navArgs.episodeInfo.totalWatchPos = exoPlayer.duration
+        withContext(Dispatchers.IO) {
+            burningSeriesViewModel.updateEpisodeInfo(navArgs.episodeInfo)
+        }
+        saveWatchedPosition()
     }
 
     override fun loadPreview(currentPosition: Long, max: Long) {
@@ -171,6 +186,21 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         }
     }
 
+    private fun saveWatchedPosition() = lifecycleScope.launch(Dispatchers.Default) {
+        while(true) {
+            saveExecutor.execute(Schema.Conflated) {
+                withContext(Dispatchers.Main) {
+                    navArgs.episodeInfo.currentWatchPos = exoPlayer.contentPosition
+                    if (navArgs.episodeInfo.totalWatchPos == 0L) {
+                        navArgs.episodeInfo.totalWatchPos = exoPlayer.duration
+                    }
+                }
+                burningSeriesViewModel.updateEpisodeInfo(navArgs.episodeInfo)
+            }
+            delay(3000)
+        }
+    }
+
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
         when (error.errorCode) {
@@ -199,7 +229,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             findNavController().navigate(VideoFragmentDirections.actionVideoFragmentToStreamUnavailableDialog(
                 navArgs.seriesWithInfo,
                 navArgs.videoStream.defaultUrl,
-                navArgs.bsUrl
+                navArgs.episodeInfo.href
             ))
         } else lifecycleScope.launch(Dispatchers.IO) {
             videoViewModel.videoSourcePos.emit(currentSourcePos + 1)
@@ -215,7 +245,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             currentPos = 0
         }
         outState.putLong(PLAYER_POSITION, currentPos)
-        outState.putBoolean(PLAYER_PLAYING, exoPlayer.isPlaying)
+        outState.putBoolean(PLAYER_PLAYING, exoPlayer.isPlaying || exoPlayer.playWhenReady)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

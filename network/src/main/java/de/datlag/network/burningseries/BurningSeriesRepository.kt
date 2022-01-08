@@ -1,6 +1,5 @@
 package de.datlag.network.burningseries
 
-import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkBoundResource
 import de.datlag.database.burningseries.BurningSeriesDao
@@ -11,6 +10,7 @@ import de.datlag.model.burningseries.allseries.search.GenreItemWithMatchInfo
 import de.datlag.model.burningseries.home.HomeData
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
+import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.SeasonData
 import de.datlag.model.burningseries.series.SeriesData
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
@@ -21,10 +21,6 @@ import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.DataInputStream
-import java.io.ObjectInputStream
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -216,6 +212,8 @@ class BurningSeriesRepository @Inject constructor(
 	}
 
 	suspend fun updateSeriesFavorite(seriesData: SeriesData) = burningSeriesDao.updateSeriesFavorite(seriesData.seriesId, seriesData.favoriteSince)
+
+	suspend fun updateEpisodeInfo(episodeInfo: EpisodeInfo) = burningSeriesDao.updateEpisodeInfo(episodeInfo)
 
 	fun getSeriesFavorites(): Flow<List<SeriesWithInfo>> = burningSeriesDao.getSeriesFavorites().flowOn(Dispatchers.IO)
 

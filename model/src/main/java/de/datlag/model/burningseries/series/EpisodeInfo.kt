@@ -32,6 +32,8 @@ data class EpisodeInfo(
     @ColumnInfo(name = "title") @SerialName("title") val title: String = String(),
     @ColumnInfo(name = "href") @SerialName("href") val href: String = String(),
     @ColumnInfo(name = "seriesId") var seriesId: Long = 0L,
+    @ColumnInfo(name = "currentWatchPos", defaultValue = 0.toString()) var currentWatchPos: Long = 0L,
+    @ColumnInfo(name = "totalWatchPos", defaultValue = 0.toString()) var totalWatchPos: Long = 0L,
     @Ignore @SerialName("hoster") val hoster: List<HosterData>
 ) : Parcelable {
     @PrimaryKey(autoGenerate = true)
@@ -44,5 +46,16 @@ data class EpisodeInfo(
         title: String,
         href: String,
         seriesId: Long,
-    ) : this(number, title, href, seriesId, listOf())
+        currentWatchPos: Long,
+        totalWatchPos: Long
+    ) : this(number, title, href, seriesId, currentWatchPos, totalWatchPos, listOf())
+
+    fun watchedPercentage(): Float {
+        if (currentWatchPos == 0L || totalWatchPos == 0L) {
+            return 0F
+        } else if (totalWatchPos in 1 until currentWatchPos) {
+            return 100F
+        }
+        return ((currentWatchPos.toDouble() * 100) / totalWatchPos.toDouble()).toFloat()
+    }
 }
