@@ -101,7 +101,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
     private fun listenSettingsState() = settingsViewModel.data.launchAndCollect {
         binding.player.setPreviewEnabled(it.video.previewEnabled)
-        if (it.video.defaultFullscreen) {
+        if (it.video.defaultFullscreen && !binding.player.fullscreenRestored) {
             binding.player.setFullscreenState(true)
         }
     }
@@ -120,7 +120,9 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             }
         }
 
-        exoPlayer.seekTo(navArgs.episodeInfo.currentWatchPos)
+        if (navArgs.episodeInfo.currentWatchPos > 0L) {
+            exoPlayer.seekTo(navArgs.episodeInfo.currentWatchPos)
+        }
         navArgs.episodeInfo.totalWatchPos = exoPlayer.duration
         withContext(Dispatchers.IO) {
             burningSeriesViewModel.updateEpisodeInfo(navArgs.episodeInfo)
@@ -186,18 +188,24 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         }
     }
 
-    private fun saveWatchedPosition() = lifecycleScope.launch(Dispatchers.Default) {
+    private fun saveWatchedPosition() = lifecycleScope.launch(Dispatchers.IO) {
         while(true) {
             saveExecutor.execute(Schema.Conflated) {
                 withContext(Dispatchers.Main) {
-                    navArgs.episodeInfo.currentWatchPos = exoPlayer.contentPosition
+                    var currentPos = exoPlayer.contentPosition
+                    if (currentPos > 3000) {
+                        currentPos -= 3000
+                    } else {
+                        currentPos = 0
+                    }
+                    navArgs.episodeInfo.currentWatchPos = currentPos
                     if (navArgs.episodeInfo.totalWatchPos == 0L) {
                         navArgs.episodeInfo.totalWatchPos = exoPlayer.duration
                     }
                 }
                 burningSeriesViewModel.updateEpisodeInfo(navArgs.episodeInfo)
             }
-            delay(3000)
+            delay(1000)
         }
     }
 
@@ -238,14 +246,12 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        var currentPos = exoPlayer.contentPosition
-        if (currentPos >= 3000) {
-            currentPos -= 3000
-        } else if (currentPos < 3000) {
-            currentPos = 0
-        }
-        outState.putLong(PLAYER_POSITION, currentPos)
-        outState.putBoolean(PLAYER_PLAYING, exoPlayer.isPlaying || exoPlayer.playWhenReady)
+
+        val currentPos = exoPlayer.contentPosition
+        val savedPos = navArgs.episodeInfo.currentWatchPos
+        val inRange = currentPos in 0..1000 || currentPos in (savedPos - 500) .. (savedPos + 500)
+        outState.putLong(PLAYER_POSITION, navArgs.episodeInfo.currentWatchPos)
+        outState.putBoolean(PLAYER_PLAYING, exoPlayer.isPlaying || (exoPlayer.playWhenReady && inRange))
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

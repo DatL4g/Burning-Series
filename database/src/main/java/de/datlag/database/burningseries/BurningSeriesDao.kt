@@ -162,6 +162,14 @@ interface BurningSeriesDao {
     @Update
     fun updateEpisodeInfo(episodeInfo: EpisodeInfo)
 
+    @Transaction
+    @Query("SELECT currentWatchPos FROM EpisodeInfoTable WHERE href = :href LIMIT 1")
+    fun getEpisodeCurrentWatchPosByHref(href: String): Long?
+
+    @Transaction
+    @Query("SELECT totalWatchPos FROM EpisodeInfoTable WHERE href = :href LIMIT 1")
+    fun getEpisodeTotalWatchPosByHref(href: String): Long?
+
 
 
     @Transaction

@@ -14,7 +14,8 @@ import kotlinx.serialization.Serializable
     tableName = "EpisodeInfoTable",
     indices = [
         Index("episodeId"),
-        Index("seriesId")
+        Index("seriesId"),
+        Index("href", unique = true)
     ],
     foreignKeys = [
         ForeignKey(

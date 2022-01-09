@@ -36,6 +36,7 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
 
     private val isLocked: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val isFullscreen: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    var fullscreenRestored: Boolean = false
 
     private val controlsBinding: ExoplayerControlsBinding by lazy {
         val videoControlView = findViewById<View>(R.id.exoplayer_controls)
@@ -94,6 +95,7 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
                 showController()
                 setLocked(isLocked.value)
             }
+            return false
         }
         return true
     }
@@ -271,6 +273,7 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
         saveState?.let { save ->
             isLocked.forceEmit(save.isLocked, getSafeScope())
             isFullscreen.forceEmit(save.isFullscreen, getSafeScope())
+            fullscreenRestored = true
         }
     }
 
@@ -278,6 +281,6 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
     data class SaveState(
         val superSaveState: Parcelable?,
         val isLocked: Boolean,
-        val isFullscreen: Boolean
+        val isFullscreen: Boolean,
     ) : View.BaseSavedState(superSaveState), Parcelable
 }

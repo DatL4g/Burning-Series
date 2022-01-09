@@ -1,5 +1,6 @@
 package de.datlag.network.burningseries
 
+import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkBoundResource
 import de.datlag.database.burningseries.BurningSeriesDao
@@ -19,6 +20,9 @@ import de.datlag.model.common.calculateScore
 import de.datlag.network.common.toInt
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
 import javax.inject.Inject
@@ -189,6 +193,18 @@ class BurningSeriesRepository @Inject constructor(
 	private suspend fun saveSeriesData(seriesData: SeriesData) {
 		val prevFavoriteSince = burningSeriesDao.getSeriesFavoriteSinceByHrefTitle(seriesData.hrefTitle).first() ?: 0L
 		seriesData.favoriteSince = prevFavoriteSince
+
+		val episodeWatchProgress: MutableMap<String, Pair<Long, Long>> = mutableMapOf()
+		coroutineScope {
+			seriesData.episodes.map { episode ->
+				async {
+					val prevEpisodeCurrentWatchPos = burningSeriesDao.getEpisodeCurrentWatchPosByHref(episode.href) ?: 0L
+					val prevEpisodeTotalWatchPos = burningSeriesDao.getEpisodeTotalWatchPosByHref(episode.href) ?: 0L
+					episodeWatchProgress[episode.href] = prevEpisodeCurrentWatchPos to prevEpisodeTotalWatchPos
+				}
+			}.awaitAll()
+		}
+
 		val seriesId = burningSeriesDao.insertSeriesData(seriesData)
 		seriesData.infos.forEach {
 			it.seriesId = seriesId
@@ -203,6 +219,9 @@ class BurningSeriesRepository @Inject constructor(
 		}
 		seriesData.episodes.forEach { episode ->
 			episode.seriesId = seriesId
+			val watchProgress = episodeWatchProgress.getOrElse(episode.href) { 0L to 0L }
+			episode.currentWatchPos = watchProgress.first
+			episode.totalWatchPos = watchProgress.second
 			val episodeId = burningSeriesDao.insertEpisodeInfo(episode)
 			episode.hoster.forEach {
 				it.episodeId = episodeId
