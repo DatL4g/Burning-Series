@@ -23,8 +23,8 @@ android {
         applicationId = "de.datlag.burningseries"
         minSdk = Configuration.minSdk
         targetSdk = Configuration.targetSdk
-        versionCode = 111
-        versionName = "1.1.1"
+        versionCode = 112
+        versionName = "1.1.2"
 
         multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
