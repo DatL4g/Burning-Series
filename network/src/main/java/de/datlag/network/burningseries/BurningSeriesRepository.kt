@@ -211,7 +211,7 @@ class BurningSeriesRepository @Inject constructor(
 			burningSeriesDao.insertInfoData(it)
 		}
 		seriesData.seasons.forEach {
-			burningSeriesDao.insertSeasonData(SeasonData(it, seriesId))
+			burningSeriesDao.insertSeasonData(it.apply { this.seriesId = seriesId })
 		}
 		seriesData.languages.forEach {
 			val langId = burningSeriesDao.addLanguageData(it)

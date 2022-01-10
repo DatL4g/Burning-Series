@@ -219,7 +219,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 confirmListener { selected ->
                     if (selected != null) {
                         val newHref = seriesData.series.hrefBuilder(
-                            seriesData.series.currentSeason(seriesData.seasons),
+                            seriesData.series.currentSeason(seriesData.seasons).value,
                             selected.value
                         )
                         burningSeriesViewModel.getSeriesData(newHref, seriesData.series.hrefTitle, true).launchAndCollect { newSeries ->
@@ -245,7 +245,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                     }
                 }
                 defaultItem {
-                    it.title == defaultSeason || it.title == seriesData.series.currentSeason(seriesData.seasons)
+                    it.title == defaultSeason || it.title == seriesData.series.currentSeason(seriesData.seasons).title
                 }
                 itemColor(getCompatColor(R.color.defaultContentColor))
                 selectionColor(getCompatColor(R.color.defaultContentColor))
@@ -259,7 +259,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 confirmListener { selected ->
                     if (selected != null) {
                         val newHref = seriesData.series.hrefBuilder(
-                            selected.title,
+                            selected.value,
                             seriesData.series.selectedLanguage
                         )
                         burningSeriesViewModel.getSeriesData(newHref, seriesData.series.hrefTitle, true).launchAndCollect { newSeries ->

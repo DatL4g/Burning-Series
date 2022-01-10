@@ -72,7 +72,20 @@ class BurningSeriesScraper {
             it.hasAttr("alt") && it.attr("alt").equals("Cover", true)
         }.firstOrNull() ?: allImages.first())?.getSrc() ?: String()
 
-        val seasons: List<String> = doc.select(".serie #seasons ul li").map { it.text() }
+        val seasons: List<SeasonData> = doc.select(".serie #seasons ul li").mapIndexed { index, it ->
+            val seasonTitle = it.selectFirst("a")?.text() ?: it.text()
+            val link = it.selectFirst("a")?.getHref() ?: it.getHref()
+            val value: Int = if (link.isNullOrEmpty()) {
+                index
+            } else {
+                if (link.split('/').size >= 3) {
+                    link.split('/')[2].toIntOrNull() ?: index
+                } else {
+                    index
+                }
+            }
+            SeasonData(seasonTitle, value)
+        }
 
         val selectedValue = doc.selectFirst(".series-language option[selected]")?.getValue()
         var selectedLanguage: String? = null
@@ -160,7 +173,7 @@ class BurningSeriesScraper {
 
         val seriesData = SeriesData(
             normalizedTitle,
-            try { splitTitle[1].trim() } catch (ignored: Exception) { seasons.firstOrNull() ?: String() },
+            try { splitTitle[1].trim() } catch (ignored: Exception) { seasons.firstOrNull()?.title ?: String() },
             description,
             coverImage,
             href = href,

@@ -33,7 +33,7 @@ data class SeriesData(
 	@ColumnInfo(name = "selectedLanguage") @SerialName("selectedLanguage") var selectedLanguage: String = String(),
 	@Ignore @SerialName("infos") val infos: List<InfoData>,
 	@Ignore @SerialName("languages") val languages: List<LanguageData>,
-	@Ignore @SerialName("seasons") val seasons: List<String>,
+	@Ignore @SerialName("seasons") val seasons: List<SeasonData>,
 	@Ignore @SerialName("episodes") val episodes: List<EpisodeInfo>
 ) : Parcelable {
 	@PrimaryKey(autoGenerate = true)
@@ -67,7 +67,7 @@ data class SeriesData(
 		listOf()
 	)
 
-	fun currentSeason(seasons: List<SeasonData>): String {
+	fun currentSeason(seasons: List<SeasonData>): SeasonData {
 		val foundSeason = seasons.find {
 			it.title.equals(season, true)
 					|| it.title.trim().equals(season.trim(), true)
@@ -77,10 +77,10 @@ data class SeriesData(
 					|| it.title.getDigitsOrNull()?.equals(season, true) == true
 					|| it.title.getDigitsOrNull()?.equals(season.getDigitsOrNull(), true) == true
 		} ?: seasons.first()
-		return foundSeason.title
+		return foundSeason
 	}
 
-	fun hrefBuilder(season: String, language: String = selectedLanguage): String {
+	fun hrefBuilder(season: Int, language: String = selectedLanguage): String {
 		var verifiedHref = href
 		if (verifiedHref.endsWith('/')) {
 			verifiedHref = verifiedHref.substring(0..(verifiedHref.length - 2))

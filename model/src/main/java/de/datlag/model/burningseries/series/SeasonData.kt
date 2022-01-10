@@ -28,6 +28,7 @@ import kotlinx.serialization.Serializable
 @Obfuscate
 data class SeasonData(
     @ColumnInfo(name = "title") val title: String = String(),
+    @ColumnInfo(name = "value") val value: Int = 1,
     @ColumnInfo(name = "seriesId") var seriesId: Long = 0L
 ) : Parcelable {
     @PrimaryKey(autoGenerate = true)
