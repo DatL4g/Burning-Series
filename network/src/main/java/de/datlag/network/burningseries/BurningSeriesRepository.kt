@@ -125,7 +125,7 @@ class BurningSeriesRepository @Inject constructor(
 
 	fun getSeriesData(href: String, hrefTitle: String, forceLoad: Boolean = false): Flow<Resource<SeriesWithInfo?>> = flow {
 		emit(Resource.loading(burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle).first()))
-		val scrapeData = scraper.scrapeSeriesData(href)
+		val scrapeData = scraper.scrapeSeriesData(rebuildHrefFromData(hrefDataFromHref(href)))
 
 		if (scrapeData != null) {
 			saveSeriesData(scrapeData)
@@ -187,7 +187,30 @@ class BurningSeriesRepository @Inject constructor(
 		val language = try {
 			hrefSplit[3]
 		} catch (ignored: Exception) { null }
-		return Triple(hrefSplit[1], season, language)
+		val fallbackLanguage = try {
+			hrefSplit[4]
+		} catch (ignored: Exception) { null }
+		return Triple(
+			hrefSplit[1],
+			if (season.isNullOrEmpty()) null else season,
+			if (fallbackLanguage != null && fallbackLanguage.isNotEmpty()) {
+				fallbackLanguage
+			} else {
+				if (language.isNullOrEmpty()) null else language
+			}
+		)
+	}
+
+	private fun rebuildHrefFromData(hrefData: Triple<String, String?, String?>): String {
+		return if (hrefData.second != null && hrefData.third != null) {
+			"serie/${hrefData.first}/${hrefData.second}/${hrefData.third}"
+		} else if (hrefData.second != null && hrefData.third == null) {
+			"serie/${hrefData.first}/${hrefData.second}"
+		} else if (hrefData.second == null && hrefData.third != null) {
+			"serie/${hrefData.first}/${hrefData.third}"
+		} else {
+			"serie/${hrefData.first}"
+		}
 	}
 
 	private suspend fun saveSeriesData(seriesData: SeriesData) {
