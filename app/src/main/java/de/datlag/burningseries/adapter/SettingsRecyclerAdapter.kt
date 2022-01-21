@@ -39,6 +39,7 @@ class SettingsRecyclerAdapter : RecyclerAdapter<SettingsModel, SettingsRecyclerA
 
         private fun bindSwitch(item: SettingsModel.Switch, position: Int) {
             val binding = RecyclerSettingsSwitchBinding.bind(itemView)
+            binding.switcher.setOnCheckedChangeListener(null)
             binding.title.text = item.title
             binding.text.text = item.text
             if (item.text.isEmpty()) {
@@ -49,6 +50,7 @@ class SettingsRecyclerAdapter : RecyclerAdapter<SettingsModel, SettingsRecyclerA
             binding.switcher.isChecked = item.defaultValue
             binding.switcher.setOnCheckedChangeListener { _, isChecked ->
                 item.listener.invoke(isChecked)
+                binding.switcher.setOnCheckedChangeListener(null)
                 submitList(differ.currentList.toMutableList().apply {
                     removeAt(position)
                     add(position, item.apply { defaultValue = isChecked })

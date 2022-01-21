@@ -90,11 +90,12 @@ dependencies {
     
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
-    implementation("androidx.appcompat:appcompat:1.4.0")
-    implementation("com.google.android.material:material:1.4.0")
+    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("com.google.android.material:material:1.5.0")
+    implementation("androidx.core:core-splashscreen:1.0.0-beta01")
 
-    implementation("androidx.coordinatorlayout:coordinatorlayout:1.1.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.2")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.3")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("com.github.DATL4G:SelectionBottomSheet:1.3.2")
