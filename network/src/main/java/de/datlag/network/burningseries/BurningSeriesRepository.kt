@@ -37,7 +37,13 @@ class BurningSeriesRepository @Inject constructor(
 ) {
 
 	fun getHomeData(): Flow<Resource<HomeData>> = flow {
-		emit(Resource.loading(null))
+		val firstOrNullEpisodes = burningSeriesDao.getAllLatestEpisode().firstOrNull()
+		val firstOrNullSeries = burningSeriesDao.getAllLatestSeries().firstOrNull()
+		emit(Resource.loading(if (firstOrNullEpisodes.isNullOrEmpty() || firstOrNullSeries.isNullOrEmpty()) {
+			null
+		} else {
+			HomeData(firstOrNullEpisodes, firstOrNullSeries)
+		}))
 		val scrapeData = scraper.scrapeHomeData()
 
 		if (scrapeData != null) {
@@ -124,8 +130,9 @@ class BurningSeriesRepository @Inject constructor(
 	fun getSeriesData(genreItem: GenreModel.GenreItem) = getSeriesData(genreItem.href, genreItem.getHrefTitle())
 
 	fun getSeriesData(href: String, hrefTitle: String, forceLoad: Boolean = false): Flow<Resource<SeriesWithInfo?>> = flow {
-		emit(Resource.loading(burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle).first()))
-		val scrapeData = scraper.scrapeSeriesData(rebuildHrefFromData(hrefDataFromHref(href)))
+		val hrefData = hrefDataFromHref(href)
+		emit(Resource.loading(burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle).firstOrNull()))
+		val scrapeData = scraper.scrapeSeriesData(rebuildHrefFromData(hrefData))
 
 		if (scrapeData != null) {
 			saveSeriesData(scrapeData)
@@ -140,8 +147,6 @@ class BurningSeriesRepository @Inject constructor(
 					it == null || forceLoad || (currentRequest - Constants.DAY_IN_MILLI) >= it.series.updatedAt || it.episodes.isEmpty()
 				},
 				fetchFromRemote = {
-					val hrefData = hrefDataFromHref(href)
-
 					if (hrefData.second != null && hrefData.third != null) {
 						service.getSeriesData(
 							apiKey = wrapApiToken,
@@ -182,13 +187,13 @@ class BurningSeriesRepository @Inject constructor(
 		}
 		val hrefSplit = newHref.split('/')
 		val season = try {
-			hrefSplit[2]
+			if (hrefSplit.size >= 3) hrefSplit[2] else null
 		} catch (ignored: Exception) { null }
 		val language = try {
-			hrefSplit[3]
+			if (hrefSplit.size >= 4) hrefSplit[3] else null
 		} catch (ignored: Exception) { null }
 		val fallbackLanguage = try {
-			hrefSplit[4]
+			if (hrefSplit.size >= 5) hrefSplit[4] else null
 		} catch (ignored: Exception) { null }
 		return Triple(
 			hrefSplit[1],

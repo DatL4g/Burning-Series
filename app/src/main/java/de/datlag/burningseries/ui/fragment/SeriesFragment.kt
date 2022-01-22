@@ -164,9 +164,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         }
         title.text = seriesData.series.title
 
-        val defaultLanguage = seriesData.languages.find {
-            it.value == seriesData.series.selectedLanguage
-        } ?: seriesData.languages.getOrNull(0)
+        val defaultLanguage = seriesData.languages.firstOrNull { it.value == seriesData.series.selectedLanguage } ?: seriesData.languages.getOrNull(0)
         val defaultSeason = seriesData.series.season
 
         selectLanguage.text = defaultLanguage?.text ?: safeContext.getString(R.string.language)

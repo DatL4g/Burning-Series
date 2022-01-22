@@ -68,9 +68,9 @@ class BurningSeriesScraper {
         val description = doc.selectFirst(".serie p")?.text() ?: String()
         val allImages = doc.select(".serie img")
 
-        val coverImage = (allImages.filter {
+        val coverImage = (allImages.firstOrNull {
             it.hasAttr("alt") && it.attr("alt").equals("Cover", true)
-        }.firstOrNull() ?: allImages.first())?.getSrc() ?: String()
+        } ?: allImages.firstOrNull())?.getSrc() ?: return null
 
         val seasons: List<SeasonData> = doc.select(".serie #seasons ul li").mapIndexed { index, it ->
             val seasonTitle = it.selectFirst("a")?.text() ?: it.text()
@@ -105,7 +105,7 @@ class BurningSeriesScraper {
         if (selectedLanguage.isNullOrEmpty()) {
             selectedLanguage = selectedValue
             if (selectedLanguage.isNullOrEmpty()) {
-                selectedLanguage = languages.first().value
+                selectedLanguage = languages.firstOrNull()?.value ?: return null
             }
         }
 
@@ -134,13 +134,14 @@ class BurningSeriesScraper {
         episodes.forEach { episodesElement ->
             val episodeData = episodesElement.select("td a")
             val episodeList: MutableList<EpisodeData> = mutableListOf()
-            for (i in episodeData.indices) {
-                val text = episodeData[i].selectFirst("a")?.text() ?: String()
-                val episodeHref = episodeData[i].selectFirst("a")?.getHref() ?: String()
+            episodeData.forEach { data ->
+                val text = data.selectFirst("a")?.text() ?: String()
+                val episodeHref = data.selectFirst("a")?.getHref() ?: String()
                 episodeList.add(EpisodeData(text, episodeHref))
             }
 
             val episodeHref = when {
+                episodeList.size <= 0 -> return null
                 episodeList[0].href.isNotEmpty() -> episodeList[0].href
                 episodeList.size > 1 && episodeList[1].href.isNotEmpty() -> episodeList[1].href
                 else -> String()
@@ -173,7 +174,9 @@ class BurningSeriesScraper {
 
         val seriesData = SeriesData(
             normalizedTitle,
-            try { splitTitle[1].trim() } catch (ignored: Exception) { seasons.firstOrNull()?.title ?: String() },
+            try {
+                if (splitTitle.size >= 2) splitTitle[1].trim() else seasons.firstOrNull()?.title ?: String()
+            } catch (ignored: Exception) { seasons.firstOrNull()?.title ?: String() },
             description,
             coverImage,
             href = href,
