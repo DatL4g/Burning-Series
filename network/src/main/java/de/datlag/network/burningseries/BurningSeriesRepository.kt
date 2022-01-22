@@ -186,15 +186,9 @@ class BurningSeriesRepository @Inject constructor(
 			newHref = newHref.substring(1)
 		}
 		val hrefSplit = newHref.split('/')
-		val season = try {
-			if (hrefSplit.size >= 3) hrefSplit[2] else null
-		} catch (ignored: Exception) { null }
-		val language = try {
-			if (hrefSplit.size >= 4) hrefSplit[3] else null
-		} catch (ignored: Exception) { null }
-		val fallbackLanguage = try {
-			if (hrefSplit.size >= 5) hrefSplit[4] else null
-		} catch (ignored: Exception) { null }
+		val season = if (hrefSplit.size >= 3) hrefSplit[2] else null
+		val language = if (hrefSplit.size >= 4) hrefSplit[3] else null
+		val fallbackLanguage = if (hrefSplit.size >= 5) hrefSplit[4] else null
 		return Triple(
 			hrefSplit[1],
 			if (season.isNullOrEmpty()) null else season,
