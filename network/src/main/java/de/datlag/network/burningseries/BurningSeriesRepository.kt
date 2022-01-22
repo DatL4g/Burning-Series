@@ -219,7 +219,7 @@ class BurningSeriesRepository @Inject constructor(
 	}
 
 	private suspend fun saveSeriesData(seriesData: SeriesData) {
-		val prevFavoriteSince = burningSeriesDao.getSeriesFavoriteSinceByHrefTitle(seriesData.hrefTitle).first() ?: 0L
+		val prevFavoriteSince = burningSeriesDao.getSeriesFavoriteSinceByHrefTitle(seriesData.hrefTitle).firstOrNull() ?: 0L
 		seriesData.favoriteSince = prevFavoriteSince
 
 		val episodeWatchProgress: MutableMap<String, Pair<Long, Long>> = mutableMapOf()
@@ -247,7 +247,11 @@ class BurningSeriesRepository @Inject constructor(
 		}
 		seriesData.episodes.forEach { episode ->
 			episode.seriesId = seriesId
-			val watchProgress = episodeWatchProgress.getOrElse(episode.href) { 0L to 0L }
+			val watchProgress = if (episodeWatchProgress.containsKey(episode.href)) {
+				episodeWatchProgress.getOrElse(episode.href) { 0L to 0L }
+			} else {
+				0L to 0L
+			}
 			episode.currentWatchPos = watchProgress.first
 			episode.totalWatchPos = watchProgress.second
 			val episodeId = burningSeriesDao.insertEpisodeInfo(episode)
