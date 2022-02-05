@@ -39,14 +39,14 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.4.0")
-    implementation("com.google.android.material:material:1.4.0")
+    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("com.google.android.material:material:1.5.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 
     api("androidx.datastore:datastore-core:1.0.0")
-    api("com.google.protobuf:protobuf-javalite:3.19.1")
+    api("com.google.protobuf:protobuf-javalite:3.19.4")
 }
 
 protobuf.protobuf.run {

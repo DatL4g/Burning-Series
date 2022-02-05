@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:background="@color/defaultBackgroundColor">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -54,6 +55,8 @@
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             android:descendantFocusability="afterDescendants"
+            android:animateLayoutChanges="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/episodesHeader"/>
 
         <com.google.android.material.textview.MaterialTextView
@@ -92,6 +95,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
+            android:animateLayoutChanges="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/seriesHeader"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

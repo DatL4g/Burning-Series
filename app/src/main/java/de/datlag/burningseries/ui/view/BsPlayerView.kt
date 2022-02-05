@@ -1,16 +1,11 @@
 package de.datlag.burningseries.ui.view
 
-import android.app.Activity
 import android.content.Context
-import android.content.pm.ActivityInfo
 import android.graphics.drawable.Drawable
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.fragment.app.findFragment
 import androidx.lifecycle.*
 import com.github.rubensousa.previewseekbar.PreviewLoader
 import com.google.android.exoplayer2.ui.PlayerControlView
@@ -18,7 +13,6 @@ import com.google.android.exoplayer2.ui.PlayerView
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.ExoplayerControlsBinding
-import de.datlag.burningseries.ui.fragment.VideoFragment
 import de.datlag.coilifier.ImageLoader
 import de.datlag.coilifier.commons.load
 import io.michaelrocks.paranoid.Obfuscate
@@ -37,6 +31,7 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
     private val isLocked: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val isFullscreen: MutableStateFlow<Boolean> = MutableStateFlow(false)
     var fullscreenRestored: Boolean = false
+    private var fullscreenListener: ((Boolean) -> Unit)? = null
 
     private val controlsBinding: ExoplayerControlsBinding by lazy {
         val videoControlView = findViewById<View>(R.id.exoplayer_controls)
@@ -44,12 +39,6 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
     }
 
     private var backPressUnit: (() -> Unit)? = null
-    private val safeActivity: Activity?
-        get() = try {
-            findFragment<VideoFragment>().safeActivity ?: this.context.getActivity()
-        } catch (ignored: Exception) {
-            this.context.getActivity()
-        }
 
     private val lifecycleOwner: LifecycleOwner?
         get() = findViewTreeLifecycleOwner() ?: context.getLifecycleOwner()
@@ -150,6 +139,10 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
         isClickable = isLocked.value
     }
 
+    fun setFullscreenListener(listener: (Boolean) -> Unit) {
+        fullscreenListener = listener
+    }
+
     fun setFullscreenState(fullscreen: Boolean) {
         isFullscreen.forceEmit(fullscreen, getSafeScope())
     }
@@ -244,25 +237,20 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
     }
 
     private fun setFullScreen(toFullScreen: Boolean) = with(controlsBinding) {
-        val controllerCompat = safeActivity?.window?.let { return@let WindowInsetsControllerCompat(it, it.decorView) }
         if (toFullScreen) {
             exoFullscreen.load<Drawable>(R.drawable.ic_baseline_fullscreen_exit_24)
-            controllerCompat?.hide(WindowInsetsCompat.Type.systemBars())
-            controllerCompat?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            safeActivity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         } else {
             exoFullscreen.load<Drawable>(R.drawable.ic_baseline_fullscreen_24)
-            controllerCompat?.show(WindowInsetsCompat.Type.systemBars())
-            controllerCompat?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH
-            safeActivity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
+        fullscreenListener?.invoke(toFullScreen)
     }
 
     override fun onSaveInstanceState(): Parcelable {
         return SaveState(
             super.onSaveInstanceState(),
             isLocked.value,
-            isFullscreen.value
+            isFullscreen.value,
+            fullscreenListener
         )
     }
 
@@ -274,6 +262,9 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
             isLocked.forceEmit(save.isLocked, getSafeScope())
             isFullscreen.forceEmit(save.isFullscreen, getSafeScope())
             fullscreenRestored = true
+            if (fullscreenListener == null) {
+                fullscreenListener = save.fullScreenListener
+            }
         }
     }
 
@@ -282,5 +273,6 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
         val superSaveState: Parcelable?,
         val isLocked: Boolean,
         val isFullscreen: Boolean,
+        val fullScreenListener: ((Boolean) -> Unit)?
     ) : View.BaseSavedState(superSaveState), Parcelable
 }

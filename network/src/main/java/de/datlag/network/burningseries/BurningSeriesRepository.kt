@@ -213,19 +213,14 @@ class BurningSeriesRepository @Inject constructor(
 	}
 
 	private suspend fun saveSeriesData(seriesData: SeriesData) {
-		val prevFavoriteSince = burningSeriesDao.getSeriesFavoriteSinceByHrefTitle(seriesData.hrefTitle).firstOrNull() ?: 0L
-		seriesData.favoriteSince = prevFavoriteSince
+		val previousSeries = burningSeriesDao.getSeriesWithEpisodesBestMatch(seriesData.hrefTitle).firstOrNull()
 
-		val episodeWatchProgress: MutableMap<String, Pair<Long, Long>> = mutableMapOf()
-		coroutineScope {
-			seriesData.episodes.map { episode ->
-				async {
-					val prevEpisodeCurrentWatchPos = burningSeriesDao.getEpisodeCurrentWatchPosByHref(episode.href) ?: 0L
-					val prevEpisodeTotalWatchPos = burningSeriesDao.getEpisodeTotalWatchPosByHref(episode.href) ?: 0L
-					episodeWatchProgress[episode.href] = prevEpisodeCurrentWatchPos to prevEpisodeTotalWatchPos
-				}
-			}.awaitAll()
-		}
+		val favSince = previousSeries?.series?.favoriteSince ?: 0L
+		val watchProgress: Map<String, Pair<Long, Long>> = previousSeries?.episodes?.map { it.href to (it.currentWatchPos to it.totalWatchPos) }?.toMap() ?: mapOf()
+
+		seriesData.favoriteSince = favSince
+
+		burningSeriesDao.getEpisodeWithHoster()
 
 		val seriesId = burningSeriesDao.insertSeriesData(seriesData)
 		seriesData.infos.forEach {
@@ -241,13 +236,13 @@ class BurningSeriesRepository @Inject constructor(
 		}
 		seriesData.episodes.forEach { episode ->
 			episode.seriesId = seriesId
-			val watchProgress = if (episodeWatchProgress.containsKey(episode.href)) {
-				episodeWatchProgress.getOrElse(episode.href) { 0L to 0L }
+			val episodeWatchProgress = if (watchProgress.containsKey(episode.href)) {
+				watchProgress.getOrElse(episode.href) { 0L to 0L }
 			} else {
 				0L to 0L
 			}
-			episode.currentWatchPos = watchProgress.first
-			episode.totalWatchPos = watchProgress.second
+			episode.currentWatchPos = episodeWatchProgress.first
+			episode.totalWatchPos = episodeWatchProgress.second
 			val episodeId = burningSeriesDao.insertEpisodeInfo(episode)
 			episode.hoster.forEach {
 				it.episodeId = episodeId

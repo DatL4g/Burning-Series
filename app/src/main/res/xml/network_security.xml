@@ -12,5 +12,30 @@
         <domain includeSubdomains="true">https://jsonbase.com</domain>
         <domain includeSubdomains="true">http://jsonbase.com</domain>
         <domain includeSubdomains="true">jsonbase.com</domain>
+
+        <domain includeSubdomains="true">https://vupload.com</domain>
+        <domain includeSubdomains="true">http://vupload.com</domain>
+        <domain includeSubdomains="true">vupload.com</domain>
+
+        <domain includeSubdomains="true">https://voe.sx</domain>
+        <domain includeSubdomains="true">http://voe.sx</domain>
+        <domain includeSubdomains="true">voe.sx</domain>
+
+        <domain includeSubdomains="true">https://streamtape.com</domain>
+        <domain includeSubdomains="true">http://streamtape.com</domain>
+        <domain includeSubdomains="true">streamtape.com</domain>
+
+        <domain includeSubdomains="true">https://videovard.sx</domain>
+        <domain includeSubdomains="true">http://videovard.sx</domain>
+        <domain includeSubdomains="true">videovard.sx</domain>
+
+        <domain includeSubdomains="true">https://upstream.to</domain>
+        <domain includeSubdomains="true">http://upstream.to</domain>
+        <domain includeSubdomains="true">upstream.to</domain>
+
+        <trust-anchors>
+            <certificates src="system"/>
+            <certificates src="user"/>
+        </trust-anchors>
     </domain-config>
 </network-security-config>

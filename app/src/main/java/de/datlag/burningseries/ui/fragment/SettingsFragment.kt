@@ -51,7 +51,6 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
     }
 
     private fun initRecycler(): Unit = with(binding) {
-        settingsRecycler.layoutManager = LinearLayoutManager(safeContext)
         settingsRecycler.isNestedScrollingEnabled = false
         settingsRecycler.adapter = settingsAdapter
     }

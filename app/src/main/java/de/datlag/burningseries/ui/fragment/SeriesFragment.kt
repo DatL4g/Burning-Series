@@ -111,9 +111,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
     private fun initRecycler(): Unit = with(binding) {
         episodeRecyclerAdapter.submitList(listOf())
-        episodeRecycler.layoutManager = LinearLayoutManager(safeContext)
         episodeRecycler.adapter = episodeRecyclerAdapter
-        episodeRecycler.isNestedScrollingEnabled = false
 
         episodeRecyclerAdapter.setOnClickListener { item ->
             burningSeriesViewModel.getStream(item.hoster).launchAndCollect {

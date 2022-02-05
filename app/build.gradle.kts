@@ -92,6 +92,7 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:1.4.1")
     implementation("com.google.android.material:material:1.5.0")
+    runtimeOnly("androidx.vectordrawable:vectordrawable-animated:1.1.0")
     implementation("androidx.core:core-splashscreen:1.0.0-beta01")
 
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
@@ -118,8 +119,8 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.activity:activity-ktx:1.4.0")
-    implementation("androidx.fragment:fragment-ktx:1.4.0")
-    implementation("androidx.room:room-ktx:2.4.0")
+    implementation("androidx.fragment:fragment-ktx:1.4.1")
+    implementation("androidx.room:room-ktx:2.4.1")
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
@@ -129,13 +130,13 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
 
-    implementation("androidx.navigation:navigation-runtime-ktx:2.3.5")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
-    implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
+    implementation("androidx.navigation:navigation-runtime-ktx:2.4.0")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.4.0")
+    implementation("androidx.navigation:navigation-ui-ktx:2.4.0")
 
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-    implementation("com.google.dagger:hilt-android:2.40")
-    kapt("com.google.dagger:hilt-android-compiler:2.40")
+    implementation("com.google.dagger:hilt-android:2.40.5")
+    kapt("com.google.dagger:hilt-android-compiler:2.40.5")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
     implementation("io.github.inflationx:viewpump:2.0.3")

@@ -3,10 +3,15 @@ package de.datlag.burningseries.ui.fragment
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.TextureView
 import android.view.View
+import android.view.WindowManager
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -18,18 +23,27 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory
+import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
+import com.google.android.exoplayer2.extractor.ts.TsExtractor
+import com.google.android.exoplayer2.extractor.ts.TsExtractor.*
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentVideoBinding
 import de.datlag.burningseries.extend.AdvancedFragment
+import de.datlag.burningseries.helper.lazyMutable
 import de.datlag.burningseries.ui.connector.KeyEventDispatcher
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.VideoViewModel
 import de.datlag.coilifier.ImageLoader
+import de.datlag.database.burningseries.BurningSeriesDao
 import de.datlag.executor.Executor
 import de.datlag.executor.Schema
+import de.datlag.model.burningseries.series.EpisodeInfo
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -56,6 +70,8 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     private val positionState: MutableStateFlow<Long> = MutableStateFlow(0)
     private val playingState: MutableStateFlow<Boolean> = MutableStateFlow(true)
 
+    private var episodeInfo: EpisodeInfo by lazyMutable { navArgs.episodeInfo }
+
 
     @Inject
     lateinit var executor: Executor
@@ -63,11 +79,15 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     @Inject
     lateinit var saveExecutor: Executor
 
+    @Inject
+    lateinit var burningSeriesDao: BurningSeriesDao
+
     private var framePosStep: Long = 0L
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        findActualEpisodeInfo()
         initPlayer()
         listenSettingsState()
         listenVideoSourceState()
@@ -75,20 +95,42 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         listenPlayingState()
     }
 
+    private fun findActualEpisodeInfo(
+        id: Long = navArgs.episodeInfo.episodeId,
+        href: String = navArgs.episodeInfo.href
+    ) = burningSeriesDao.getEpisodeInfoByIdOrHref(id, href).launchAndCollect {
+        episodeInfo = it ?: episodeInfo
+    }
+
     private fun initPlayer(): Unit = with(binding) {
         retriever = FFmpegMediaMetadataRetriever()
 
+        val extractorFactory = DefaultExtractorsFactory().setTsExtractorFlags(FLAG_DETECT_ACCESS_UNITS)
         exoPlayer = ExoPlayer.Builder(safeContext).apply {
             setSeekBackIncrementMs(10000)
             setSeekForwardIncrementMs(10000)
             setPauseAtEndOfMediaItems(true)
+            setMediaSourceFactory(DefaultMediaSourceFactory(safeContext, extractorFactory))
         }.build().apply {
             addListener(this@VideoFragment)
             playWhenReady = true
         }
         player.player = exoPlayer
 
-        player.setTitle(navArgs.episodeInfo.title)
+        player.setTitle(episodeInfo.title)
+        player.setFullscreenListener {
+            val controllerCompat = safeActivity?.window?.let { controller -> return@let WindowInsetsControllerCompat(controller, controller.decorView) }
+            if (it) {
+                controllerCompat?.hide(WindowInsetsCompat.Type.systemBars())
+                controllerCompat?.hide(WindowInsetsCompat.Type.ime())
+                controllerCompat?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                safeActivity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                controllerCompat?.show(WindowInsetsCompat.Type.systemBars())
+                controllerCompat?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH
+                safeActivity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            }
+        }
         player.setPreviewLoader(this@VideoFragment)
         player.setPreviewImage(ImageLoader.create(getVideoFrame(-1L)))
 
@@ -120,12 +162,12 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             }
         }
 
-        if (navArgs.episodeInfo.currentWatchPos > 0L) {
-            exoPlayer.seekTo(navArgs.episodeInfo.currentWatchPos)
+        if (episodeInfo.currentWatchPos >= 3000L) {
+            exoPlayer.seekTo(episodeInfo.currentWatchPos)
         }
-        navArgs.episodeInfo.totalWatchPos = exoPlayer.duration
+        episodeInfo.totalWatchPos = exoPlayer.duration
         withContext(Dispatchers.IO) {
-            burningSeriesViewModel.updateEpisodeInfo(navArgs.episodeInfo)
+            burningSeriesViewModel.updateEpisodeInfo(episodeInfo)
         }
         saveWatchedPosition()
     }
@@ -198,12 +240,12 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
                     } else {
                         currentPos = 0
                     }
-                    navArgs.episodeInfo.currentWatchPos = currentPos
-                    if (navArgs.episodeInfo.totalWatchPos == 0L) {
-                        navArgs.episodeInfo.totalWatchPos = exoPlayer.duration
+                    episodeInfo.currentWatchPos = currentPos
+                    if (episodeInfo.totalWatchPos == 0L) {
+                        episodeInfo.totalWatchPos = exoPlayer.duration
                     }
                 }
-                burningSeriesViewModel.updateEpisodeInfo(navArgs.episodeInfo)
+                burningSeriesViewModel.updateEpisodeInfo(episodeInfo)
             }
             delay(1000)
         }
@@ -237,7 +279,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             findNavController().navigate(VideoFragmentDirections.actionVideoFragmentToStreamUnavailableDialog(
                 navArgs.seriesWithInfo,
                 navArgs.videoStream.defaultUrl,
-                navArgs.episodeInfo.href
+                episodeInfo.href
             ))
         } else lifecycleScope.launch(Dispatchers.IO) {
             videoViewModel.videoSourcePos.emit(currentSourcePos + 1)
@@ -248,9 +290,9 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         super.onSaveInstanceState(outState)
 
         val currentPos = exoPlayer.contentPosition
-        val savedPos = navArgs.episodeInfo.currentWatchPos
+        val savedPos = episodeInfo.currentWatchPos
         val inRange = currentPos in 0..1000 || currentPos in (savedPos - 500) .. (savedPos + 500)
-        outState.putLong(PLAYER_POSITION, navArgs.episodeInfo.currentWatchPos)
+        outState.putLong(PLAYER_POSITION, episodeInfo.currentWatchPos)
         outState.putBoolean(PLAYER_PLAYING, exoPlayer.isPlaying || (exoPlayer.playWhenReady && inRange))
     }
 
@@ -267,6 +309,21 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         extendedFab?.visibility = View.GONE
         hideNavigationFabs()
         hideLoadingDialog()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            safeActivity?.window?.attributes?.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
+        safeActivity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        safeActivity?.window?.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        safeActivity?.window?.let { WindowCompat.setDecorFitsSystemWindows(it, false) }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            safeActivity?.window?.attributes?.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
+        }
+        safeActivity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        safeActivity?.window?.let { WindowCompat.setDecorFitsSystemWindows(it, true) }
     }
 
     override fun onDestroyView() {

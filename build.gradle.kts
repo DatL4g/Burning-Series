@@ -2,7 +2,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
-    id("com.github.ben-manes.versions") version "0.39.0"
+    id("com.github.ben-manes.versions") version "0.42.0"
 }
 
 buildscript {
@@ -17,12 +17,12 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:7.0.4")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.3.5")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.40")
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.40.5")
         classpath("org.jetbrains.kotlin:kotlin-serialization:1.5.31")
         classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.18")
-        classpath("io.michaelrocks:paranoid-gradle-plugin:0.3.5")
-        classpath("com.klaxit.hiddensecrets:HiddenSecretsPlugin:0.1.2")
+        classpath("io.michaelrocks:paranoid-gradle-plugin:0.3.7")
+        classpath("com.klaxit.hiddensecrets:HiddenSecretsPlugin:0.1.3")
         classpath("com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:10.0.0-b06")
     }
 }

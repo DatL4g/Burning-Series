@@ -43,6 +43,7 @@ sealed class GenreModel {
         tableName = "GenreItemTable",
         indices = [
             Index("genreItemId"),
+            Index("genreId"),
             Index("href", unique = true)
         ],
         foreignKeys = [

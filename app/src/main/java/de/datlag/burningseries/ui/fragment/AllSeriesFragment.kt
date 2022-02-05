@@ -67,7 +67,6 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
     }
 
     private fun initRecycler(): Unit = with(binding) {
-        allSeriesRecycler.layoutManager = LinearLayoutManager(safeContext)
         allSeriesRecycler.adapter = allSeriesRecyclerAdapter
 
         allSeriesRecyclerAdapter.setOnClickListener { item ->

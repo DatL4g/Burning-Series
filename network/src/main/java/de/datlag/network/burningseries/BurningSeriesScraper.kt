@@ -174,9 +174,7 @@ class BurningSeriesScraper {
 
         val seriesData = SeriesData(
             normalizedTitle,
-            try {
-                if (splitTitle.size >= 2) splitTitle[1].trim() else seasons.firstOrNull()?.title ?: String()
-            } catch (ignored: Exception) { seasons.firstOrNull()?.title ?: String() },
+            if (splitTitle.size >= 2) splitTitle[1].trim() else seasons.firstOrNull()?.title ?: String(),
             description,
             coverImage,
             href = href,

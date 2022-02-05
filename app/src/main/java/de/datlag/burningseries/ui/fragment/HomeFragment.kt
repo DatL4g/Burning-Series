@@ -99,10 +99,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	}
 	
 	private fun initRecycler(): Unit = with(binding) {
-		latestEpisodeRecycler.layoutManager = LinearLayoutManager(safeContext)
 		latestEpisodeRecycler.adapter = latestEpisodeRecyclerAdapter
-		latestEpisodeRecycler.isNestedScrollingEnabled = false
-		
 		latestEpisodeRecyclerAdapter.setOnClickListener { item ->
 			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
 				latestEpisode = item
@@ -118,11 +115,8 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 			true
 		}
 		
-		
-		latestSeriesRecycler.layoutManager = LinearLayoutManager(safeContext)
+
 		latestSeriesRecycler.adapter = latestSeriesRecyclerAdapter
-		latestSeriesRecycler.isNestedScrollingEnabled = false
-		
 		latestSeriesRecyclerAdapter.setOnClickListener { item ->
 			findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
 				latestSeries = item

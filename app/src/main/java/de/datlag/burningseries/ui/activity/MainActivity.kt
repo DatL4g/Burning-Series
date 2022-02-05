@@ -32,7 +32,7 @@ class MainActivity : AdvancedActivity(R.layout.activity_main), FABExtended, Stat
 		if (savedInstanceState != null) {
 			this.setTheme(R.style.AppTheme)
 		} else {
-			this.installSplashScreen()
+			installSplashScreen()
 		}
 		super.onCreate(savedInstanceState)
 

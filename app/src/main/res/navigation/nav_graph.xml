@@ -13,7 +13,11 @@
 
         <action
             android:id="@+id/action_homeFragment_to_seriesFragment"
-            app:destination="@id/seriesFragment" />
+            app:destination="@id/seriesFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
         <action
             android:id="@+id/action_homeFragment_to_favoritesFragment"
             app:destination="@id/favoritesFragment" />
@@ -69,7 +73,11 @@
             app:destination="@id/allSeriesFragment" />
         <action
             android:id="@+id/action_seriesFragment_to_videoFragment"
-            app:destination="@id/videoFragment" />
+            app:destination="@id/videoFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_seriesFragment_to_scrapeHosterFragment"
             app:destination="@id/scrapeHosterFragment" />
@@ -87,10 +95,18 @@
         tools:layout="@layout/fragment_favorites">
         <action
             android:id="@+id/action_favoritesFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            app:destination="@id/homeFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_favoritesFragment_to_seriesFragment"
-            app:destination="@id/seriesFragment" />
+            app:destination="@id/seriesFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
         <action
             android:id="@+id/action_favoritesFragment_to_allSeriesFragment"
             app:destination="@id/allSeriesFragment" />
@@ -105,7 +121,11 @@
             app:destination="@id/homeFragment" />
         <action
             android:id="@+id/action_allSeriesFragment_to_seriesFragment"
-            app:destination="@id/seriesFragment" />
+            app:destination="@id/seriesFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
         <action
             android:id="@+id/action_allSeriesFragment_to_favoritesFragment"
             app:destination="@id/favoritesFragment" />

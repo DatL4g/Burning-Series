@@ -9,6 +9,7 @@ import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.*
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
+import de.datlag.model.burningseries.series.relation.SeriesWithEpisode
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.*
@@ -170,6 +171,10 @@ interface BurningSeriesDao {
     @Query("SELECT totalWatchPos FROM EpisodeInfoTable WHERE href = :href LIMIT 1")
     fun getEpisodeTotalWatchPosByHref(href: String): Long?
 
+    @Transaction
+    @Query("SELECT * FROM EpisodeInfoTable WHERE episodeId = :id OR href = :href LIMIT 1")
+    fun getEpisodeInfoByIdOrHref(id: Long, href: String): Flow<EpisodeInfo?>
+
 
 
     @Transaction
@@ -191,8 +196,16 @@ interface BurningSeriesDao {
     fun getSeriesWithInfoByHrefTitle(hrefTitle: String): Flow<SeriesWithInfo?>
 
     @Transaction
+    @Query("SELECT * FROM SeriesTable WHERE hrefTitle = :hrefTitle LIMIT 1")
+    fun getSeriesWithEpisodeByHrefTitle(hrefTitle: String): Flow<SeriesWithEpisode?>
+
+    @Transaction
     @Query("SELECT * FROM SeriesTable WHERE :hrefTitle LIKE hrefTitle || '%' OR hrefTitle LIKE :hrefTitle || '%' LIMIT 1")
     fun getSeriesWithInfoByLikeHrefTitle(hrefTitle: String): Flow<SeriesWithInfo?>
+
+    @Transaction
+    @Query("SELECT * FROM SeriesTable WHERE :hrefTitle LIKE hrefTitle || '%' OR hrefTitle LIKE :hrefTitle || '%' LIMIT 1")
+    fun getSeriesWithEpisodeByLikeHrefTitle(hrefTitle: String): Flow<SeriesWithEpisode?>
 
     fun getSeriesWithInfoBestMatch(hrefTitle: String): Flow<SeriesWithInfo?> = flow {
         getSeriesWithInfoByHrefTitle(hrefTitle).collect {
@@ -200,6 +213,16 @@ interface BurningSeriesDao {
                 emit(it)
             } else {
                 emitAll(getSeriesWithInfoByLikeHrefTitle(hrefTitle))
+            }
+        }
+    }
+
+    fun getSeriesWithEpisodesBestMatch(hrefTitle: String): Flow<SeriesWithEpisode?> = flow {
+        getSeriesWithEpisodeByHrefTitle(hrefTitle).collect {
+            if (it != null) {
+                emit(it)
+            } else {
+                emitAll(getSeriesWithEpisodeByLikeHrefTitle(hrefTitle))
             }
         }
     }
