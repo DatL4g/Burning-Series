@@ -10,6 +10,7 @@ import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.HosterData
+import de.datlag.model.burningseries.series.relation.SeriesWithEpisode
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.network.burningseries.BurningSeriesRepository
 import de.datlag.network.m3o.M3ORepository

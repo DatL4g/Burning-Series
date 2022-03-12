@@ -158,6 +158,9 @@
         <argument
             android:name="episodeInfo"
             app:argType="de.datlag.model.burningseries.series.EpisodeInfo" />
+        <action
+            android:id="@+id/action_videoFragment_self"
+            app:destination="@id/videoFragment" />
     </fragment>
     <dialog
         android:id="@+id/helpImproveDialog"
@@ -179,6 +182,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_about_libraries"
             app:destination="@id/about_libraries" />
+        <action
+            android:id="@+id/action_settingsFragment_to_syncFragment"
+            app:destination="@id/syncFragment" />
     </fragment>
     <fragment
         android:id="@+id/scrapeHosterFragment"
@@ -297,4 +303,9 @@
             android:name="release"
             app:argType="de.datlag.model.github.Release" />
     </dialog>
+    <fragment
+        android:id="@+id/syncFragment"
+        android:name="de.datlag.burningseries.ui.fragment.SyncFragment"
+        android:label="SyncFragment"
+        tools:layout="@layout/fragment_sync"/>
 </navigation>

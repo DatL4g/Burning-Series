@@ -66,4 +66,6 @@
     <string name="confirm">Confirm</string>
     <string name="default_fullscreen">Default Fullscreen</string>
     <string name="default_fullscreen_subtitle">Automatically switch to fullscreen mode when watching a video</string>
+    <string name="sync_with_other_device">Sync with other device</string>
+    <string name="searching_for_devices">Searching for devices</string>
 </resources>

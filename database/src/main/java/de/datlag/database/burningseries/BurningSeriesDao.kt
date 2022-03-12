@@ -78,6 +78,14 @@ interface BurningSeriesDao {
     @Query("SELECT favoriteSince FROM SeriesTable WHERE hrefTitle = :hrefTitle OR hrefTitle LIKE :hrefTitle || '%' LIMIT 1")
     fun getSeriesFavoriteSinceByHrefTitle(hrefTitle: String): Flow<Long?>
 
+    @Transaction
+    @Query(
+        "SELECT DISTINCT SeriesTable.* FROM SeriesTable " +
+            "INNER JOIN EpisodeInfoTable ON SeriesTable.seriesId = EpisodeInfoTable.seriesId " +
+            "WHERE SeriesTable.favoriteSince > 0 OR EpisodeInfoTable.currentWatchPos > 0 OR EpisodeInfoTable.totalWatchPos > 0"
+    )
+    fun getSeriesFavoritesAndWatched(): Flow<List<SeriesWithInfo>>
+
 
 
     @Transaction
@@ -189,6 +197,10 @@ interface BurningSeriesDao {
     @Query("SELECT * FROM EpisodeInfoTable")
     fun getEpisodeWithHoster(): Flow<List<EpisodeWithHoster>>
 
+    @Transaction
+    @Query("SELECT * FROM EpisodeInfoTable WHERE seriesId = :seriesId AND number = :number LIMIT 1")
+    fun getEpisodeInfoBySeriesAndNumber(seriesId: Long, number: String): Flow<EpisodeWithHoster?>
+
 
 
     @Transaction
@@ -226,6 +238,7 @@ interface BurningSeriesDao {
             }
         }
     }
+
 
     @Transaction
     @Query("SELECT * FROM SeriesTable WHERE favoriteSince > 0 AND title LIKE '%' || :title || '%' ORDER BY favoriteSince DESC")

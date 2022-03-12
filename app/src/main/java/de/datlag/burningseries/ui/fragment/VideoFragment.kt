@@ -24,10 +24,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
-import com.google.android.exoplayer2.extractor.ts.TsExtractor
-import com.google.android.exoplayer2.extractor.ts.TsExtractor.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
@@ -44,12 +41,11 @@ import de.datlag.database.burningseries.BurningSeriesDao
 import de.datlag.executor.Executor
 import de.datlag.executor.Schema
 import de.datlag.model.burningseries.series.EpisodeInfo
+import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
+import de.datlag.model.video.VideoStream
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import wseemann.media.FFmpegMediaMetadataRetriever
 import javax.inject.Inject
@@ -71,6 +67,9 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     private val playingState: MutableStateFlow<Boolean> = MutableStateFlow(true)
 
     private var episodeInfo: EpisodeInfo by lazyMutable { navArgs.episodeInfo }
+
+    private var nextEpisodeInfo: EpisodeWithHoster? = null
+    private var nextEpisodeStreams: MutableSet<VideoStream> = mutableSetOf()
 
 
     @Inject
@@ -149,12 +148,13 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     }
 
     private fun listenVideoSourceState() = videoViewModel.videoSourcePos.launchAndCollect {
-        exoPlayer.setMediaItem(MediaItem.fromUri(navArgs.videoStream.url[it]))
+        val nextStream = navArgs.videoStream.url.getOrElse(it) { navArgs.videoStream.url[0] }
+        exoPlayer.setMediaItem(MediaItem.fromUri(nextStream))
         exoPlayer.prepare()
 
         withContext(Dispatchers.IO) {
             try {
-                retriever.setDataSource(navArgs.videoStream.url[it])
+                retriever.setDataSource(nextStream)
             } catch (ignored: Exception) {
                 withContext(Dispatchers.Main) {
                     binding.player.setPreviewEnabled(false)
@@ -170,6 +170,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             burningSeriesViewModel.updateEpisodeInfo(episodeInfo)
         }
         saveWatchedPosition()
+        loadNextEpisode()
     }
 
     override fun loadPreview(currentPosition: Long, max: Long) {
@@ -251,6 +252,29 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         }
     }
 
+    private fun loadNextEpisode() = lifecycleScope.launch(Dispatchers.IO) {
+        while(nextEpisodeInfo == null) {
+            executor.execute(Schema.Queue) {
+                val watchedPercentage = withContext(Dispatchers.Main) {
+                    (exoPlayer.contentPosition.toFloat() / exoPlayer.contentDuration.toFloat()) * 100F
+                }
+                if (watchedPercentage >= 85F) {
+                    val nextNum = try {
+                        episodeInfo.number.toInt() + 1
+                    } catch (ignored: Exception) { null }
+
+                    if (nextNum != null) {
+                        nextEpisodeInfo = burningSeriesDao.getEpisodeInfoBySeriesAndNumber(episodeInfo.seriesId, nextNum.toString()).first()
+                        burningSeriesViewModel.getStream(nextEpisodeInfo?.hoster ?: nextEpisodeInfo?.episode?.hoster ?: listOf()).mapNotNull { it.data }.launchAndCollect {
+                            nextEpisodeStreams.addAll(videoViewModel.getVideoSources(it).first())
+                        }
+                    }
+                }
+            }
+            delay(1000)
+        }
+    }
+
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
         when (error.errorCode) {
@@ -258,6 +282,21 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             PlaybackException.ERROR_CODE_IO_NO_PERMISSION -> nextSourceOrDialog()
             PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED -> nextSourceOrDialog()
             else -> nextSourceOrDialog()
+        }
+    }
+
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        super.onIsPlayingChanged(isPlaying)
+        binding.player.onPlayingChanged(isPlaying)
+    }
+
+    override fun onPlaybackStateChanged(playbackState: Int): Unit = with(binding) {
+        super.onPlaybackStateChanged(playbackState)
+        if (playbackState == Player.STATE_ENDED) {
+            if (nextEpisodeInfo != null && nextEpisodeStreams.isNotEmpty()) {
+                val sameHosterOrFirst = nextEpisodeStreams.firstOrNull { it.hoster.equals(navArgs.videoStream.hoster, true) } ?: nextEpisodeStreams.first()
+                findNavController().navigate(VideoFragmentDirections.actionVideoFragmentSelf(sameHosterOrFirst, navArgs.seriesWithInfo, nextEpisodeInfo!!.episode))
+            }
         }
     }
 

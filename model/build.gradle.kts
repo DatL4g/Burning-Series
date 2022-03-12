@@ -46,8 +46,8 @@ dependencies {
     api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("javax.inject:javax.inject:1")
     
-    api("androidx.room:room-runtime:2.4.1")
-    kapt("androidx.room:room-compiler:2.4.1")
+    api("androidx.room:room-runtime:2.4.2")
+    kapt("androidx.room:room-compiler:2.4.2")
     
     api("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 }

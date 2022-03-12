@@ -7,7 +7,6 @@ import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.BuildConfig
@@ -47,6 +46,9 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
         }
         binding.githubCard.setOnClickListener {
             Constants.GITHUB_PROJECT.toUri().openInBrowser(safeContext, safeContext.getString(R.string.github_project))
+        }
+        binding.syncCard.setOnClickListener {
+            findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToSyncFragment())
         }
     }
 

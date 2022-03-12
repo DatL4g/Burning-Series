@@ -65,4 +65,6 @@
     <string name="confirm">Bestätigen</string>
     <string name="default_fullscreen">Vollbild standartmäßig</string>
     <string name="default_fullscreen_subtitle">Automatisch zu Vollbild wechseln beim Video schauen</string>
+    <string name="sync_with_other_device">Mit anderem Gerät synchronisieren</string>
+    <string name="searching_for_devices">Suche nach Geräten</string>
 </resources>

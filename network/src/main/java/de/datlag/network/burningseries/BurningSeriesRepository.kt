@@ -11,10 +11,10 @@ import de.datlag.model.burningseries.allseries.search.GenreItemWithMatchInfo
 import de.datlag.model.burningseries.home.HomeData
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
-import de.datlag.model.burningseries.series.EpisodeInfo
-import de.datlag.model.burningseries.series.SeasonData
-import de.datlag.model.burningseries.series.SeriesData
+import de.datlag.model.burningseries.series.*
+import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
+import de.datlag.model.burningseries.series.relation.SeriesWithEpisode
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.model.common.calculateScore
 import de.datlag.network.common.toInt
@@ -212,42 +212,64 @@ class BurningSeriesRepository @Inject constructor(
 		}
 	}
 
-	private suspend fun saveSeriesData(seriesData: SeriesData) {
+	private suspend fun saveSeriesData(
+		seriesData: SeriesData,
+		infos: List<InfoData> = seriesData.infos,
+		seasons: List<SeasonData> = seriesData.seasons,
+		languages: List<LanguageData> = seriesData.languages,
+		episodes: Map<EpisodeInfo, List<HosterData>> = seriesData.episodes.associateWith { it.hoster }
+	) {
 		val previousSeries = burningSeriesDao.getSeriesWithEpisodesBestMatch(seriesData.hrefTitle).firstOrNull()
 
-		val favSince = previousSeries?.series?.favoriteSince ?: 0L
-		val watchProgress: Map<String, Pair<Long, Long>> = previousSeries?.episodes?.map { it.href to (it.currentWatchPos to it.totalWatchPos) }?.toMap() ?: mapOf()
+		val favSince = previousSeries?.series?.favoriteSince ?: seriesData.favoriteSince
+		val watchProgress: Map<String, Pair<Long, Long>> = previousSeries?.episodes?.associate {
+			it.href to (it.currentWatchPos to it.totalWatchPos)
+		} ?: mapOf()
 
 		seriesData.favoriteSince = favSince
 
-		burningSeriesDao.getEpisodeWithHoster()
-
 		val seriesId = burningSeriesDao.insertSeriesData(seriesData)
-		seriesData.infos.forEach {
-			it.seriesId = seriesId
-			burningSeriesDao.insertInfoData(it)
-		}
-		seriesData.seasons.forEach {
-			burningSeriesDao.insertSeasonData(it.apply { this.seriesId = seriesId })
-		}
-		seriesData.languages.forEach {
-			val langId = burningSeriesDao.addLanguageData(it)
-			burningSeriesDao.insertSeriesLanguagesCrossRef(SeriesLanguagesCrossRef(seriesId, langId))
-		}
-		seriesData.episodes.forEach { episode ->
-			episode.seriesId = seriesId
-			val episodeWatchProgress = if (watchProgress.containsKey(episode.href)) {
-				watchProgress.getOrElse(episode.href) { 0L to 0L }
-			} else {
-				0L to 0L
-			}
-			episode.currentWatchPos = episodeWatchProgress.first
-			episode.totalWatchPos = episodeWatchProgress.second
-			val episodeId = burningSeriesDao.insertEpisodeInfo(episode)
-			episode.hoster.forEach {
-				it.episodeId = episodeId
-				burningSeriesDao.insertHoster(it)
-			}
+
+		coroutineScope {
+			infos.map {
+				async(Dispatchers.IO) {
+					it.seriesId = seriesId
+					burningSeriesDao.insertInfoData(it)
+				}
+			}.awaitAll()
+
+			seasons.map {
+				async(Dispatchers.IO) {
+					burningSeriesDao.insertSeasonData(it.apply { this.seriesId = seriesId })
+				}
+			}.awaitAll()
+
+			languages.map {
+				async(Dispatchers.IO) {
+					val langId = burningSeriesDao.addLanguageData(it)
+					burningSeriesDao.insertSeriesLanguagesCrossRef(SeriesLanguagesCrossRef(seriesId, langId))
+				}
+			}.awaitAll()
+
+			episodes.map { entry ->
+				async(Dispatchers.IO) {
+					entry.key.seriesId = seriesId
+					val episodeWatchProgress = watchProgress.getOrElse(entry.key.href) { 0L to 0L }
+					if (entry.key.currentWatchPos < episodeWatchProgress.first) {
+						entry.key.currentWatchPos = episodeWatchProgress.first
+					}
+					if (entry.key.totalWatchPos < episodeWatchProgress.second) {
+						entry.key.totalWatchPos = episodeWatchProgress.second
+					}
+					val episodeId = burningSeriesDao.insertEpisodeInfo(entry.key)
+					entry.value.map {
+						async(Dispatchers.IO) {
+							it.episodeId = episodeId
+							burningSeriesDao.insertHoster(it)
+						}
+					}.awaitAll()
+				}
+			}.awaitAll()
 		}
 	}
 
@@ -326,4 +348,16 @@ class BurningSeriesRepository @Inject constructor(
 			}
 		}
 	}
+
+	fun getSeriesToSync() = burningSeriesDao.getSeriesFavoritesAndWatched().flowOn(Dispatchers.IO)
+
+	suspend fun saveSyncSeries(
+		seriesWithEpisode: SeriesWithInfo
+	) = saveSeriesData(
+		seriesWithEpisode.series,
+		seriesWithEpisode.infos,
+		seriesWithEpisode.seasons,
+		seriesWithEpisode.languages,
+		seriesWithEpisode.episodes.associate { it.episode to it.hoster }
+	)
 }

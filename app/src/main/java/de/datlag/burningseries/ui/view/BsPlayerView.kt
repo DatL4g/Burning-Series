@@ -8,8 +8,9 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.lifecycle.*
 import com.github.rubensousa.previewseekbar.PreviewLoader
-import com.google.android.exoplayer2.ui.PlayerControlView
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.ui.StyledPlayerControlView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.ExoplayerControlsBinding
@@ -20,9 +21,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.parcelize.Parcelize
+import timber.log.Timber
 
 @Obfuscate
-class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, LifecycleObserver {
+class BsPlayerView :
+    StyledPlayerView,
+    StyledPlayerControlView.VisibilityListener,
+    LifecycleObserver
+{
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -69,6 +75,12 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
         exoFullscreen.setOnClickListener {
             toggleFullscreenState()
         }
+        exoPlay.setOnClickListener {
+            this@BsPlayerView.player?.play()
+        }
+        exoPause.setOnClickListener {
+            this@BsPlayerView.player?.pause()
+        }
     }
 
     override fun onVisibilityChange(visibility: Int) {
@@ -77,7 +89,7 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_UP) {
-            if (isControllerVisible) {
+            if (isControllerFullyVisible) {
                 hideController()
                 setLocked(isLocked.value)
             } else {
@@ -99,6 +111,24 @@ class BsPlayerView : PlayerView, PlayerControlView.VisibilityListener, Lifecycle
         } else {
             text = title
             show()
+        }
+    }
+
+    fun onPlayingChanged(isPlaying: Boolean): Unit = with(controlsBinding) {
+        if (isPlaying) {
+            val playFocused = exoPlay.isFocused
+            exoPlay.hide()
+            exoPause.show()
+            if (playFocused) {
+                exoPause.requestFocus()
+            }
+        } else {
+            val pauseFocused = exoPause.isFocused
+            exoPause.hide()
+            exoPlay.show()
+            if (pauseFocused) {
+                exoPlay.requestFocus()
+            }
         }
     }
 

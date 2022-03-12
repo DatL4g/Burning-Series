@@ -33,7 +33,7 @@ import javax.inject.Singleton
 @Obfuscate
 object NetworkModule {
 	
-	private val jsonBuilder = Json {
+	val jsonBuilder = Json {
 		ignoreUnknownKeys = true
 		isLenient = true
 		encodeDefaults = true

@@ -31,6 +31,7 @@ import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.LanguageData
 import de.datlag.model.burningseries.series.SeasonData
+import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.model.jsonbase.Stream
 import de.datlag.model.video.VideoStream
@@ -110,6 +111,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     }
 
     private fun initRecycler(): Unit = with(binding) {
+        episodeRecycler.itemAnimator = null
         episodeRecyclerAdapter.submitList(listOf())
         episodeRecycler.adapter = episodeRecyclerAdapter
 
@@ -172,7 +174,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         } else {
             selectSeason.hide()
         }
-        episodeRecyclerAdapter.submitList(seriesData.episodes) {
+        episodeRecyclerAdapter.submitList(seriesData.episodes.sortedWith(compareBy<EpisodeWithHoster> { it.episode.number.toIntOrNull() }.thenBy { it.episode.number })) {
             if (episode != null) {
                 val (title, episodeTitle) = episode.getEpisodeAndSeries()
                 episodeRecyclerAdapter.performClickOn {

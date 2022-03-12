@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/defaultBackgroundColor"
+        android:layout_marginBottom="8dp"
+        app:rippleColor="@color/rippleColorInvert"
+        app:tint="@color/defaultBackgroundColor"
+        app:iconTint="@color/defaultBackgroundColor"
+        app:fabSize="normal"
+        app:backgroundTint="@color/defaultContentColor" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:gravity="center"
+        android:textColor="@color/defaultContentColor"
+        android:maxLines="1"
+        android:singleLine="true"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="14sp"
+        app:autoSizeMaxTextSize="20sp"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
