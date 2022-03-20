@@ -51,7 +51,7 @@ dependencies {
 
 protobuf.protobuf.run {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.19.1"
+        artifact = "com.google.protobuf:protoc:3.19.4"
     }
 
     generateProtoTasks {

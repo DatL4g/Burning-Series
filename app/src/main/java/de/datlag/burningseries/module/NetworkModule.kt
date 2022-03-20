@@ -19,6 +19,7 @@ import de.datlag.network.video.VideoScraper
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
@@ -51,7 +52,7 @@ object NetworkModule {
 	
 	@Provides
 	@Named(Constants.NAMED_JSON)
-	fun provideMediaType(): MediaType = MediaType.get(Constants.MEDIATYPE_JSON)
+	fun provideMediaType(): MediaType = Constants.MEDIATYPE_JSON.toMediaType()
 	
 	@Provides
 	@Singleton

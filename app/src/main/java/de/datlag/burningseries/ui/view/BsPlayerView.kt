@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.lifecycle.*
 import com.github.rubensousa.previewseekbar.PreviewLoader
 import com.google.android.exoplayer2.Player
@@ -94,6 +95,11 @@ class BsPlayerView :
                 setLocked(isLocked.value)
             } else {
                 showController()
+                if (controlsBinding.exoPlay.isVisible) {
+                    controlsBinding.exoPlay.requestFocus()
+                } else {
+                    controlsBinding.exoPause.requestFocus()
+                }
                 setLocked(isLocked.value)
             }
             return false

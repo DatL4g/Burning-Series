@@ -82,7 +82,7 @@ dependencies {
     implementation(project(mapOf("path" to ":database")))
     implementation(project(mapOf("path" to ":executor")))
     implementation(project(mapOf("path" to ":datastore")))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib${CompileOptions.kotlinJdk}:1.5.31")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib${CompileOptions.kotlinJdk}:1.6.10")
     
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
@@ -99,7 +99,7 @@ dependencies {
     implementation("com.github.devendroid:ReadMoreOption:1.0.3")
     implementation("com.mikepenz:aboutlibraries:10.0.0")
 
-    implementation("com.google.android.exoplayer:exoplayer:2.17.0")
+    implementation("com.google.android.exoplayer:exoplayer:2.17.1")
     implementation("com.github.DATL4G.PreviewSeekBar:previewseekbar-exoplayer:3.0.1")
     implementation("com.github.wseemann:FFmpegMediaMetadataRetriever-core:1.0.16")
     implementation("com.github.wseemann:FFmpegMediaMetadataRetriever-native:1.0.16")
@@ -120,19 +120,17 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.1")
     implementation("androidx.lifecycle:lifecycle-common-java8:2.4.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
 
     implementation("androidx.navigation:navigation-runtime-ktx:2.4.1")
     implementation("androidx.navigation:navigation-fragment-ktx:2.4.1")
     implementation("androidx.navigation:navigation-ui-ktx:2.4.1")
 
-    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-    implementation("com.google.dagger:hilt-android:2.40.5")
-    kapt("com.google.dagger:hilt-android-compiler:2.40.5")
+    implementation("com.google.dagger:hilt-android:2.41")
+    kapt("com.google.dagger:hilt-android-compiler:2.41")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
     implementation("io.github.inflationx:viewpump:2.0.3")
@@ -140,9 +138,16 @@ dependencies {
     
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
 
-    implementation("com.github.bumptech.glide:glide:4.12.0")
-    kapt("com.github.bumptech.glide:compiler:4.12.0")
-    implementation("com.github.DATL4G:Coilifier-Android:1.2.0")
+    implementation("com.github.bumptech.glide", "glide").version {
+        strictly("4.13.1")
+    }
+    kapt("com.github.bumptech.glide", "compiler").version {
+        strictly("4.13.1")
+    }
+    implementation("com.github.DATL4G:Coilifier-Android:1.2.0") {
+        exclude("com.github.bumptech.glide", "glide")
+        exclude("com.github.bumptech.glide", "compiler")
+    }
 
     implementation("androidx.datastore:datastore:1.0.0")
     
@@ -155,6 +160,6 @@ dependencies {
 
 protobuf.protobuf.run {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.19.1"
+        artifact = "com.google.protobuf:protoc:3.19.4"
     }
 }

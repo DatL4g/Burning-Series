@@ -46,12 +46,19 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     
     api("io.github.hadiyarajesh:flower:2.0.0")
-    api("com.squareup.retrofit2:retrofit:2.9.0")
-    api("com.squareup.okhttp3:okhttp:3.14.9")
-    api("com.squareup.okhttp3:logging-interceptor:3.14.9")
+    api("com.squareup.retrofit2:retrofit:2.9.0") {
+        exclude("com.squareup.okhttp3", "okhttp")
+        exclude("com.squareup.okhttp3", "logging-interceptor")
+    }
+    api("com.squareup.okhttp3", "okhttp").version {
+        strictly("4.9.3")
+    }
+    api("com.squareup.okhttp3", "logging-interceptor").version {
+        strictly("4.9.3")
+    }
     implementation("javax.inject:javax.inject:1")
     implementation("org.jsoup:jsoup:1.14.3")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
 }

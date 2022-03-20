@@ -32,6 +32,7 @@ object Constants {
 	const val API_WRAP_API_DOWNLOAD_VIDEO = "0.1.2"
 
 	const val DATABASE_BURNING_SERIES = "BurningSeriesDatabase"
+	const val M3O_BURNING_SERIES_TABLE = "BurningSeries"
 
 	const val NAMED_JSON = "JSON"
 	const val NAMED_JSON_CONVERTER = "JSON_CONVERTER"

@@ -24,7 +24,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import javax.inject.Inject
 import javax.inject.Named
@@ -43,10 +45,9 @@ class M3ORepository @Inject constructor(
 			fetchFromRemote = {
 				imageService.convertURL(
 					"Bearer $token",
-					RequestBody.create(
-						MediaType.get(Constants.MEDIATYPE_JSON),
-						jsonBuilder.encodeToString(ConvertRequestURL(url))
-					)
+					jsonBuilder.encodeToString(
+						ConvertRequestURL(url)
+					).toRequestBody(Constants.MEDIATYPE_JSON.toMediaType())
 				)
 			}
 		).flowOn(Dispatchers.IO)
@@ -104,10 +105,9 @@ class M3ORepository @Inject constructor(
 			fetchFromRemote = {
 				dbService.countBurningSeries(
 					"Bearer $token",
-					RequestBody.create(
-						MediaType.get(Constants.MEDIATYPE_JSON),
-						jsonBuilder.encodeToString(CountRequest("BurningSeries"))
-					)
+					jsonBuilder.encodeToString(
+						CountRequest(Constants.M3O_BURNING_SERIES_TABLE)
+					).toRequestBody(Constants.MEDIATYPE_JSON.toMediaType())
 				)
 			}
 		).collect {
@@ -135,10 +135,9 @@ class M3ORepository @Inject constructor(
 			fetchFromRemote = {
 				dbService.getStream(
 					"Bearer $token",
-					RequestBody.create(
-						MediaType.get(Constants.MEDIATYPE_JSON),
-						jsonBuilder.encodeToString(BurningSeriesHosterQuery(href))
-					)
+					jsonBuilder.encodeToString(
+						BurningSeriesHosterQuery(href)
+					).toRequestBody(Constants.MEDIATYPE_JSON.toMediaType())
 				)
 			}
 		).collect {
@@ -170,10 +169,9 @@ class M3ORepository @Inject constructor(
 	}.flowOn(Dispatchers.IO)
 
 	suspend fun saveScrapedHoster(scraped: ScrapeHoster): Flow<Boolean> = flow {
-		val entry = RequestBody.create(
-			MediaType.get(Constants.MEDIATYPE_JSON),
-			jsonBuilder.encodeToString(BurningSeriesHoster(record = BurningSeriesHosterRecord.fromScraped(scraped)))
-		)
+		val entry = jsonBuilder.encodeToString(
+			BurningSeriesHoster(record = BurningSeriesHosterRecord.fromScraped(scraped))
+		).toRequestBody(Constants.MEDIATYPE_JSON.toMediaType())
 		networkResource(fetchFromRemote = {
 			dbService.saveStream(
 				"Bearer $token",
@@ -207,10 +205,9 @@ class M3ORepository @Inject constructor(
 		networkResource(fetchFromRemote = {
 			dbService.saveStream(
 				"Bearer $token",
-				RequestBody.create(
-					MediaType.get(Constants.MEDIATYPE_JSON),
-					jsonBuilder.encodeToString(BurningSeriesHoster(record = BurningSeriesHosterRecord.fromStream(href, stream)))
-				)
+				jsonBuilder.encodeToString(
+					BurningSeriesHoster(record = BurningSeriesHosterRecord.fromStream(href, stream))
+				).toRequestBody(Constants.MEDIATYPE_JSON.toMediaType())
 			)
 		}).collect { }
 	}

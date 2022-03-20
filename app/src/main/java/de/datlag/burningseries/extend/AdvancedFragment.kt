@@ -8,7 +8,6 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
@@ -54,16 +53,14 @@ abstract class AdvancedFragment : Fragment {
 				onLoaded.invoke(ImageLoader.create(File(it.filesDir, name)))
 			}
 		} else {
-			m3oRepository.getImageFromURL(url)
-				.asLiveData(lifecycleScope.coroutineContext)
-				.observe(viewLifecycleOwner) {
-					it.data?.let { bytes ->
-						saveFileInternal(name, bytes)
-						onLoaded.invoke(ImageLoader.create(bytes))
-					} ?: run {
-						onLoaded.invoke(null)
-					}
+			m3oRepository.getImageFromURL(url).launchAndCollect {
+				it.data?.let { bytes ->
+					saveFileInternal(name, bytes)
+					onLoaded.invoke(ImageLoader.create(bytes))
+				} ?: run {
+					onLoaded.invoke(null)
 				}
+			}
 		}
 	}
 
