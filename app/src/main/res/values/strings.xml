@@ -68,4 +68,6 @@
     <string name="default_fullscreen_subtitle">Automatically switch to fullscreen mode when watching a video</string>
     <string name="sync_with_other_device">Sync with other device</string>
     <string name="searching_for_devices">Searching for devices</string>
+    <string name="mal_login">MyAnimeList Login</string>
+    <string name="mal_logout">MyAnimeList Logout</string>
 </resources>

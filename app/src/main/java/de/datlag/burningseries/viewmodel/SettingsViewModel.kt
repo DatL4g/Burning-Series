@@ -55,4 +55,16 @@ class SettingsViewModel @Inject constructor(
             it.toBuilder().setVideo(it.video.toBuilder().setDefaultFullscreen(newValue).build()).build()
         }
     }
+
+    fun updateUserMalAuth(newValue: String) = viewModelScope.launch(Dispatchers.IO) {
+        dataStore.updateData {
+            it.toBuilder().setUser(it.user.toBuilder().setMalAuth(newValue).build()).build()
+        }
+    }
+
+    fun updateUserMalImages(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        dataStore.updateData {
+            it.toBuilder().setUser(it.user.toBuilder().setMalImages(newValue).build()).build()
+        }
+    }
 }

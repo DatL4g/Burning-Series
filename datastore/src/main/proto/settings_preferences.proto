@@ -16,4 +16,9 @@ message SettingsPreferences {
     bool defaultFullscreen = 4;
   }
   Video video = 2;
+  message User {
+    string malAuth = 1;
+    bool malImages = 2;
+  }
+  User user = 3;
 }

@@ -35,4 +35,12 @@ object SecretModule {
         @ApplicationContext app: Context,
         secrets: Secrets
     ): String = secrets.getWrapAPIToken(app.packageName)
+
+    @Provides
+    @Singleton
+    @Named("malClientId")
+    fun providedMALClientId(
+        @ApplicationContext app: Context,
+        secrets: Secrets
+    ): String = secrets.getMALClientId(app.packageName)
 }

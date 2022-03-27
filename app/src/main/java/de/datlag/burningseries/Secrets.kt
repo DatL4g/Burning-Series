@@ -17,4 +17,6 @@ class Secrets {
     external fun getWrapAPIToken(packageName: String): String
 
     external fun getM3OToken(packageName: String): String
+
+    external fun getMALClientId(packageName: String): String
 }

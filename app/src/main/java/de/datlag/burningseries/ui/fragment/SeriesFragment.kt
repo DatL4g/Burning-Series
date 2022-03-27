@@ -5,16 +5,18 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.ahmed3elshaer.selectionbottomsheet.ExpandState
 import com.ahmed3elshaer.selectionbottomsheet.selectionBottomSheet
 import com.devs.readmoreoption.ReadMoreOption
 import com.hadiyarajesh.flower.Resource
+import com.kttdevelopment.mal4j.anime.AnimePreview
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.EpisodeRecyclerAdapter
@@ -22,7 +24,10 @@ import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
+import de.datlag.burningseries.viewmodel.SettingsViewModel
+import de.datlag.burningseries.viewmodel.UserViewModel
 import de.datlag.burningseries.viewmodel.VideoViewModel
+import de.datlag.coilifier.PlaceholderScaling
 import de.datlag.coilifier.Scale
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
@@ -36,6 +41,11 @@ import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.model.jsonbase.Stream
 import de.datlag.model.video.VideoStream
 import io.michaelrocks.paranoid.Obfuscate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 
 @AndroidEntryPoint
@@ -45,7 +55,9 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     private val navArgs: SeriesFragmentArgs by navArgs()
     private val binding: FragmentSeriesBinding by viewBinding(FragmentSeriesBinding::bind)
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
+    private val settingsViewModel: SettingsViewModel by activityViewModels()
     private val videoViewModel: VideoViewModel by viewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
 
     private val episodeRecyclerAdapter = EpisodeRecyclerAdapter()
     private lateinit var readMoreOption: ReadMoreOption
@@ -56,6 +68,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         super.onViewCreated(view, savedInstanceState)
 
         initRecycler()
+        recoverMalAuthState()
 
         readMoreOption = safeContext.readMoreOption {
             textLength(3)
@@ -155,12 +168,10 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     }
 
     private fun setViewData(seriesData: SeriesWithInfo, episode: LatestEpisode? = null): Unit = with(binding) {
-        hideLoadingDialog()
         currentSeriesWithInfo = seriesData
-        loadImageAndSave(Constants.getBurningSeriesLink(seriesData.series.image)) { bytes ->
-            binding.banner.load<Drawable>(bytes) {
-                scaleType(Scale.FIT_CENTER)
-            }
+        hideLoadingDialog()
+        userViewModel.getMalSeries(seriesData) {
+            loadMalData(it)
         }
         title.text = seriesData.series.title
 
@@ -323,6 +334,53 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 }
             }
         }
+    }
+
+    private fun recoverMalAuthState() = settingsViewModel.data.map { it.user.malAuth }.launchAndCollect {
+        userViewModel.loadMalAuth(it)
+    }
+
+    private fun loadMalData(preview: AnimePreview?) = lifecycleScope.launch(Dispatchers.IO) {
+        val defaultUrl = Constants.getBurningSeriesLink(currentSeriesWithInfo.series.image)
+        val saveName = defaultUrl.substringAfterLast('/')
+
+        fun loadImageFallback() {
+            loadImageAndSave(defaultUrl, saveName) { bytes ->
+                binding.banner.load<Drawable>(bytes) {
+                    scaleType(Scale.FIT_CENTER)
+                    if (bannerHasImage()) {
+                        placeholder(binding.banner, PlaceholderScaling.fitCenter())
+                    }
+                }
+            }
+        }
+
+        if (settingsViewModel.data.map { settings -> settings.user.malImages }.first() && userViewModel.isMalAuthorized()) {
+            withContext(Dispatchers.Main) {
+                preview?.mainPicture?.largeURL?.let { picture ->
+                    loadImageAndSave(picture, saveName) { loader ->
+                        loader?.let {
+                            binding.banner.load<Drawable>(it) {
+                                scaleType(Scale.FIT_CENTER)
+                                if (bannerHasImage()) {
+                                    placeholder(binding.banner, PlaceholderScaling.fitCenter())
+                                }
+                            }
+                        } ?: loadImageFallback()
+                    }
+                } ?: loadImageFallback()
+            }
+        } else {
+            withContext(Dispatchers.Main) {
+                loadImageFallback()
+            }
+        }
+
+        preview?.let { userViewModel.syncMalSeries(it, currentSeriesWithInfo.episodes.map { ep -> ep.episode }) }
+    }
+
+    private fun bannerHasImage(): Boolean = with(binding.banner) {
+        return@with isVisible && isShown && (width > 0 || measuredWidth > 0) && (height > 0 || measuredHeight > 0)
     }
 
     override fun onResume() {

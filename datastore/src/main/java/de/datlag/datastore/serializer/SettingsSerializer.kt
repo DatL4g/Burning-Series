@@ -18,15 +18,18 @@ class SettingsSerializer(isTelevision: Boolean, defaultDarkMode: Boolean) : Seri
             .setPreferMp4(false)
             .setPreviewEnabled(!isTelevision)
             .setDefaultFullscreen(true))
+        .setUser(SettingsPreferences.User.newBuilder()
+            .setMalAuth(String())
+            .setMalImages(true))
         .build()
 
     override suspend fun readFrom(input: InputStream): SettingsPreferences {
         return try {
-            return SettingsPreferences.parseFrom(input)
+            return SettingsPreferences.parseDelimitedFrom(input)
         } catch (e: Exception) {
             defaultValue
         }
     }
 
-    override suspend fun writeTo(t: SettingsPreferences, output: OutputStream) = t.writeTo(output)
+    override suspend fun writeTo(t: SettingsPreferences, output: OutputStream) = t.writeDelimitedTo(output)
 }

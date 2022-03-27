@@ -6,7 +6,9 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.annotation.LayoutRes
+import androidx.core.widget.ImageViewCompat
 import androidx.viewbinding.ViewBinding
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -27,4 +29,9 @@ fun View.hide() {
 
 fun View.invisible() {
 	this.visibility = View.INVISIBLE
+}
+
+fun ImageView.clearTint() {
+	this.clearColorFilter()
+	ImageViewCompat.setImageTintList(this, null)
 }

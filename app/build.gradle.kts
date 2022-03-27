@@ -89,7 +89,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.4.1")
     implementation("com.google.android.material:material:1.5.0")
     runtimeOnly("androidx.vectordrawable:vectordrawable-animated:1.1.0")
-    implementation("androidx.core:core-splashscreen:1.0.0-beta01")
+    implementation("androidx.core:core-splashscreen:1.0.0-beta02")
 
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.3")
@@ -156,6 +156,8 @@ dependencies {
 
     implementation("com.github.SamuelGjk:RoundCornerProgressBar:1.0")
     implementation("com.github.DatL4g.Klient2Klient:Klient2Klient:0.1.1")
+    implementation("com.kttdevelopment:mal4j:2.7.2")
+    implementation("net.openid:appauth:0.11.1")
 }
 
 protobuf.protobuf.run {

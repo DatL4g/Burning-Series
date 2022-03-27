@@ -48,13 +48,31 @@ class SettingsRecyclerAdapter : RecyclerAdapter<SettingsModel, SettingsRecyclerA
                 binding.text.show()
             }
             binding.switcher.isChecked = item.defaultValue
-            binding.switcher.setOnCheckedChangeListener { _, isChecked ->
-                item.listener.invoke(isChecked)
-                binding.switcher.setOnCheckedChangeListener(null)
-                submitList(differ.currentList.toMutableList().apply {
-                    removeAt(position)
-                    add(position, item.apply { defaultValue = isChecked })
-                })
+            binding.switcher.isEnabled = item.enabled
+            binding.title.alpha = if (item.enabled) {
+                1F
+            } else {
+                0.5F
+            }
+            binding.text.alpha = if (item.enabled) {
+                1F
+            } else {
+                0.5F
+            }
+            binding.switcher.alpha = if (item.enabled) {
+                1F
+            } else {
+                0.5F
+            }
+            if (item.enabled) {
+                binding.switcher.setOnCheckedChangeListener { _, isChecked ->
+                    item.listener.invoke(isChecked)
+                    binding.switcher.setOnCheckedChangeListener(null)
+                    submitList(differ.currentList.toMutableList().apply {
+                        removeAt(position)
+                        add(position, item.apply { defaultValue = isChecked })
+                    })
+                }
             }
         }
 

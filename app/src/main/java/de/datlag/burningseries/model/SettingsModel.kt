@@ -10,6 +10,7 @@ sealed class SettingsModel {
         val title: String,
         val text: String = String(),
         var defaultValue: Boolean = false,
+        var enabled: Boolean = true,
         val listener: (isChecked: Boolean) -> Unit
     ) : SettingsModel()
 

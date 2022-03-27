@@ -4,9 +4,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,6 +17,7 @@ import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.burningseries.viewmodel.GitHubViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
+import de.datlag.burningseries.viewmodel.UserViewModel
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import io.michaelrocks.paranoid.Obfuscate
@@ -30,8 +29,9 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	
 	private val binding: FragmentHomeBinding by viewBinding(FragmentHomeBinding::bind)
 	private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
-	private val settingsViewModel: SettingsViewModel by viewModels()
+	private val settingsViewModel: SettingsViewModel by activityViewModels()
 	private val gitHubViewModel: GitHubViewModel by activityViewModels()
+	private val userViewModel: UserViewModel by activityViewModels()
 	
 	private val latestEpisodeRecyclerAdapter by lazy {
 		LatestEpisodeRecyclerAdapter(binding.allSeriesButton.id)
@@ -46,6 +46,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		initRecycler()
 		listenImproveDialogSetting()
 		listenNewVersionDialog()
+		recoverMalAuthState()
 
 		burningSeriesViewModel.homeData.launchAndCollect {
 			when (it.status) {
@@ -90,6 +91,10 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		} else {
 			burningSeriesViewModel.showedHelpImprove = true
 		}
+	}
+
+	private fun recoverMalAuthState() = settingsViewModel.data.map { it.user.malAuth }.launchAndCollect {
+		userViewModel.loadMalAuth(it)
 	}
 
 	private fun listenNewVersionDialog() = gitHubViewModel.getLatestRelease().launchAndCollect {

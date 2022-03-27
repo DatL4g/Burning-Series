@@ -28,7 +28,9 @@ import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
-import de.datlag.burningseries.common.*
+import de.datlag.burningseries.common.hideLoadingDialog
+import de.datlag.burningseries.common.safeActivity
+import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.FragmentVideoBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.helper.lazyMutable
@@ -44,9 +46,13 @@ import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.video.VideoStream
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import timber.log.Timber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import wseemann.media.FFmpegMediaMetadataRetriever
 import javax.inject.Inject
 
@@ -58,7 +64,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     private val binding: FragmentVideoBinding by viewBinding(FragmentVideoBinding::bind)
 
     private val videoViewModel: VideoViewModel by viewModels()
-    private val settingsViewModel: SettingsViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by activityViewModels()
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
     private lateinit var exoPlayer: ExoPlayer
     private lateinit var retriever: FFmpegMediaMetadataRetriever

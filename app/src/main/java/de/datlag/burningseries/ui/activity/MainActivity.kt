@@ -1,9 +1,7 @@
 package de.datlag.burningseries.ui.activity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
-import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fede987.statusbaralert.StatusBarAlert
@@ -19,7 +17,7 @@ import de.datlag.burningseries.ui.connector.FABNavigation
 import de.datlag.burningseries.ui.connector.KeyEventDispatcher
 import de.datlag.burningseries.ui.connector.StatusBarAlertProvider
 import io.michaelrocks.paranoid.Obfuscate
-import timber.log.Timber
+
 
 @AndroidEntryPoint
 @Obfuscate

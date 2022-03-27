@@ -17,9 +17,7 @@ import de.datlag.coilifier.Scale
 import de.datlag.coilifier.commons.load
 import de.datlag.k2k.Host
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
-import javax.inject.Inject
 
 @Obfuscate
 class DeviceDiscoveryAdapter : ClickRecyclerAdapter<Host, DeviceDiscoveryAdapter.ViewHolder>() {

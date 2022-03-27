@@ -7,9 +7,11 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.github.rubensousa.previewseekbar.PreviewLoader
-import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.StyledPlayerControlView
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import de.datlag.burningseries.R
@@ -22,7 +24,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.parcelize.Parcelize
-import timber.log.Timber
 
 @Obfuscate
 class BsPlayerView :
