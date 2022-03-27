@@ -18,6 +18,8 @@ import de.datlag.network.burningseries.BurningSeriesRepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.*
 import net.openid.appauth.*
+import net.openid.appauth.browser.BrowserDenyList
+import net.openid.appauth.browser.BrowserMatcher
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -68,7 +70,15 @@ class UserViewModel @Inject constructor(
                 AuthorizationRequest.CODE_CHALLENGE_METHOD_PLAIN
             )
             .build()
-        malAuthService = AuthorizationService(context)
+        val appAuthConfig = AppAuthConfiguration.Builder()
+            .setBrowserMatcher(BrowserDenyList(
+                *Constants.MAL_OAUTH_BROWSER_DENY.map { deny ->
+                    BrowserMatcher {
+                        it.packageName.equals(deny, true)
+                    }
+                }.toTypedArray()
+            )).build()
+        malAuthService = AuthorizationService(context, appAuthConfig)
         return malAuthService?.getAuthorizationRequestIntent(authRequest)
     }
 

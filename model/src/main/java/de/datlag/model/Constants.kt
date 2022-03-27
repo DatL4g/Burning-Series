@@ -50,6 +50,8 @@ object Constants {
 	const val MAL_RESPONSE_TYPE = "code"
 	const val MAL_REDIRECT_URI = "datlag://burningseries"
 
+	val MAL_OAUTH_BROWSER_DENY = listOf("com.vewd.core.integration.dia")
+
 	fun getBurningSeriesLink(href: String): String {
 		return if (!href.matches("^\\w+?://.*".toRegex())) {
 			if (!href.startsWith("/")) {
