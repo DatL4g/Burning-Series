@@ -343,6 +343,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     private fun loadMalData(preview: AnimePreview?) = lifecycleScope.launch(Dispatchers.IO) {
         val defaultUrl = Constants.getBurningSeriesLink(currentSeriesWithInfo.series.image)
         val saveName = defaultUrl.substringAfterLast('/')
+        val malImageUrl = preview?.mainPicture?.largeURL
 
         fun loadImageFallback() {
             loadImageAndSave(defaultUrl, saveName) { bytes ->
@@ -357,18 +358,22 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
         if (settingsViewModel.data.map { settings -> settings.user.malImages }.first() && userViewModel.isMalAuthorized()) {
             withContext(Dispatchers.Main) {
-                preview?.mainPicture?.largeURL?.let { picture ->
-                    loadImageAndSave(picture, saveName) { loader ->
-                        loader?.let {
-                            binding.banner.load<Drawable>(it) {
+                if (malImageUrl != null) {
+                    loadImageAndSave(malImageUrl, saveName) { loader ->
+                        if (loader != null) {
+                            binding.banner.load<Drawable>(loader) {
                                 scaleType(Scale.FIT_CENTER)
                                 if (bannerHasImage()) {
                                     placeholder(binding.banner, PlaceholderScaling.fitCenter())
                                 }
                             }
-                        } ?: loadImageFallback()
+                        } else {
+                            loadImageFallback()
+                        }
                     }
-                } ?: loadImageFallback()
+                } else {
+                    loadImageFallback()
+                }
             }
         } else {
             withContext(Dispatchers.Main) {

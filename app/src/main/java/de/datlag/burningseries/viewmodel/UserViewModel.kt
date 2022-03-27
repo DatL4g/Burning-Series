@@ -11,6 +11,7 @@ import com.kttdevelopment.mal4j.MyAnimeList
 import com.kttdevelopment.mal4j.anime.AnimePreview
 import com.kttdevelopment.mal4j.anime.property.AnimeStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import de.datlag.burningseries.common.safeSubList
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
@@ -125,17 +126,35 @@ class UserViewModel @Inject constructor(
     fun getMalSeries(mal: MyAnimeList?, seriesData: SeriesWithInfo, callback: (AnimePreview?) -> Unit) = viewModelScope.launch(Dispatchers.IO) {
         mal?.let {
             if (seriesData.infos.any { info -> info.data.contains("Anime", true) }) {
-                val query = it.anime.includeNSFW().withLimit(1)
+                val query = it.anime.includeNSFW().withLimit(15)
                 val malWithSeason = query.withQuery("${seriesData.series.title} ${seriesData.series.season}").search() ?: listOf()
-                val malEntry: AnimePreview? = malWithSeason.firstOrNull() ?: (query.withQuery(seriesData.series.title).search() ?: listOf()).firstOrNull()
+                var malEntry: AnimePreview? = malWithSeason.firstOrNull { entry ->
+                    animePreviewIsExactMatch(entry, seriesData.series.title)
+                }
 
-                withContext(Dispatchers.Main) {
-                    callback.invoke(malEntry)
+                if (malEntry != null) {
+                    return@launch callback.invoke(malEntry)
+                } else {
+                    val malWithoutSeason = query.withQuery(seriesData.series.title).search() ?: listOf()
+                    malEntry = malWithoutSeason.firstOrNull { entry ->
+                        animePreviewIsExactMatch(entry, seriesData.series.title)
+                    } ?: malWithoutSeason.firstOrNull() ?: malWithSeason.firstOrNull()
+
+                    return@launch callback.invoke(malEntry)
                 }
             } else {
-                callback.invoke(null)
+                return@launch callback.invoke(null)
             }
-        } ?: callback.invoke(null)
+        } ?: return@launch callback.invoke(null)
+    }
+
+    private fun animePreviewIsExactMatch(preview: AnimePreview, matchTitle: String): Boolean {
+        return (preview.title ?: String()).trim().equals(matchTitle.trim(), true)
+                || (preview.alternativeTitles.english ?: String()).trim().equals(matchTitle.trim(), true)
+                || (preview.alternativeTitles.japanese ?: String()).trim().equals(matchTitle.trim(), true)
+                || (preview.title ?: String()).equals(matchTitle, true)
+                || (preview.alternativeTitles.english ?: String()).equals(matchTitle, true)
+                || (preview.alternativeTitles.japanese ?: String()).equals(matchTitle, true)
     }
 
     fun syncMalSeries(preview: AnimePreview, episodes: List<EpisodeInfo>) = viewModelScope.launch(Dispatchers.IO) {
@@ -160,7 +179,7 @@ class UserViewModel @Inject constructor(
         } else {
             val addWatchedAmount = malWatchedAmount - deviceWatchedAmount
             if (addWatchedAmount > 0) {
-                val notWatchedEpisodes = episodes.filterNot { it.watchedPercentage() >= 90F }.toMutableList().subList(0, addWatchedAmount)
+                val notWatchedEpisodes = episodes.filterNot { it.watchedPercentage() >= 90F }.safeSubList(0, addWatchedAmount)
                 notWatchedEpisodes.map { async {
                     it.totalWatchPos = Long.MAX_VALUE
                     it.currentWatchPos = Long.MAX_VALUE
