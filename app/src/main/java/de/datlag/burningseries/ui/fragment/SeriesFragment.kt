@@ -416,7 +416,11 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             }
         }
 
-        preview?.let { userViewModel.syncMalSeries(it, currentSeriesWithInfo.episodes.map { ep -> ep.episode }) }
+        preview?.let { userViewModel.syncMalSeries(
+            it,
+            currentSeriesWithInfo.episodes.map { ep -> ep.episode },
+            currentSeriesWithInfo.currentSeasonIsLast
+        ) }
     }
 
     private fun loadAniListData(medium: MediaQuery.Medium) = lifecycleScope.launch(Dispatchers.IO) {
@@ -460,7 +464,11 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             }
         }
 
-        userViewModel.syncAniListSeries(medium, currentSeriesWithInfo.episodes.map { ep -> ep.episode })
+        userViewModel.syncAniListSeries(
+            medium,
+            currentSeriesWithInfo.episodes.map { ep -> ep.episode },
+            currentSeriesWithInfo.currentSeasonIsLast
+        )
     }
 
     private fun bannerHasImage(): Boolean = with(binding.banner) {

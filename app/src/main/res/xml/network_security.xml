@@ -41,6 +41,10 @@
         <domain includeSubdomains="true">http://anilist.co</domain>
         <domain includeSubdomains="true">anilist.co</domain>
 
+        <domain includeSubdomains="true">https://graphql.anilist.co</domain>
+        <domain includeSubdomains="true">http://graphql.anilist.co</domain>
+        <domain includeSubdomains="true">graphql.anilist.co</domain>
+
         <trust-anchors>
             <certificates src="system"/>
             <certificates src="user"/>

@@ -203,7 +203,7 @@ class UserViewModel @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    fun syncMalSeries(preview: AnimePreview, episodes: List<EpisodeInfo>) = viewModelScope.launch(Dispatchers.IO) {
+    fun syncMalSeries(preview: AnimePreview, episodes: List<EpisodeInfo>, isLastSeason: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         val malListStatus = preview.listStatus
         val malWatchedAmount = malListStatus?.watchedEpisodes ?: 0
         val malWatchStatus = malListStatus?.status
@@ -213,7 +213,7 @@ class UserViewModel @Inject constructor(
         val deviceWatchedAmount = episodes.filter { it.watchedPercentage() >= 90F }.size
 
         if (deviceWatchedAmount > malWatchedAmount) {
-            if (deviceWatchedAmount >= episodes.size) {
+            if (deviceWatchedAmount >= episodes.size && isLastSeason) {
                 if (malCompletedOrRewatching) {
                     try {
                         malListStatus.edit().episodesWatched(deviceWatchedAmount).update()
@@ -293,7 +293,7 @@ class UserViewModel @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    fun syncAniListSeries(medium: MediaQuery.Medium, episodes: List<EpisodeInfo>) = viewModelScope.launch(Dispatchers.IO) {
+    fun syncAniListSeries(medium: MediaQuery.Medium, episodes: List<EpisodeInfo>, isLastSeason: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         suspend fun saveOrUpdate(token: String) {
             val aniListStatus = medium.mediaListEntry
             val aniListWatchedAmount = aniListStatus?.progress ?: 0
@@ -305,7 +305,7 @@ class UserViewModel @Inject constructor(
             val deviceWatchedAmount = episodes.filter { it.watchedPercentage() >= 90F }.size
 
             if (deviceWatchedAmount > aniListWatchedAmount) {
-                if (deviceWatchedAmount >= episodes.size) {
+                if (deviceWatchedAmount >= episodes.size && isLastSeason) {
                     if (aniListCompletedOrRewatching) {
                         anilistRepository.saveAniListEntry(token, medium.id, deviceWatchedAmount, aniListWatchStatus ?: MediaListStatus.CURRENT)
                     } else {

@@ -8,6 +8,7 @@ import de.datlag.model.burningseries.series.*
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
+import kotlin.math.max
 
 @Parcelize
 @Serializable
@@ -34,4 +35,20 @@ data class SeriesWithInfo(
         parentColumn = "seriesId",
         entityColumn = "seriesId"
     ) val episodes: List<EpisodeWithHoster>
-) : Parcelable
+) : Parcelable {
+
+    val currentSeasonIsLast: Boolean
+        get() {
+            val seasonsMax = seasons.maxOfOrNull { it.value } ?: series.seasons.maxOfOrNull { it.value } ?: Int.MAX_VALUE
+            val currentMax = if (seasons.isNotEmpty() && series.seasons.isNotEmpty()) {
+                max(series.currentSeason(seasons).value, series.currentSeason(series.seasons).value)
+            } else if (seasons.isNotEmpty()) {
+                series.currentSeason(seasons).value
+            } else if (series.seasons.isNotEmpty()) {
+                series.currentSeason(series.seasons).value
+            } else {
+                Int.MIN_VALUE
+            }
+            return currentMax >= seasonsMax
+        }
+}
