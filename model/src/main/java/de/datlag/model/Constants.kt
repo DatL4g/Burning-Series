@@ -13,6 +13,7 @@ object Constants {
 	const val HOST_BS_TO = "bs.to"
 	const val HOST_GITHUB = "github.com"
 	const val HOST_MAL = "myanimelist.net"
+	const val HOST_ANILIST = "anilist.co"
 
 	const val API_M3O = "${PROTOCOL_HTTPS}api.m3o.com"
 	const val API_JSONBASE = "${PROTOCOL_HTTPS}jsonbase.com"
@@ -48,9 +49,14 @@ object Constants {
 	const val MAL_OAUTH_AUTH_URI = "${PROTOCOL_HTTPS}${HOST_MAL}/v1/oauth2/authorize"
 	const val MAL_OAUTH_TOKEN_URI = "${PROTOCOL_HTTPS}${HOST_MAL}/v1/oauth2/token"
 	const val MAL_RESPONSE_TYPE = "code"
-	const val MAL_REDIRECT_URI = "datlag://burningseries"
+	const val MAL_REDIRECT_URI = "datlag://burningseries/myanimelist"
 
-	val MAL_OAUTH_BROWSER_DENY = listOf("com.vewd.core.integration.dia")
+	const val ANILIST_OAUTH_AUTH_URI = "${PROTOCOL_HTTPS}${HOST_ANILIST}/api/v2/oauth/authorize"
+	const val ANILIST_OAUTH_TOKEN_URI = "${PROTOCOL_HTTPS}${HOST_ANILIST}/api/v2/oauth/token"
+	const val ANILIST_RESPONSE_TYPE = "code"
+	const val ANILIST_REDIRECT_URI = "datlag://burningseries/anilist"
+
+	val OAUTH_BROWSER_DENY = listOf("com.vewd.core.integration.dia")
 
 	fun getBurningSeriesLink(href: String): String {
 		return if (!href.matches("^\\w+?://.*".toRegex())) {

@@ -1,0 +1,22 @@
+query MediaQuery($search: String!, $mediaType: MediaType!) {
+    page: Page(page: 1, perPage: 15) {
+        media(search: $search, type: $mediaType) {
+            id
+            mediaListEntry {
+                status,
+                progress
+            },
+            title {
+                romaji
+                english
+                native
+                userPreferred
+            },
+            coverImage {
+                extraLarge
+                large
+                medium
+            }
+        }
+    }
+}

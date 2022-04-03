@@ -63,6 +63,16 @@ abstract class AdvancedFragment : Fragment {
 		}
 	}
 
+	fun loadSavedImage(name: String): ImageLoader? {
+		return if (checkFileValid(name)) {
+			safeActivity?.let {
+				ImageLoader.create(File(it.filesDir, name))
+			}
+		} else {
+			null
+		}
+	}
+
 	fun getBurningSeriesHosterCount(onLoaded: (Long) -> Unit) {
 		m3oRepository.getBurningSeriesHosterCount().launchAndCollect {
 			if (it != null) {

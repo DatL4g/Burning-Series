@@ -30,6 +30,8 @@ import de.datlag.burningseries.viewmodel.VideoViewModel
 import de.datlag.coilifier.PlaceholderScaling
 import de.datlag.coilifier.Scale
 import de.datlag.coilifier.commons.load
+import de.datlag.executor.Executor
+import de.datlag.executor.Schema
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.home.LatestEpisode
@@ -40,6 +42,7 @@ import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.model.jsonbase.Stream
 import de.datlag.model.video.VideoStream
+import de.datlag.network.anilist.MediaQuery
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -47,6 +50,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
+import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 @Obfuscate
@@ -64,11 +69,15 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
     private lateinit var currentSeriesWithInfo: SeriesWithInfo
 
+    @Inject
+    lateinit var executor: Executor
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initRecycler()
         recoverMalAuthState()
+        recoverAniListAuthState()
 
         readMoreOption = safeContext.readMoreOption {
             textLength(3)
@@ -92,7 +101,13 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             }
         }
         navArgs.seriesWithInfo?.let { series ->
-            setViewData(series)
+            lifecycleScope.launch(Dispatchers.IO) {
+                executor.execute(Schema.Conflated) {
+                    withContext(Dispatchers.Main) {
+                        setViewData(series)
+                    }
+                }
+            }
             burningSeriesViewModel.getSeriesData(series.series.href, series.series.hrefTitle).launchAndCollect {
                 seriesFlowCollect(it)
             }
@@ -104,21 +119,25 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         }
     }
 
-    private fun seriesFlowCollect(it: Resource<SeriesWithInfo?>, episode: LatestEpisode? = null) {
-        when (it.status) {
-            Resource.Status.LOADING -> {
-                it.data?.let { data -> setViewData(data, episode) }
-                showLoadingStatusBar()
-                showLoadingDialog()
-            }
-            Resource.Status.SUCCESS -> {
-                it.data?.let { data -> setViewData(data, episode) }
-                showSuccessStatusBar()
-                hideLoadingDialog()
-            }
-            Resource.Status.ERROR -> {
-                showErrorStatusBar()
-                hideLoadingDialog()
+    private fun seriesFlowCollect(it: Resource<SeriesWithInfo?>, episode: LatestEpisode? = null) = lifecycleScope.launch(Dispatchers.IO) {
+        executor.execute(Schema.Conflated) {
+            withContext(Dispatchers.Main) {
+                when (it.status) {
+                    Resource.Status.LOADING -> {
+                        it.data?.let { data -> setViewData(data, episode) }
+                        showLoadingStatusBar()
+                        showLoadingDialog()
+                    }
+                    Resource.Status.SUCCESS -> {
+                        it.data?.let { data -> setViewData(data, episode) }
+                        showSuccessStatusBar()
+                        hideLoadingDialog()
+                    }
+                    Resource.Status.ERROR -> {
+                        showErrorStatusBar()
+                        hideLoadingDialog()
+                    }
+                }
             }
         }
     }
@@ -170,8 +189,20 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     private fun setViewData(seriesData: SeriesWithInfo, episode: LatestEpisode? = null): Unit = with(binding) {
         currentSeriesWithInfo = seriesData
         hideLoadingDialog()
-        userViewModel.getMalSeries(seriesData) {
-            loadMalData(it)
+        loadSavedImage(Constants.getBurningSeriesLink(seriesData.series.image).substringAfterLast('/'))?.let {
+            binding.banner.load<Drawable>(it)
+        }
+        userViewModel.getAniListSeries(seriesData).launchAndCollect { series ->
+            if (series != null) {
+                loadAniListData(series)
+            }
+        }
+        userViewModel.getUserMal { mal ->
+            if (mal != null) {
+                userViewModel.getMalSeries(mal, seriesData).launchAndCollect {
+                    loadMalData(it)
+                }
+            }
         }
         title.text = seriesData.series.title
 
@@ -340,6 +371,10 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         userViewModel.loadMalAuth(it)
     }
 
+    private fun recoverAniListAuthState() = settingsViewModel.data.map { it.user.anilistAuth }.launchAndCollect {
+        userViewModel.loadAniListAuth(it)
+    }
+
     private fun loadMalData(preview: AnimePreview?) = lifecycleScope.launch(Dispatchers.IO) {
         val defaultUrl = Constants.getBurningSeriesLink(currentSeriesWithInfo.series.image)
         val saveName = defaultUrl.substringAfterLast('/')
@@ -382,6 +417,50 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         }
 
         preview?.let { userViewModel.syncMalSeries(it, currentSeriesWithInfo.episodes.map { ep -> ep.episode }) }
+    }
+
+    private fun loadAniListData(medium: MediaQuery.Medium) = lifecycleScope.launch(Dispatchers.IO) {
+        val defaultUrl = Constants.getBurningSeriesLink(currentSeriesWithInfo.series.image)
+        val saveName = defaultUrl.substringAfterLast('/')
+        val aniListImageUrl = medium.coverImage?.extraLarge ?: medium.coverImage?.large ?: medium.coverImage?.medium
+
+        fun loadImageFallback() {
+            loadImageAndSave(defaultUrl, saveName) { bytes ->
+                binding.banner.load<Drawable>(bytes) {
+                    scaleType(Scale.FIT_CENTER)
+                    if (bannerHasImage()) {
+                        placeholder(binding.banner, PlaceholderScaling.fitCenter())
+                    }
+                }
+            }
+        }
+
+        if (settingsViewModel.data.map { settings -> settings.user.aniListImages }.first() && userViewModel.isAniListAuthorized()) {
+            withContext(Dispatchers.Main) {
+                if (aniListImageUrl != null) {
+                    loadImageAndSave(aniListImageUrl, saveName) { loader ->
+                        if (loader != null) {
+                            binding.banner.load<Drawable>(loader) {
+                                scaleType(Scale.FIT_CENTER)
+                                if (bannerHasImage()) {
+                                    placeholder(binding.banner, PlaceholderScaling.fitCenter())
+                                }
+                            }
+                        } else {
+                            loadImageFallback()
+                        }
+                    }
+                } else {
+                    loadImageFallback()
+                }
+            }
+        } else {
+            withContext(Dispatchers.Main) {
+                loadImageFallback()
+            }
+        }
+
+        userViewModel.syncAniListSeries(medium, currentSeriesWithInfo.episodes.map { ep -> ep.episode })
     }
 
     private fun bannerHasImage(): Boolean = with(binding.banner) {

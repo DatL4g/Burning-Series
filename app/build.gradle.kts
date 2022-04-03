@@ -156,7 +156,6 @@ dependencies {
 
     implementation("com.github.SamuelGjk:RoundCornerProgressBar:1.0")
     implementation("com.github.DatL4g.Klient2Klient:Klient2Klient:0.1.1")
-    implementation("com.kttdevelopment:mal4j:2.7.2")
     implementation("net.openid:appauth:0.11.1")
 }
 

@@ -68,6 +68,16 @@
     <string name="default_fullscreen_subtitle">Automatically switch to fullscreen mode when watching a video</string>
     <string name="sync_with_other_device">Sync with other device</string>
     <string name="searching_for_devices">Searching for devices</string>
-    <string name="mal_login">MyAnimeList Login</string>
-    <string name="mal_logout">MyAnimeList Logout</string>
+    <string name="myanimelist" translatable="false">MyAnimeList</string>
+    <string name="anilist" translatable="false">AniList</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="mal_login">MAL Login</string>
+    <string name="mal_login_subtitle">Sync your progress with MyAnimeList</string>
+    <string name="mal_images">Use MAL Images</string>
+    <string name="mal_images_subtitle">Loads MyAnimeList Covers of series</string>
+    <string name="anilist_login">AniList Login</string>
+    <string name="anilist_login_subtitle">Sync your progress with AniList</string>
+    <string name="anilist_images">Use AniList Images</string>
+    <string name="anilist_images_subtitle">Loads AniList Covers of series</string>
 </resources>

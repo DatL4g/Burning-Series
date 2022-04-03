@@ -8,7 +8,9 @@ import de.datlag.datastore.SettingsPreferences
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -63,8 +65,30 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateUserMalImages(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        val aniListImagesValue = if (newValue) {
+            false
+        } else {
+            dataStore.data.map { it.user.aniListImages }.first()
+        }
         dataStore.updateData {
-            it.toBuilder().setUser(it.user.toBuilder().setMalImages(newValue).build()).build()
+            it.toBuilder().setUser(it.user.toBuilder().setMalImages(newValue).setAniListImages(aniListImagesValue).build()).build()
+        }
+    }
+
+    fun updateUserAniListAuth(newValue: String) = viewModelScope.launch(Dispatchers.IO) {
+        dataStore.updateData {
+            it.toBuilder().setUser(it.user.toBuilder().setAnilistAuth(newValue).build()).build()
+        }
+    }
+
+    fun updateUserAniListImages(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        val malImagesValue = if (newValue) {
+            false
+        } else {
+            dataStore.data.map { it.user.malImages }.first()
+        }
+        dataStore.updateData {
+            it.toBuilder().setUser(it.user.toBuilder().setAniListImages(newValue).setMalImages(malImagesValue).build()).build()
         }
     }
 }

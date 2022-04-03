@@ -46,7 +46,11 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="datlag"
-                    android:host="burningseries" />
+                    android:host="burningseries"
+                    android:path="/myanimelist"/>
+                <data android:scheme="datlag"
+                    android:host="burningseries"
+                    android:path="/anilist" />
             </intent-filter>
         </activity>
     </application>

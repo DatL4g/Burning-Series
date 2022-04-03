@@ -19,6 +19,8 @@ message SettingsPreferences {
   message User {
     string malAuth = 1;
     bool malImages = 2;
+    string anilistAuth = 3;
+    bool aniListImages = 4;
   }
   User user = 3;
 }

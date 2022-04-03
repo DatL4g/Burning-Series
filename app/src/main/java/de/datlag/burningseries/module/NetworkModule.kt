@@ -1,5 +1,6 @@
 package de.datlag.burningseries.module
 
+import com.apollographql.apollo3.ApolloClient
 import com.hadiyarajesh.flower.calladpater.FlowCallAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -150,4 +151,8 @@ object NetworkModule {
 		.baseUrl(Constants.API_GITHUB)
 		.build()
 		.create(GitHub::class.java)
+
+	@Provides
+	@Singleton
+	fun provideAniListApolloClient() = ApolloClient.Builder().serverUrl("https://graphql.anilist.co").build()
 }

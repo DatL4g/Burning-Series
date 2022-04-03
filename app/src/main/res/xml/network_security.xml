@@ -33,6 +33,14 @@
         <domain includeSubdomains="true">http://upstream.to</domain>
         <domain includeSubdomains="true">upstream.to</domain>
 
+        <domain includeSubdomains="true">https://myanimelist.net</domain>
+        <domain includeSubdomains="true">http://myanimelist.net</domain>
+        <domain includeSubdomains="true">myanimelist.net</domain>
+
+        <domain includeSubdomains="true">https://anilist.co</domain>
+        <domain includeSubdomains="true">http://anilist.co</domain>
+        <domain includeSubdomains="true">anilist.co</domain>
+
         <trust-anchors>
             <certificates src="system"/>
             <certificates src="user"/>

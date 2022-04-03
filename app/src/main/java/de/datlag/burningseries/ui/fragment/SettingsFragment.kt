@@ -3,6 +3,7 @@ package de.datlag.burningseries.ui.fragment
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
@@ -24,12 +25,14 @@ import de.datlag.burningseries.model.SettingsModel
 import de.datlag.burningseries.viewmodel.GitHubViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.UserViewModel
+import de.datlag.coilifier.ImageLoader
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
@@ -43,7 +46,11 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
     private val settingsAdapter = SettingsRecyclerAdapter()
 
     private val malOAuthResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        result -> userViewModel.resultLauncherCallback(result)
+        result -> userViewModel.malResultLauncherCallback(result)
+    }
+
+    private val anilistOAuthResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        result -> userViewModel.aniListResultLauncherCallback(result)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,8 +59,12 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
         initRecycler()
         setSettingsData()
         listenNewVersion()
+
         userViewModel.setSaveMalAuthListener {
             settingsViewModel.updateUserMalAuth(it)
+        }
+        userViewModel.setSaveAniListListener {
+            settingsViewModel.updateUserAniListAuth(it)
         }
         binding.librariesCard.setOnClickListener {
             findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToAboutLibraries())
@@ -64,13 +75,6 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
         binding.syncCard.setOnClickListener {
             findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToSyncFragment())
         }
-        binding.malCard.setOnClickListener {
-            if (userViewModel.isMalAuthorized()) {
-                userViewModel.endMalAuth()
-            } else {
-                malOAuthResultLauncher.launch(userViewModel.createMalAuthIntent(safeContext))
-            }
-        }
     }
 
     private fun initRecycler(): Unit = with(binding) {
@@ -80,6 +84,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
 
     private fun setSettingsData() = settingsViewModel.data.launchAndCollect {
         userViewModel.loadMalAuth(it.user.malAuth)
+        userViewModel.loadAniListAuth(it.user.anilistAuth)
 
         settingsAdapter.submitList(listOf(
             SettingsModel.Group(0,safeContext.getString(R.string.appearance)),
@@ -128,35 +133,87 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
             ) { isChecked ->
                 settingsViewModel.updateVideoFullscreen(isChecked)
             },
-            SettingsModel.Group(2, "MyAnimeList"),
+            SettingsModel.Group(2, getString(R.string.myanimelist)),
+            SettingsModel.Service(0,
+                getString(R.string.mal_login),
+                getString(R.string.mal_login_subtitle),
+                getString(if (userViewModel.isMalAuthorized()) R.string.login else R.string.logout),
+                { view ->
+                    userViewModel.getUserMal { mal ->
+                        loadUserImage(mal, view)
+                    }
+                }
+            ) {
+                if (userViewModel.isMalAuthorized()) {
+                    userViewModel.endMalAuth()
+                } else {
+                    malOAuthResultLauncher.launch(userViewModel.createMalAuthIntent(safeContext))
+                }
+            },
             SettingsModel.Switch(6,
-                "Use MAL Images",
-                "Loads MyAnimeList Covers of series",
+                getString(R.string.mal_images),
+                getString(R.string.mal_images_subtitle),
                 it.user.malImages && userViewModel.isMalAuthorized(),
                 userViewModel.isMalAuthorized()
             ) { isChecked ->
                 settingsViewModel.updateUserMalImages(isChecked)
-            }
+            },
+            SettingsModel.Group(3, getString(R.string.anilist)),
+            SettingsModel.Service(1,
+                getString(R.string.anilist_login),
+                getString(R.string.anilist_login_subtitle),
+                getString(if (userViewModel.isAniListAuthorized()) R.string.login else R.string.logout),
+                { view ->
+                    loadAniListUserImage(view)
+                }
+            ) {
+                if (userViewModel.isAniListAuthorized()) {
+                    userViewModel.endAniListAuth()
+                } else {
+                    anilistOAuthResultLauncher.launch(userViewModel.createAniListAuthIntent(safeContext))
+                }
+            },
+            SettingsModel.Switch(7,
+                getString(R.string.anilist_images),
+                getString(R.string.anilist_images_subtitle),
+                it.user.aniListImages && userViewModel.isAniListAuthorized(),
+                userViewModel.isAniListAuthorized()
+            ) { isChecked ->
+                settingsViewModel.updateUserAniListImages(isChecked)
+            },
         ))
-        binding.mal.text = safeContext.getString(if (userViewModel.isMalAuthorized()) R.string.mal_logout else R.string.mal_login)
-        userViewModel.getUserMal { mal -> loadUserImage(mal) }
     }
 
-    private fun loadUserImage(mal: MyAnimeList?) = lifecycleScope.launch(Dispatchers.IO) {
+    private fun loadUserImage(mal: MyAnimeList?, view: ImageView) = lifecycleScope.launch(Dispatchers.IO) {
         val picture = mal?.authenticatedUser?.pictureURL
         withContext(Dispatchers.Main) {
-            binding.malIcon.clearTint()
+            view.clearTint()
             if (picture.isNullOrEmpty()) {
-                binding.malIcon.load<Drawable>(R.drawable.ic_myanimelist)
+                view.load<Drawable>(R.drawable.ic_myanimelist)
             } else {
-                binding.malIcon.load<Drawable>(picture) {
+                view.load<Drawable>(picture) {
                     transform(RoundedCorners(safeContext.dpToPx(12).toInt()))
                     error(R.drawable.ic_myanimelist)
                     placeholder(R.drawable.ic_myanimelist)
                 }
             }
         }
+    }
 
+    private fun loadAniListUserImage(view: ImageView) = userViewModel.getAniListUser().launchAndCollect {
+        val picture = it?.avatar?.large ?: it?.avatar?.medium
+        withContext(Dispatchers.Main) {
+            view.clearTint()
+            if (picture.isNullOrEmpty()) {
+                view.load<Drawable>(R.drawable.ic_anilist)
+            } else {
+                view.load<Drawable>(picture) {
+                    transform(RoundedCorners(safeContext.dpToPx(12).toInt()))
+                    error(R.drawable.ic_anilist)
+                    placeholder(R.drawable.ic_anilist)
+                }
+            }
+        }
     }
 
     private fun listenNewVersion() = gitHubViewModel.getLatestRelease().launchAndCollect { release ->

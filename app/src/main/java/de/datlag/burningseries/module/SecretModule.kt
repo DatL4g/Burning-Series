@@ -39,8 +39,24 @@ object SecretModule {
     @Provides
     @Singleton
     @Named("malClientId")
-    fun providedMALClientId(
+    fun provideMALClientId(
         @ApplicationContext app: Context,
         secrets: Secrets
     ): String = secrets.getMALClientId(app.packageName)
+
+    @Provides
+    @Singleton
+    @Named("anilistClientId")
+    fun provideAniListClientId(
+        @ApplicationContext app: Context,
+        secrets: Secrets
+    ): String = secrets.getAniListClientId(app.packageName)
+
+    @Provides
+    @Singleton
+    @Named("anilistClientSecret")
+    fun provideAniListClientSecret(
+        @ApplicationContext app: Context,
+        secrets: Secrets
+    ): String = secrets.getAniListClientSecret(app.packageName)
 }

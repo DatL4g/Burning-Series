@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.LatestEpisodeRecyclerAdapter
 import de.datlag.burningseries.adapter.LatestSeriesRecyclerAdapter
+import de.datlag.burningseries.common.hideKeyboard
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.FragmentHomeBinding
 import de.datlag.burningseries.extend.AdvancedFragment
@@ -40,6 +41,11 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		LatestSeriesRecyclerAdapter(binding.allSeriesButton.id, extendedFab?.id)
 	}
 
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		hideKeyboard()
+	}
+
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 
@@ -47,6 +53,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		listenImproveDialogSetting()
 		listenNewVersionDialog()
 		recoverMalAuthState()
+		recoverAniListAuthState()
 
 		burningSeriesViewModel.homeData.launchAndCollect {
 			when (it.status) {
@@ -95,6 +102,10 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 
 	private fun recoverMalAuthState() = settingsViewModel.data.map { it.user.malAuth }.launchAndCollect {
 		userViewModel.loadMalAuth(it)
+	}
+
+	private fun recoverAniListAuthState() = settingsViewModel.data.map { it.user.anilistAuth }.launchAndCollect {
+		userViewModel.loadAniListAuth(it)
 	}
 
 	private fun listenNewVersionDialog() = gitHubViewModel.getLatestRelease().launchAndCollect {

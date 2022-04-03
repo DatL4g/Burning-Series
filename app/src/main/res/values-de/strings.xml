@@ -67,6 +67,14 @@
     <string name="default_fullscreen_subtitle">Automatisch zu Vollbild wechseln beim Video schauen</string>
     <string name="sync_with_other_device">Mit anderem Gerät synchronisieren</string>
     <string name="searching_for_devices">Suche nach Geräten</string>
-    <string name="mal_login">MyAnimeList Login</string>
-    <string name="mal_logout">MyAnimeList Logout</string>
+    <string name="login">Einloggen</string>
+    <string name="logout">Ausloggen</string>
+    <string name="mal_login">MAL Einloggen</string>
+    <string name="mal_login_subtitle">Synchronisiere deinen Fortschritt mit MyAnimeList</string>
+    <string name="mal_images">Benutze MAL Bilder</string>
+    <string name="mal_images_subtitle">Lädt MyAnimeList Cover von Serien</string>
+    <string name="anilist_login">AniList Einloggen</string>
+    <string name="anilist_login_subtitle">Synchronisiere deinen Fortschritt mit AniList</string>
+    <string name="anilist_images">Benutze AniList Bilder</string>
+    <string name="anilist_images_subtitle">Lädt AniList Cover von Serien</string>
 </resources>

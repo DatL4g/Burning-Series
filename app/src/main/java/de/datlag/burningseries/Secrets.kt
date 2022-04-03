@@ -19,4 +19,8 @@ class Secrets {
     external fun getM3OToken(packageName: String): String
 
     external fun getMALClientId(packageName: String): String
+
+    external fun getAniListClientId(packageName: String): String
+
+    external fun getAniListClientSecret(packageName: String): String
 }

@@ -15,20 +15,31 @@ import de.datlag.burningseries.common.safeSubList
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
+import de.datlag.network.anilist.AniListRepository
+import de.datlag.network.anilist.MediaQuery
+import de.datlag.network.anilist.ViewerQuery
+import de.datlag.network.anilist.type.MediaListStatus
 import de.datlag.network.burningseries.BurningSeriesRepository
+import de.datlag.network.myanimelist.MyAnimeListRepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import net.openid.appauth.*
 import net.openid.appauth.browser.BrowserDenyList
 import net.openid.appauth.browser.BrowserMatcher
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
 @HiltViewModel
 @Obfuscate
 class UserViewModel @Inject constructor(
-    val repository: BurningSeriesRepository,
-    @Named("malClientId") val malClientId: String
+    val bsRepository: BurningSeriesRepository,
+    val malRepository: MyAnimeListRepository,
+    val anilistRepository : AniListRepository,
+    @Named("malClientId") val malClientId: String,
+    @Named("anilistClientId") val anilistClientId: String,
+    @Named("anilistClientSecret") val anilistClientSecret: String
 ) : ViewModel() {
 
     private var malServiceConfig = AuthorizationServiceConfiguration(
@@ -39,7 +50,24 @@ class UserViewModel @Inject constructor(
     private var malAuthService: AuthorizationService? = null
     private var saveMalAuthListener: ((String) -> Unit)? = null
 
-    fun resultLauncherCallback(result: ActivityResult?) {
+    private var anilistServiceConfig = AuthorizationServiceConfiguration(
+        Constants.ANILIST_OAUTH_AUTH_URI.toUri(),
+        Constants.ANILIST_OAUTH_TOKEN_URI.toUri()
+    )
+    private var anilistAuthState = AuthState(anilistServiceConfig)
+    private var anilistAuthService : AuthorizationService? = null
+    private var saveAniListListener: ((String) -> Unit)? = null
+
+    private val appAuthConfig = AppAuthConfiguration.Builder()
+        .setBrowserMatcher(BrowserDenyList(
+            *Constants.OAUTH_BROWSER_DENY.map { deny ->
+                BrowserMatcher {
+                    it.packageName.equals(deny, true)
+                }
+            }.toTypedArray()
+        )).build()
+
+    fun malResultLauncherCallback(result: ActivityResult?) {
         if (result?.resultCode == Activity.RESULT_OK) {
             val data = result.data
             val resp = data?.let { AuthorizationResponse.fromIntent(it) }
@@ -51,6 +79,25 @@ class UserViewModel @Inject constructor(
                     malAuthService?.performTokenRequest(it) { response, tokenEx ->
                         malAuthState.update(response, tokenEx)
                         saveMalAuthListener?.invoke(malAuthState.jsonSerializeString())
+                    }
+                }
+            }
+        }
+    }
+
+    fun aniListResultLauncherCallback(result: ActivityResult?) {
+        if (result?.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            val resp = data?.let { AuthorizationResponse.fromIntent(it) }
+            val ex = AuthorizationException.fromIntent(data)
+            anilistAuthState.update(resp, ex)
+
+            if (!resp?.authorizationCode.isNullOrEmpty()) {
+                resp?.createTokenExchangeRequest()?.let {
+                    val clientAuth = ClientSecretBasic(anilistClientSecret)
+                    anilistAuthService?.performTokenRequest(it, clientAuth) { response, tokenEx ->
+                        anilistAuthState.update(response, tokenEx)
+                        saveAniListListener?.invoke(anilistAuthState.jsonSerializeString())
                     }
                 }
             }
@@ -71,21 +118,31 @@ class UserViewModel @Inject constructor(
                 AuthorizationRequest.CODE_CHALLENGE_METHOD_PLAIN
             )
             .build()
-        val appAuthConfig = AppAuthConfiguration.Builder()
-            .setBrowserMatcher(BrowserDenyList(
-                *Constants.MAL_OAUTH_BROWSER_DENY.map { deny ->
-                    BrowserMatcher {
-                        it.packageName.equals(deny, true)
-                    }
-                }.toTypedArray()
-            )).build()
+
         malAuthService = AuthorizationService(context, appAuthConfig)
         return malAuthService?.getAuthorizationRequestIntent(authRequest)
+    }
+
+    fun createAniListAuthIntent(context: Context): Intent? {
+        val authRequest = AuthorizationRequest.Builder(
+            anilistServiceConfig,
+            anilistClientId,
+            Constants.ANILIST_RESPONSE_TYPE,
+            Constants.ANILIST_REDIRECT_URI.toUri()
+        ).build()
+
+        anilistAuthService = AuthorizationService(context, appAuthConfig)
+        return anilistAuthService?.getAuthorizationRequestIntent(authRequest)
     }
 
     fun endMalAuth() {
         malAuthState = AuthState(malServiceConfig)
         saveMalAuthListener?.invoke(String())
+    }
+
+    fun endAniListAuth() {
+        anilistAuthState = AuthState(anilistServiceConfig)
+        saveAniListListener?.invoke(String())
     }
 
     fun loadMalAuth(auth: String) {
@@ -94,68 +151,57 @@ class UserViewModel @Inject constructor(
         }
     }
 
+    fun loadAniListAuth(auth: String) {
+        if (auth.isNotEmpty()) {
+            anilistAuthState = AuthState.jsonDeserialize(auth)
+        }
+    }
+
     fun setSaveMalAuthListener(listener: (String) -> Unit) {
         saveMalAuthListener = listener
     }
 
+    fun setSaveAniListListener(listener: (String) -> Unit) {
+        saveAniListListener = listener
+    }
+
     fun isMalAuthorized() = malAuthState.isAuthorized
 
+    fun isAniListAuthorized() = anilistAuthState.isAuthorized
+
     fun getUserMal(callback: (mal: MyAnimeList?) -> Unit) {
-        if (!isMalAuthorized()) {
-            callback.invoke(null)
-        }
-        if (malAuthState.needsTokenRefresh) {
+        fun malWithFreshToken() {
             malAuthService?.let {
                 malAuthState.performActionWithFreshTokens(it) { accessToken, idToken, ex ->
                     if (accessToken.isNullOrEmpty() || ex != null) {
                         callback.invoke(null)
                     } else {
-                        callback.invoke(MyAnimeList.withToken("Bearer $accessToken"))
+                        callback.invoke(malRepository.getUserMal(accessToken))
                     }
                 }
             }
+        }
+
+        if (!isMalAuthorized()) {
+            callback.invoke(null)
         } else {
-            callback.invoke(MyAnimeList.withToken("Bearer ${malAuthState.accessToken}"))
+            if (malAuthState.needsTokenRefresh) {
+                malWithFreshToken()
+            } else {
+                malAuthState.accessToken?.let {
+                    return@let callback.invoke(malRepository.getUserMal(it))
+                } ?: malWithFreshToken()
+            }
         }
     }
 
-    fun getMalSeries(seriesData: SeriesWithInfo, callback: (AnimePreview?) -> Unit) {
-        getUserMal { getMalSeries(it, seriesData, callback) }
-    }
-
-    fun getMalSeries(mal: MyAnimeList?, seriesData: SeriesWithInfo, callback: (AnimePreview?) -> Unit) = viewModelScope.launch(Dispatchers.IO) {
-        mal?.let {
-            if (seriesData.infos.any { info -> info.data.contains("Anime", true) }) {
-                val query = it.anime.includeNSFW().withLimit(15)
-                val malWithSeason = query.withQuery("${seriesData.series.title} ${seriesData.series.season}").search() ?: listOf()
-                var malEntry: AnimePreview? = malWithSeason.firstOrNull { entry ->
-                    animePreviewIsExactMatch(entry, seriesData.series.title)
-                }
-
-                if (malEntry != null) {
-                    return@launch callback.invoke(malEntry)
-                } else {
-                    val malWithoutSeason = query.withQuery(seriesData.series.title).search() ?: listOf()
-                    malEntry = malWithoutSeason.firstOrNull { entry ->
-                        animePreviewIsExactMatch(entry, seriesData.series.title)
-                    } ?: malWithoutSeason.firstOrNull() ?: malWithSeason.firstOrNull()
-
-                    return@launch callback.invoke(malEntry)
-                }
-            } else {
-                return@launch callback.invoke(null)
-            }
-        } ?: return@launch callback.invoke(null)
-    }
-
-    private fun animePreviewIsExactMatch(preview: AnimePreview, matchTitle: String): Boolean {
-        return (preview.title ?: String()).trim().equals(matchTitle.trim(), true)
-                || (preview.alternativeTitles.english ?: String()).trim().equals(matchTitle.trim(), true)
-                || (preview.alternativeTitles.japanese ?: String()).trim().equals(matchTitle.trim(), true)
-                || (preview.title ?: String()).equals(matchTitle, true)
-                || (preview.alternativeTitles.english ?: String()).equals(matchTitle, true)
-                || (preview.alternativeTitles.japanese ?: String()).equals(matchTitle, true)
-    }
+    fun getMalSeries(mal: MyAnimeList?, seriesData: SeriesWithInfo): Flow<AnimePreview?> = flow {
+        if (mal != null) {
+            emitAll(malRepository.getMalSeries(mal, seriesData))
+        } else {
+            emit(null)
+        }
+    }.flowOn(Dispatchers.IO)
 
     fun syncMalSeries(preview: AnimePreview, episodes: List<EpisodeInfo>) = viewModelScope.launch(Dispatchers.IO) {
         val malListStatus = preview.listStatus
@@ -169,12 +215,18 @@ class UserViewModel @Inject constructor(
         if (deviceWatchedAmount > malWatchedAmount) {
             if (deviceWatchedAmount >= episodes.size) {
                 if (malCompletedOrRewatching) {
-                    malListStatus.edit().episodesWatched(deviceWatchedAmount).update()
+                    try {
+                        malListStatus.edit().episodesWatched(deviceWatchedAmount).update()
+                    } catch (ignored: Exception) { }
                 } else {
-                    malListStatus.edit().episodesWatched(deviceWatchedAmount).update().edit().status(AnimeStatus.Completed).update()
+                    try {
+                        malListStatus.edit().episodesWatched(deviceWatchedAmount).update().edit().status(AnimeStatus.Completed).update()
+                    } catch (ignored: Exception) { }
                 }
             } else {
-                malListStatus.edit().episodesWatched(deviceWatchedAmount).update()
+                try {
+                    malListStatus.edit().episodesWatched(deviceWatchedAmount).update()
+                } catch (ignored: Exception) { }
             }
         } else {
             val addWatchedAmount = malWatchedAmount - deviceWatchedAmount
@@ -183,8 +235,109 @@ class UserViewModel @Inject constructor(
                 notWatchedEpisodes.map { async {
                     it.totalWatchPos = Long.MAX_VALUE
                     it.currentWatchPos = Long.MAX_VALUE
-                    repository.updateEpisodeInfo(it)
+                    bsRepository.updateEpisodeInfo(it)
                 } }.awaitAll()
+            }
+        }
+    }
+
+    fun getAniListUser(): Flow<ViewerQuery.Viewer?> = flow {
+        if (!isAniListAuthorized()) {
+            emit(null)
+        } else {
+            if (anilistAuthState.needsTokenRefresh) {
+                aniListFreshToken().firstOrNull()?.let {
+                    emitAll(anilistRepository.getViewer(it))
+                } ?: emit(null)
+            } else {
+                anilistAuthState.accessToken?.let {
+                    return@let emitAll(anilistRepository.getViewer(it))
+                } ?: aniListFreshToken().firstOrNull()?.let {
+                    emitAll(anilistRepository.getViewer(it))
+                } ?: emit(null)
+            }
+        }
+    }.flowOn(Dispatchers.IO)
+
+    private fun aniListFreshToken(): Flow<String?> = flow {
+        anilistAuthService?.let {
+            return@let anilistAuthState.performActionWithFreshTokens(it) { accessToken, idToken, ex ->
+                if (accessToken.isNullOrEmpty() || ex != null) {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        emit(null)
+                    }
+                } else {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        emit(accessToken)
+                    }
+                }
+            }
+        } ?: emit(null)
+    }.flowOn(Dispatchers.IO)
+
+    fun getAniListSeries(seriesData: SeriesWithInfo): Flow<MediaQuery.Medium?> = flow {
+        if (!isAniListAuthorized()) {
+            emit(null)
+        } else {
+            if (anilistAuthState.needsTokenRefresh) {
+                aniListFreshToken().firstOrNull()?.let {
+                    emitAll(anilistRepository.getAniListSeries(it, seriesData))
+                } ?: emit(null)
+            } else {
+                anilistAuthState.accessToken?.let {
+                    return@let emitAll(anilistRepository.getAniListSeries(it, seriesData))
+                } ?: aniListFreshToken().firstOrNull()?.let {
+                    emitAll(anilistRepository.getAniListSeries(it, seriesData))
+                } ?: emit(null)
+            }
+        }
+    }.flowOn(Dispatchers.IO)
+
+    fun syncAniListSeries(medium: MediaQuery.Medium, episodes: List<EpisodeInfo>) = viewModelScope.launch(Dispatchers.IO) {
+        suspend fun saveOrUpdate(token: String) {
+            val aniListStatus = medium.mediaListEntry
+            val aniListWatchedAmount = aniListStatus?.progress ?: 0
+            val aniListWatchStatus = aniListStatus?.status
+            val aniListRewatching = aniListWatchStatus == MediaListStatus.REPEATING || (aniListWatchStatus?.rawValue ?: String()) == MediaListStatus.REPEATING.rawValue
+            val aniListCompleted = aniListWatchStatus == MediaListStatus.COMPLETED || (aniListWatchStatus?.rawValue ?: String()) == MediaListStatus.COMPLETED.rawValue
+            val aniListCompletedOrRewatching = aniListRewatching || aniListCompleted
+
+            val deviceWatchedAmount = episodes.filter { it.watchedPercentage() >= 90F }.size
+
+            if (deviceWatchedAmount > aniListWatchedAmount) {
+                if (deviceWatchedAmount >= episodes.size) {
+                    if (aniListCompletedOrRewatching) {
+                        anilistRepository.saveAniListEntry(token, medium.id, deviceWatchedAmount, aniListWatchStatus ?: MediaListStatus.CURRENT)
+                    } else {
+                        anilistRepository.saveAniListEntry(token, medium.id, deviceWatchedAmount, MediaListStatus.COMPLETED)
+                    }
+                } else {
+                    anilistRepository.saveAniListEntry(token, medium.id, deviceWatchedAmount, aniListWatchStatus ?: MediaListStatus.CURRENT)
+                }
+            } else {
+                val addWatchedAmount = aniListWatchedAmount - deviceWatchedAmount
+                if (addWatchedAmount > 0) {
+                    val notWatchedEpisodes = episodes.filterNot { it.watchedPercentage() >= 90F }.safeSubList(0, addWatchedAmount)
+                    notWatchedEpisodes.map { async {
+                        it.totalWatchPos = Long.MAX_VALUE
+                        it.currentWatchPos = Long.MAX_VALUE
+                        bsRepository.updateEpisodeInfo(it)
+                    } }.awaitAll()
+                }
+            }
+        }
+
+        if (isAniListAuthorized()) {
+            if (anilistAuthState.needsTokenRefresh) {
+                aniListFreshToken().firstOrNull()?.let {
+                    saveOrUpdate(it)
+                }
+            } else {
+                anilistAuthState.accessToken?.let {
+                    return@let saveOrUpdate(it)
+                } ?: aniListFreshToken().firstOrNull()?.let {
+                    saveOrUpdate(it)
+                }
             }
         }
     }
@@ -192,5 +345,6 @@ class UserViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         malAuthService = null
+        anilistAuthService = null
     }
 }
