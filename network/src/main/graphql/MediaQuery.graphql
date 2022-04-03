@@ -1,6 +1,6 @@
-query MediaQuery($search: String!, $mediaType: MediaType!, $mediaFormat: [MediaFormat!]!) {
+query MediaQuery($search: String!, $mediaType: MediaType!, $mediaFormat: [MediaFormat!]!, $statusNot: MediaStatus!) {
     page: Page(page: 1, perPage: 15) {
-        media(search: $search, type: $mediaType, format_in: $mediaFormat) {
+        media(search: $search, type: $mediaType, format_in: $mediaFormat, status_not: $statusNot) {
             id
             mediaListEntry {
                 status,

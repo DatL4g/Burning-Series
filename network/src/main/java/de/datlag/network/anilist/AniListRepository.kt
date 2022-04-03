@@ -6,6 +6,7 @@ import de.datlag.model.JaroWinkler
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.network.anilist.type.MediaFormat
 import de.datlag.network.anilist.type.MediaListStatus
+import de.datlag.network.anilist.type.MediaStatus
 import de.datlag.network.anilist.type.MediaType
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
@@ -94,7 +95,7 @@ class AniListRepository @Inject constructor(
 
     private suspend fun animeMediumWithDistance(apolloWithToken: ApolloClient, query: String, seriesTitleWithSeason: String, seriesTitle: String, seriesHrefTitle: String): Map<Double, MediaQuery.Medium> {
         return try {
-            apolloWithToken.query(MediaQuery(query, MediaType.ANIME, listOf(MediaFormat.TV, MediaFormat.TV_SHORT, MediaFormat.ONA))).execute().data?.page?.media ?: emptyList()
+            apolloWithToken.query(MediaQuery(query, MediaType.ANIME, listOf(MediaFormat.TV, MediaFormat.TV_SHORT, MediaFormat.ONA), MediaStatus.NOT_YET_RELEASED)).execute().data?.page?.media ?: emptyList()
         } catch (ignored: Exception) { emptyList() }.filterNotNull().associateBy {
             max(mediumBestDistance(seriesTitleWithSeason, it), max(mediumBestDistance(seriesTitle, it), mediumBestDistance(seriesHrefTitle, it)))
         }
