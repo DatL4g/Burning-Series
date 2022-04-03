@@ -137,7 +137,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
             SettingsModel.Service(0,
                 getString(R.string.mal_login),
                 getString(R.string.mal_login_subtitle),
-                getString(if (userViewModel.isMalAuthorized()) R.string.login else R.string.logout),
+                getString(if (userViewModel.isMalAuthorized()) R.string.logout else R.string.login),
                 { view ->
                     userViewModel.getUserMal { mal ->
                         loadUserImage(mal, view)
@@ -162,7 +162,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
             SettingsModel.Service(1,
                 getString(R.string.anilist_login),
                 getString(R.string.anilist_login_subtitle),
-                getString(if (userViewModel.isAniListAuthorized()) R.string.login else R.string.logout),
+                getString(if (userViewModel.isAniListAuthorized()) R.string.logout else R.string.login),
                 { view ->
                     loadAniListUserImage(view)
                 }
