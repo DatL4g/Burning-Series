@@ -1,8 +1,10 @@
 package de.datlag.network.anilist
 
+import android.util.Log
 import com.apollographql.apollo3.ApolloClient
 import de.datlag.model.JaroWinkler
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
+import de.datlag.network.anilist.type.MediaFormat
 import de.datlag.network.anilist.type.MediaListStatus
 import de.datlag.network.anilist.type.MediaType
 import io.michaelrocks.paranoid.Obfuscate
@@ -51,6 +53,7 @@ class AniListRepository @Inject constructor(
                     animeMediumWithDistance(
                         apolloClientWithToken,
                         it,
+                        "${seriesWithInfo.series.title} ${seriesWithInfo.series.season}",
                         seriesWithInfo.series.title,
                         seriesWithInfo.series.hrefTitle
                     )
@@ -70,6 +73,7 @@ class AniListRepository @Inject constructor(
                             ).length - seriesWithInfo.series.title.length
                     )
                 }
+
                 val entryDiff = abs((lenEntry?.key ?: Double.MIN_VALUE) - (maxEntry?.key ?: Double.MAX_VALUE))
                 val bestEntry = if (entryDiff < 0.15) {
                     lenEntry ?: maxEntry
@@ -88,25 +92,40 @@ class AniListRepository @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    private suspend fun animeMediumWithDistance(apolloWithToken: ApolloClient, query: String, seriesTitle: String, seriesHrefTitle: String): Map<Double, MediaQuery.Medium> {
+    private suspend fun animeMediumWithDistance(apolloWithToken: ApolloClient, query: String, seriesTitleWithSeason: String, seriesTitle: String, seriesHrefTitle: String): Map<Double, MediaQuery.Medium> {
         return try {
-            apolloWithToken.query(MediaQuery(query, MediaType.ANIME)).execute().data?.page?.media ?: emptyList()
+            apolloWithToken.query(MediaQuery(query, MediaType.ANIME, listOf(MediaFormat.TV, MediaFormat.TV_SHORT, MediaFormat.ONA))).execute().data?.page?.media ?: emptyList()
         } catch (ignored: Exception) { emptyList() }.filterNotNull().associateBy {
-            max(mediumBestDistance(seriesTitle, it), mediumBestDistance(seriesHrefTitle, it))
+            max(mediumBestDistance(seriesTitleWithSeason, it), max(mediumBestDistance(seriesTitle, it), mediumBestDistance(seriesHrefTitle, it)))
         }
     }
 
     private fun mediumBestDistance(title: String, medium: MediaQuery.Medium): Double {
         val matches = title.split("[|:]".toRegex()).map {
-            val englishDistance = JaroWinkler.distance(it, medium.title?.english ?: String())
-            val nativeDistance = JaroWinkler.distance(it, medium.title?.native ?: String())
-            val romajiDistance = JaroWinkler.distance(it, medium.title?.romaji ?: String())
-            val userPreferredDistance = JaroWinkler.distance(it, medium.title?.userPreferred ?: String())
+            val englishDistance = JaroWinkler.distance(it.trim(), medium.title?.english ?: String())
+            val nativeDistance = JaroWinkler.distance(it.trim(), medium.title?.native ?: String())
+            val romajiDistance = JaroWinkler.distance(it.trim(), medium.title?.romaji ?: String())
+            val userPreferredDistance = JaroWinkler.distance(it.trim(), medium.title?.userPreferred ?: String())
+            val synonymDistance: Double = if (!medium.synonyms.isNullOrEmpty()) {
+                medium.synonyms.map { synonym -> JaroWinkler.distance(it.trim(), synonym ?: String()) }.average()
+            } else { 0.0 }
 
-            max(englishDistance, max(nativeDistance, max(romajiDistance, userPreferredDistance)))
+            max(englishDistance, max(nativeDistance, max(romajiDistance, max(userPreferredDistance, synonymDistance))))
+        }.toMutableList()
+
+        if (matches.size > 1) {
+            val englishDistance = JaroWinkler.distance(title, medium.title?.english ?: String())
+            val nativeDistance = JaroWinkler.distance(title, medium.title?.native ?: String())
+            val romajiDistance = JaroWinkler.distance(title, medium.title?.romaji ?: String())
+            val userPreferredDistance = JaroWinkler.distance(title, medium.title?.userPreferred ?: String())
+            val synonymDistance: Double = if (!medium.synonyms.isNullOrEmpty()) {
+                medium.synonyms.map { synonym -> JaroWinkler.distance(title, synonym ?: String()) }.average()
+            } else { 0.0 }
+
+            matches.add(max(englishDistance, max(nativeDistance, max(romajiDistance, max(userPreferredDistance, synonymDistance)))))
         }
 
-        return (matches.sum()) / matches.size
+        return matches.average()
     }
 
     suspend fun saveAniListEntry(token: String, id: Int, progress: Int, status: MediaListStatus) {

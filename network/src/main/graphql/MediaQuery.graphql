@@ -1,6 +1,6 @@
-query MediaQuery($search: String!, $mediaType: MediaType!) {
+query MediaQuery($search: String!, $mediaType: MediaType!, $mediaFormat: [MediaFormat!]!) {
     page: Page(page: 1, perPage: 15) {
-        media(search: $search, type: $mediaType) {
+        media(search: $search, type: $mediaType, format_in: $mediaFormat) {
             id
             mediaListEntry {
                 status,
@@ -17,6 +17,7 @@ query MediaQuery($search: String!, $mediaType: MediaType!) {
                 large
                 medium
             }
+            synonyms
         }
     }
 }
