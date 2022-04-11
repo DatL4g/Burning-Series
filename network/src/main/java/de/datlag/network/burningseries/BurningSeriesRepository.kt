@@ -273,6 +273,8 @@ class BurningSeriesRepository @Inject constructor(
 		}
 	}
 
+	fun getSeriesById(id: Long) = burningSeriesDao.getSeriesWithInfoById(id)
+
 	suspend fun updateSeriesFavorite(seriesData: SeriesData) = burningSeriesDao.updateSeriesFavorite(seriesData.seriesId, seriesData.favoriteSince)
 
 	suspend fun updateEpisodeInfo(episodeInfo: EpisodeInfo) = burningSeriesDao.updateEpisodeInfo(episodeInfo)
@@ -282,7 +284,7 @@ class BurningSeriesRepository @Inject constructor(
 	fun searchSeriesFavorites(title: String): Flow<List<SeriesWithInfo>> = burningSeriesDao.searchFavorites(title).flowOn(Dispatchers.IO)
 
 	fun getAllSeries(pagination: Long): Flow<Resource<List<GenreWithItems>>> = flow {
-		if (pagination == 0) {
+		if (pagination == 0L) {
 			val first = burningSeriesDao.getAllSeries(pagination).first()
 			val currentRequest = Clock.System.now().epochSeconds
 
@@ -360,4 +362,6 @@ class BurningSeriesRepository @Inject constructor(
 		seriesWithEpisode.languages,
 		seriesWithEpisode.episodes.associate { it.episode to it.hoster }
 	)
+
+	fun getAllSeriesCountJoined() = burningSeriesDao.getAllSeriesCountJoined()
 }

@@ -16,6 +16,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import okhttp3.internal.toImmutableList
 import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.max
@@ -101,17 +102,21 @@ class AniListRepository @Inject constructor(
         }
     }
 
-    private fun mediumBestDistance(title: String, medium: MediaQuery.Medium): Double {
-        val matches = title.split("[|:]".toRegex()).map {
-            val englishDistance = JaroWinkler.distance(it.trim(), medium.title?.english ?: String())
-            val nativeDistance = JaroWinkler.distance(it.trim(), medium.title?.native ?: String())
-            val romajiDistance = JaroWinkler.distance(it.trim(), medium.title?.romaji ?: String())
-            val userPreferredDistance = JaroWinkler.distance(it.trim(), medium.title?.userPreferred ?: String())
-            val synonymDistance: Double = if (!medium.synonyms.isNullOrEmpty()) {
-                medium.synonyms.map { synonym -> JaroWinkler.distance(it.trim(), synonym ?: String()) }.average()
-            } else { 0.0 }
+    private suspend fun mediumBestDistance(title: String, medium: MediaQuery.Medium): Double {
+        val matches = coroutineScope {
+            title.split("[|:]".toRegex()).map {
+                async {
+                    val englishDistance = JaroWinkler.distance(it.trim(), medium.title?.english ?: String())
+                    val nativeDistance = JaroWinkler.distance(it.trim(), medium.title?.native ?: String())
+                    val romajiDistance = JaroWinkler.distance(it.trim(), medium.title?.romaji ?: String())
+                    val userPreferredDistance = JaroWinkler.distance(it.trim(), medium.title?.userPreferred ?: String())
+                    val synonymDistance: Double = if (!medium.synonyms.isNullOrEmpty()) {
+                        medium.synonyms.map { synonym -> JaroWinkler.distance(it.trim(), synonym ?: String()) }.average()
+                    } else { 0.0 }
 
-            max(englishDistance, max(nativeDistance, max(romajiDistance, max(userPreferredDistance, synonymDistance))))
+                    max(englishDistance, max(nativeDistance, max(romajiDistance, max(userPreferredDistance, synonymDistance))))
+                }
+            }.awaitAll()
         }.toMutableList()
 
         if (matches.size > 1) {

@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
     id("kotlin-kapt")
     id("io.michaelrocks.paranoid")
-    id("com.apollographql.apollo3") version "3.2.0"
+    id("com.apollographql.apollo3") version "3.2.2"
 }
 
 android {
@@ -60,10 +60,10 @@ dependencies {
     implementation("javax.inject:javax.inject:1")
     implementation("org.jsoup:jsoup:1.14.3")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
     api("com.kttdevelopment:mal4j:2.7.2")
-    api("com.apollographql.apollo3:apollo-runtime:3.2.0")
+    api("com.apollographql.apollo3:apollo-runtime:3.2.2")
 }
 
 apollo {

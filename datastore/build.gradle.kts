@@ -46,7 +46,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 
     api("androidx.datastore:datastore-core:1.0.0")
-    api("com.google.protobuf:protobuf-javalite:3.19.4")
+    api("com.google.protobuf:protobuf-javalite:3.20.0")
 }
 
 protobuf.protobuf.run {

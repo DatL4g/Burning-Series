@@ -41,11 +41,11 @@ data class SeriesWithInfo(
         get() {
             val seasonsMax = seasons.maxOfOrNull { it.value } ?: series.seasons.maxOfOrNull { it.value } ?: Int.MAX_VALUE
             val currentMax = if (seasons.isNotEmpty() && series.seasons.isNotEmpty()) {
-                max(series.currentSeason(seasons).value, series.currentSeason(series.seasons).value)
+                max(series.currentSeason(seasons)?.value ?: Int.MIN_VALUE, series.currentSeason(series.seasons)?.value ?: Int.MIN_VALUE)
             } else if (seasons.isNotEmpty()) {
-                series.currentSeason(seasons).value
+                series.currentSeason(seasons)?.value ?: Int.MIN_VALUE
             } else if (series.seasons.isNotEmpty()) {
-                series.currentSeason(series.seasons).value
+                series.currentSeason(series.seasons)?.value ?: Int.MIN_VALUE
             } else {
                 Int.MIN_VALUE
             }

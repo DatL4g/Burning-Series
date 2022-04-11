@@ -49,6 +49,7 @@ import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -103,7 +104,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     private fun findActualEpisodeInfo(
         id: Long = navArgs.episodeInfo.episodeId,
         href: String = navArgs.episodeInfo.href
-    ) = burningSeriesDao.getEpisodeInfoByIdOrHref(id, href).launchAndCollect {
+    ) = burningSeriesDao.getEpisodeInfoByIdOrHref(id, href).distinctUntilChanged().launchAndCollect {
         episodeInfo = it ?: episodeInfo
     }
 

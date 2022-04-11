@@ -30,6 +30,7 @@ import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -82,7 +83,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
         settingsRecycler.adapter = settingsAdapter
     }
 
-    private fun setSettingsData() = settingsViewModel.data.launchAndCollect {
+    private fun setSettingsData() = settingsViewModel.data.distinctUntilChanged().launchAndCollect {
         userViewModel.loadMalAuth(it.user.malAuth)
         userViewModel.loadAniListAuth(it.user.anilistAuth)
 
@@ -195,15 +196,15 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                     transform(RoundedCorners(safeContext.dpToPx(12).toInt()))
                     error(R.drawable.ic_myanimelist)
                     placeholder(R.drawable.ic_myanimelist)
+                    fallback(R.drawable.ic_myanimelist)
                 }
             }
         }
     }
 
-    private fun loadAniListUserImage(view: ImageView) = userViewModel.getAniListUser().launchAndCollect {
+    private fun loadAniListUserImage(view: ImageView) = userViewModel.getAniListUser().distinctUntilChanged().launchAndCollect {
         val picture = it?.avatar?.large ?: it?.avatar?.medium
         withContext(Dispatchers.Main) {
-            view.clearTint()
             if (picture.isNullOrEmpty()) {
                 view.load<Drawable>(R.drawable.ic_anilist)
             } else {
@@ -211,6 +212,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                     transform(RoundedCorners(safeContext.dpToPx(12).toInt()))
                     error(R.drawable.ic_anilist)
                     placeholder(R.drawable.ic_anilist)
+                    fallback(R.drawable.ic_anilist)
                 }
             }
         }

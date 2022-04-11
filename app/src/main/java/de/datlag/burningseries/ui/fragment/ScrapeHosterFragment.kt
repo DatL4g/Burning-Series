@@ -25,6 +25,7 @@ import de.datlag.model.Constants
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -82,7 +83,7 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
         }
     }
 
-    private fun listenAdBlockList() = adBlockViewModel.adBlockList.launchAndCollect {
+    private fun listenAdBlockList() = adBlockViewModel.adBlockList.distinctUntilChanged().launchAndCollect {
         adBlockWebViewClient.adBlockList.emit(it)
     }
 
@@ -99,7 +100,7 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
                     }
                 }
             }
-            delay(3000)
+            delay(2000)
         }
     }
 

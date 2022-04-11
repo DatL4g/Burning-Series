@@ -67,8 +67,8 @@ data class SeriesData(
 		listOf()
 	)
 
-	fun currentSeason(seasons: List<SeasonData>): SeasonData {
-		val foundSeason = seasons.find {
+	fun currentSeason(seasons: List<SeasonData>): SeasonData? {
+		return seasons.find {
 			it.title.equals(season, true)
 					|| it.title.trim().equals(season.trim(), true)
 					|| it.title.equals(season.toIntOrNull()?.toString(), true)
@@ -76,8 +76,7 @@ data class SeriesData(
 					|| it.title.toIntOrNull()?.toString()?.equals(season.toIntOrNull()?.toString(), true) == true
 					|| it.title.getDigitsOrNull()?.equals(season, true) == true
 					|| it.title.getDigitsOrNull()?.equals(season.getDigitsOrNull(), true) == true
-		} ?: seasons.first()
-		return foundSeason
+		} ?: seasons.firstOrNull()
 	}
 
 	fun hrefBuilder(season: Int, language: String = selectedLanguage): String {

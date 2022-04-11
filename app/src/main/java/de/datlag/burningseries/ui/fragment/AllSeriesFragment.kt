@@ -122,6 +122,7 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         setSupportActionBar(binding.toolbar)
         setHasOptionsMenu(true)
         showToolbarBackButton(binding.toolbar)
+        burningSeriesViewModel.setSeriesData(null)
     }
 
     override fun onStop() {

@@ -97,7 +97,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("com.github.DATL4G:SelectionBottomSheet:1.3.2")
     implementation("com.github.devendroid:ReadMoreOption:1.0.3")
-    implementation("com.mikepenz:aboutlibraries:10.0.0")
+    implementation("com.mikepenz:aboutlibraries:10.1.0")
 
     implementation("com.google.android.exoplayer:exoplayer:2.17.1")
     implementation("com.github.DATL4G.PreviewSeekBar:previewseekbar-exoplayer:3.0.1")
@@ -122,12 +122,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
     implementation("androidx.lifecycle:lifecycle-common-java8:2.4.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
 
-    implementation("androidx.navigation:navigation-runtime-ktx:2.4.1")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.4.1")
-    implementation("androidx.navigation:navigation-ui-ktx:2.4.1")
+    implementation("androidx.navigation:navigation-runtime-ktx:2.4.2")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.4.2")
+    implementation("androidx.navigation:navigation-ui-ktx:2.4.2")
 
     implementation("com.google.dagger:hilt-android:2.41")
     kapt("com.google.dagger:hilt-android-compiler:2.41")
@@ -144,7 +144,7 @@ dependencies {
     kapt("com.github.bumptech.glide", "compiler").version {
         strictly("4.13.1")
     }
-    implementation("com.github.DATL4G:Coilifier-Android:1.2.0") {
+    implementation("com.github.DatL4g:Coilifier-Android:1.2.2") {
         exclude("com.github.bumptech.glide", "glide")
         exclude("com.github.bumptech.glide", "compiler")
     }

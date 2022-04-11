@@ -9,6 +9,7 @@ import de.datlag.network.github.GitHubRepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
@@ -55,7 +56,7 @@ class GitHubViewModel @Inject constructor(
                 emit(null)
             }
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
     private fun checkNewReleaseAvailable(current: Release, list: List<Release>): Release? {
         return if (list.isNotEmpty()) {

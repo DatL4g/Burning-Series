@@ -201,7 +201,7 @@ class UserViewModel @Inject constructor(
         } else {
             emit(null)
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
     fun syncMalSeries(preview: AnimePreview, episodes: List<EpisodeInfo>, isLastSeason: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         val malListStatus = preview.listStatus
@@ -257,7 +257,7 @@ class UserViewModel @Inject constructor(
                 } ?: emit(null)
             }
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
     private fun aniListFreshToken(): Flow<String?> = flow {
         anilistAuthService?.let {
@@ -273,7 +273,7 @@ class UserViewModel @Inject constructor(
                 }
             }
         } ?: emit(null)
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
     fun getAniListSeries(seriesData: SeriesWithInfo): Flow<MediaQuery.Medium?> = flow {
         if (!isAniListAuthorized()) {
@@ -291,7 +291,7 @@ class UserViewModel @Inject constructor(
                 } ?: emit(null)
             }
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
     fun syncAniListSeries(medium: MediaQuery.Medium, episodes: List<EpisodeInfo>, isLastSeason: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         suspend fun saveOrUpdate(token: String) {

@@ -27,11 +27,8 @@ import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.UserViewModel
 import de.datlag.burningseries.viewmodel.VideoViewModel
-import de.datlag.coilifier.PlaceholderScaling
 import de.datlag.coilifier.Scale
 import de.datlag.coilifier.commons.load
-import de.datlag.executor.Executor
-import de.datlag.executor.Schema
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.home.LatestEpisode
@@ -45,13 +42,13 @@ import de.datlag.model.video.VideoStream
 import de.datlag.network.anilist.MediaQuery
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
 @Obfuscate
@@ -67,17 +64,23 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     private val episodeRecyclerAdapter = EpisodeRecyclerAdapter()
     private lateinit var readMoreOption: ReadMoreOption
 
-    private lateinit var currentSeriesWithInfo: SeriesWithInfo
-
-    @Inject
-    lateinit var executor: Executor
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initRecycler()
         recoverMalAuthState()
         recoverAniListAuthState()
+
+        listenSeriesStatus()
+        listenSeriesData()
+        listenCover()
+        listenTitle()
+        listenIsFavorite()
+        listenSelectedLanguage()
+        listenLanguages()
+        listenSelectedSeason()
+        listenSeasons()
+        listenDescription()
 
         readMoreOption = safeContext.readMoreOption {
             textLength(3)
@@ -91,51 +94,93 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         }
 
         navArgs.latestEpisode?.let { episode ->
-            burningSeriesViewModel.getSeriesData(episode).launchAndCollect {
-                seriesFlowCollect(it, episode)
-            }
+            burningSeriesViewModel.getSeriesData(episode)
+            listenEpisodes(episode)
         }
         navArgs.latestSeries?.let { latest ->
-            burningSeriesViewModel.getSeriesData(latest).launchAndCollect {
-                seriesFlowCollect(it)
-            }
+            burningSeriesViewModel.getSeriesData(latest)
+            listenEpisodes()
         }
         navArgs.seriesWithInfo?.let { series ->
-            lifecycleScope.launch(Dispatchers.IO) {
-                executor.execute(Schema.Conflated) {
-                    withContext(Dispatchers.Main) {
-                        setViewData(series)
-                    }
-                }
-            }
-            burningSeriesViewModel.getSeriesData(series.series.href, series.series.hrefTitle).launchAndCollect {
-                seriesFlowCollect(it)
-            }
+            burningSeriesViewModel.setSeriesData(series)
+            burningSeriesViewModel.getSeriesData(series.series.href, series.series.hrefTitle)
+            listenEpisodes()
         }
         (navArgs.genreItem as? GenreModel.GenreItem?)?.let { item ->
-            burningSeriesViewModel.getSeriesData(item).launchAndCollect {
-                seriesFlowCollect(it)
+            burningSeriesViewModel.getSeriesData(item)
+            listenEpisodes()
+        }
+    }
+
+    private fun seriesLanguageSelector(languageData: LanguageData) {
+        selectionBottomSheet<LanguageData> {
+            dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
+            title(safeContext.getString(R.string.select_language))
+            titleColor(getCompatColor(R.color.defaultContentColor))
+            list(burningSeriesViewModel.currentSeriesLanguages)
+            itemBinder { item -> item.text }
+            defaultItem { item -> item == languageData || item.text.equals(languageData.text, true) }
+            itemColor(getCompatColor(R.color.defaultContentColor))
+            selectionColor(getCompatColor(R.color.defaultContentColor))
+            selectionDrawable(getCompatDrawable(R.drawable.ic_baseline_language_24))
+            confirmDisabledBackgroundColor(getCompatColor(android.R.color.transparent))
+            confirmDisabledTextColor(getCompatColor(R.color.defaultContentColor))
+            confirmBackgroundColor(getCompatColor(R.color.defaultContentColor))
+            confirmTextColor(getCompatColor(R.color.defaultBackgroundColor))
+            confirmText(safeContext.getString(R.string.confirm))
+            setExpandState(ExpandState.ExpandCustom { isTvOrLandscape() })
+            confirmListener { selected ->
+                if (selected != null) {
+                    val seriesData = burningSeriesViewModel.currentSeriesData?.series
+                    val newHref = seriesData?.currentSeason(burningSeriesViewModel.currentSeriesSeasons)?.let { season ->
+                        seriesData.hrefBuilder(
+                            season.value,
+                            selected.value
+                        )
+                    }
+                    if (newHref != null) {
+                        burningSeriesViewModel.getSeriesData(newHref, seriesData.hrefTitle, true)
+                    }
+                }
             }
         }
     }
 
-    private fun seriesFlowCollect(it: Resource<SeriesWithInfo?>, episode: LatestEpisode? = null) = lifecycleScope.launch(Dispatchers.IO) {
-        executor.execute(Schema.Conflated) {
-            withContext(Dispatchers.Main) {
-                when (it.status) {
-                    Resource.Status.LOADING -> {
-                        it.data?.let { data -> setViewData(data, episode) }
-                        showLoadingStatusBar()
-                        showLoadingDialog()
-                    }
-                    Resource.Status.SUCCESS -> {
-                        it.data?.let { data -> setViewData(data, episode) }
-                        showSuccessStatusBar()
-                        hideLoadingDialog()
-                    }
-                    Resource.Status.ERROR -> {
-                        showErrorStatusBar()
-                        hideLoadingDialog()
+    private fun seriesSeasonSelector(seasonData: SeasonData) {
+        selectionBottomSheet<SeasonData> {
+            dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
+            title(safeContext.getString(R.string.select_season))
+            titleColor(getCompatColor(R.color.defaultContentColor))
+            list(burningSeriesViewModel.currentSeriesSeasons)
+            itemBinder {
+                val intOrNull = it.title.toIntOrNull()
+                if (intOrNull != null) {
+                    safeContext.getString(R.string.season_placeholder, intOrNull)
+                } else {
+                    it.title
+                }
+            }
+            defaultItem {
+                it.title.equals(seasonData.title, true) || it.title.equals(burningSeriesViewModel.currentSeriesData?.series?.currentSeason(burningSeriesViewModel.currentSeriesSeasons)?.title, true)
+            }
+            itemColor(getCompatColor(R.color.defaultContentColor))
+            selectionColor(getCompatColor(R.color.defaultContentColor))
+            selectionDrawable(getCompatDrawable(R.drawable.ic_baseline_video_library_24))
+            confirmDisabledBackgroundColor(getCompatColor(android.R.color.transparent))
+            confirmDisabledTextColor(getCompatColor(R.color.defaultContentColor))
+            confirmBackgroundColor(getCompatColor(R.color.defaultContentColor))
+            confirmTextColor(getCompatColor(R.color.defaultBackgroundColor))
+            confirmText(safeContext.getString(R.string.confirm))
+            setExpandState(ExpandState.ExpandCustom { isTvOrLandscape() })
+            confirmListener { selected ->
+                if (selected != null) {
+                    val seriesData = burningSeriesViewModel.currentSeriesData?.series
+                    val newHref = seriesData?.hrefBuilder(
+                        selected.value,
+                        seriesData.selectedLanguage
+                    )
+                    if (newHref != null) {
+                        burningSeriesViewModel.getSeriesData(newHref, seriesData.hrefTitle, true)
                     }
                 }
             }
@@ -156,7 +201,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                     Resource.Status.ERROR -> {
                         hideLoadingDialog()
                         findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
-                            currentSeriesWithInfo,
+                            burningSeriesViewModel.currentSeriesData!!,
                             item.episode.href
                         ))
                     }
@@ -165,7 +210,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                         if (list.isEmpty()) {
                             hideLoadingDialog()
                             findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
-                                currentSeriesWithInfo,
+                                burningSeriesViewModel.currentSeriesData!!,
                                 item.episode.href
                             ))
                         } else {
@@ -180,132 +225,135 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToOpenInBrowserDialog(
                 Constants.getBurningSeriesLink(item.episode.href),
                 item.episode.title,
-                currentSeriesWithInfo
+                burningSeriesViewModel.currentSeriesData!!
             ))
             true
         }
+
+        favIcon.setOnClickListener { _ ->
+            val emit = burningSeriesViewModel.currentSeriesData?.apply {
+                series.favoriteSince = if (series.favoriteSince <= 0) Clock.System.now().epochSeconds else 0L
+            }
+            if (emit != null) {
+                burningSeriesViewModel.updateSeriesFavorite(emit)
+                favIconColorApply(emit.series.favoriteSince > 0)
+            }
+        }
     }
 
-    private fun setViewData(seriesData: SeriesWithInfo, episode: LatestEpisode? = null): Unit = with(binding) {
-        currentSeriesWithInfo = seriesData
-        hideLoadingDialog()
-        loadSavedImage(Constants.getBurningSeriesLink(seriesData.series.image).substringAfterLast('/'))?.let {
-            binding.banner.load<Drawable>(it)
+    private fun listenSeriesStatus() = burningSeriesViewModel.seriesStatus.distinctUntilChanged().launchAndCollect {
+        when (it) {
+            Resource.Status.LOADING -> {
+                showLoadingStatusBar()
+                showLoadingDialog()
+            }
+            Resource.Status.ERROR -> {
+                showErrorStatusBar()
+                hideLoadingDialog()
+            }
+            Resource.Status.SUCCESS -> {
+                showSuccessStatusBar()
+                hideLoadingDialog()
+            }
         }
-        userViewModel.getAniListSeries(seriesData).launchAndCollect { series ->
+    }
+
+    private fun listenSeriesData() = burningSeriesViewModel.seriesData.launchAndCollect {
+        if (it != null) {
+            hideLoadingDialog()
+        }
+    }
+
+    private fun listenCover() = burningSeriesViewModel.seriesBSImage.launchAndCollect {
+        fun listenAniListSeries(current: SeriesWithInfo) = userViewModel.getAniListSeries(current).distinctUntilChanged().launchAndCollect { series ->
             if (series != null) {
                 loadAniListData(series)
             }
         }
-        userViewModel.getUserMal { mal ->
-            if (mal != null) {
-                userViewModel.getMalSeries(mal, seriesData).launchAndCollect {
-                    loadMalData(it)
-                }
+
+        fun listenMalSeries(current: SeriesWithInfo) = userViewModel.getUserMal { mal ->
+            userViewModel.getMalSeries(mal, current).distinctUntilChanged().launchAndCollect { preview ->
+                loadMalData(preview)
             }
         }
-        title.text = seriesData.series.title
 
-        val defaultLanguage = seriesData.languages.firstOrNull { it.value == seriesData.series.selectedLanguage } ?: seriesData.languages.getOrNull(0)
-        val defaultSeason = seriesData.series.season
+        loadSavedImage(Constants.getBurningSeriesLink(it).substringAfterLast('/'))?.let { imageLoader ->
+            binding.banner.load<Drawable>(imageLoader) {
+                fitCenter()
+            }
+        }
 
-        selectLanguage.text = defaultLanguage?.text ?: safeContext.getString(R.string.language)
-        selectSeason.text = defaultSeason
-        if (seriesData.seasons.isLargerThan(1)) {
-            selectSeason.show()
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            burningSeriesViewModel.currentSeriesData?.let { current ->
+                listenAniListSeries(current)
+                listenMalSeries(current)
+            }
+        }
+    }
+
+    private fun listenTitle() = burningSeriesViewModel.seriesTitle.launchAndCollect {
+        binding.title.text = it
+    }
+
+    private fun listenIsFavorite() = burningSeriesViewModel.seriesFavorite.launchAndCollect { isFav ->
+        favIconColorApply(isFav)
+    }
+
+    private fun listenSelectedLanguage() = burningSeriesViewModel.seriesSelectedLanguage.launchAndCollect {
+        binding.selectLanguage.text = it?.text ?: safeContext.getString(R.string.language)
+        binding.selectLanguage.isEnabled = burningSeriesViewModel.currentSeriesLanguages.isLargerThan(1)
+
+        binding.selectLanguage.setOnClickListener { _ ->
+            if (it != null) {
+                seriesLanguageSelector(it)
+            }
+        }
+    }
+
+    private fun listenLanguages() = burningSeriesViewModel.seriesLanguages.launchAndCollect {
+        binding.selectLanguage.isEnabled = burningSeriesViewModel.currentSeriesLanguages.isLargerThan(1)
+    }
+
+    private fun listenSelectedSeason() = burningSeriesViewModel.seriesSelectedSeason.launchAndCollect {
+        binding.selectSeason.text = burningSeriesViewModel.currentSeriesData?.series?.season ?: it?.title ?: it?.value?.toString() ?: String()
+        if (burningSeriesViewModel.currentSeriesSeasons.isLargerThan(1)) {
+            binding.selectSeason.show()
         } else {
-            selectSeason.hide()
+            binding.selectSeason.hide()
         }
-        episodeRecyclerAdapter.submitList(seriesData.episodes.sortedWith(compareBy<EpisodeWithHoster> { it.episode.number.toIntOrNull() }.thenBy { it.episode.number })) {
+
+        binding.selectSeason.setOnClickListener { _ ->
+            if (it != null) {
+                seriesSeasonSelector(it)
+            }
+        }
+    }
+
+    private fun listenSeasons() = burningSeriesViewModel.seriesSeasons.launchAndCollect {
+        if (burningSeriesViewModel.currentSeriesSeasons.isLargerThan(1)) {
+            binding.selectSeason.show()
+        } else {
+            binding.selectSeason.hide()
+        }
+    }
+
+    private fun listenDescription() = burningSeriesViewModel.seriesDescription.launchAndCollect {
+        if (it.isNotEmpty()) {
+            try {
+                readMoreOption.addReadMoreTo(binding.description, it)
+            } catch (ignored: Exception) {
+                binding.description.text = it
+            }
+        }
+    }
+
+    private fun listenEpisodes(episode: LatestEpisode? = null) = burningSeriesViewModel.seriesEpisodes.launchAndCollect { episodes ->
+        episodeRecyclerAdapter.submitList(episodes.sortedWith(compareBy<EpisodeWithHoster> { it.episode.number.toIntOrNull() }.thenBy { it.episode.number })) {
             if (episode != null) {
-                val (title, episodeTitle) = episode.getEpisodeAndSeries()
+                val (_, episodeTitle) = episode.getEpisodeAndSeries()
                 episodeRecyclerAdapter.performClickOn {
-                    it.episode.href.equals(episode.href, true) || it.episode.title == episodeTitle
-                }
-            }
-        }
-
-        readMoreOption.addReadMoreTo(description, seriesData.series.description)
-        favIconColorApply(seriesData.series.favoriteSince > 0L)
-
-        favIcon.setOnClickListener {
-            val isFav = seriesData.series.favoriteSince > 0L
-            seriesData.series.apply {
-                favoriteSince = if (!isFav) Clock.System.now().epochSeconds else 0L
-            }
-            burningSeriesViewModel.updateSeriesFavorite(seriesData)
-
-            favIconColorApply(!isFav)
-        }
-
-        selectLanguage.isEnabled = seriesData.languages.isLargerThan(1)
-        selectLanguage.setOnClickListener { _ ->
-            selectionBottomSheet<LanguageData> {
-                dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
-                title(safeContext.getString(R.string.select_language))
-                titleColor(getCompatColor(R.color.defaultContentColor))
-                list(seriesData.languages)
-                itemBinder { it.text }
-                defaultItem { it == defaultLanguage }
-                itemColor(getCompatColor(R.color.defaultContentColor))
-                selectionColor(getCompatColor(R.color.defaultContentColor))
-                selectionDrawable(getCompatDrawable(R.drawable.ic_baseline_language_24))
-                confirmDisabledBackgroundColor(getCompatColor(android.R.color.transparent))
-                confirmDisabledTextColor(getCompatColor(R.color.defaultContentColor))
-                confirmBackgroundColor(getCompatColor(R.color.defaultContentColor))
-                confirmTextColor(getCompatColor(R.color.defaultBackgroundColor))
-                confirmText(safeContext.getString(R.string.confirm))
-                setExpandState(ExpandState.ExpandCustom { isTvOrLandscape() })
-                confirmListener { selected ->
-                    if (selected != null) {
-                        val newHref = seriesData.series.hrefBuilder(
-                            seriesData.series.currentSeason(seriesData.seasons).value,
-                            selected.value
-                        )
-                        burningSeriesViewModel.getSeriesData(newHref, seriesData.series.hrefTitle, true).launchAndCollect { newSeries ->
-                            seriesFlowCollect(newSeries)
-                        }
-                    }
-                }
-            }
-        }
-
-        selectSeason.setOnClickListener {
-            selectionBottomSheet<SeasonData> {
-                dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
-                title(safeContext.getString(R.string.select_season))
-                titleColor(getCompatColor(R.color.defaultContentColor))
-                list(seriesData.seasons)
-                itemBinder {
-                    val intOrNull = it.title.toIntOrNull()
-                    if (intOrNull != null) {
-                        safeContext.getString(R.string.season_placeholder, intOrNull)
-                    } else {
-                        it.title
-                    }
-                }
-                defaultItem {
-                    it.title == defaultSeason || it.title == seriesData.series.currentSeason(seriesData.seasons).title
-                }
-                itemColor(getCompatColor(R.color.defaultContentColor))
-                selectionColor(getCompatColor(R.color.defaultContentColor))
-                selectionDrawable(getCompatDrawable(R.drawable.ic_baseline_video_library_24))
-                confirmDisabledBackgroundColor(getCompatColor(android.R.color.transparent))
-                confirmDisabledTextColor(getCompatColor(R.color.defaultContentColor))
-                confirmBackgroundColor(getCompatColor(R.color.defaultContentColor))
-                confirmTextColor(getCompatColor(R.color.defaultBackgroundColor))
-                confirmText(safeContext.getString(R.string.confirm))
-                setExpandState(ExpandState.ExpandCustom { isTvOrLandscape() })
-                confirmListener { selected ->
-                    if (selected != null) {
-                        val newHref = seriesData.series.hrefBuilder(
-                            selected.value,
-                            seriesData.series.selectedLanguage
-                        )
-                        burningSeriesViewModel.getSeriesData(newHref, seriesData.series.hrefTitle, true).launchAndCollect { newSeries ->
-                            seriesFlowCollect(newSeries)
-                        }
-                    }
+                    it.episode.href.equals(episode.href, true) || it.episode.title.equals(episodeTitle, true)
                 }
             }
         }
@@ -336,7 +384,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             hideLoadingDialog()
             if (it.isEmpty()) {
                 findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
-                    currentSeriesWithInfo,
+                    burningSeriesViewModel.currentSeriesData!!,
                     episode.href
                 ))
             } else {
@@ -359,7 +407,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                     setExpandState(ExpandState.ExpandCustom { isTvOrLandscape() })
                     confirmListener { item ->
                         if (item != null) {
-                            findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(item, currentSeriesWithInfo, episode))
+                            findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(item, burningSeriesViewModel.currentSeriesData!!, episode))
                         }
                     }
                 }
@@ -376,17 +424,16 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     }
 
     private fun loadMalData(preview: AnimePreview?) = lifecycleScope.launch(Dispatchers.IO) {
-        val defaultUrl = Constants.getBurningSeriesLink(currentSeriesWithInfo.series.image)
+        val defaultUrl = burningSeriesViewModel.currentSeriesData?.series?.image?.let {
+            return@let Constants.getBurningSeriesLink(it)
+        } ?: String()
         val saveName = defaultUrl.substringAfterLast('/')
         val malImageUrl = preview?.mainPicture?.largeURL
 
         fun loadImageFallback() {
             loadImageAndSave(defaultUrl, saveName) { bytes ->
                 binding.banner.load<Drawable>(bytes) {
-                    scaleType(Scale.FIT_CENTER)
-                    if (bannerHasImage()) {
-                        placeholder(binding.banner, PlaceholderScaling.fitCenter())
-                    }
+                    fitCenter()
                 }
             }
         }
@@ -397,10 +444,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                     loadImageAndSave(malImageUrl, saveName) { loader ->
                         if (loader != null) {
                             binding.banner.load<Drawable>(loader) {
-                                scaleType(Scale.FIT_CENTER)
-                                if (bannerHasImage()) {
-                                    placeholder(binding.banner, PlaceholderScaling.fitCenter())
-                                }
+                                fitCenter()
                             }
                         } else {
                             loadImageFallback()
@@ -418,23 +462,20 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
         preview?.let { userViewModel.syncMalSeries(
             it,
-            currentSeriesWithInfo.episodes.map { ep -> ep.episode },
-            currentSeriesWithInfo.currentSeasonIsLast
+            burningSeriesViewModel.currentSeriesData!!.episodes.map { ep -> ep.episode },
+            burningSeriesViewModel.currentSeriesData!!.currentSeasonIsLast
         ) }
     }
 
-    private fun loadAniListData(medium: MediaQuery.Medium) = lifecycleScope.launch(Dispatchers.IO) {
-        val defaultUrl = Constants.getBurningSeriesLink(currentSeriesWithInfo.series.image)
+    private fun loadAniListData(medium: MediaQuery.Medium?) = lifecycleScope.launch(Dispatchers.IO) {
+        val defaultUrl = Constants.getBurningSeriesLink(burningSeriesViewModel.currentSeriesData!!.series.image)
         val saveName = defaultUrl.substringAfterLast('/')
-        val aniListImageUrl = medium.coverImage?.extraLarge ?: medium.coverImage?.large ?: medium.coverImage?.medium
+        val aniListImageUrl = medium?.coverImage?.extraLarge ?: medium?.coverImage?.large ?: medium?.coverImage?.medium
 
         fun loadImageFallback() {
             loadImageAndSave(defaultUrl, saveName) { bytes ->
                 binding.banner.load<Drawable>(bytes) {
-                    scaleType(Scale.FIT_CENTER)
-                    if (bannerHasImage()) {
-                        placeholder(binding.banner, PlaceholderScaling.fitCenter())
-                    }
+                    fitCenter()
                 }
             }
         }
@@ -445,10 +486,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                     loadImageAndSave(aniListImageUrl, saveName) { loader ->
                         if (loader != null) {
                             binding.banner.load<Drawable>(loader) {
-                                scaleType(Scale.FIT_CENTER)
-                                if (bannerHasImage()) {
-                                    placeholder(binding.banner, PlaceholderScaling.fitCenter())
-                                }
+                                fitCenter()
                             }
                         } else {
                             loadImageFallback()
@@ -464,15 +502,13 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             }
         }
 
-        userViewModel.syncAniListSeries(
-            medium,
-            currentSeriesWithInfo.episodes.map { ep -> ep.episode },
-            currentSeriesWithInfo.currentSeasonIsLast
-        )
-    }
-
-    private fun bannerHasImage(): Boolean = with(binding.banner) {
-        return@with isVisible && isShown && (width > 0 || measuredWidth > 0) && (height > 0 || measuredHeight > 0)
+        medium?.let {
+            userViewModel.syncAniListSeries(
+                it,
+                burningSeriesViewModel.currentSeriesData!!.episodes.map { ep -> ep.episode },
+                burningSeriesViewModel.currentSeriesData!!.currentSeasonIsLast
+            )
+        }
     }
 
     override fun onResume() {

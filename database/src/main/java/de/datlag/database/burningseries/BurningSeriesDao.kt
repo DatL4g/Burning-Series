@@ -60,11 +60,15 @@ interface BurningSeriesDao {
 
     @Transaction
     @Query("UPDATE SeriesTable SET favoriteSince = :favSeconds WHERE seriesId = :id")
-    suspend fun updateSeriesFavorite(id: Long, favSeconds: Long)
+    suspend fun updateSeriesFavorite(id: Long, favSeconds: Long): Int
 
     @Transaction
     @Delete
     suspend fun deleteSeriesData(seriesData: SeriesData)
+
+    @Transaction
+    @Query("SELECT * FROM SeriesTable WHERE seriesId = :id LIMIT 1")
+    fun getSeriesWithInfoById(id: Long): Flow<SeriesWithInfo?>
 
     @Transaction
     @Query("SELECT * FROM SeriesTable WHERE hrefTitle = :hrefTitle LIMIT 1")
@@ -263,6 +267,12 @@ interface BurningSeriesDao {
     @Transaction
     @Delete
     suspend fun deleteGenreItem(genreItem: GenreModel.GenreItem)
+
+
+
+    @Transaction
+    @Query("SELECT DISTINCT COUNT(*) FROM GenreTable INNER JOIN GenreItemTable ON GenreTable.genreId = GenreItemTable.genreId")
+    fun getAllSeriesCountJoined(): Flow<Long>
 
 
 

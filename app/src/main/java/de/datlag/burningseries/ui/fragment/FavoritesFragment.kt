@@ -98,6 +98,7 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
         setSupportActionBar(binding.toolbar)
         setHasOptionsMenu(true)
         showToolbarBackButton(binding.toolbar)
+        burningSeriesViewModel.setSeriesData(null)
     }
 
     override fun onStop() {

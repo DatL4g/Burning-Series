@@ -44,7 +44,7 @@ class MainActivity : AdvancedActivity(R.layout.activity_main), FABExtended, Stat
 	}
 
 	override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
-		return (getCurrentNavFragment() as? KeyEventDispatcher?)?.dispatchKeyEvent(event) ?: super.dispatchKeyEvent(event)
+		return ((getCurrentNavFragment() as? KeyEventDispatcher?)?.dispatchKeyEvent(event) ?: false) || super.dispatchKeyEvent(event)
 	}
 
 	override val extendedFab: ExtendedFloatingActionButton

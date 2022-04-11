@@ -13,6 +13,7 @@ import de.datlag.burningseries.adapter.LatestEpisodeRecyclerAdapter
 import de.datlag.burningseries.adapter.LatestSeriesRecyclerAdapter
 import de.datlag.burningseries.common.hideKeyboard
 import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentHomeBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
@@ -22,6 +23,7 @@ import de.datlag.burningseries.viewmodel.UserViewModel
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import io.michaelrocks.paranoid.Obfuscate
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 @AndroidEntryPoint
@@ -52,10 +54,11 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		initRecycler()
 		listenImproveDialogSetting()
 		listenNewVersionDialog()
+		listenAllSeriesCount()
 		recoverMalAuthState()
 		recoverAniListAuthState()
 
-		burningSeriesViewModel.homeData.launchAndCollect {
+		burningSeriesViewModel.homeData.distinctUntilChanged().launchAndCollect {
 			when (it.status) {
 				Resource.Status.LOADING -> {
 					showLoadingStatusBar()
@@ -113,6 +116,14 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 			gitHubViewModel.showedNewVersion = true
 		}
 	}
+
+	private fun listenAllSeriesCount() = burningSeriesViewModel.getAllSeriesCountJoined().distinctUntilChanged().launchAndCollect {
+		if (it <= 0) {
+			burningSeriesViewModel.allSeriesPagination.launchAndCollect {
+				burningSeriesViewModel.getNewPaginationData()
+			}
+		}
+	}
 	
 	private fun initRecycler(): Unit = with(binding) {
 		latestEpisodeRecycler.adapter = latestEpisodeRecyclerAdapter
@@ -152,5 +163,6 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		super.onResume()
 		extendedFab?.visibility = View.VISIBLE
 		hideNavigationFabs()
+		burningSeriesViewModel.setSeriesData(null)
 	}
 }

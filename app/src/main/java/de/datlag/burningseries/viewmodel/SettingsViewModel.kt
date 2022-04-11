@@ -7,10 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import de.datlag.datastore.SettingsPreferences
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,7 +17,7 @@ class SettingsViewModel @Inject constructor(
     val dataStore: DataStore<SettingsPreferences>
 ) : ViewModel() {
 
-    val data: Flow<SettingsPreferences> = dataStore.data.flowOn(Dispatchers.IO)
+    val data: Flow<SettingsPreferences> = dataStore.data.flowOn(Dispatchers.IO).distinctUntilChanged()
 
     fun updateAppearanceDarkMode(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         dataStore.updateData {
