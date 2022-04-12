@@ -30,7 +30,7 @@ object Constants {
 
 	const val API_WRAP_API_HOME_VERSION = "0.1.0"
 	const val API_WRAP_API_ALL_VERSION = "0.1.1"
-	const val API_WRAP_API_SERIES_VERSION = "0.2.5"
+	const val API_WRAP_API_SERIES_VERSION = "0.2.6"
 	const val API_WRAP_API_DOWNLOAD_VIDEO = "0.1.2"
 
 	const val DATABASE_BURNING_SERIES = "BurningSeriesDatabase"

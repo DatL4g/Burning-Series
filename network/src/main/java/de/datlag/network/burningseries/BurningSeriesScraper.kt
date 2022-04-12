@@ -109,8 +109,8 @@ class BurningSeriesScraper {
             }
         }
 
-        val infoHeaders = doc.select(".serie div > span").map { it.text() }
-        val infoData: MutableList<String> = doc.select(".serie div p").map { it.wholeText() }.toMutableList()
+        val infoHeaders = doc.select(".serie .infos div > span").map { it.text() }
+        val infoData: MutableList<String> = doc.select(".serie .infos p").map { it.wholeText() }.toMutableList()
         val infoList: MutableList<InfoData> = mutableListOf()
 
         if (infoData.contains(description)) {

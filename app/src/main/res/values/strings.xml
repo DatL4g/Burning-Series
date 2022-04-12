@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Burning-Series</string>
     <string name="font_path" translatable="false">fonts/Poppins-Regular.ttf</string>
+    <string name="font_path_medium" translatable="false">fonts/Poppins-Medium.ttf</string>
+    <string name="font_path_bold" translatable="false">fonts/Poppins-Bold.ttf</string>
 
     <string name="favorites">Favorites</string>
     <string name="search">Search</string>

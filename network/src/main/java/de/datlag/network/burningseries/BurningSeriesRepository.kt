@@ -364,4 +364,6 @@ class BurningSeriesRepository @Inject constructor(
 	)
 
 	fun getAllSeriesCountJoined() = burningSeriesDao.getAllSeriesCountJoined()
+
+	fun getAllGenres() = burningSeriesDao.getAllGenres()
 }

@@ -66,7 +66,12 @@ class MyAnimeListRepository @Inject constructor() {
         }
     }.flowOn(Dispatchers.IO)
 
-    private suspend fun animePreviewWithDistanceByQuery(myAnimeList: MyAnimeList, query: String, seriesTitle: String, seriesHrefTitle: String): Map<Double, AnimePreview> {
+    private suspend fun animePreviewWithDistanceByQuery(
+        myAnimeList: MyAnimeList,
+        query: String,
+        seriesTitle: String,
+        seriesHrefTitle: String
+    ): Map<Double, AnimePreview> {
         return try {
             myAnimeList.anime.includeNSFW().withLimit(15).withQuery(query).search() ?: emptyList()
         } catch (ignored: Exception) { emptyList() }.associateBy {
@@ -80,7 +85,7 @@ class MyAnimeListRepository @Inject constructor() {
         val japaneseDistance = JaroWinkler.distance(title, animePreview.alternativeTitles.japanese ?: String())
         val synonyms = animePreview.alternativeTitles.synonyms ?: emptyArray()
         val synonymDistance: Double = if (synonyms.isNotEmpty()) {
-            synonyms.sumOf { JaroWinkler.distance(title, it) } / synonyms.size / 2
+            synonyms.map { synonym -> JaroWinkler.distance(title, synonym ?: String()) }.average()
         } else { 0.0 }
 
         return max(titleDistance, max(englishDistance, max(japaneseDistance, synonymDistance)))

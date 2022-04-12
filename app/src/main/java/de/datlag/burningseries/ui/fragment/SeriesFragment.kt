@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -15,11 +14,13 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.ahmed3elshaer.selectionbottomsheet.ExpandState
 import com.ahmed3elshaer.selectionbottomsheet.selectionBottomSheet
 import com.devs.readmoreoption.ReadMoreOption
+import com.google.android.material.chip.Chip
 import com.hadiyarajesh.flower.Resource
 import com.kttdevelopment.mal4j.anime.AnimePreview
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.EpisodeRecyclerAdapter
+import de.datlag.burningseries.adapter.SeriesInfoAdapter
 import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
@@ -30,9 +31,11 @@ import de.datlag.burningseries.viewmodel.VideoViewModel
 import de.datlag.coilifier.Scale
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
+import de.datlag.model.JaroWinkler
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.series.EpisodeInfo
+import de.datlag.model.burningseries.series.InfoData
 import de.datlag.model.burningseries.series.LanguageData
 import de.datlag.model.burningseries.series.SeasonData
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
@@ -62,6 +65,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     private val userViewModel: UserViewModel by activityViewModels()
 
     private val episodeRecyclerAdapter = EpisodeRecyclerAdapter()
+    private val seriesInfoAdapter = SeriesInfoAdapter()
     private lateinit var readMoreOption: ReadMoreOption
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,6 +85,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         listenSelectedSeason()
         listenSeasons()
         listenDescription()
+        listenInfo()
 
         readMoreOption = safeContext.readMoreOption {
             textLength(3)
@@ -188,6 +193,10 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     }
 
     private fun initRecycler(): Unit = with(binding) {
+        infoRecycler.itemAnimator = null
+        seriesInfoAdapter.submitList(listOf())
+        infoRecycler.adapter = seriesInfoAdapter
+
         episodeRecycler.itemAnimator = null
         episodeRecyclerAdapter.submitList(listOf())
         episodeRecycler.adapter = episodeRecyclerAdapter
@@ -346,6 +355,43 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 binding.description.text = it
             }
         }
+    }
+
+    private fun listenInfo() = burningSeriesViewModel.seriesInfo.launchAndCollect {
+        var genreInfo: InfoData? = null
+        seriesInfoAdapter.submitList(it.mapNotNull { info ->
+            if (info.header.trim().equals("Genre", true) || info.header.trim().equals("Genres", true)) {
+                genreInfo = info
+                null
+            } else {
+                info
+            }
+        }.sortedBy { info -> info.header.trim() })
+
+        burningSeriesViewModel.getAllGenres()
+        binding.genreGroup.removeAllViews()
+        if (genreInfo != null) {
+            val genreSplit = genreInfo!!.data.trim().split("\\s".toRegex())
+            genreSplit.subList(0, if (genreSplit.size >= 5) 5 else genreSplit.size).forEach {  genre ->
+                binding.genreGroup.addView(Chip(safeContext).apply {
+                    setTextColor(safeContext.getColorCompat(R.color.defaultBackgroundColor))
+                    setChipBackgroundColorResource(R.color.defaultContentColor)
+                    text = genre.trim()
+                    setOnClickListener {
+                        findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToAllSeriesFragment(bestGenre(genre)))
+                    }
+                })
+            }
+        }
+    }
+
+
+    private fun bestGenre(genre: String): GenreModel.GenreData? {
+        return burningSeriesViewModel.genres.firstOrNull {
+            it.genre.trim().equals(genre.trim(), true)
+        } ?: burningSeriesViewModel.genres.associateBy {
+            JaroWinkler.distance(genre.trim(), it.genre.trim())
+        }.maxByOrNull { it.key }?.value
     }
 
     private fun listenEpisodes(episode: LatestEpisode? = null) = burningSeriesViewModel.seriesEpisodes.launchAndCollect { episodes ->

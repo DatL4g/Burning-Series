@@ -163,6 +163,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		super.onResume()
 		extendedFab?.visibility = View.VISIBLE
 		hideNavigationFabs()
+		burningSeriesViewModel.cancelFetchSeries()
 		burningSeriesViewModel.setSeriesData(null)
 	}
 }

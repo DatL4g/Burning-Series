@@ -3,6 +3,7 @@ package de.datlag.network.anilist
 import android.util.Log
 import com.apollographql.apollo3.ApolloClient
 import de.datlag.model.JaroWinkler
+import de.datlag.model.Levenshtein
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.network.anilist.type.MediaFormat
 import de.datlag.network.anilist.type.MediaListStatus
@@ -57,7 +58,8 @@ class AniListRepository @Inject constructor(
                         it,
                         "${seriesWithInfo.series.title} ${seriesWithInfo.series.season}",
                         seriesWithInfo.series.title,
-                        seriesWithInfo.series.hrefTitle
+                        seriesWithInfo.series.hrefTitle,
+                        seriesWithInfo.series.description
                     )
                 } }.awaitAll()
 
@@ -83,7 +85,7 @@ class AniListRepository @Inject constructor(
                     maxEntry ?: lenEntry
                 }
 
-                if (bestEntry != null && bestEntry.key > 0.65) {
+                if (bestEntry != null && bestEntry.key > 0.50) {
                     emit(bestEntry.value)
                 } else {
                     emit(null)
@@ -94,11 +96,27 @@ class AniListRepository @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    private suspend fun animeMediumWithDistance(apolloWithToken: ApolloClient, query: String, seriesTitleWithSeason: String, seriesTitle: String, seriesHrefTitle: String): Map<Double, MediaQuery.Medium> {
+    private suspend fun animeMediumWithDistance(
+        apolloWithToken: ApolloClient,
+        query: String,
+        seriesTitleWithSeason: String,
+        seriesTitle: String,
+        seriesHrefTitle: String,
+        seriesDescription: String
+    ): Map<Double, MediaQuery.Medium> {
         return try {
             apolloWithToken.query(MediaQuery(query, MediaType.ANIME, listOf(MediaFormat.TV, MediaFormat.TV_SHORT, MediaFormat.ONA), MediaStatus.NOT_YET_RELEASED)).execute().data?.page?.media ?: emptyList()
         } catch (ignored: Exception) { emptyList() }.filterNotNull().associateBy {
-            max(mediumBestDistance(seriesTitleWithSeason, it), max(mediumBestDistance(seriesTitle, it), mediumBestDistance(seriesHrefTitle, it)))
+            val titleSimilarity = max(mediumBestDistance(seriesTitleWithSeason, it), max(mediumBestDistance(seriesTitle, it), mediumBestDistance(seriesHrefTitle, it)))
+            var descriptionSimilarity = Levenshtein.normalizedSimilarity(it.description ?: String(), seriesDescription)
+            descriptionSimilarity = max(
+                descriptionSimilarity,
+                if ((it.description ?: String()).startsWith(seriesDescription, true)
+                    || (it.description ?: String()).endsWith(seriesDescription, true))
+                        0.75F
+                else 0F
+            )
+            (titleSimilarity + descriptionSimilarity.toDouble()) / 2
         }
     }
 

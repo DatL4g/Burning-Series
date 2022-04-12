@@ -132,6 +132,11 @@
         <action
             android:id="@+id/action_allSeriesFragment_to_openInBrowserDialog"
             app:destination="@id/openInBrowserDialog" />
+        <argument
+            android:name="defaultGenre"
+            app:argType="de.datlag.model.burningseries.allseries.GenreModel$GenreData"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/videoFragment"

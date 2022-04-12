@@ -258,6 +258,10 @@ interface BurningSeriesDao {
     @Delete
     suspend fun deleteGenre(genreData: GenreModel.GenreData)
 
+    @Transaction
+    @Query("SELECT * FROM GenreTable ORDER BY GenreTable.genre")
+    fun getAllGenres(): Flow<List<GenreModel.GenreData>>
+
 
 
     @Transaction
@@ -277,7 +281,7 @@ interface BurningSeriesDao {
 
 
     @Transaction
-    @Query("SELECT * FROM GenreTable LIMIT 1 OFFSET :offset")
+    @Query("SELECT * FROM GenreTable ORDER BY GenreTable.genre LIMIT 1 OFFSET :offset")
     fun getAllSeries(offset: Long = 0L): Flow<List<GenreWithItems>>
 
     @Transaction

@@ -16,6 +16,7 @@ import de.datlag.network.burningseries.BurningSeriesRepository
 import de.datlag.network.m3o.M3ORepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -107,6 +108,21 @@ class BurningSeriesViewModel @Inject constructor(
 			}
 		} ?: emptyList()
 	}.distinctUntilChanged()
+	val seriesInfo: Flow<List<InfoData>> = seriesData.map {
+		it?.let { seriesWithInfo ->
+			return@let if (!seriesWithInfo.infos.isNullOrEmpty()) {
+				seriesWithInfo.infos
+			} else {
+				seriesWithInfo.series.infos
+			}
+		} ?: emptyList()
+	}.distinctUntilChanged()
+
+	private val _genres: MutableStateFlow<List<GenreModel.GenreData>> = MutableStateFlow(listOf())
+	val genres: List<GenreModel.GenreData>
+		get() = _genres.value
+
+	private var fetchSeriesJob: Job? = null
 
 	init {
 		getAllFavorites()
@@ -117,6 +133,10 @@ class BurningSeriesViewModel @Inject constructor(
 		}
 	}
 
+	fun getAllGenres() = viewModelScope.launch(Dispatchers.IO) {
+		_genres.emitAll(repository.getAllGenres())
+	}
+
 	fun setSeriesData(seriesWithInfo: SeriesWithInfo?) {
 		val success = _seriesData.tryEmit(seriesWithInfo)
 		if (!success) {
@@ -124,6 +144,10 @@ class BurningSeriesViewModel @Inject constructor(
 				_seriesData.emit(seriesWithInfo)
 			}
 		}
+	}
+
+	fun setAllSeriesPage(index: Int) = viewModelScope.launch(Dispatchers.IO) {
+		allSeriesPagination.emit(index.toLong())
 	}
 
 	fun getAllSeriesNext() = viewModelScope.launch(Dispatchers.IO) {
@@ -160,53 +184,67 @@ class BurningSeriesViewModel @Inject constructor(
 		favorites.emitAll(repository.searchSeriesFavorites(title))
 	}
 
-	fun getSeriesData(latestSeries: LatestSeries) = viewModelScope.launch(Dispatchers.IO) {
-		repository.getSeriesData(latestSeries).collect {
-			val safe = it.data
-			if (safe != null) {
-				setSeriesData(safe)
-			} else {
-				_seriesData.emit(it.data)
+	fun getSeriesData(latestSeries: LatestSeries) {
+		fetchSeriesJob?.cancel()
+		fetchSeriesJob = viewModelScope.launch(Dispatchers.IO) {
+			repository.getSeriesData(latestSeries).collect {
+				val safe = it.data
+				if (safe != null) {
+					setSeriesData(safe)
+				} else {
+					_seriesData.emit(it.data)
+				}
+				_seriesStatus.emit(it.status)
 			}
-			_seriesStatus.emit(it.status)
 		}
 	}
 
-	fun getSeriesData(latestEpisode: LatestEpisode) = viewModelScope.launch(Dispatchers.IO) {
-		repository.getSeriesData(latestEpisode).collect {
-			val safe = it.data
-			if (safe != null) {
-				setSeriesData(safe)
-			} else {
-				_seriesData.emit(it.data)
+	fun getSeriesData(latestEpisode: LatestEpisode) {
+		fetchSeriesJob?.cancel()
+		fetchSeriesJob = viewModelScope.launch(Dispatchers.IO) {
+			repository.getSeriesData(latestEpisode).collect {
+				val safe = it.data
+				if (safe != null) {
+					setSeriesData(safe)
+				} else {
+					_seriesData.emit(it.data)
+				}
+				_seriesStatus.emit(it.status)
 			}
-			_seriesStatus.emit(it.status)
 		}
 	}
 
-	fun getSeriesData(genreItem: GenreModel.GenreItem) = viewModelScope.launch(Dispatchers.IO) {
-		repository.getSeriesData(genreItem).collect {
-			val safe = it.data
-			if (safe != null) {
-				setSeriesData(safe)
-			} else {
-				_seriesData.emit(it.data)
+	fun getSeriesData(genreItem: GenreModel.GenreItem) {
+		fetchSeriesJob?.cancel()
+		fetchSeriesJob = viewModelScope.launch(Dispatchers.IO) {
+			repository.getSeriesData(genreItem).collect {
+				val safe = it.data
+				if (safe != null) {
+					setSeriesData(safe)
+				} else {
+					_seriesData.emit(it.data)
+				}
+				_seriesStatus.emit(it.status)
 			}
-			_seriesStatus.emit(it.status)
 		}
 	}
 
-	fun getSeriesData(href: String, hrefTitle: String, forceLoad: Boolean = false) = viewModelScope.launch(Dispatchers.IO) {
-		repository.getSeriesData(href, hrefTitle, forceLoad).collect {
-			val safe = it.data
-			if (safe != null) {
-				setSeriesData(safe)
-			} else {
-				_seriesData.emit(it.data)
+	fun getSeriesData(href: String, hrefTitle: String, forceLoad: Boolean = false) {
+		fetchSeriesJob?.cancel()
+		fetchSeriesJob = viewModelScope.launch(Dispatchers.IO) {
+			repository.getSeriesData(href, hrefTitle, forceLoad).collect {
+				val safe = it.data
+				if (safe != null) {
+					setSeriesData(safe)
+				} else {
+					_seriesData.emit(it.data)
+				}
+				_seriesStatus.emit(it.status)
 			}
-			_seriesStatus.emit(it.status)
 		}
 	}
+
+	fun cancelFetchSeries() = fetchSeriesJob?.cancel()
 
 	fun updateSeriesFavorite(seriesData: SeriesWithInfo) = viewModelScope.launch(Dispatchers.IO) {
 		repository.updateSeriesFavorite(seriesData.series)

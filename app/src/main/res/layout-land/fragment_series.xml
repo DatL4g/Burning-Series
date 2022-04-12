@@ -94,6 +94,26 @@
             android:layout_margin="16dp"
             app:layout_constraintTop_toBottomOf="@id/container"/>
 
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/genreGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:lineSpacing="2dp"
+            app:chipSpacingHorizontal="4dp"
+            app:chipSpacingVertical="2dp"
+            app:layout_constraintTop_toBottomOf="@id/description"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/infoRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:animateLayoutChanges="false"
+            android:layout_margin="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/genreGroup"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/episodeRecycler"
             android:layout_width="match_parent"
@@ -101,6 +121,6 @@
             android:nestedScrollingEnabled="false"
             android:animateLayoutChanges="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@id/description" />
+            app:layout_constraintTop_toBottomOf="@id/infoRecycler" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

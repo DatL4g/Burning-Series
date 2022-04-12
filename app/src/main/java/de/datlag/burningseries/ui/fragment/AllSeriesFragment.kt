@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.ferfalk.simplesearchview.SimpleSearchView
@@ -26,6 +27,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
 
+    private val navArgs: AllSeriesFragmentArgs by navArgs()
     private val binding: FragmentAllSeriesBinding by viewBinding(FragmentAllSeriesBinding::bind)
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 
@@ -38,6 +40,15 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
 
         initRecycler()
         initSearchView()
+
+        (navArgs.defaultGenre as? GenreModel.GenreData?)?.let { default ->
+            val currentGenres = burningSeriesViewModel.genres
+            val genresIndex = currentGenres.indexOfFirst { it == default || it.genre.equals(default.genre, true) }
+            if (genresIndex >= 0) {
+                burningSeriesViewModel.setAllSeriesPage(genresIndex)
+            }
+        }
+
         burningSeriesViewModel.allSeriesPagination.launchAndCollect {
             showLoadingDialog()
             burningSeriesViewModel.getNewPaginationData()
@@ -122,6 +133,7 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         setSupportActionBar(binding.toolbar)
         setHasOptionsMenu(true)
         showToolbarBackButton(binding.toolbar)
+        burningSeriesViewModel.cancelFetchSeries()
         burningSeriesViewModel.setSeriesData(null)
     }
 

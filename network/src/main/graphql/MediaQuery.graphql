@@ -18,6 +18,7 @@ query MediaQuery($search: String!, $mediaType: MediaType!, $mediaFormat: [MediaF
                 medium
             }
             synonyms
+            description
         }
     }
 }
