@@ -148,7 +148,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                     }
                 }
             }
-        }
+        }.show(this)
     }
 
     private fun seriesSeasonSelector(seasonData: SeasonData) {
@@ -189,7 +189,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                     }
                 }
             }
-        }
+        }.show(this)
     }
 
     private fun initRecycler(): Unit = with(binding) {
@@ -456,7 +456,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                             findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(item, burningSeriesViewModel.currentSeriesData!!, episode))
                         }
                     }
-                }
+                }.show(this@SeriesFragment)
             }
         }
     }

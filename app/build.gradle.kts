@@ -95,7 +95,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.3")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
-    implementation("com.github.DATL4G:SelectionBottomSheet:1.3.2")
+    implementation("com.github.DATL4G:SelectionBottomSheet:2.0.0")
     implementation("com.github.devendroid:ReadMoreOption:1.0.3")
     implementation("com.mikepenz:aboutlibraries:10.1.0")
 
