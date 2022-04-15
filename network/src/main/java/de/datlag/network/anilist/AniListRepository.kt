@@ -2,7 +2,6 @@ package de.datlag.network.anilist
 
 import com.apollographql.apollo3.ApolloClient
 import de.datlag.model.JaroWinkler
-import de.datlag.model.Levenshtein
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.network.anilist.type.MediaFormat
 import de.datlag.network.anilist.type.MediaListStatus
@@ -105,16 +104,7 @@ class AniListRepository @Inject constructor(
         return try {
             apolloWithToken.query(MediaQuery(query, MediaType.ANIME, listOf(MediaFormat.TV, MediaFormat.TV_SHORT, MediaFormat.ONA), MediaStatus.NOT_YET_RELEASED)).execute().data?.page?.media ?: emptyList()
         } catch (ignored: Exception) { emptyList() }.filterNotNull().associateBy {
-            val titleSimilarity = max(mediumBestDistance(seriesTitleWithSeason, it), max(mediumBestDistance(seriesTitle, it), mediumBestDistance(seriesHrefTitle, it)))
-            var descriptionSimilarity = Levenshtein.normalizedSimilarity(it.description ?: String(), seriesDescription)
-            descriptionSimilarity = max(
-                descriptionSimilarity,
-                if ((it.description ?: String()).startsWith(seriesDescription, true)
-                    || (it.description ?: String()).endsWith(seriesDescription, true))
-                        0.75F
-                else 0F
-            )
-            (titleSimilarity + descriptionSimilarity.toDouble()) / 2
+            max(mediumBestDistance(seriesTitleWithSeason, it), max(mediumBestDistance(seriesTitle, it), mediumBestDistance(seriesHrefTitle, it)))
         }
     }
 

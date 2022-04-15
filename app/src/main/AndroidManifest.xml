@@ -40,7 +40,8 @@
         <activity
             android:name="net.openid.appauth.RedirectUriReceiverActivity"
             tools:node="replace"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.INTERNET">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
