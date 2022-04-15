@@ -23,8 +23,8 @@ android {
         applicationId = "de.datlag.burningseries"
         minSdk = Configuration.minSdk
         targetSdk = Configuration.targetSdk
-        versionCode = 120
-        versionName = "1.2.0"
+        versionCode = 200
+        versionName = "2.0.0"
 
         multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
@@ -82,7 +82,7 @@ dependencies {
     implementation(project(mapOf("path" to ":database")))
     implementation(project(mapOf("path" to ":executor")))
     implementation(project(mapOf("path" to ":datastore")))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib${CompileOptions.kotlinJdk}:1.6.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib${CompileOptions.kotlinJdk}:1.6.20")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
@@ -166,6 +166,6 @@ dependencies {
 
 protobuf.protobuf.run {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.19.4"
+        artifact = "com.google.protobuf:protoc:3.20.0"
     }
 }
