@@ -16,7 +16,6 @@ import de.datlag.burningseries.common.hideLoadingDialog
 import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentAllSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
-import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel

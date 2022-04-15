@@ -77,9 +77,9 @@ class BurningSeriesRepository @Inject constructor(
 				},
 				shouldFetchFromRemote = {
 					it == null || it.first.isNullOrEmpty() || it.second.isNullOrEmpty() || it.first.any { episode ->
-						(currentRequest - Constants.DAY_IN_MILLI) >= episode.updatedAt
+						currentRequest - Constants.DAY_IN_MILLI >= episode.updatedAt
 					} || it.second.any { series ->
-						(currentRequest - Constants.DAY_IN_MILLI) >= series.updatedAt
+						currentRequest - Constants.DAY_IN_MILLI >= series.updatedAt
 					}
 				},
 				fetchFromRemote = {
@@ -141,7 +141,7 @@ class BurningSeriesRepository @Inject constructor(
 					burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle)
 				},
 				shouldFetchFromRemote = {
-					it == null || forceLoad || (currentRequest - Constants.DAY_IN_MILLI) >= it.series.updatedAt || it.episodes.isEmpty()
+					it == null || forceLoad || currentRequest - Constants.DAY_IN_MILLI >= it.series.updatedAt || it.episodes.isEmpty()
 				},
 				fetchFromRemote = {
 					if (hrefData.second != null && hrefData.third != null) {
@@ -285,7 +285,7 @@ class BurningSeriesRepository @Inject constructor(
 			val first = burningSeriesDao.getAllSeries(pagination).first()
 			val currentRequest = Clock.System.now().epochSeconds
 
-			if (first.isEmpty() || first.any { (currentRequest - Constants.DAY_IN_MILLI) >= it.genre.updatedAt }) {
+			if (first.isEmpty() || first.any { currentRequest - Constants.DAY_IN_MILLI >= it.genre.updatedAt }) {
 				emit(Resource.loading(first))
 				val scrapeData = scraper.scrapeAllSeries()
 				if (scrapeData.isNotEmpty()) {
@@ -297,7 +297,7 @@ class BurningSeriesRepository @Inject constructor(
 							burningSeriesDao.getAllSeries(pagination)
 						},
 						shouldFetchFromRemote = {
-							it.isNullOrEmpty() || it.any { item -> (currentRequest - Constants.DAY_IN_MILLI) >= item.genre.updatedAt }
+							it.isNullOrEmpty() || it.any { item -> currentRequest - Constants.DAY_IN_MILLI >= item.genre.updatedAt }
 						},
 						fetchFromRemote = {
 							service.getAllSeries(apiKey = wrapApiToken)

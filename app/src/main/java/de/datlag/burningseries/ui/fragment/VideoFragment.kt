@@ -300,11 +300,9 @@ class VideoFragment : AdvancedFragment(), PreviewLoader, Player.Listener, KeyEve
 
     override fun onPlaybackStateChanged(playbackState: Int): Unit = with(binding) {
         super.onPlaybackStateChanged(playbackState)
-        if (playbackState == Player.STATE_ENDED) {
-            if (nextEpisodeInfo != null && nextEpisodeStreams.isNotEmpty()) {
-                val sameHosterOrFirst = nextEpisodeStreams.firstOrNull { it.hoster.equals(navArgs.videoStream.hoster, true) } ?: nextEpisodeStreams.first()
-                findNavController().navigate(VideoFragmentDirections.actionVideoFragmentSelf(sameHosterOrFirst, navArgs.seriesWithInfo, nextEpisodeInfo!!.episode))
-            }
+        if (playbackState == Player.STATE_ENDED && nextEpisodeInfo != null && nextEpisodeStreams.isNotEmpty()) {
+            val sameHosterOrFirst = nextEpisodeStreams.firstOrNull { it.hoster.equals(navArgs.videoStream.hoster, true) } ?: nextEpisodeStreams.first()
+            findNavController().navigate(VideoFragmentDirections.actionVideoFragmentSelf(sameHosterOrFirst, navArgs.seriesWithInfo, nextEpisodeInfo!!.episode))
         }
     }
 

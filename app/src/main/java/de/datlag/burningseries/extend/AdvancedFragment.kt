@@ -33,13 +33,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 @Obfuscate
 abstract class AdvancedFragment() : ThemeFragment() {
-	
+
 	@ApplicationContext
 	lateinit var appContext: Context
-	
+
 	@Inject
 	lateinit var m3oRepository: M3ORepository
-	
+
 	fun loadImageAndSave(
 		url: String,
 		name: String = url.substringAfterLast("/"),

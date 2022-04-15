@@ -77,4 +77,6 @@
     <string name="anilist_login_subtitle">Synchronisiere deinen Fortschritt mit AniList</string>
     <string name="anilist_images">Benutze AniList Bilder</string>
     <string name="anilist_images_subtitle">Lädt AniList Cover von Serien</string>
+    <string name="burningseries_theme">BurningSeries Theme</string>
+    <string name="burningseries_theme_subtitle">Nutze die BurningSeries Akzentfarbe</string>
 </resources>

@@ -34,13 +34,13 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Obfuscate
 object NetworkModule {
-	
+
 	val jsonBuilder = Json {
 		ignoreUnknownKeys = true
 		isLenient = true
 		encodeDefaults = true
 	}
-	
+
 	private val loggingInterceptor = HttpLoggingInterceptor {
 		Timber.w(it)
 	}.apply {
@@ -50,18 +50,18 @@ object NetworkModule {
 	@Provides
 	@Singleton
 	fun provideJsonBuilder(): Json = jsonBuilder
-	
+
 	@Provides
 	@Named(Constants.NAMED_JSON)
 	fun provideMediaType(): MediaType = Constants.MEDIATYPE_JSON.toMediaType()
-	
+
 	@Provides
 	@Singleton
 	@Named(Constants.NAMED_JSON_CONVERTER)
 	fun provideConverterFactory(
 		@Named(Constants.NAMED_JSON) json: MediaType
 	): Converter.Factory = jsonBuilder.asConverterFactory(json)
-	
+
 	@Provides
 	@Singleton
 	fun provideCallFactory(): OkHttpClient = OkHttpClient.Builder()
@@ -70,7 +70,7 @@ object NetworkModule {
 		.writeTimeout(60, TimeUnit.SECONDS)
 		.addInterceptor(loggingInterceptor)
 		.build()
-	
+
 	@Provides
 	@Singleton
 	@Named(Constants.NAMED_JSON_RETROFIT)
@@ -81,7 +81,7 @@ object NetworkModule {
 		.addCallAdapterFactory(FlowCallAdapterFactory())
 		.callFactory(httpClient)
 		.addConverterFactory(json)
-	
+
 	@Provides
 	@Singleton
 	fun provideBurningSeriesService(
@@ -94,7 +94,7 @@ object NetworkModule {
 	@Provides
 	@Singleton
 	fun provideBurningSeriesScraper() = BurningSeriesScraper()
-	
+
 	@Provides
 	@Singleton
 	fun provideM3OImageService(

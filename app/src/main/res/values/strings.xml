@@ -82,4 +82,6 @@
     <string name="anilist_login_subtitle">Sync your progress with AniList</string>
     <string name="anilist_images">Use AniList Images</string>
     <string name="anilist_images_subtitle">Loads AniList Covers of series</string>
+    <string name="burningseries_theme">BurningSeries Theme</string>
+    <string name="burningseries_theme_subtitle">Use the BurningSeries accent color</string>
 </resources>

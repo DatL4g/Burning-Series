@@ -174,7 +174,7 @@ class UserViewModel @Inject constructor(
     fun getUserMal(callback: (mal: MyAnimeList?) -> Unit) {
         fun malWithFreshToken() {
             malAuthService?.let {
-                malAuthState.performActionWithFreshTokens(it) { accessToken, idToken, ex ->
+                malAuthState.performActionWithFreshTokens(it) { accessToken, _, ex ->
                     if (accessToken.isNullOrEmpty() || ex != null) {
                         callback.invoke(null)
                     } else {
@@ -263,7 +263,7 @@ class UserViewModel @Inject constructor(
 
     private fun aniListFreshToken(): Flow<String?> = flow {
         anilistAuthService?.let {
-            return@let anilistAuthState.performActionWithFreshTokens(it) { accessToken, idToken, ex ->
+            return@let anilistAuthState.performActionWithFreshTokens(it) { accessToken, _, ex ->
                 if (accessToken.isNullOrEmpty() || ex != null) {
                     viewModelScope.launch(Dispatchers.IO) {
                         emit(null)

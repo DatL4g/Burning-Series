@@ -33,13 +33,13 @@ import kotlinx.coroutines.flow.map
 @AndroidEntryPoint
 @Obfuscate
 class HomeFragment : AdvancedFragment() {
-	
+
 	private val binding: FragmentHomeBinding by viewBinding(CreateMethod.INFLATE)
 	private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 	private val settingsViewModel: SettingsViewModel by activityViewModels()
 	private val gitHubViewModel: GitHubViewModel by activityViewModels()
 	private val userViewModel: UserViewModel by activityViewModels()
-	
+
 	private val latestEpisodeRecyclerAdapter by lazy {
 		LatestEpisodeRecyclerAdapter(binding.allSeriesButton.id)
 	}
@@ -151,7 +151,7 @@ class HomeFragment : AdvancedFragment() {
 			}
 		}
 	}
-	
+
 	private fun initRecycler(): Unit = with(binding) {
 		latestEpisodeRecycler.adapter = latestEpisodeRecyclerAdapter
 		latestEpisodeRecyclerAdapter.setOnClickListener { item ->

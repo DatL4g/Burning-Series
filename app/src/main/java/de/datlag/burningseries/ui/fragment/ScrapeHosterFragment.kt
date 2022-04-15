@@ -20,7 +20,6 @@ import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentScrapeHosterBinding
 import de.datlag.burningseries.extend.AdvancedFragment
-import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.burningseries.ui.webview.AdBlockWebViewClient
 import de.datlag.burningseries.viewmodel.AdBlockViewModel
 import de.datlag.burningseries.viewmodel.ScrapeHosterViewModel

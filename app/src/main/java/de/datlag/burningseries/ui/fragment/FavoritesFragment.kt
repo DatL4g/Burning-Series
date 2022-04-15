@@ -18,7 +18,6 @@ import de.datlag.burningseries.common.isTelevision
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.FragmentFavoritesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
-import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import io.michaelrocks.paranoid.Obfuscate
 

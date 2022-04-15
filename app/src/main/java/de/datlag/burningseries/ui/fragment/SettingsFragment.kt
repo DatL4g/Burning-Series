@@ -136,7 +136,7 @@ class SettingsFragment : AdvancedFragment() {
                 safeContext.getString(R.string.dark_mode),
                 safeContext.getString(R.string.dark_mode_subtitle),
                 it.appearance.darkMode
-            ) { view, isChecked ->
+            ) { _, isChecked ->
                 val mode = if (isChecked) NightMode.Mode.DARK else NightMode.Mode.LIGHT
 
                 AppCompatDelegate.setDefaultNightMode(mode.toDelegateMode())
@@ -144,8 +144,8 @@ class SettingsFragment : AdvancedFragment() {
                 settingsViewModel.updateAppearanceDarkMode(isChecked)
             },
             SettingsModel.Switch(1,
-                "BurningSeries Theme",
-                "Use the BurningSeries theme",
+                safeContext.getString(R.string.burningseries_theme),
+                safeContext.getString(R.string.burningseries_theme_subtitle),
                 it.appearance.theme > 0
             ) { view, isChecked ->
                 val id = if (isChecked) {

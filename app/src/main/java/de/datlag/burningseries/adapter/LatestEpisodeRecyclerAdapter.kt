@@ -20,24 +20,24 @@ import io.michaelrocks.paranoid.Obfuscate
 
 @Obfuscate
 class LatestEpisodeRecyclerAdapter(private val belowFocusViewId: Int) : ClickRecyclerAdapter<LatestEpisode, LatestEpisodeRecyclerAdapter.ViewHolder>() {
-	
+
 	override val diffCallback = object : DiffUtil.ItemCallback<LatestEpisode>() {
 		override fun areItemsTheSame(oldItem: LatestEpisode, newItem: LatestEpisode): Boolean {
 			return oldItem.href == newItem.href
 		}
-		
+
 		override fun areContentsTheSame(oldItem: LatestEpisode, newItem: LatestEpisode): Boolean {
 			return oldItem.hashCode() == newItem.hashCode()
 		}
 	}
-	
+
 	override val differ = AsyncListDiffer(this, diffCallback)
-	
+
 	inner class ViewHolder(
 		itemView: View
 	) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
 		val binding: RecyclerLatestEpisodeBinding by viewBinding(RecyclerLatestEpisodeBinding::bind)
-		
+
 		init {
 			binding.card.setOnClickListener(this)
 			binding.card.setOnLongClickListener(this)
@@ -46,16 +46,16 @@ class LatestEpisodeRecyclerAdapter(private val belowFocusViewId: Int) : ClickRec
 		override fun onClick(p0: View?) {
 			clickListener?.invoke(differ.currentList[absoluteAdapterPosition])
 		}
-		
+
 		override fun onLongClick(v: View?): Boolean {
 			return longClickListener?.invoke(differ.currentList[absoluteAdapterPosition]) ?: false
 		}
 	}
-	
+
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 		return ViewHolder(parent.inflateView(R.layout.recycler_latest_episode))
 	}
-	
+
 	override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
 		val item = differ.currentList[position]
 		val (title, text) = item.getEpisodeAndSeries()

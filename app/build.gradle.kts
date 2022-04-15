@@ -83,7 +83,7 @@ dependencies {
     implementation(project(mapOf("path" to ":executor")))
     implementation(project(mapOf("path" to ":datastore")))
     implementation("org.jetbrains.kotlin:kotlin-stdlib${CompileOptions.kotlinJdk}:1.6.10")
-    
+
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     implementation("androidx.appcompat:appcompat:1.4.1")
@@ -136,7 +136,7 @@ dependencies {
 
     implementation("io.github.inflationx:viewpump:2.0.3")
     implementation("io.github.inflationx:calligraphy3:3.1.1")
-    
+
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
 
     implementation("com.github.bumptech.glide", "glide").version {
