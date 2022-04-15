@@ -61,10 +61,10 @@ import kotlinx.datetime.Clock
 
 @AndroidEntryPoint
 @Obfuscate
-class SeriesFragment : AdvancedFragment() {
+class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
     private val navArgs: SeriesFragmentArgs by navArgs()
-    private val binding: FragmentSeriesBinding by viewBinding(CreateMethod.INFLATE)
+    private val binding: FragmentSeriesBinding by viewBinding()
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
     private val settingsViewModel: SettingsViewModel by activityViewModels()
     private val videoViewModel: VideoViewModel by viewModels()
@@ -73,14 +73,6 @@ class SeriesFragment : AdvancedFragment() {
     private val episodeRecyclerAdapter = EpisodeRecyclerAdapter()
     private val seriesInfoAdapter = SeriesInfoAdapter()
     private lateinit var readMoreOption: ReadMoreOption
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -383,8 +375,8 @@ class SeriesFragment : AdvancedFragment() {
     }
 
     private fun addGenre(genre: String) = lifecycleScope.launch(Dispatchers.Main) {
-        val applyTextColor = (ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.defaultBackgroundColor(safeContext) ?: safeContext.getColorCompat(R.color.defaultBackgroundColor)
-        val applyBackgroundColor = (ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.defaultContentColor(safeContext) ?: safeContext.getColorCompat(R.color.defaultContentColor)
+        val applyTextColor = (themeManager.currentTheme as? ApplicationTheme?)?.defaultBackgroundColor(safeContext) ?: safeContext.getColorCompat(R.color.defaultBackgroundColor)
+        val applyBackgroundColor = (themeManager.currentTheme as? ApplicationTheme?)?.defaultContentColor(safeContext) ?: safeContext.getColorCompat(R.color.defaultContentColor)
 
         binding.genreGroup.addView(Chip(safeContext).apply {
             setTextColor(applyTextColor)
@@ -421,7 +413,7 @@ class SeriesFragment : AdvancedFragment() {
                 scaleType(Scale.CENTER_INSIDE)
             }
             favIcon.clearTint()
-            val color = (ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.favoriteIconCheckedColor(safeContext) ?: safeContext.getColorCompat(R.color.favIconColorTrue)
+            val color = (themeManager.currentTheme as? ApplicationTheme?)?.favoriteIconCheckedColor(safeContext) ?: safeContext.getColorCompat(R.color.favIconColorTrue)
             favIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 color,
                 BlendModeCompat.SRC_IN
@@ -431,7 +423,7 @@ class SeriesFragment : AdvancedFragment() {
                 scaleType(Scale.CENTER_INSIDE)
             }
             favIcon.clearTint()
-            val color = (ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.favoriteIconUnCheckedColor(safeContext) ?: safeContext.getColorCompat(R.color.favIconColorFalse)
+            val color = (themeManager.currentTheme as? ApplicationTheme?)?.favoriteIconUnCheckedColor(safeContext) ?: safeContext.getColorCompat(R.color.favIconColorFalse)
             favIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 color,
                 BlendModeCompat.SRC_IN

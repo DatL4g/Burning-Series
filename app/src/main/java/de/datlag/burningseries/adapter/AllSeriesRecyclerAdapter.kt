@@ -49,7 +49,7 @@ class AllSeriesRecyclerAdapter(
         private fun bindHeader(item: GenreModel.GenreData) {
             val binding = RecyclerAllSeriesHeaderBinding.bind(itemView)
 
-            val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+            val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
             appTheme?.let {
                 binding.card.setBackgroundColor(it.defaultBackgroundColor(binding.card.context))
                 binding.title.setTextColor(it.defaultContentColor(binding.title.context))
@@ -63,7 +63,7 @@ class AllSeriesRecyclerAdapter(
             binding.card.setOnClickListener(this)
             binding.card.setOnLongClickListener(this)
 
-            val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+            val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
             appTheme?.let {
                 binding.card.setCardBackgroundColor(it.defaultBackgroundColor(binding.card.context))
                 binding.title.setTextColor(it.defaultContentColor(binding.title.context))

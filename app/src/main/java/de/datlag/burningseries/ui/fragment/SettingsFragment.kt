@@ -43,9 +43,9 @@ import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 @Obfuscate
-class SettingsFragment : AdvancedFragment() {
+class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
 
-    private val binding: FragmentSettingsBinding by viewBinding(CreateMethod.INFLATE)
+    private val binding: FragmentSettingsBinding by viewBinding()
     private val settingsViewModel: SettingsViewModel by activityViewModels()
     private val gitHubViewModel: GitHubViewModel by activityViewModels()
     private val userViewModel: UserViewModel by activityViewModels()
@@ -58,14 +58,6 @@ class SettingsFragment : AdvancedFragment() {
 
     private val anilistOAuthResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         result -> userViewModel.aniListResultLauncherCallback(result)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -149,10 +141,10 @@ class SettingsFragment : AdvancedFragment() {
                 it.appearance.theme > 0
             ) { view, isChecked ->
                 val id = if (isChecked) {
-                    ThemeManager.instance.changeTheme(BurningSeriesTheme(), view, 0)
+                    themeManager.changeTheme(BurningSeriesTheme(), view, 0)
                     1
                 } else {
-                    ThemeManager.instance.reverseChangeTheme(DefaultTheme(), view, 0)
+                    themeManager.reverseChangeTheme(DefaultTheme(), view, 0)
                     0
                 }
                 settingsAdapter.notifyDataSetChanged()

@@ -11,6 +11,7 @@ import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.dolatkia.animatedThemeManager.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.DeviceDiscoveryAdapter
 import de.datlag.burningseries.common.hide
 import de.datlag.burningseries.common.isTelevision
@@ -29,22 +30,14 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @Obfuscate
-class SyncFragment : AdvancedFragment() {
+class SyncFragment : AdvancedFragment(R.layout.fragment_sync) {
 
-    private val binding: FragmentSyncBinding by viewBinding(CreateMethod.INFLATE)
+    private val binding: FragmentSyncBinding by viewBinding()
     private val syncViewModel: SyncViewModel by viewModels()
     private val discoveryAdapter = DeviceDiscoveryAdapter()
 
     @Inject
     lateinit var json: Json
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = with(binding) {
         super.onViewCreated(view, savedInstanceState)

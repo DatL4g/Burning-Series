@@ -23,20 +23,12 @@ import io.michaelrocks.paranoid.Obfuscate
 
 @AndroidEntryPoint
 @Obfuscate
-class FavoritesFragment : AdvancedFragment() {
+class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
 
-    private val binding: FragmentFavoritesBinding by viewBinding(CreateMethod.INFLATE)
+    private val binding: FragmentFavoritesBinding by viewBinding()
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 
     private val favoritesRecyclerAdapter = FavoriteRecyclerAdapter(this)
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

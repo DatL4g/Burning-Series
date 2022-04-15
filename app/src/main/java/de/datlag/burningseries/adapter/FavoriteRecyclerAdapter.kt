@@ -53,7 +53,7 @@ class FavoriteRecyclerAdapter(private val fragment: AdvancedFragment) : ClickRec
     override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
         val item = differ.currentList[position]
 
-        val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+        val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
         appTheme?.let {
             binding.parent.setBackgroundColor(it.defaultBackgroundColor(binding.parent.context))
             binding.card.setCardBackgroundColor(it.defaultBackgroundColor(binding.card.context))

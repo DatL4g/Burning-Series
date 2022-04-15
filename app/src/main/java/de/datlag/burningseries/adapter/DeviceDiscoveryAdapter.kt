@@ -57,7 +57,7 @@ class DeviceDiscoveryAdapter : ClickRecyclerAdapter<Host, DeviceDiscoveryAdapter
         val item = differ.currentList[position]
         val isTv = item.optionalInfo?.let { NetworkModule.jsonBuilder.decodeFromJsonElement<HostOptionalInfo>(it) }?.isTv ?: false
 
-        val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+        val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
         appTheme?.let {
             binding.icon.setBackgroundColor(it.defaultContentColor(binding.icon.context))
             binding.icon.supportImageTintList = ColorStateList.valueOf(it.defaultBackgroundColor(binding.icon.context))

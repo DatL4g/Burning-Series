@@ -32,9 +32,9 @@ import kotlinx.coroutines.flow.map
 
 @AndroidEntryPoint
 @Obfuscate
-class HomeFragment : AdvancedFragment() {
+class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 
-	private val binding: FragmentHomeBinding by viewBinding(CreateMethod.INFLATE)
+	private val binding: FragmentHomeBinding by viewBinding()
 	private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 	private val settingsViewModel: SettingsViewModel by activityViewModels()
 	private val gitHubViewModel: GitHubViewModel by activityViewModels()
@@ -50,14 +50,6 @@ class HomeFragment : AdvancedFragment() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		hideKeyboard()
-	}
-
-	override fun onCreateView(
-		inflater: LayoutInflater,
-		container: ViewGroup?,
-		savedInstanceState: Bundle?
-	): View? {
-		return binding.root
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

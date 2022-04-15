@@ -161,7 +161,7 @@ dependencies {
     implementation("com.github.DatL4g.Klient2Klient:Klient2Klient:0.1.1")
     implementation("net.openid:appauth:0.11.1")
 
-    implementation("com.dolatkia:animated-theme-manager:1.1.4")
+    implementation("com.github.DATL4G:Android-Animated-Theme-Manager:release-SNAPSHOT")
 }
 
 protobuf.protobuf.run {

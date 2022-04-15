@@ -33,10 +33,10 @@ import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 @Obfuscate
-class ScrapeHosterFragment : AdvancedFragment() {
+class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
 
     private val navArgs: ScrapeHosterFragmentArgs by navArgs()
-    private val binding: FragmentScrapeHosterBinding by viewBinding(CreateMethod.INFLATE)
+    private val binding: FragmentScrapeHosterBinding by viewBinding()
     private val viewModel: ScrapeHosterViewModel by activityViewModels()
     private val adBlockViewModel: AdBlockViewModel by activityViewModels()
 
@@ -62,14 +62,6 @@ class ScrapeHosterFragment : AdvancedFragment() {
         super.onCreate(savedInstanceState)
 
         adBlockViewModel.loadAdBlockList(safeContext.resources.openRawResource(R.raw.adblock))
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -26,6 +26,7 @@ import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import dagger.hilt.android.AndroidEntryPoint
+import de.datlag.burningseries.R
 import de.datlag.burningseries.common.hideLoadingDialog
 import de.datlag.burningseries.common.safeActivity
 import de.datlag.burningseries.common.safeContext
@@ -57,10 +58,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @Obfuscate
-class VideoFragment : AdvancedFragment(), PreviewLoader, Player.Listener, KeyEventDispatcher {
+class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, Player.Listener, KeyEventDispatcher {
 
     private val navArgs: VideoFragmentArgs by navArgs()
-    private val binding: FragmentVideoBinding by viewBinding(CreateMethod.INFLATE)
+    private val binding: FragmentVideoBinding by viewBinding()
 
     private val videoViewModel: VideoViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by activityViewModels()
@@ -87,14 +88,6 @@ class VideoFragment : AdvancedFragment(), PreviewLoader, Player.Listener, KeyEve
     lateinit var burningSeriesDao: BurningSeriesDao
 
     private var framePosStep: Long = 0L
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

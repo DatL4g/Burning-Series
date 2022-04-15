@@ -38,7 +38,7 @@ class SettingsRecyclerAdapter : RecyclerAdapter<SettingsModel, SettingsRecyclerA
         private fun bindGroup(item: SettingsModel.Group) {
             val binding = RecyclerSettingsGroupBinding.bind(itemView)
 
-            val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+            val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
             appTheme?.let {
                 binding.card.setBackgroundColor(it.defaultBackgroundColor(binding.card.context))
                 binding.title.setTextColor(it.defaultContentColor(binding.title.context))
@@ -51,7 +51,7 @@ class SettingsRecyclerAdapter : RecyclerAdapter<SettingsModel, SettingsRecyclerA
             val binding = RecyclerSettingsSwitchBinding.bind(itemView)
             binding.switcher.setOnCheckedChangeListener(null)
 
-            val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+            val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
             appTheme?.let {
                 binding.card.setBackgroundColor(it.defaultBackgroundColor(binding.card.context))
                 binding.title.setTextColor(it.defaultContentColor(binding.title.context))
@@ -101,7 +101,7 @@ class SettingsRecyclerAdapter : RecyclerAdapter<SettingsModel, SettingsRecyclerA
             val binding = RecyclerSettingsServiceBinding.bind(itemView)
             binding.button.setOnClickListener(null)
 
-            val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+            val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
             appTheme?.let {
                 binding.card.setBackgroundColor(it.defaultBackgroundColor(binding.card.context))
                 binding.title.setTextColor(it.defaultContentColor(binding.title.context))

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -32,13 +33,16 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @Obfuscate
-abstract class AdvancedFragment() : ThemeFragment() {
+abstract class AdvancedFragment : ThemeFragment {
 
 	@ApplicationContext
 	lateinit var appContext: Context
 
 	@Inject
 	lateinit var m3oRepository: M3ORepository
+
+	constructor() : super()
+	constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
 
 	fun loadImageAndSave(
 		url: String,
@@ -116,7 +120,7 @@ abstract class AdvancedFragment() : ThemeFragment() {
 		statusBarAlert?.hide(false)
 		hideLoadingDialog()
 		hideKeyboard()
-		(ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.let {
+		(themeManager.currentTheme as? ApplicationTheme?)?.let {
 			applyFabColors(it)
 		}
 	}

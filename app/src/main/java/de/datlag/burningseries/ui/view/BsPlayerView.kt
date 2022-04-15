@@ -85,7 +85,7 @@ class BsPlayerView :
         exoPause.setOnClickListener {
             this@BsPlayerView.player?.pause()
         }
-        (ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.let {
+        (ThemeManager.currentTheme as? ApplicationTheme?)?.let {
             exoProgress.setPlayedColor(it.playerSeekBarPlayedColor(context))
             exoProgress.scrubberColor = it.playerSeekBarScrubberColor(context)
         }

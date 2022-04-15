@@ -23,22 +23,14 @@ import io.michaelrocks.paranoid.Obfuscate
 
 @AndroidEntryPoint
 @Obfuscate
-class AllSeriesFragment : AdvancedFragment() {
+class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
 
     private val navArgs: AllSeriesFragmentArgs by navArgs()
-    private val binding: FragmentAllSeriesBinding by viewBinding(CreateMethod.INFLATE)
+    private val binding: FragmentAllSeriesBinding by viewBinding()
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 
     private val allSeriesRecyclerAdapter by lazy {
         AllSeriesRecyclerAdapter(extendedFab?.id, extendedFab?.id)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

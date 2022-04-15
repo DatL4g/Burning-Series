@@ -47,7 +47,7 @@ class SeriesInfoAdapter : ClickRecyclerAdapter<InfoData, SeriesInfoAdapter.ViewH
     override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
         val item = differ.currentList[position]
 
-        val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+        val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
         appTheme?.let {
             binding.header.setTextColor(it.defaultContentColor(binding.header.context))
             binding.info.setTextColor(it.defaultContentColor(binding.info.context))

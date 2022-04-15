@@ -57,7 +57,7 @@ class LatestSeriesRecyclerAdapter(
 	override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
 		val item = differ.currentList[position]
 
-		val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+		val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
 		appTheme?.let {
 			binding.card.setCardBackgroundColor(it.defaultBackgroundColor(binding.card.context))
 			binding.title.setTextColor(it.defaultContentColor(binding.title.context))
