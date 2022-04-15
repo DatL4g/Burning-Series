@@ -229,32 +229,7 @@ class SeriesFragment : AdvancedFragment() {
         episodeRecycler.adapter = episodeRecyclerAdapter
 
         episodeRecyclerAdapter.setOnClickListener { item ->
-            burningSeriesViewModel.getStream(item.hoster).launchAndCollect {
-                when (it.status) {
-                    Resource.Status.LOADING -> {
-                        showLoadingDialog()
-                    }
-                    Resource.Status.ERROR -> {
-                        hideLoadingDialog()
-                        findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
-                            burningSeriesViewModel.currentSeriesData!!,
-                            item.episode.href
-                        ))
-                    }
-                    Resource.Status.SUCCESS -> {
-                        val list = it.data ?: listOf()
-                        if (list.isEmpty()) {
-                            hideLoadingDialog()
-                            findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
-                                burningSeriesViewModel.currentSeriesData!!,
-                                item.episode.href
-                            ))
-                        } else {
-                            getVideoSources(item.episode, list)
-                        }
-                    }
-                }
-            }
+            episodeRecyclerClick(item)
         }
 
         episodeRecyclerAdapter.setOnLongClickListener { item ->
@@ -266,7 +241,7 @@ class SeriesFragment : AdvancedFragment() {
             true
         }
 
-        favIcon.setOnClickListener { _ ->
+        favIcon.setOnClickListener {
             val emit = burningSeriesViewModel.currentSeriesData?.apply {
                 series.favoriteSince = if (series.favoriteSince <= 0) Clock.System.now().epochSeconds else 0L
             }
@@ -500,6 +475,33 @@ class SeriesFragment : AdvancedFragment() {
         }
     }
 
+    private fun episodeRecyclerClick(item: EpisodeWithHoster) = burningSeriesViewModel.getStream(item.hoster).launchAndCollect {
+        when (it.status) {
+            Resource.Status.LOADING -> {
+                showLoadingDialog()
+            }
+            Resource.Status.ERROR -> {
+                hideLoadingDialog()
+                findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
+                    burningSeriesViewModel.currentSeriesData!!,
+                    item.episode.href
+                ))
+            }
+            Resource.Status.SUCCESS -> {
+                val list = it.data ?: listOf()
+                if (list.isEmpty()) {
+                    hideLoadingDialog()
+                    findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
+                        burningSeriesViewModel.currentSeriesData!!,
+                        item.episode.href
+                    ))
+                } else {
+                    getVideoSources(item.episode, list)
+                }
+            }
+        }
+    }
+
     private fun recoverMalAuthState() = settingsViewModel.data.map { it.user.malAuth }.launchAndCollect {
         userViewModel.loadMalAuth(it)
     }
@@ -508,13 +510,7 @@ class SeriesFragment : AdvancedFragment() {
         userViewModel.loadAniListAuth(it)
     }
 
-    private fun loadMalData(preview: AnimePreview?) = lifecycleScope.launch(Dispatchers.IO) {
-        val defaultUrl = burningSeriesViewModel.currentSeriesData?.series?.image?.let {
-            return@let Constants.getBurningSeriesLink(it)
-        } ?: String()
-        val saveName = defaultUrl.substringAfterLast('/')
-        val malImageUrl = preview?.mainPicture?.largeURL
-
+    private fun loadAnimeProviderImage(imageUrl: String?, defaultUrl: String, saveName: String) = lifecycleScope.launch(Dispatchers.Main) {
         fun loadImageFallback() {
             loadImageAndSave(defaultUrl, saveName) { bytes ->
                 binding.banner.load<Drawable>(bytes) {
@@ -523,27 +519,31 @@ class SeriesFragment : AdvancedFragment() {
             }
         }
 
-        if (settingsViewModel.data.map { settings -> settings.user.malImages }.first() && userViewModel.isMalAuthorized()) {
-            withContext(Dispatchers.Main) {
-                if (malImageUrl != null) {
-                    loadImageAndSave(malImageUrl, saveName) { loader ->
-                        if (loader != null) {
-                            binding.banner.load<Drawable>(loader) {
-                                fitCenter()
-                            }
-                        } else {
-                            loadImageFallback()
-                        }
+        if (imageUrl != null) {
+            loadImageAndSave(imageUrl, saveName) { loader ->
+                if (loader != null) {
+                    binding.banner.load<Drawable>(loader) {
+                        fitCenter()
                     }
                 } else {
                     loadImageFallback()
                 }
             }
         } else {
-            withContext(Dispatchers.Main) {
-                loadImageFallback()
-            }
+            loadImageFallback()
         }
+    }
+
+    private fun loadMalData(preview: AnimePreview?) = lifecycleScope.launch(Dispatchers.IO) {
+        val defaultUrl = burningSeriesViewModel.currentSeriesData?.series?.image?.let {
+            return@let Constants.getBurningSeriesLink(it)
+        } ?: String()
+        val saveName = defaultUrl.substringAfterLast('/')
+        val malImageUrl = if (settingsViewModel.data.map { settings -> settings.user.malImages }.first() && userViewModel.isMalAuthorized()) {
+            preview?.mainPicture?.largeURL
+        } else { null }
+
+        loadAnimeProviderImage(malImageUrl, defaultUrl, saveName)
 
         preview?.let { userViewModel.syncMalSeries(
             it,
@@ -555,37 +555,11 @@ class SeriesFragment : AdvancedFragment() {
     private fun loadAniListData(medium: MediaQuery.Medium?) = lifecycleScope.launch(Dispatchers.IO) {
         val defaultUrl = Constants.getBurningSeriesLink(burningSeriesViewModel.currentSeriesData!!.series.image)
         val saveName = defaultUrl.substringAfterLast('/')
-        val aniListImageUrl = medium?.coverImage?.extraLarge ?: medium?.coverImage?.large ?: medium?.coverImage?.medium
+        val aniListImageUrl = if (settingsViewModel.data.map { settings -> settings.user.aniListImages }.first() && userViewModel.isAniListAuthorized()) {
+            medium?.coverImage?.extraLarge ?: medium?.coverImage?.large ?: medium?.coverImage?.medium
+        } else { null }
 
-        fun loadImageFallback() {
-            loadImageAndSave(defaultUrl, saveName) { bytes ->
-                binding.banner.load<Drawable>(bytes) {
-                    fitCenter()
-                }
-            }
-        }
-
-        if (settingsViewModel.data.map { settings -> settings.user.aniListImages }.first() && userViewModel.isAniListAuthorized()) {
-            withContext(Dispatchers.Main) {
-                if (aniListImageUrl != null) {
-                    loadImageAndSave(aniListImageUrl, saveName) { loader ->
-                        if (loader != null) {
-                            binding.banner.load<Drawable>(loader) {
-                                fitCenter()
-                            }
-                        } else {
-                            loadImageFallback()
-                        }
-                    }
-                } else {
-                    loadImageFallback()
-                }
-            }
-        } else {
-            withContext(Dispatchers.Main) {
-                loadImageFallback()
-            }
-        }
+        loadAnimeProviderImage(aniListImageUrl, defaultUrl, saveName)
 
         medium?.let {
             userViewModel.syncAniListSeries(

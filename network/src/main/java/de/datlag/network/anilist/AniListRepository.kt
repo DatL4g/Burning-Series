@@ -55,8 +55,7 @@ class AniListRepository @Inject constructor(
                         it,
                         "${seriesWithInfo.series.title} ${seriesWithInfo.series.season}",
                         seriesWithInfo.series.title,
-                        seriesWithInfo.series.hrefTitle,
-                        seriesWithInfo.series.description
+                        seriesWithInfo.series.hrefTitle
                     )
                 } }.awaitAll()
 
@@ -98,8 +97,7 @@ class AniListRepository @Inject constructor(
         query: String,
         seriesTitleWithSeason: String,
         seriesTitle: String,
-        seriesHrefTitle: String,
-        seriesDescription: String
+        seriesHrefTitle: String
     ): Map<Double, MediaQuery.Medium> {
         return try {
             apolloWithToken.query(MediaQuery(query, MediaType.ANIME, listOf(MediaFormat.TV, MediaFormat.TV_SHORT, MediaFormat.ONA), MediaStatus.NOT_YET_RELEASED)).execute().data?.page?.media ?: emptyList()
