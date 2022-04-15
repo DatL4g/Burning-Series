@@ -2,10 +2,14 @@ package de.datlag.burningseries.ui.fragment
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.dolatkia.animatedThemeManager.AppTheme
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
@@ -13,9 +17,9 @@ import de.datlag.burningseries.adapter.LatestEpisodeRecyclerAdapter
 import de.datlag.burningseries.adapter.LatestSeriesRecyclerAdapter
 import de.datlag.burningseries.common.hideKeyboard
 import de.datlag.burningseries.common.safeContext
-import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentHomeBinding
 import de.datlag.burningseries.extend.AdvancedFragment
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.burningseries.viewmodel.GitHubViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
@@ -28,9 +32,9 @@ import kotlinx.coroutines.flow.map
 
 @AndroidEntryPoint
 @Obfuscate
-class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
+class HomeFragment : AdvancedFragment() {
 	
-	private val binding: FragmentHomeBinding by viewBinding(FragmentHomeBinding::bind)
+	private val binding: FragmentHomeBinding by viewBinding(CreateMethod.INFLATE)
 	private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 	private val settingsViewModel: SettingsViewModel by activityViewModels()
 	private val gitHubViewModel: GitHubViewModel by activityViewModels()
@@ -46,6 +50,14 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		hideKeyboard()
+	}
+
+	override fun onCreateView(
+		inflater: LayoutInflater,
+		container: ViewGroup?,
+		savedInstanceState: Bundle?
+	): View? {
+		return binding.root
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -88,6 +100,21 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 
 		extendedFabFavorite(HomeFragmentDirections.actionHomeFragmentToFavoritesFragment())
 		extendedFab?.id?.let { binding.allSeriesButton.nextFocusRightId = it }
+	}
+
+	override fun syncTheme(appTheme: AppTheme) {
+		val currentTheme = appTheme as? ApplicationTheme?
+		currentTheme?.let {
+			binding.parent.setBackgroundColor(it.defaultBackgroundColor(safeContext))
+			binding.episodesHeader.setTextColor(it.defaultContentColor(safeContext))
+			binding.settingsButton.setBackgroundColor(it.defaultContentColor(safeContext))
+			binding.settingsButton.setTextColor(it.defaultBackgroundColor(safeContext))
+			binding.seriesHeader.setTextColor(it.defaultContentColor(safeContext))
+			binding.allSeriesButton.setBackgroundColor(it.defaultContentColor(safeContext))
+			binding.allSeriesButton.setTextColor(it.defaultBackgroundColor(safeContext))
+
+			latestEpisodeRecyclerAdapter.resubmitList()
+		}
 	}
 
 	private fun listenImproveDialogSetting() = settingsViewModel.data.map { it.appearance.improveDialog }.launchAndCollect {

@@ -3,16 +3,23 @@ package de.datlag.burningseries.ui.fragment
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.dolatkia.animatedThemeManager.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.DeviceDiscoveryAdapter
-import de.datlag.burningseries.common.*
+import de.datlag.burningseries.common.hide
+import de.datlag.burningseries.common.isTelevision
+import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.show
 import de.datlag.burningseries.databinding.FragmentSyncBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.model.*
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.burningseries.viewmodel.SyncViewModel
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.serialization.decodeFromString
@@ -22,14 +29,22 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @Obfuscate
-class SyncFragment : AdvancedFragment(R.layout.fragment_sync) {
+class SyncFragment : AdvancedFragment() {
 
-    private val binding: FragmentSyncBinding by viewBinding(FragmentSyncBinding::bind)
+    private val binding: FragmentSyncBinding by viewBinding(CreateMethod.INFLATE)
     private val syncViewModel: SyncViewModel by viewModels()
     private val discoveryAdapter = DeviceDiscoveryAdapter()
 
     @Inject
     lateinit var json: Json
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = with(binding) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,6 +60,13 @@ class SyncFragment : AdvancedFragment(R.layout.fragment_sync) {
 
         collectPeers()
         collectConnection()
+    }
+
+    override fun syncTheme(appTheme: AppTheme) {
+        val currentTheme = appTheme as? ApplicationTheme?
+        currentTheme?.let {
+            binding.syncHeader.setTextColor(it.defaultContentColor(safeContext))
+        }
     }
 
     private fun collectPeers() = syncViewModel.peers.launchAndCollect {

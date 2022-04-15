@@ -3,8 +3,6 @@ package de.datlag.network.m3o
 import com.hadiyarajesh.flower.ApiResponse
 import de.datlag.model.Constants
 import de.datlag.model.m3o.db.Count
-import de.datlag.model.m3o.db.create.BurningSeriesHoster
-import de.datlag.model.m3o.db.read.BurningSeriesHosterQuery
 import de.datlag.model.m3o.db.read.BurningSeriesHosterRecords
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.Flow

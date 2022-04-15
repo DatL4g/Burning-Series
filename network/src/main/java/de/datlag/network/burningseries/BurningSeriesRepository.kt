@@ -1,6 +1,5 @@
 package de.datlag.network.burningseries
 
-import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkBoundResource
 import de.datlag.database.burningseries.BurningSeriesDao
@@ -12,9 +11,7 @@ import de.datlag.model.burningseries.home.HomeData
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.*
-import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
-import de.datlag.model.burningseries.series.relation.SeriesWithEpisode
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.model.common.calculateScore
 import de.datlag.network.common.toInt

@@ -7,7 +7,6 @@ import de.datlag.model.Constants
 import de.datlag.model.burningseries.series.HosterData
 import de.datlag.model.common.base64ToByteArray
 import de.datlag.model.jsonbase.Stream
-import de.datlag.model.m3o.db.Count
 import de.datlag.model.m3o.db.CountRequest
 import de.datlag.model.m3o.db.create.BurningSeriesHoster
 import de.datlag.model.m3o.db.create.BurningSeriesHosterRecord
@@ -24,7 +23,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -169,7 +167,7 @@ class M3ORepository @Inject constructor(
 		}
 	}.flowOn(Dispatchers.IO)
 
-	suspend fun saveScrapedHoster(scraped: ScrapeHoster): Flow<Boolean> = flow {
+	fun saveScrapedHoster(scraped: ScrapeHoster): Flow<Boolean> = flow {
 		val entry = jsonBuilder.encodeToString(
 			BurningSeriesHoster(record = BurningSeriesHosterRecord.fromScraped(scraped))
 		).toRequestBody(Constants.MEDIATYPE_JSON.toMediaType())

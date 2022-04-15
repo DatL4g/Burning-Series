@@ -11,12 +11,14 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.dolatkia.animatedThemeManager.ThemeManager
 import com.github.rubensousa.previewseekbar.PreviewLoader
 import com.google.android.exoplayer2.ui.StyledPlayerControlView
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.ExoplayerControlsBinding
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.coilifier.ImageLoader
 import de.datlag.coilifier.commons.load
 import io.michaelrocks.paranoid.Obfuscate
@@ -82,6 +84,10 @@ class BsPlayerView :
         }
         exoPause.setOnClickListener {
             this@BsPlayerView.player?.pause()
+        }
+        (ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.let {
+            exoProgress.setPlayedColor(it.playerSeekBarPlayedColor(context))
+            exoProgress.scrubberColor = it.playerSeekBarScrubberColor(context)
         }
     }
 

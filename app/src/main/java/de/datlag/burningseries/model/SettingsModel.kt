@@ -1,9 +1,7 @@
 package de.datlag.burningseries.model
 
-import android.graphics.Bitmap
+import android.view.View
 import android.widget.ImageView
-import com.bumptech.glide.load.Transformation
-import de.datlag.coilifier.ImageLoader
 import io.michaelrocks.paranoid.Obfuscate
 
 @Obfuscate
@@ -16,7 +14,7 @@ sealed class SettingsModel {
         val text: String = String(),
         var defaultValue: Boolean = false,
         var enabled: Boolean = true,
-        val listener: (isChecked: Boolean) -> Unit
+        val listener: (switch: View, isChecked: Boolean) -> Unit
     ) : SettingsModel()
 
     data class Service(

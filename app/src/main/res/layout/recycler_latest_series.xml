@@ -6,8 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     app:cardBackgroundColor="@color/defaultBackgroundColor"
-    android:background="@color/defaultBackgroundColor"
-    android:backgroundTint="@color/defaultBackgroundColor"
     android:elevation="0dp"
     app:cardElevation="0dp"
     app:cardMaxElevation="0dp">

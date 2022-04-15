@@ -5,11 +5,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.dolatkia.animatedThemeManager.ThemeManager
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerAllSeriesHeaderBinding
 import de.datlag.burningseries.databinding.RecyclerAllSeriesItemBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.model.burningseries.allseries.GenreModel
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -46,6 +48,13 @@ class AllSeriesRecyclerAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
         private fun bindHeader(item: GenreModel.GenreData) {
             val binding = RecyclerAllSeriesHeaderBinding.bind(itemView)
+
+            val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+            appTheme?.let {
+                binding.card.setBackgroundColor(it.defaultBackgroundColor(binding.card.context))
+                binding.title.setTextColor(it.defaultContentColor(binding.title.context))
+            }
+
             binding.title.text = item.genre
         }
 
@@ -53,6 +62,14 @@ class AllSeriesRecyclerAdapter(
             val binding = RecyclerAllSeriesItemBinding.bind(itemView)
             binding.card.setOnClickListener(this)
             binding.card.setOnLongClickListener(this)
+
+            val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+            appTheme?.let {
+                binding.card.setCardBackgroundColor(it.defaultBackgroundColor(binding.card.context))
+                binding.title.setTextColor(it.defaultContentColor(binding.title.context))
+                binding.title.setBackgroundColor(it.defaultBackgroundColor(binding.title.context))
+            }
+
             binding.title.text = item.title
 
             if (rightFocusViewId != null) {

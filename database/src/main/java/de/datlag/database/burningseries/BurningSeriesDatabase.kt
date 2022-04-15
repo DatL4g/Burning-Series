@@ -5,8 +5,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import de.datlag.database.Converters
-import de.datlag.model.burningseries.allseries.search.GenreItemFTS
 import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.allseries.search.GenreItemFTS
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.*

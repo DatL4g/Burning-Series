@@ -7,11 +7,13 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.dolatkia.animatedThemeManager.ThemeManager
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerFavoriteBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
@@ -50,6 +52,14 @@ class FavoriteRecyclerAdapter(private val fragment: AdvancedFragment) : ClickRec
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
         val item = differ.currentList[position]
+
+        val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+        appTheme?.let {
+            binding.parent.setBackgroundColor(it.defaultBackgroundColor(binding.parent.context))
+            binding.card.setCardBackgroundColor(it.defaultBackgroundColor(binding.card.context))
+            binding.cover.setBackgroundColor(it.defaultBackgroundColor(binding.cover.context))
+            binding.title.setTextColor(it.defaultContentColor(binding.title.context))
+        }
 
         fragment.loadImageAndSave(Constants.getBurningSeriesLink(item.series.image)) {
             binding.cover.load<Drawable>(it)

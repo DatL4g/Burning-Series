@@ -9,7 +9,6 @@ import de.datlag.k2k.connect.Connection
 import de.datlag.k2k.connect.connection
 import de.datlag.k2k.discover.Discovery
 import de.datlag.k2k.discover.discovery
-import de.datlag.model.burningseries.series.relation.SeriesWithEpisode
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.network.burningseries.BurningSeriesRepository
 import io.michaelrocks.paranoid.Obfuscate

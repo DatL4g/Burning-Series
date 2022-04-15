@@ -1,15 +1,16 @@
 package de.datlag.burningseries.extend
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.LayoutRes
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
+import com.dolatkia.animatedThemeManager.ThemeFragment
+import com.dolatkia.animatedThemeManager.ThemeManager
 import com.fede987.statusbaralert.StatusBarAlert
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -20,6 +21,7 @@ import de.datlag.burningseries.common.*
 import de.datlag.burningseries.ui.connector.FABExtended
 import de.datlag.burningseries.ui.connector.FABNavigation
 import de.datlag.burningseries.ui.connector.StatusBarAlertProvider
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.coilifier.ImageLoader
 import de.datlag.network.m3o.M3ORepository
 import io.michaelrocks.paranoid.Obfuscate
@@ -30,11 +32,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @Obfuscate
-abstract class AdvancedFragment : Fragment {
-	
-	constructor() : super() { }
-	
-	constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId) { }
+abstract class AdvancedFragment() : ThemeFragment() {
 	
 	@ApplicationContext
 	lateinit var appContext: Context
@@ -118,6 +116,9 @@ abstract class AdvancedFragment : Fragment {
 		statusBarAlert?.hide(false)
 		hideLoadingDialog()
 		hideKeyboard()
+		(ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.let {
+			applyFabColors(it)
+		}
 	}
 
 	override fun onPause() {
@@ -153,6 +154,16 @@ abstract class AdvancedFragment : Fragment {
 		R.color.successBackgroundColor,
 		R.color.successContentColor
 	)
+
+	protected fun applyFabColors(appTheme: ApplicationTheme) {
+		extendedFab?.setBackgroundColor(appTheme.defaultContentColor(safeContext))
+		extendedFab?.setTextColor(appTheme.defaultBackgroundColor(safeContext))
+		extendedFab?.iconTint = ColorStateList.valueOf(appTheme.defaultBackgroundColor(safeContext))
+		nextFab?.setBackgroundColor(appTheme.defaultContentColor(safeContext))
+		nextFab?.supportImageTintList = ColorStateList.valueOf(appTheme.defaultBackgroundColor(safeContext))
+		previousFab?.setBackgroundColor(appTheme.defaultContentColor(safeContext))
+		previousFab?.supportImageTintList = ColorStateList.valueOf(appTheme.defaultBackgroundColor(safeContext))
+	}
 
 	inline fun <T> Flow<T>.launchAndCollect(crossinline action: suspend CoroutineScope.(T) -> Unit) = this.launchAndCollectIn(viewLifecycleOwner, action = action)
 

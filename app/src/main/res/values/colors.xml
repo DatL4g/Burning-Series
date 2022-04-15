@@ -4,6 +4,7 @@
     <color name="primaryLightColor">#ffffff</color>
     <color name="primaryDarkColor">#ffffff</color>
     <color name="defaultBackgroundColor">#ffffffff</color>
+    <color name="defaultBackgroundColorHalfAlpha">#78ffffff</color>
     <color name="defaultContentColor">#ff121212</color>
     <color name="defaultContentColorHalfAlpha">#78121212</color>
     <color name="bottomSheetBackground">#ffffff</color>
@@ -22,4 +23,7 @@
     <color name="datlagColor">#db3236</color>
     <color name="datlagContentColor">#ffffff</color>
     <color name="datlagColorHalfAlpha">#78db3236</color>
+
+    <color name="bsColor">#094576</color>
+    <color name="bsColorHalfAlpha">#78094576</color>
 </resources>

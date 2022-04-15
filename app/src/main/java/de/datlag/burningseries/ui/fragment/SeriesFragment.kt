@@ -1,8 +1,11 @@
 package de.datlag.burningseries.ui.fragment
 
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.activityViewModels
@@ -10,10 +13,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.ahmed3elshaer.selectionbottomsheet.ExpandState
 import com.ahmed3elshaer.selectionbottomsheet.selectionBottomSheet
 import com.devs.readmoreoption.ReadMoreOption
+import com.dolatkia.animatedThemeManager.AppTheme
+import com.dolatkia.animatedThemeManager.ThemeManager
 import com.google.android.material.chip.Chip
 import com.hadiyarajesh.flower.Resource
 import com.kttdevelopment.mal4j.anime.AnimePreview
@@ -24,6 +30,7 @@ import de.datlag.burningseries.adapter.SeriesInfoAdapter
 import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.UserViewModel
@@ -51,14 +58,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
-import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
-class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
+class SeriesFragment : AdvancedFragment() {
 
     private val navArgs: SeriesFragmentArgs by navArgs()
-    private val binding: FragmentSeriesBinding by viewBinding(FragmentSeriesBinding::bind)
+    private val binding: FragmentSeriesBinding by viewBinding(CreateMethod.INFLATE)
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
     private val settingsViewModel: SettingsViewModel by activityViewModels()
     private val videoViewModel: VideoViewModel by viewModels()
@@ -67,6 +73,14 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     private val episodeRecyclerAdapter = EpisodeRecyclerAdapter()
     private val seriesInfoAdapter = SeriesInfoAdapter()
     private lateinit var readMoreOption: ReadMoreOption
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -114,6 +128,19 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         (navArgs.genreItem as? GenreModel.GenreItem?)?.let { item ->
             burningSeriesViewModel.getSeriesData(item)
             listenEpisodes()
+        }
+    }
+
+    override fun syncTheme(appTheme: AppTheme) {
+        val currentTheme = appTheme as? ApplicationTheme?
+        currentTheme?.let {
+            binding.parent.setBackgroundColor(it.defaultBackgroundColor(safeContext))
+            binding.title.setTextColor(it.defaultContentColor(safeContext))
+            binding.selectLanguage.setTextColor(it.buttonTransparentTextStateList(safeContext))
+            binding.selectLanguage.backgroundTintList = it.buttonTransparentBackgroundStateList(safeContext)
+            binding.selectSeason.setTextColor(it.defaultBackgroundColor(safeContext))
+            binding.selectSeason.setBackgroundColor(it.defaultContentColor(safeContext))
+            binding.description.setTextColor(it.defaultContentColor(safeContext))
         }
     }
 
@@ -370,21 +397,29 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
         burningSeriesViewModel.getAllGenres()
         binding.genreGroup.removeAllViews()
+
         if (genreInfo != null) {
             val genreSplit = genreInfo!!.data.trim().split("\\s".toRegex())
-            genreSplit.subList(0, if (genreSplit.size >= 5) 5 else genreSplit.size).forEach {  genre ->
-                binding.genreGroup.addView(Chip(safeContext).apply {
-                    setTextColor(safeContext.getColorCompat(R.color.defaultBackgroundColor))
-                    setChipBackgroundColorResource(R.color.defaultContentColor)
-                    text = genre.trim()
-                    setOnClickListener {
-                        findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToAllSeriesFragment(bestGenre(genre)))
-                    }
-                })
+
+            genreSplit.subList(0, if (genreSplit.size >= 5) 5 else genreSplit.size).forEach { genre ->
+                addGenre(genre)
             }
         }
     }
 
+    private fun addGenre(genre: String) = lifecycleScope.launch(Dispatchers.Main) {
+        val applyTextColor = (ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.defaultBackgroundColor(safeContext) ?: safeContext.getColorCompat(R.color.defaultBackgroundColor)
+        val applyBackgroundColor = (ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.defaultContentColor(safeContext) ?: safeContext.getColorCompat(R.color.defaultContentColor)
+
+        binding.genreGroup.addView(Chip(safeContext).apply {
+            setTextColor(applyTextColor)
+            chipBackgroundColor = ColorStateList.valueOf(applyBackgroundColor)
+            text = genre.trim()
+            setOnClickListener {
+                findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToAllSeriesFragment(bestGenre(genre)))
+            }
+        })
+    }
 
     private fun bestGenre(genre: String): GenreModel.GenreData? {
         return burningSeriesViewModel.genres.firstOrNull {
@@ -410,16 +445,20 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             favIcon.load<Drawable>(R.drawable.ic_baseline_favorite_24) {
                 scaleType(Scale.CENTER_INSIDE)
             }
+            favIcon.clearTint()
+            val color = (ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.favoriteIconCheckedColor(safeContext) ?: safeContext.getColorCompat(R.color.favIconColorTrue)
             favIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                safeContext.getColorCompat(R.color.favIconColorTrue),
+                color,
                 BlendModeCompat.SRC_IN
             )
         } else {
             favIcon.load<Drawable>(R.drawable.ic_outline_favorite_border_24) {
                 scaleType(Scale.CENTER_INSIDE)
             }
+            favIcon.clearTint()
+            val color = (ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?)?.favoriteIconUnCheckedColor(safeContext) ?: safeContext.getColorCompat(R.color.favIconColorFalse)
             favIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                safeContext.getColorCompat(R.color.favIconColorFalse),
+                color,
                 BlendModeCompat.SRC_IN
             )
         }

@@ -12,6 +12,7 @@ class SettingsSerializer(isTelevision: Boolean, defaultDarkMode: Boolean) : Seri
     override val defaultValue: SettingsPreferences = SettingsPreferences.newBuilder()
         .setAppearance(SettingsPreferences.Appearance.newBuilder()
             .setDarkMode(defaultDarkMode)
+            .setTheme(0)
             .setImproveDialog(!isTelevision))
         .setVideo(SettingsPreferences.Video.newBuilder()
             .setAdvancedFetching(false)

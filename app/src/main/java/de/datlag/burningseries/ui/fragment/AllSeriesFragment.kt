@@ -1,23 +1,22 @@
 package de.datlag.burningseries.ui.fragment
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
+import android.view.*
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
+import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.dolatkia.animatedThemeManager.AppTheme
 import com.ferfalk.simplesearchview.SimpleSearchView
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.AllSeriesRecyclerAdapter
 import de.datlag.burningseries.common.hideLoadingDialog
-import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentAllSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
@@ -25,14 +24,22 @@ import io.michaelrocks.paranoid.Obfuscate
 
 @AndroidEntryPoint
 @Obfuscate
-class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
+class AllSeriesFragment : AdvancedFragment() {
 
     private val navArgs: AllSeriesFragmentArgs by navArgs()
-    private val binding: FragmentAllSeriesBinding by viewBinding(FragmentAllSeriesBinding::bind)
+    private val binding: FragmentAllSeriesBinding by viewBinding(CreateMethod.INFLATE)
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 
     private val allSeriesRecyclerAdapter by lazy {
         AllSeriesRecyclerAdapter(extendedFab?.id, extendedFab?.id)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -76,6 +83,8 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
             burningSeriesViewModel.getAllSeriesPrevious()
         }
     }
+
+    override fun syncTheme(appTheme: AppTheme) { }
 
     private fun initRecycler(): Unit = with(binding) {
         allSeriesRecycler.adapter = allSeriesRecyclerAdapter

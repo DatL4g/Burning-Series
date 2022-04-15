@@ -3,14 +3,16 @@ package de.datlag.burningseries.ui.fragment
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.dolatkia.animatedThemeManager.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.hideLoadingDialog
@@ -18,6 +20,7 @@ import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentScrapeHosterBinding
 import de.datlag.burningseries.extend.AdvancedFragment
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.burningseries.ui.webview.AdBlockWebViewClient
 import de.datlag.burningseries.viewmodel.AdBlockViewModel
 import de.datlag.burningseries.viewmodel.ScrapeHosterViewModel
@@ -31,10 +34,10 @@ import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 @Obfuscate
-class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
+class ScrapeHosterFragment : AdvancedFragment() {
 
     private val navArgs: ScrapeHosterFragmentArgs by navArgs()
-    private val binding: FragmentScrapeHosterBinding by viewBinding(FragmentScrapeHosterBinding::bind)
+    private val binding: FragmentScrapeHosterBinding by viewBinding(CreateMethod.INFLATE)
     private val viewModel: ScrapeHosterViewModel by activityViewModels()
     private val adBlockViewModel: AdBlockViewModel by activityViewModels()
 
@@ -62,6 +65,14 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
         adBlockViewModel.loadAdBlockList(safeContext.resources.openRawResource(R.raw.adblock))
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -70,6 +81,8 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
         binding.webView.loadUrl(Constants.getBurningSeriesLink(navArgs.href))
         saveStream()
     }
+
+    override fun syncTheme(appTheme: AppTheme) { }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView(): Unit = with(binding) {

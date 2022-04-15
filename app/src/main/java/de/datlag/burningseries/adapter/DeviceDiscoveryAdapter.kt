@@ -1,5 +1,6 @@
 package de.datlag.burningseries.adapter
 
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
@@ -7,12 +8,14 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.dolatkia.animatedThemeManager.ThemeManager
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerDeviceDiscoveryBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
 import de.datlag.burningseries.model.HostOptionalInfo
 import de.datlag.burningseries.module.NetworkModule
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.coilifier.Scale
 import de.datlag.coilifier.commons.load
 import de.datlag.k2k.Host
@@ -52,8 +55,15 @@ class DeviceDiscoveryAdapter : ClickRecyclerAdapter<Host, DeviceDiscoveryAdapter
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
         val item = differ.currentList[position]
-
         val isTv = item.optionalInfo?.let { NetworkModule.jsonBuilder.decodeFromJsonElement<HostOptionalInfo>(it) }?.isTv ?: false
+
+        val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+        appTheme?.let {
+            binding.icon.setBackgroundColor(it.defaultContentColor(binding.icon.context))
+            binding.icon.supportImageTintList = ColorStateList.valueOf(it.defaultBackgroundColor(binding.icon.context))
+            binding.title.setTextColor(it.defaultContentColor(binding.title.context))
+        }
+
         binding.icon.load<Drawable>(if (isTv) R.drawable.ic_baseline_tv_24 else R.drawable.ic_baseline_phone_android_24) {
             scaleType(Scale.CENTER_INSIDE)
         }

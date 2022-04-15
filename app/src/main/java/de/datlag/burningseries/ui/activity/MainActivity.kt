@@ -3,7 +3,9 @@ package de.datlag.burningseries.ui.activity
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.dolatkia.animatedThemeManager.AppTheme
 import com.fede987.statusbaralert.StatusBarAlert
 import com.fede987.statusbaralert.utils.statusBarAlert
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -16,15 +18,16 @@ import de.datlag.burningseries.ui.connector.FABExtended
 import de.datlag.burningseries.ui.connector.FABNavigation
 import de.datlag.burningseries.ui.connector.KeyEventDispatcher
 import de.datlag.burningseries.ui.connector.StatusBarAlertProvider
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import io.michaelrocks.paranoid.Obfuscate
 
 
 @AndroidEntryPoint
 @Obfuscate
-class MainActivity : AdvancedActivity(R.layout.activity_main), FABExtended, StatusBarAlertProvider, FABNavigation {
+class MainActivity : AdvancedActivity(), FABExtended, StatusBarAlertProvider, FABNavigation {
 
-	private val binding: ActivityMainBinding by viewBinding(ActivityMainBinding::bind)
-	private lateinit var statusBarAlertProvided: StatusBarAlert
+	private val binding: ActivityMainBinding by viewBinding(CreateMethod.INFLATE)
+	private lateinit var statusBarAlertProvider: StatusBarAlert
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		if (savedInstanceState != null) {
@@ -33,13 +36,22 @@ class MainActivity : AdvancedActivity(R.layout.activity_main), FABExtended, Stat
 			installSplashScreen()
 		}
 		super.onCreate(savedInstanceState)
+		setContentView(binding.root)
 
-		statusBarAlertProvided = statusBarAlert {
+		statusBarAlertProvider = statusBarAlert {
 			autoHide(false)
 			showProgress(false)
 			alertColor(R.color.defaultContentColor)
 			textColor(R.color.defaultBackgroundColor)
 			progressBarColor(R.color.defaultBackgroundColor)
+		}
+	}
+
+	override fun syncTheme(appTheme: AppTheme) {
+		val currentTheme = appTheme as? ApplicationTheme?
+		currentTheme?.let {
+			binding.coordinator.setBackgroundColor(it.defaultBackgroundColor(this))
+			binding.navHostFragment.setBackgroundColor(it.defaultBackgroundColor(this))
 		}
 	}
 
@@ -51,7 +63,7 @@ class MainActivity : AdvancedActivity(R.layout.activity_main), FABExtended, Stat
 		get() = binding.extendedFab
 
 	override val statusBarAlert: StatusBarAlert
-		get() = statusBarAlertProvided
+		get() = statusBarAlertProvider
 
 	override val previousFab: FloatingActionButton
 		get() = binding.previousFab

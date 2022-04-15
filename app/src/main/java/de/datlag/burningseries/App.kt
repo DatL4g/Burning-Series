@@ -25,6 +25,8 @@ class App : MultiDexApplication() {
 	@Inject
 	lateinit var settingsDataStore: DataStore<SettingsPreferences>
 
+	var themeId: Int = 0
+
 	override fun onCreate() {
 		super.onCreate()
 		applyDarkMode()
@@ -36,8 +38,9 @@ class App : MultiDexApplication() {
 	}
 
 	private fun applyDarkMode() = GlobalScope.launch(Dispatchers.IO) {
-		settingsDataStore.data.map { it.appearance.darkMode }.collect {
-			val mode = if (it) NightMode.Mode.DARK else NightMode.Mode.LIGHT
+		settingsDataStore.data.map { it.appearance }.collect {
+			val mode = if (it.darkMode) NightMode.Mode.DARK else NightMode.Mode.LIGHT
+			themeId = it.theme
 			withContext(Dispatchers.Main) {
 				AppCompatDelegate.setDefaultNightMode(mode.toDelegateMode())
 			}

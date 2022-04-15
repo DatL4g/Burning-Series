@@ -1,6 +1,5 @@
 package de.datlag.burningseries.model
 
-import de.datlag.model.burningseries.series.relation.SeriesWithEpisode
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

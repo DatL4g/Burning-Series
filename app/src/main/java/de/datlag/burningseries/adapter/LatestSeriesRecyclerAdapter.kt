@@ -6,10 +6,12 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.dolatkia.animatedThemeManager.ThemeManager
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerLatestSeriesBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.model.burningseries.home.LatestSeries
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -54,7 +56,14 @@ class LatestSeriesRecyclerAdapter(
 	
 	override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
 		val item = differ.currentList[position]
-		
+
+		val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+		appTheme?.let {
+			binding.card.setCardBackgroundColor(it.defaultBackgroundColor(binding.card.context))
+			binding.title.setTextColor(it.defaultContentColor(binding.title.context))
+			binding.title.setBackgroundColor(it.defaultBackgroundColor(binding.title.context))
+		}
+
 		binding.title.text = item.title
 
 		if (position == 0 && aboveFocusViewId != null) {

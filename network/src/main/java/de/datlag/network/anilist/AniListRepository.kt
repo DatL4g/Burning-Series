@@ -1,6 +1,5 @@
 package de.datlag.network.anilist
 
-import android.util.Log
 import com.apollographql.apollo3.ApolloClient
 import de.datlag.model.JaroWinkler
 import de.datlag.model.Levenshtein
@@ -17,7 +16,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import okhttp3.internal.toImmutableList
 import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.max

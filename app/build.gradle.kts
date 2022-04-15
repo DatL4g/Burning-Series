@@ -95,7 +95,6 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.3")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
-    implementation("com.github.DATL4G:SelectionBottomSheet:2.0.0")
     implementation("com.github.devendroid:ReadMoreOption:1.0.3")
     implementation("com.mikepenz:aboutlibraries:10.1.0")
 
@@ -111,7 +110,9 @@ dependencies {
     implementation("androidx.multidex:multidex:2.0.1")
     implementation("com.jakewharton.timber:timber:5.0.1")
 
-    implementation("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.6")
+    implementation("com.github.kirich1409", "viewbindingpropertydelegate").version {
+        strictly("1.5.6")
+    }
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.activity:activity-ktx:1.4.0")
@@ -150,13 +151,17 @@ dependencies {
     }
 
     implementation("androidx.datastore:datastore:1.0.0")
-    
+
+    implementation("com.github.DATL4G:SelectionBottomSheet:535724d01e")
+
     implementation("com.github.DatL4g:StatusBarAlert:2.0.1")
     implementation("com.github.Ferfalk:SimpleSearchView:0.2.0")
 
     implementation("com.github.SamuelGjk:RoundCornerProgressBar:1.0")
     implementation("com.github.DatL4g.Klient2Klient:Klient2Klient:0.1.1")
     implementation("net.openid:appauth:0.11.1")
+
+    implementation("com.dolatkia:animated-theme-manager:1.1.4")
 }
 
 protobuf.protobuf.run {

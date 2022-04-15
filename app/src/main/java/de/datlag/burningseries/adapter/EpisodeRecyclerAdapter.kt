@@ -3,16 +3,21 @@ package de.datlag.burningseries.adapter
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.dolatkia.animatedThemeManager.ThemeManager
 import de.datlag.burningseries.R
+import de.datlag.burningseries.common.clearTint
 import de.datlag.burningseries.common.hide
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.common.show
 import de.datlag.burningseries.databinding.RecyclerEpisodeBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
+import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.coilifier.commons.load
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import io.michaelrocks.paranoid.Obfuscate
@@ -61,6 +66,15 @@ class EpisodeRecyclerAdapter : ClickRecyclerAdapter<EpisodeWithHoster, EpisodeRe
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
         val item = differ.currentList[position]
+
+        val appTheme = ThemeManager.instance.getCurrentTheme() as? ApplicationTheme?
+        appTheme?.let {
+            binding.card.setBackgroundColor(it.defaultBackgroundColor(binding.card.context))
+            binding.number.setTextColor(it.defaultContentColor(binding.number.context))
+            binding.title.setTextColor(it.defaultContentColor(binding.title.context))
+            binding.progressIcon.clearTint()
+            binding.progressIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(it.defaultContentColor(binding.progressIcon.context), BlendModeCompat.SRC_IN)
+        }
 
         binding.number.text = item.episode.number
         binding.title.text = item.episode.title

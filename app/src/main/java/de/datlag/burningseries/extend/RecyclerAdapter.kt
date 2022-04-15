@@ -17,4 +17,6 @@ abstract class RecyclerAdapter<ReturnType, VH : RecyclerView.ViewHolder> : Recyc
 	
 	fun submitList(list: Collection<ReturnType>) = differ.submitList(list.toList())
 	fun submitList(list: Collection<ReturnType>, callback: () -> Unit) = differ.submitList(list.toList(), callback)
+
+	fun resubmitList() = submitList(differ.currentList)
 }

@@ -25,6 +25,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun updateAppearanceBurningSeriesTheme(id: Int) = viewModelScope.launch(Dispatchers.IO) {
+        dataStore.updateData {
+            it.toBuilder().setAppearance(it.appearance.toBuilder().setTheme(id).build()).build()
+        }
+    }
+
     fun updateAppearanceImproveDialog(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         dataStore.updateData {
             it.toBuilder().setAppearance(it.appearance.toBuilder().setImproveDialog(newValue).build()).build()

@@ -10,7 +10,6 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.expand
-import de.datlag.burningseries.common.isTelevision
 import de.datlag.burningseries.common.isTvOrLandscape
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.DialogWebviewErrorBinding

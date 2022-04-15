@@ -2,16 +2,23 @@ package de.datlag.burningseries.ui.fragment
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.dolatkia.animatedThemeManager.AppTheme
+import com.dolatkia.animatedThemeManager.ThemeManager
 import com.kttdevelopment.mal4j.MyAnimeList
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.BuildConfig
@@ -22,10 +29,10 @@ import de.datlag.burningseries.databinding.FragmentSettingsBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.helper.NightMode
 import de.datlag.burningseries.model.SettingsModel
+import de.datlag.burningseries.ui.theme.*
 import de.datlag.burningseries.viewmodel.GitHubViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.UserViewModel
-import de.datlag.coilifier.ImageLoader
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import io.michaelrocks.paranoid.Obfuscate
@@ -33,13 +40,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
-class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
+class SettingsFragment : AdvancedFragment() {
 
-    private val binding: FragmentSettingsBinding by viewBinding(FragmentSettingsBinding::bind)
+    private val binding: FragmentSettingsBinding by viewBinding(CreateMethod.INFLATE)
     private val settingsViewModel: SettingsViewModel by activityViewModels()
     private val gitHubViewModel: GitHubViewModel by activityViewModels()
     private val userViewModel: UserViewModel by activityViewModels()
@@ -52,6 +58,14 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
 
     private val anilistOAuthResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         result -> userViewModel.aniListResultLauncherCallback(result)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,6 +92,35 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
         }
     }
 
+    override fun syncTheme(appTheme: AppTheme) {
+        val currentTheme = appTheme as? ApplicationTheme?
+        currentTheme?.let {
+            binding.parent.setBackgroundColor(it.defaultBackgroundColor(safeContext))
+            binding.settingsHeader.setTextColor(it.defaultContentColor(safeContext))
+            binding.latestReleaseCard.setCardBackgroundColor(it.defaultContentColor(safeContext))
+            binding.title.setTextColor(it.defaultBackgroundColor(safeContext))
+            binding.date.setTextColor(it.defaultBackgroundColor(safeContext))
+            binding.text.setTextColor(it.defaultBackgroundColor(safeContext))
+            binding.viewButton.setTextColor(it.defaultContentColor(safeContext))
+            binding.viewButton.setBackgroundColor(it.defaultBackgroundColor(safeContext))
+
+            binding.librariesCard.setCardBackgroundColor(it.defaultContentColor(safeContext))
+            binding.aboutIcon.clearTint()
+            binding.aboutIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(it.defaultBackgroundColor(safeContext), BlendModeCompat.SRC_IN)
+            binding.about.setTextColor(it.defaultBackgroundColor(safeContext))
+
+            binding.githubCard.setCardBackgroundColor(it.defaultContentColor(safeContext))
+            binding.githubIcon.clearTint()
+            binding.githubIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(it.defaultBackgroundColor(safeContext), BlendModeCompat.SRC_IN)
+            binding.github.setTextColor(it.defaultBackgroundColor(safeContext))
+
+            binding.syncCard.setCardBackgroundColor(it.defaultContentColor(safeContext))
+            binding.syncIcon.clearTint()
+            binding.syncIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(it.defaultBackgroundColor(safeContext), BlendModeCompat.SRC_IN)
+            binding.sync.setTextColor(it.defaultBackgroundColor(safeContext))
+        }
+    }
+
     private fun initRecycler(): Unit = with(binding) {
         settingsRecycler.isNestedScrollingEnabled = false
         settingsRecycler.adapter = settingsAdapter
@@ -93,45 +136,63 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                 safeContext.getString(R.string.dark_mode),
                 safeContext.getString(R.string.dark_mode_subtitle),
                 it.appearance.darkMode
-            ) { isChecked ->
+            ) { view, isChecked ->
                 val mode = if (isChecked) NightMode.Mode.DARK else NightMode.Mode.LIGHT
+
                 AppCompatDelegate.setDefaultNightMode(mode.toDelegateMode())
+
                 settingsViewModel.updateAppearanceDarkMode(isChecked)
             },
             SettingsModel.Switch(1,
+                "BurningSeries Theme",
+                "Use the BurningSeries theme",
+                it.appearance.theme > 0
+            ) { view, isChecked ->
+                val id = if (isChecked) {
+                    ThemeManager.instance.changeTheme(BurningSeriesTheme(), view, 0)
+                    1
+                } else {
+                    ThemeManager.instance.reverseChangeTheme(DefaultTheme(), view, 0)
+                    0
+                }
+                settingsAdapter.notifyDataSetChanged()
+
+                settingsViewModel.updateAppearanceBurningSeriesTheme(id)
+            },
+            SettingsModel.Switch(2,
                 safeContext.getString(R.string.display_improve_dialog),
                 safeContext.getString(R.string.display_improve_dialog_subtitle),
                 it.appearance.improveDialog
-            ) { isChecked ->
+            ) { _, isChecked ->
                 settingsViewModel.updateAppearanceImproveDialog(isChecked)
             },
             SettingsModel.Group(1, safeContext.getString(R.string.video)),
-            SettingsModel.Switch(2,
+            SettingsModel.Switch(3,
                 safeContext.getString(R.string.advanced_fetching),
                 safeContext.getString(R.string.advanced_fetching_subtitle),
                 it.video.advancedFetching
-            ) { isChecked ->
+            ) { _, isChecked ->
                 settingsViewModel.updateVideoAdvancedFetching(isChecked)
             },
-            SettingsModel.Switch(3,
+            SettingsModel.Switch(4,
                 safeContext.getString(R.string.prefer_mp4),
                 safeContext.getString(R.string.prefer_mp4_subtitle),
                 it.video.preferMp4
-            ) { isChecked ->
+            ) { _, isChecked ->
                 settingsViewModel.updateVideoPreferMp4(isChecked)
             },
-            SettingsModel.Switch(4,
+            SettingsModel.Switch(5,
                 safeContext.getString(R.string.enable_preview),
                 safeContext.getString(R.string.enable_preview_subtitle),
                 it.video.previewEnabled
-            ) { isChecked ->
+            ) { _, isChecked ->
                 settingsViewModel.updateVideoPreview(isChecked)
             },
-            SettingsModel.Switch(5,
+            SettingsModel.Switch(6,
                 getString(R.string.default_fullscreen),
                 getString(R.string.default_fullscreen_subtitle),
                 it.video.defaultFullscreen
-            ) { isChecked ->
+            ) { _, isChecked ->
                 settingsViewModel.updateVideoFullscreen(isChecked)
             },
             SettingsModel.Group(2, getString(R.string.myanimelist)),
@@ -151,12 +212,12 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                     malOAuthResultLauncher.launch(userViewModel.createMalAuthIntent(safeContext))
                 }
             },
-            SettingsModel.Switch(6,
+            SettingsModel.Switch(7,
                 getString(R.string.mal_images),
                 getString(R.string.mal_images_subtitle),
                 it.user.malImages && userViewModel.isMalAuthorized(),
                 userViewModel.isMalAuthorized()
-            ) { isChecked ->
+            ) { _, isChecked ->
                 settingsViewModel.updateUserMalImages(isChecked)
             },
             SettingsModel.Group(3, getString(R.string.anilist)),
@@ -174,12 +235,12 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                     anilistOAuthResultLauncher.launch(userViewModel.createAniListAuthIntent(safeContext))
                 }
             },
-            SettingsModel.Switch(7,
+            SettingsModel.Switch(8,
                 getString(R.string.anilist_images),
                 getString(R.string.anilist_images_subtitle),
                 it.user.aniListImages && userViewModel.isAniListAuthorized(),
                 userViewModel.isAniListAuthorized()
-            ) { isChecked ->
+            ) { _, isChecked ->
                 settingsViewModel.updateUserAniListImages(isChecked)
             },
         ))

@@ -5,10 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.TextureView
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -17,7 +14,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.dolatkia.animatedThemeManager.AppTheme
 import com.github.rubensousa.previewseekbar.PreviewLoader
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -27,7 +26,6 @@ import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import dagger.hilt.android.AndroidEntryPoint
-import de.datlag.burningseries.R
 import de.datlag.burningseries.common.hideLoadingDialog
 import de.datlag.burningseries.common.safeActivity
 import de.datlag.burningseries.common.safeContext
@@ -59,10 +57,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @Obfuscate
-class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, Player.Listener, KeyEventDispatcher {
+class VideoFragment : AdvancedFragment(), PreviewLoader, Player.Listener, KeyEventDispatcher {
 
     private val navArgs: VideoFragmentArgs by navArgs()
-    private val binding: FragmentVideoBinding by viewBinding(FragmentVideoBinding::bind)
+    private val binding: FragmentVideoBinding by viewBinding(CreateMethod.INFLATE)
 
     private val videoViewModel: VideoViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by activityViewModels()
@@ -89,6 +87,14 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     lateinit var burningSeriesDao: BurningSeriesDao
 
     private var framePosStep: Long = 0L
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -284,12 +290,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
-        when (error.errorCode) {
-            PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS -> nextSourceOrDialog()
-            PlaybackException.ERROR_CODE_IO_NO_PERMISSION -> nextSourceOrDialog()
-            PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED -> nextSourceOrDialog()
-            else -> nextSourceOrDialog()
-        }
+        nextSourceOrDialog()
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -349,6 +350,8 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             playingState.tryEmit(it.getBoolean(PLAYER_PLAYING))
         }
     }
+
+    override fun syncTheme(appTheme: AppTheme) { }
 
     override fun onResume() {
         super.onResume()

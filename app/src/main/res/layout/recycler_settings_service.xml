@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
-    android:background="@color/defaultBackgroundColor"
-    android:backgroundTint="@color/defaultBackgroundColor">
+    android:background="@color/defaultBackgroundColor">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/icon"

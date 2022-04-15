@@ -10,7 +10,6 @@ import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.*
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
-import de.datlag.model.burningseries.series.relation.SeriesWithEpisode
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.network.burningseries.BurningSeriesRepository
 import de.datlag.network.m3o.M3ORepository
@@ -19,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,12 +30,15 @@ class BurningSeriesViewModel @Inject constructor(
 	var showedHelpImprove: Boolean = false
 
 	val homeData = repository.getHomeData()
-	val favorites: MutableSharedFlow<List<SeriesWithInfo>> = MutableSharedFlow()
+	private val _favorites: MutableSharedFlow<List<SeriesWithInfo>> = MutableSharedFlow()
+	val favorites = _favorites.asSharedFlow()
 
 	val allSeriesCount: StateFlow<Long> = repository.getAllSeriesCount().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
-	val allSeriesPagination: MutableStateFlow<Long> = MutableStateFlow(0)
-	val allSeriesPaginated: MutableSharedFlow<Resource<List<GenreWithItems>>> = MutableSharedFlow()
-	val allSeriesPaginatedFlat: MutableSharedFlow<List<GenreModel>> = MutableSharedFlow()
+	private val _allSeriesPagination: MutableStateFlow<Long> = MutableStateFlow(0)
+	private val _allSeriesPaginated: MutableSharedFlow<Resource<List<GenreWithItems>>> = MutableSharedFlow()
+	private val _allSeriesPaginatedFlat: MutableSharedFlow<List<GenreModel>> = MutableSharedFlow()
+	val allSeriesPagination = _allSeriesPagination.asSharedFlow()
+	val allSeriesPaginatedFlat = _allSeriesPaginatedFlat.asSharedFlow()
 
 	private val _seriesStatus: MutableStateFlow<Resource.Status> = MutableStateFlow(Resource.Status.LOADING)
 	private val _seriesData: MutableStateFlow<SeriesWithInfo?> = MutableStateFlow(null)
@@ -127,8 +128,8 @@ class BurningSeriesViewModel @Inject constructor(
 	init {
 		getAllFavorites()
 		viewModelScope.launch(Dispatchers.IO) {
-			allSeriesPaginated.collect {
-				it.data?.flatMap { item -> item.toGenreModel() }?.let { items -> allSeriesPaginatedFlat.emit(items) }
+			_allSeriesPaginated.collect {
+				it.data?.flatMap { item -> item.toGenreModel() }?.let { items -> _allSeriesPaginatedFlat.emit(items) }
 			}
 		}
 	}
@@ -147,41 +148,41 @@ class BurningSeriesViewModel @Inject constructor(
 	}
 
 	fun setAllSeriesPage(index: Int) = viewModelScope.launch(Dispatchers.IO) {
-		allSeriesPagination.emit(index.toLong())
+		_allSeriesPagination.emit(index.toLong())
 	}
 
 	fun getAllSeriesNext() = viewModelScope.launch(Dispatchers.IO) {
 		val maxValue = repository.getAllSeriesCount().first()
-		if (allSeriesPagination.value + 1 < maxValue) {
-			allSeriesPagination.emit(allSeriesPagination.value + 1)
+		if (_allSeriesPagination.value + 1 < maxValue) {
+			_allSeriesPagination.emit(_allSeriesPagination.value + 1)
 		} else {
-			allSeriesPagination.emit(0)
+			_allSeriesPagination.emit(0)
 		}
 	}
 
 	fun getAllSeriesPrevious() = viewModelScope.launch(Dispatchers.IO) {
 		val maxValue = repository.getAllSeriesCount().first()
-		if (allSeriesPagination.value - 1 < 0) {
-			allSeriesPagination.emit(maxValue - 1)
+		if (_allSeriesPagination.value - 1 < 0) {
+			_allSeriesPagination.emit(maxValue - 1)
 		} else {
-			allSeriesPagination.emit(allSeriesPagination.value -1)
+			_allSeriesPagination.emit(_allSeriesPagination.value -1)
 		}
 	}
 
 	fun getNewPaginationData() = viewModelScope.launch(Dispatchers.IO) {
-		allSeriesPaginated.emitAll(repository.getAllSeries(allSeriesPagination.value))
+		_allSeriesPaginated.emitAll(repository.getAllSeries(_allSeriesPagination.value))
 	}
 
 	fun searchAllSeries(title: String) = viewModelScope.launch(Dispatchers.IO) {
-		allSeriesPaginatedFlat.emitAll(repository.searchAllSeries(title))
+		_allSeriesPaginatedFlat.emitAll(repository.searchAllSeries(title))
 	}
 
 	fun getAllFavorites() = viewModelScope.launch(Dispatchers.IO) {
-		favorites.emitAll(repository.getSeriesFavorites())
+		_favorites.emitAll(repository.getSeriesFavorites())
 	}
 
 	fun searchFavorites(title: String) = viewModelScope.launch(Dispatchers.IO) {
-		favorites.emitAll(repository.searchSeriesFavorites(title))
+		_favorites.emitAll(repository.searchSeriesFavorites(title))
 	}
 
 	fun getSeriesData(latestSeries: LatestSeries) {

@@ -6,7 +6,6 @@ import de.datlag.model.jsonbase.Stream
 import de.datlag.network.common.toMD5
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 

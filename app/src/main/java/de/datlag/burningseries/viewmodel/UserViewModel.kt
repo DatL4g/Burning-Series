@@ -22,12 +22,14 @@ import de.datlag.network.anilist.type.MediaListStatus
 import de.datlag.network.burningseries.BurningSeriesRepository
 import de.datlag.network.myanimelist.MyAnimeListRepository
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import net.openid.appauth.*
 import net.openid.appauth.browser.BrowserDenyList
 import net.openid.appauth.browser.BrowserMatcher
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
