@@ -289,16 +289,25 @@ class BsPlayerView :
     }
 
     override fun onSaveInstanceState(): Parcelable {
-        return SaveState(
-            super.onSaveInstanceState(),
-            isLocked.value,
-            isFullscreen.value,
-            fullscreenListener
-        )
+        val state = try {
+            super.onSaveInstanceState()
+        } catch (ignored: Exception) {
+            BaseSavedState.EMPTY_STATE
+        }
+        val save = try {
+            SaveState(
+                state,
+                isLocked.value,
+                isFullscreen.value,
+                fullscreenListener
+            )
+        } catch (ignored: Exception) { state }
+
+        return save ?: BaseSavedState.EMPTY_STATE
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
-        val saveState = state as? SaveState
+        val saveState = state as? SaveState?
         super.onRestoreInstanceState(saveState?.superSaveState ?: state)
 
         saveState?.let { save ->
