@@ -3,14 +3,11 @@ package de.datlag.burningseries.ui.fragment
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.dolatkia.animatedThemeManager.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -94,7 +91,7 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
     private fun saveStream() = lifecycleScope.launch(Dispatchers.IO) {
         val scrapeJsInput = safeContext.resources.openRawResource(R.raw.scrape_hoster)
         val jsText = String(scrapeJsInput.readBytes())
-        while (true) {
+        while (view != null) {
             if (view != null) {
                 withContext(Dispatchers.Main) {
                     binding.webView.evaluateJavascript(jsText) {

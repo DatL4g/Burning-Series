@@ -152,7 +152,7 @@ dependencies {
 
     implementation("androidx.datastore:datastore:1.0.0")
 
-    implementation("com.github.DATL4G:SelectionBottomSheet:535724d01e")
+    implementation("com.github.DATL4G:SelectionBottomSheet:2.0.1")
 
     implementation("com.github.DatL4g:StatusBarAlert:2.0.1")
     implementation("com.github.Ferfalk:SimpleSearchView:0.2.0")

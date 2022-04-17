@@ -2,12 +2,9 @@ package de.datlag.burningseries.ui.fragment
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.dolatkia.animatedThemeManager.AppTheme
 import com.hadiyarajesh.flower.Resource
@@ -27,8 +24,11 @@ import de.datlag.burningseries.viewmodel.UserViewModel
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import io.michaelrocks.paranoid.Obfuscate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 @Obfuscate
@@ -112,9 +112,17 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	private fun listenImproveDialogSetting() = settingsViewModel.data.map { it.appearance.improveDialog }.launchAndCollect {
 		if (it) {
 			if (!burningSeriesViewModel.showedHelpImprove) {
-				getBurningSeriesHosterCount { count ->
-					burningSeriesViewModel.showedHelpImprove = true
-					findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToHelpImproveDialog(count))
+				getBurningSeriesHosterCount().launchAndCollect { count ->
+					while (view != null && !burningSeriesViewModel.showedHelpImprove) {
+						try {
+							findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToHelpImproveDialog(count))
+							burningSeriesViewModel.showedHelpImprove = true
+							break
+						} catch (ignored: Exception) { }
+						withContext(Dispatchers.IO) {
+							delay(1000)
+						}
+					}
 				}
 			}
 		} else {
@@ -131,8 +139,17 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	}
 
 	private fun listenNewVersionDialog() = gitHubViewModel.getLatestRelease().launchAndCollect {
-		if (!gitHubViewModel.showedNewVersion && it != null && burningSeriesViewModel.showedHelpImprove) {
-			gitHubViewModel.showedNewVersion = true
+		while (view != null && !gitHubViewModel.showedNewVersion && it != null) {
+			if (burningSeriesViewModel.showedHelpImprove) {
+				try {
+					findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToNewReleaseDialog(it))
+					gitHubViewModel.showedNewVersion = true
+					break
+				} catch (ignored: Exception) { }
+			}
+			withContext(Dispatchers.IO) {
+				delay(1000)
+			}
 		}
 	}
 

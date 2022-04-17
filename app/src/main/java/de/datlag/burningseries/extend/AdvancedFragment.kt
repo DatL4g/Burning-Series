@@ -11,7 +11,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.dolatkia.animatedThemeManager.ThemeFragment
-import com.dolatkia.animatedThemeManager.ThemeManager
 import com.fede987.statusbaralert.StatusBarAlert
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -28,6 +27,7 @@ import de.datlag.network.m3o.M3ORepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import java.io.File
 import javax.inject.Inject
 
@@ -75,13 +75,7 @@ abstract class AdvancedFragment : ThemeFragment {
 		}
 	}
 
-	fun getBurningSeriesHosterCount(onLoaded: (Long) -> Unit) {
-		m3oRepository.getBurningSeriesHosterCount().launchAndCollect {
-			if (it != null) {
-				onLoaded.invoke(it)
-			}
-		}
-	}
+	fun getBurningSeriesHosterCount() = m3oRepository.getBurningSeriesHosterCount().filterNotNull()
 
 	fun extendedFabFavorite(directions: NavDirections) {
 		extendedFab?.let { fab ->
