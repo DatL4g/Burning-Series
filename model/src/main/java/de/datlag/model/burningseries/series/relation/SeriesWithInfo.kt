@@ -37,18 +37,23 @@ data class SeriesWithInfo(
     ) val episodes: List<EpisodeWithHoster>
 ) : Parcelable {
 
+    private val currentSeasonMaxValue: Int
+        get() = if (seasons.isNotEmpty() && series.seasons.isNotEmpty()) {
+            max(series.currentSeason(seasons)?.value ?: Int.MIN_VALUE, series.currentSeason(series.seasons)?.value ?: Int.MIN_VALUE)
+        } else if (seasons.isNotEmpty()) {
+            series.currentSeason(seasons)?.value ?: Int.MIN_VALUE
+        } else if (series.seasons.isNotEmpty()) {
+            series.currentSeason(series.seasons)?.value ?: Int.MIN_VALUE
+        } else {
+            Int.MIN_VALUE
+        }
+
+    val currentSeasonIsFirst: Boolean
+        get() = currentSeasonMaxValue == 1
+
     val currentSeasonIsLast: Boolean
         get() {
             val seasonsMax = seasons.maxOfOrNull { it.value } ?: series.seasons.maxOfOrNull { it.value } ?: Int.MAX_VALUE
-            val currentMax = if (seasons.isNotEmpty() && series.seasons.isNotEmpty()) {
-                max(series.currentSeason(seasons)?.value ?: Int.MIN_VALUE, series.currentSeason(series.seasons)?.value ?: Int.MIN_VALUE)
-            } else if (seasons.isNotEmpty()) {
-                series.currentSeason(seasons)?.value ?: Int.MIN_VALUE
-            } else if (series.seasons.isNotEmpty()) {
-                series.currentSeason(series.seasons)?.value ?: Int.MIN_VALUE
-            } else {
-                Int.MIN_VALUE
-            }
-            return currentMax >= seasonsMax
+            return currentSeasonMaxValue >= seasonsMax
         }
 }

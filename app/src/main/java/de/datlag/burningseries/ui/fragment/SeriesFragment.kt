@@ -537,11 +537,17 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
         loadAnimeProviderImage(malImageUrl, defaultUrl, saveName)
 
-        preview?.let { userViewModel.syncMalSeries(
-            it,
-            burningSeriesViewModel.currentSeriesData!!.episodes.map { ep -> ep.episode },
-            burningSeriesViewModel.currentSeriesData!!.currentSeasonIsLast
-        ) }
+        preview?.let {
+            val currentSeries = burningSeriesViewModel.currentSeriesData
+            if (currentSeries != null) {
+                userViewModel.syncMalSeries(
+                    it,
+                    currentSeries.episodes.map { ep -> ep.episode },
+                    currentSeries.currentSeasonIsFirst,
+                    currentSeries.currentSeasonIsLast
+                )
+            }
+        }
     }
 
     private fun loadAniListData(medium: MediaQuery.Medium?) = lifecycleScope.launch(Dispatchers.IO) {
@@ -554,11 +560,15 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         loadAnimeProviderImage(aniListImageUrl, defaultUrl, saveName)
 
         medium?.let {
-            userViewModel.syncAniListSeries(
-                it,
-                burningSeriesViewModel.currentSeriesData!!.episodes.map { ep -> ep.episode },
-                burningSeriesViewModel.currentSeriesData!!.currentSeasonIsLast
-            )
+            val currentSeries = burningSeriesViewModel.currentSeriesData
+            if (currentSeries != null) {
+                userViewModel.syncAniListSeries(
+                    it,
+                    currentSeries.episodes.map { ep -> ep.episode },
+                    currentSeries.currentSeasonIsFirst,
+                    currentSeries.currentSeasonIsLast
+                )
+            }
         }
     }
 

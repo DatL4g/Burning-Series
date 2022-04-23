@@ -205,7 +205,7 @@ class UserViewModel @Inject constructor(
         }
     }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
-    fun syncMalSeries(preview: AnimePreview, episodes: List<EpisodeInfo>, isLastSeason: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+    fun syncMalSeries(preview: AnimePreview, episodes: List<EpisodeInfo>, isFirstSeason: Boolean, isLastSeason: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         val malListStatus = preview.listStatus
         val malWatchedAmount = malListStatus?.watchedEpisodes ?: 0
         val malWatchStatus = malListStatus?.status
@@ -232,7 +232,7 @@ class UserViewModel @Inject constructor(
             }
         } else {
             val addWatchedAmount = malWatchedAmount - deviceWatchedAmount
-            if (addWatchedAmount > 0) {
+            if (addWatchedAmount > 0 && isFirstSeason) {
                 val notWatchedEpisodes = episodes.filterNot { it.watchedPercentage() >= 90F }.safeSubList(0, addWatchedAmount)
                 notWatchedEpisodes.map { async {
                     it.totalWatchPos = Long.MAX_VALUE
@@ -295,7 +295,7 @@ class UserViewModel @Inject constructor(
         }
     }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
-    fun syncAniListSeries(medium: MediaQuery.Medium, episodes: List<EpisodeInfo>, isLastSeason: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+    fun syncAniListSeries(medium: MediaQuery.Medium, episodes: List<EpisodeInfo>, isFirstSeason: Boolean, isLastSeason: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         suspend fun saveOrUpdate(token: String) {
             val aniListStatus = medium.mediaListEntry
             val aniListWatchedAmount = aniListStatus?.progress ?: 0
@@ -318,7 +318,7 @@ class UserViewModel @Inject constructor(
                 }
             } else {
                 val addWatchedAmount = aniListWatchedAmount - deviceWatchedAmount
-                if (addWatchedAmount > 0) {
+                if (addWatchedAmount > 0 && isFirstSeason) {
                     val notWatchedEpisodes = episodes.filterNot { it.watchedPercentage() >= 90F }.safeSubList(0, addWatchedAmount)
                     notWatchedEpisodes.map { async {
                         it.totalWatchPos = Long.MAX_VALUE
