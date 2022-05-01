@@ -46,7 +46,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     
-    api("io.github.hadiyarajesh:flower:2.0.0")
+    api("io.github.hadiyarajesh:flower:2.0.2")
     api("com.squareup.retrofit2:retrofit:2.9.0") {
         exclude("com.squareup.okhttp3", "okhttp")
         exclude("com.squareup.okhttp3", "logging-interceptor")
@@ -62,7 +62,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
-    api("com.kttdevelopment:mal4j:2.7.2")
+    api("com.kttdevelopment:mal4j:2.7.4")
     api("com.apollographql.apollo3:apollo-runtime:3.2.2")
 }
 

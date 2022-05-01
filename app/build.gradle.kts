@@ -82,7 +82,7 @@ dependencies {
     implementation(project(mapOf("path" to ":database")))
     implementation(project(mapOf("path" to ":executor")))
     implementation(project(mapOf("path" to ":datastore")))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib${CompileOptions.kotlinJdk}:1.6.20")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib${CompileOptions.kotlinJdk}:1.6.21")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
@@ -166,6 +166,6 @@ dependencies {
 
 protobuf.protobuf.run {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.20.0"
+        artifact = "com.google.protobuf:protoc:3.20.1"
     }
 }

@@ -70,7 +70,7 @@ class App : MultiDexApplication() {
 					} catch (ignored: Exception) { }
 					logFile.setLastModified(Clock.System.now().toEpochMilliseconds())
 				}
-			} catch (ignored: Exception) { }
+			} catch (ignored: Throwable) { }
 		}
 	}
 
