@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import de.datlag.burningseries.common.indexOfLastWithItem
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
 import de.datlag.model.burningseries.home.LatestEpisode
@@ -129,6 +130,18 @@ class BurningSeriesViewModel @Inject constructor(
 			}
 		} ?: emptyList()
 	}.distinctUntilChanged()
+	val continueSeriesEpisode: EpisodeWithHoster?
+		get() {
+			val episodeList = currentSeriesEpisodes.sortedWith(compareBy<EpisodeWithHoster> { it.episode.number.toIntOrNull() }.thenBy { it.episode.number })
+			val lastWatched = episodeList.indexOfLastWithItem { it.episode.watchedPercentage() > 0 }
+			return when {
+				lastWatched.first == -1 -> episodeList.firstOrNull()
+				lastWatched.second?.episode?.finishedWatching == true -> {
+					episodeList.getOrNull(lastWatched.first + 1) ?: lastWatched.second
+				}
+				else -> lastWatched.second
+			} ?: lastWatched.second ?: episodeList.firstOrNull()
+		}
 
 	private val _genres: MutableStateFlow<List<GenreModel.GenreData>> = MutableStateFlow(listOf())
 	val genres: List<GenreModel.GenreData>

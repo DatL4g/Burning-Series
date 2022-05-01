@@ -2,6 +2,7 @@ package de.datlag.model.burningseries.series
 
 import android.os.Parcelable
 import androidx.room.*
+import de.datlag.model.burningseries.common.getDigitsOrNull
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -62,4 +63,16 @@ data class EpisodeInfo(
 
     val finishedWatching: Boolean
         get() = watchedPercentage() > 85F
+
+    val episodeNumber: Int?
+        get() {
+            val matched = "[|({]\\s*Ep([.]|isode)?\\s*(\\d+)\\s*[|)}]".toRegex(RegexOption.IGNORE_CASE).find(title.trim())
+            return matched?.groupValues?.let {
+                val numberMatch = it.lastOrNull()
+                numberMatch?.toIntOrNull() ?: numberMatch?.getDigitsOrNull()?.toIntOrNull()
+            }
+        }
+
+    val episodeNumberOrListNumber: Int?
+        get() = episodeNumber ?: number.toIntOrNull() ?: number.getDigitsOrNull()?.toIntOrNull()
 }

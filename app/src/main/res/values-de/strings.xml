@@ -83,4 +83,6 @@
     <string name="last_exception">Letzter Fehler</string>
     <string name="copy">Kopieren</string>
     <string name="error_copy_tag">BurningSeries Fehler</string>
+    <string name="start_episode">Start [Ep. %d]</string>
+    <string name="continue_episode">Weiter [Ep. %d]</string>
 </resources>

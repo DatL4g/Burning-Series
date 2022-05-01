@@ -3,9 +3,7 @@ package de.datlag.burningseries.ui.fragment
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.activityViewModels
@@ -13,13 +11,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.ahmed3elshaer.selectionbottomsheet.ExpandState
 import com.ahmed3elshaer.selectionbottomsheet.selectionBottomSheet
 import com.devs.readmoreoption.ReadMoreOption
 import com.dolatkia.animatedThemeManager.AppTheme
-import com.dolatkia.animatedThemeManager.ThemeManager
 import com.google.android.material.chip.Chip
 import com.hadiyarajesh.flower.Resource
 import com.kttdevelopment.mal4j.anime.AnimePreview
@@ -56,7 +52,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 
 @AndroidEntryPoint
@@ -402,6 +397,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         if (episodes.isNullOrEmpty()) {
             extendedFab?.visibility = View.GONE
         } else {
+            applyContinueFab()
             extendedFab?.let { fab ->
                 fab.visibility = View.VISIBLE
                 binding.selectSeason.nextFocusRightId = fab.id
@@ -584,26 +580,30 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun applyContinueFab() {
         extendedFab?.let { fab ->
+            val continueEpisodeNumber = burningSeriesViewModel.continueSeriesEpisode?.episode?.episodeNumberOrListNumber
             fab.visibility = if (burningSeriesViewModel.currentSeriesEpisodes.isNullOrEmpty()) View.GONE else View.VISIBLE
-            fab.text = safeContext.getString(R.string.continue_string)
+            fab.text = if (continueEpisodeNumber != null) {
+                if (continueEpisodeNumber <= 1) {
+                    safeContext.getString(R.string.start_episode, continueEpisodeNumber)
+                } else {
+                    safeContext.getString(R.string.continue_episode, continueEpisodeNumber)
+                }
+            } else {
+                safeContext.getString(R.string.continue_string)
+            }
             fab.setIconResource(R.drawable.ic_baseline_play_arrow_24)
             fab.setOnClickListener {
-                val episodeList = burningSeriesViewModel.currentSeriesEpisodes.sortedWith(compareBy<EpisodeWithHoster> { it.episode.number.toIntOrNull() }.thenBy { it.episode.number })
-                val lastWatched = episodeList.indexOfLastWithItem { it.episode.watchedPercentage() > 0 }
-                val continueWatch: EpisodeWithHoster? = when {
-                    lastWatched.first == -1 -> episodeList.firstOrNull()
-                    lastWatched.second?.episode?.finishedWatching == true -> {
-                        episodeList.getOrNull(lastWatched.first + 1) ?: lastWatched.second
-                    }
-                    else -> lastWatched.second
-                } ?: lastWatched.second ?: episodeList.firstOrNull()
-                continueWatch?.let { episode -> episodeRecyclerClick(episode) }
+                burningSeriesViewModel.continueSeriesEpisode?.let { episode -> episodeRecyclerClick(episode) }
             }
             binding.selectSeason.nextFocusRightId = fab.id
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        applyContinueFab()
         hideNavigationFabs()
     }
 }
