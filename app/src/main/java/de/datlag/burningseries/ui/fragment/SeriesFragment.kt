@@ -70,7 +70,9 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     private val videoViewModel: VideoViewModel by viewModels()
     private val userViewModel: UserViewModel by activityViewModels()
 
-    private val episodeRecyclerAdapter = EpisodeRecyclerAdapter()
+    private val episodeRecyclerAdapter by lazy {
+        EpisodeRecyclerAdapter(extendedFab?.id)
+    }
     private val seriesInfoAdapter = SeriesInfoAdapter()
     private lateinit var readMoreOption: ReadMoreOption
 
@@ -397,6 +399,16 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     }
 
     private fun listenEpisodes(episode: LatestEpisode? = null) = burningSeriesViewModel.seriesEpisodes.launchAndCollect { episodes ->
+        if (episodes.isNullOrEmpty()) {
+            extendedFab?.visibility = View.GONE
+        } else {
+            extendedFab?.let { fab ->
+                fab.visibility = View.VISIBLE
+                binding.selectSeason.nextFocusRightId = fab.id
+                fab.requestFocus()
+            }
+        }
+
         episodeRecyclerAdapter.submitList(episodes.sortedWith(compareBy<EpisodeWithHoster> { it.episode.number.toIntOrNull() }.thenBy { it.episode.number })) {
             if (episode != null) {
                 val (_, episodeTitle) = episode.getEpisodeAndSeries()
@@ -574,7 +586,24 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
     override fun onResume() {
         super.onResume()
-        extendedFab?.visibility = View.GONE
+        extendedFab?.let { fab ->
+            fab.visibility = if (burningSeriesViewModel.currentSeriesEpisodes.isNullOrEmpty()) View.GONE else View.VISIBLE
+            fab.text = safeContext.getString(R.string.continue_string)
+            fab.setIconResource(R.drawable.ic_baseline_play_arrow_24)
+            fab.setOnClickListener {
+                val episodeList = burningSeriesViewModel.currentSeriesEpisodes.sortedWith(compareBy<EpisodeWithHoster> { it.episode.number.toIntOrNull() }.thenBy { it.episode.number })
+                val lastWatched = episodeList.indexOfLastWithItem { it.episode.watchedPercentage() > 0 }
+                val continueWatch: EpisodeWithHoster? = when {
+                    lastWatched.first == -1 -> episodeList.firstOrNull()
+                    lastWatched.second?.episode?.finishedWatching == true -> {
+                        episodeList.getOrNull(lastWatched.first + 1) ?: lastWatched.second
+                    }
+                    else -> lastWatched.second
+                } ?: lastWatched.second ?: episodeList.firstOrNull()
+                continueWatch?.let { episode -> episodeRecyclerClick(episode) }
+            }
+            binding.selectSeason.nextFocusRightId = fab.id
+        }
         hideNavigationFabs()
     }
 }

@@ -74,6 +74,8 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:textColor="@color/button_text_selector"
+                    android:nextFocusLeft="@id/favIcon"
+                    android:nextFocusRight="@id/selectSeason"
                     app:backgroundTint="@color/button_background_selector"/>
 
                 <com.google.android.material.button.MaterialButton
@@ -84,6 +86,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:textColor="@color/defaultBackgroundColor"
+                    android:nextFocusLeft="@id/selectLanguage"
                     app:backgroundTint="@color/defaultContentColor"/>
             </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.appcompat.widget.LinearLayoutCompat>

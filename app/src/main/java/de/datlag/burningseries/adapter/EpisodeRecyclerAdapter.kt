@@ -23,7 +23,9 @@ import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import io.michaelrocks.paranoid.Obfuscate
 
 @Obfuscate
-class EpisodeRecyclerAdapter : ClickRecyclerAdapter<EpisodeWithHoster, EpisodeRecyclerAdapter.ViewHolder>() {
+class EpisodeRecyclerAdapter(
+    private val rightFocusViewId: Int? = null
+) : ClickRecyclerAdapter<EpisodeWithHoster, EpisodeRecyclerAdapter.ViewHolder>() {
 
     override val diffCallback = object : DiffUtil.ItemCallback<EpisodeWithHoster>() {
         override fun areItemsTheSame(
@@ -76,6 +78,9 @@ class EpisodeRecyclerAdapter : ClickRecyclerAdapter<EpisodeWithHoster, EpisodeRe
             binding.progressIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(it.defaultContentColor(binding.progressIcon.context), BlendModeCompat.SRC_IN)
         }
 
+        if (rightFocusViewId != null) {
+            binding.card.nextFocusRightId = rightFocusViewId
+        }
         binding.number.text = item.episode.number
         binding.title.text = item.episode.title
         val watchedProgress = item.episode.watchedPercentage()
@@ -84,7 +89,7 @@ class EpisodeRecyclerAdapter : ClickRecyclerAdapter<EpisodeWithHoster, EpisodeRe
                 binding.progressIcon.load<Drawable>(null)
                 binding.progressIcon.hide()
             }
-            watchedProgress >= 90F -> {
+            watchedProgress >= 85F -> {
                 binding.progressIcon.load<Drawable>(R.drawable.ic_baseline_check_24)
                 binding.progressIcon.show()
             }

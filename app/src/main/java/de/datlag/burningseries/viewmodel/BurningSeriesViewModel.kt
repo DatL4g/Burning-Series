@@ -70,6 +70,17 @@ class BurningSeriesViewModel @Inject constructor(
 				series.series.seasons
 			}
 		}
+	val currentSeriesEpisodes: List<EpisodeWithHoster>
+		get() {
+			val series = currentSeriesData
+			return if (series == null) {
+				emptyList()
+			} else if (!series.episodes.isNullOrEmpty()) {
+				series.episodes
+			} else {
+				series.series.episodes.map { EpisodeWithHoster(it, it.hoster) }
+			}
+		}
 	val seriesBSImage: Flow<String> = seriesData.map { it?.series?.image ?: String() }.distinctUntilChanged()
 	val seriesTitle: Flow<String> = seriesData.map { it?.series?.title ?: String() }.distinctUntilChanged()
 	val seriesFavorite: Flow<Boolean> = seriesData.map { (it?.series?.favoriteSince ?: 0) > 0 }.distinctUntilChanged()

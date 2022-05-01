@@ -59,4 +59,7 @@ data class EpisodeInfo(
         }
         return ((currentWatchPos.toDouble() * 100) / totalWatchPos.toDouble()).toFloat()
     }
+
+    val finishedWatching: Boolean
+        get() = watchedPercentage() > 85F
 }

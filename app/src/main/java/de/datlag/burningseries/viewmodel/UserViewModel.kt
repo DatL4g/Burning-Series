@@ -212,7 +212,7 @@ class UserViewModel @Inject constructor(
         val malRewatching = malListStatus?.isRewatching ?: false
         val malCompletedOrRewatching = malWatchStatus == AnimeStatus.Completed || (malWatchStatus == AnimeStatus.Watching && malRewatching)
 
-        val deviceWatchedAmount = episodes.filter { it.watchedPercentage() >= 90F }.size
+        val deviceWatchedAmount = episodes.filter { it.finishedWatching }.size
 
         if (deviceWatchedAmount > malWatchedAmount) {
             if (deviceWatchedAmount >= episodes.size && isLastSeason) {
@@ -233,7 +233,7 @@ class UserViewModel @Inject constructor(
         } else {
             val addWatchedAmount = malWatchedAmount - deviceWatchedAmount
             if (addWatchedAmount > 0 && isFirstSeason) {
-                val notWatchedEpisodes = episodes.filterNot { it.watchedPercentage() >= 90F }.safeSubList(0, addWatchedAmount)
+                val notWatchedEpisodes = episodes.filterNot { it.finishedWatching }.safeSubList(0, addWatchedAmount)
                 notWatchedEpisodes.map { async {
                     it.totalWatchPos = Long.MAX_VALUE
                     it.currentWatchPos = Long.MAX_VALUE
@@ -304,7 +304,7 @@ class UserViewModel @Inject constructor(
             val aniListCompleted = aniListWatchStatus == MediaListStatus.COMPLETED || (aniListWatchStatus?.rawValue ?: String()) == MediaListStatus.COMPLETED.rawValue
             val aniListCompletedOrRewatching = aniListRewatching || aniListCompleted
 
-            val deviceWatchedAmount = episodes.filter { it.watchedPercentage() >= 90F }.size
+            val deviceWatchedAmount = episodes.filter { it.finishedWatching }.size
 
             if (deviceWatchedAmount > aniListWatchedAmount) {
                 if (deviceWatchedAmount >= episodes.size && isLastSeason) {
@@ -319,7 +319,7 @@ class UserViewModel @Inject constructor(
             } else {
                 val addWatchedAmount = aniListWatchedAmount - deviceWatchedAmount
                 if (addWatchedAmount > 0 && isFirstSeason) {
-                    val notWatchedEpisodes = episodes.filterNot { it.watchedPercentage() >= 90F }.safeSubList(0, addWatchedAmount)
+                    val notWatchedEpisodes = episodes.filterNot { it.finishedWatching }.safeSubList(0, addWatchedAmount)
                     notWatchedEpisodes.map { async {
                         it.totalWatchPos = Long.MAX_VALUE
                         it.currentWatchPos = Long.MAX_VALUE

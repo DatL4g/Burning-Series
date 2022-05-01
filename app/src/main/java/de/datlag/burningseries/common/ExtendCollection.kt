@@ -27,3 +27,13 @@ fun <T> List<T>.safeSubList(startIndex: Int = 0, endIndex: Int): List<T> {
     }
     return this.subList(safeStart, safeEnd)
 }
+
+inline fun <T> List<T>.indexOfLastWithItem(predicate: (T) -> Boolean): Pair<Int, T?> {
+    val iterator = this.listIterator(size)
+    while (iterator.hasPrevious()) {
+        if (predicate(iterator.previous())) {
+            return Pair(iterator.nextIndex(), iterator.next())
+        }
+    }
+    return Pair(-1, null)
+}
