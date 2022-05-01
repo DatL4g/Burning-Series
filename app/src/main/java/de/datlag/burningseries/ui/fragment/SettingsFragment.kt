@@ -2,9 +2,7 @@ package de.datlag.burningseries.ui.fragment
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
@@ -14,11 +12,10 @@ import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.devs.readmoreoption.ReadMoreOption
 import com.dolatkia.animatedThemeManager.AppTheme
-import com.dolatkia.animatedThemeManager.ThemeManager
 import com.kttdevelopment.mal4j.MyAnimeList
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.BuildConfig
@@ -29,17 +26,23 @@ import de.datlag.burningseries.databinding.FragmentSettingsBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.helper.NightMode
 import de.datlag.burningseries.model.SettingsModel
-import de.datlag.burningseries.ui.theme.*
+import de.datlag.burningseries.ui.theme.ApplicationTheme
+import de.datlag.burningseries.ui.theme.BurningSeriesTheme
+import de.datlag.burningseries.ui.theme.DefaultTheme
 import de.datlag.burningseries.viewmodel.GitHubViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.UserViewModel
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
+import de.datlag.model.common.asIsoString
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @AndroidEntryPoint
 @Obfuscate
@@ -81,6 +84,36 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
         }
         binding.syncCard.setOnClickListener {
             findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToSyncFragment())
+        }
+
+        val errorText = loadFileSavedText(Constants.LOG_FILE)?.trim()
+        if (errorText.isNullOrEmpty()) {
+            binding.latestErrorCard.hide()
+        } else {
+            val errorLastModified = fileLastModifiedOrCreated(Constants.LOG_FILE)
+            if (errorLastModified > 0L) {
+                val localDate = Instant.fromEpochMilliseconds(errorLastModified).toLocalDateTime(TimeZone.currentSystemDefault()).date
+                binding.errorDate.text = localDate.asIsoString()
+            }
+            val readMoreOption = safeContext.readMoreOption {
+                textLength(3)
+                textLengthType(ReadMoreOption.TYPE_LINE)
+                moreLabel("\t${safeContext.getString(R.string.more)}")
+                lessLabel("\t${safeContext.getString(R.string.less)}")
+                labelUnderLine(true)
+                moreLabelColor(safeContext.getColorCompat(R.color.datlagContentColor))
+                lessLabelColor(safeContext.getColorCompat(R.color.datlagContentColor))
+                expandAnimation(true)
+            }
+            try {
+                readMoreOption.addReadMoreTo(binding.errorText, errorText)
+            } catch (ignored: Exception) {
+                binding.errorText.text = errorText
+            }
+            binding.errorButton.setOnClickListener {
+                safeContext.copyToClipboard(safeContext.getString(R.string.error_copy_tag), errorText)
+            }
+            binding.latestErrorCard.show()
         }
     }
 

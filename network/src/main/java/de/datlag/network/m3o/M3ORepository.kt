@@ -1,6 +1,5 @@
 package de.datlag.network.m3o
 
-import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkResource
 import de.datlag.model.Constants
@@ -180,7 +179,6 @@ class M3ORepository @Inject constructor(
 			when (it.status) {
 				Resource.Status.SUCCESS -> emit(true)
 				Resource.Status.ERROR -> {
-					Log.e("Save Error", it.message ?: "No message")
 					emitAll(updateScrapedHoster(entry))
 				}
 				else -> { }
@@ -198,8 +196,10 @@ class M3ORepository @Inject constructor(
 			when (it.status) {
 				Resource.Status.SUCCESS -> emit(true)
 				Resource.Status.ERROR -> {
-					Log.e("Update Error", it.message ?: "No message")
 					emit(false)
+					if (!it.message.isNullOrEmpty()) {
+						throw Exception(it.message)
+					}
 				}
 				else -> { }
 			}
@@ -216,7 +216,9 @@ class M3ORepository @Inject constructor(
 			)
 		}).collect {
 			if (it.status == Resource.Status.ERROR) {
-				Log.e("Save Stream Error", it.message ?: "No message")
+				if (!it.message.isNullOrEmpty()) {
+					throw Exception(it.message)
+				}
 			}
 		}
 	}

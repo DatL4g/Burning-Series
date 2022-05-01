@@ -3,6 +3,8 @@
 package de.datlag.burningseries.common
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.ColorStateList
@@ -30,4 +32,9 @@ fun Context.dpToPx(value: Number) = this.resources.dpToPx(value)
 fun colorStateListOf(vararg mapping: Pair<IntArray, Int>): ColorStateList {
     val (states, colors) = mapping.unzip()
     return ColorStateList(states.toTypedArray(), colors.toIntArray())
+}
+
+fun Context.copyToClipboard(description: String, text: String) {
+    val clipBoardManager = this.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager?
+    clipBoardManager?.setPrimaryClip(ClipData.newPlainText(description, text))
 }

@@ -75,6 +75,10 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView(): Unit = with(binding) {
         webView.webViewClient = adBlockWebViewClient
+        webView.clearHistory()
+        webView.clearCache(true)
+        webView.clearMatches()
+        webView.clearFormData()
 
         webView.settings.apply {
             allowFileAccess = false

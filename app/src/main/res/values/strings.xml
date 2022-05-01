@@ -85,4 +85,7 @@
     <string name="burningseries_theme">BurningSeries Theme</string>
     <string name="burningseries_theme_subtitle">Use the BurningSeries accent color</string>
     <string name="close">Close</string>
+    <string name="last_exception">Last Exception</string>
+    <string name="copy">Copy</string>
+    <string name="error_copy_tag">BurningSeries Error</string>
 </resources>

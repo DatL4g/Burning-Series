@@ -58,6 +58,8 @@ object Constants {
 
 	val OAUTH_BROWSER_DENY = listOf("com.vewd.core.integration.dia")
 
+	const val LOG_FILE = "burningseries.log"
+
 	fun getBurningSeriesLink(href: String): String {
 		return if (!href.matches("^\\w+?://.*".toRegex())) {
 			if (!href.startsWith("/")) {

@@ -2,6 +2,7 @@ package de.datlag.model.github
 
 import android.os.Parcelable
 import de.datlag.model.burningseries.common.getDigitsOrNull
+import de.datlag.model.common.asIsoString
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -33,7 +34,7 @@ data class Release(
 
     fun publishedAtIsoDate() = if (publishedAtSeconds > 0L) {
         val date = Instant.fromEpochSeconds(publishedAtSeconds).toLocalDateTime(TimeZone.currentSystemDefault()).date
-        "${date.year}-${date.monthNumber}-${date.dayOfMonth}"
+        date.asIsoString()
     } else {
         publishedAt
     }

@@ -75,6 +75,19 @@ abstract class AdvancedFragment : ThemeFragment {
 		}
 	}
 
+	fun loadFileSavedText(name: String): String? = if (checkFileValid(name)) {
+		safeActivity?.let { File(it.filesDir, name) }?.readText()
+	} else {
+		null
+	}
+
+	fun fileLastModifiedOrCreated(name: String): Long = if (checkFileValid(name)) {
+		val file = safeActivity?.let { File(it.filesDir, name) }
+		file?.lastModified() ?: 0L
+	} else {
+		0L
+	}
+
 	fun getBurningSeriesHosterCount() = m3oRepository.getBurningSeriesHosterCount().filterNotNull()
 
 	fun extendedFabFavorite(directions: NavDirections) {
