@@ -274,7 +274,14 @@ class BurningSeriesRepository @Inject constructor(
 
 	suspend fun updateSeriesFavorite(seriesData: SeriesData) = burningSeriesDao.updateSeriesFavorite(seriesData.seriesId, seriesData.favoriteSince)
 
-	suspend fun updateEpisodeInfo(episodeInfo: EpisodeInfo) = burningSeriesDao.updateEpisodeInfo(episodeInfo)
+	suspend fun updateEpisodeInfo(episodeInfo: EpisodeInfo) {
+		val newDBEpisode = burningSeriesDao.getEpisodeInfoByIdOrHref(episodeInfo.episodeId, episodeInfo.href).firstOrNull() ?: episodeInfo
+		newDBEpisode.apply {
+			currentWatchPos = episodeInfo.currentWatchPos
+			totalWatchPos = episodeInfo.totalWatchPos
+		}
+		burningSeriesDao.updateEpisodeInfo(episodeInfo)
+	}
 
 	fun getSeriesFavorites(): Flow<List<SeriesWithInfo>> = burningSeriesDao.getSeriesFavorites().flowOn(Dispatchers.IO)
 

@@ -11,7 +11,6 @@ import com.kttdevelopment.mal4j.MyAnimeList
 import com.kttdevelopment.mal4j.anime.AnimePreview
 import com.kttdevelopment.mal4j.anime.property.AnimeStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
-import de.datlag.burningseries.common.safeSubList
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
@@ -205,14 +204,28 @@ class UserViewModel @Inject constructor(
         }
     }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
-    fun syncMalSeries(preview: AnimePreview, episodes: List<EpisodeInfo>, isFirstSeason: Boolean, isLastSeason: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+    fun syncMalSeries(
+        preview: AnimePreview,
+        episodes: List<EpisodeInfo>,
+        continueEpisodeInfo: EpisodeInfo?,
+        isFirstSeason: Boolean,
+        isLastSeason: Boolean
+    ) = viewModelScope.launch(Dispatchers.IO) {
         val malListStatus = preview.listStatus
         val malWatchedAmount = malListStatus?.watchedEpisodes ?: 0
         val malWatchStatus = malListStatus?.status
         val malRewatching = malListStatus?.isRewatching ?: false
         val malCompletedOrRewatching = malWatchStatus == AnimeStatus.Completed || (malWatchStatus == AnimeStatus.Watching && malRewatching)
 
-        val deviceWatchedAmount = episodes.filter { it.finishedWatching }.size
+        val deviceWatchedAmount = if (continueEpisodeInfo != null) {
+            (if (!continueEpisodeInfo.finishedWatching) {
+                continueEpisodeInfo.episodeNumber?.minus(1)
+            } else {
+                continueEpisodeInfo.episodeNumber
+            }) ?: episodes.filter { it.finishedWatching }.size
+        } else {
+            episodes.filter { it.finishedWatching }.size
+        }
 
         if (deviceWatchedAmount > malWatchedAmount) {
             if (deviceWatchedAmount >= episodes.size && isLastSeason) {
@@ -232,8 +245,21 @@ class UserViewModel @Inject constructor(
             }
         } else {
             val addWatchedAmount = malWatchedAmount - deviceWatchedAmount
-            if (addWatchedAmount > 0 && isFirstSeason) {
-                val notWatchedEpisodes = episodes.filterNot { it.finishedWatching }.safeSubList(0, addWatchedAmount)
+            if (addWatchedAmount > 0) {
+                val notWatchedEpisodes = episodes.filter {
+                    val episodeNumber = it.episodeNumber
+                    val episodeOrListNumber = it.episodeNumberOrListNumber
+                    val episodeNumberInRange = if (episodeNumber != null) {
+                        episodeNumber <= malWatchedAmount
+                    } else {
+                        if (episodeOrListNumber != null && isFirstSeason) {
+                            episodeOrListNumber <= malWatchedAmount
+                        } else {
+                            false
+                        }
+                    }
+                    !it.finishedWatching && episodeNumberInRange
+                }
                 notWatchedEpisodes.map { async {
                     it.totalWatchPos = Long.MAX_VALUE
                     it.currentWatchPos = Long.MAX_VALUE
@@ -295,7 +321,13 @@ class UserViewModel @Inject constructor(
         }
     }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
-    fun syncAniListSeries(medium: MediaQuery.Medium, episodes: List<EpisodeInfo>, isFirstSeason: Boolean, isLastSeason: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+    fun syncAniListSeries(
+        medium: MediaQuery.Medium,
+        episodes: List<EpisodeInfo>,
+        continueEpisodeInfo: EpisodeInfo?,
+        isFirstSeason: Boolean,
+        isLastSeason: Boolean
+    ) = viewModelScope.launch(Dispatchers.IO) {
         suspend fun saveOrUpdate(token: String) {
             val aniListStatus = medium.mediaListEntry
             val aniListWatchedAmount = aniListStatus?.progress ?: 0
@@ -304,7 +336,15 @@ class UserViewModel @Inject constructor(
             val aniListCompleted = aniListWatchStatus == MediaListStatus.COMPLETED || (aniListWatchStatus?.rawValue ?: String()) == MediaListStatus.COMPLETED.rawValue
             val aniListCompletedOrRewatching = aniListRewatching || aniListCompleted
 
-            val deviceWatchedAmount = episodes.filter { it.finishedWatching }.size
+            val deviceWatchedAmount = if (continueEpisodeInfo != null) {
+                (if (!continueEpisodeInfo.finishedWatching) {
+                    continueEpisodeInfo.episodeNumber?.minus(1)
+                } else {
+                    continueEpisodeInfo.episodeNumber
+                }) ?: episodes.filter { it.finishedWatching }.size
+            } else {
+                episodes.filter { it.finishedWatching }.size
+            }
 
             if (deviceWatchedAmount > aniListWatchedAmount) {
                 if (deviceWatchedAmount >= episodes.size && isLastSeason) {
@@ -318,8 +358,21 @@ class UserViewModel @Inject constructor(
                 }
             } else {
                 val addWatchedAmount = aniListWatchedAmount - deviceWatchedAmount
-                if (addWatchedAmount > 0 && isFirstSeason) {
-                    val notWatchedEpisodes = episodes.filterNot { it.finishedWatching }.safeSubList(0, addWatchedAmount)
+                if (addWatchedAmount > 0) {
+                    val notWatchedEpisodes = episodes.filter {
+                        val episodeNumber = it.episodeNumber
+                        val episodeOrListNumber = it.episodeNumberOrListNumber
+                        val episodeNumberInRange = if (episodeNumber != null) {
+                            episodeNumber <= aniListWatchedAmount
+                        } else {
+                            if (episodeOrListNumber != null && isFirstSeason) {
+                                episodeOrListNumber <= aniListWatchedAmount
+                            } else {
+                                false
+                            }
+                        }
+                        !it.finishedWatching && episodeNumberInRange
+                    }
                     notWatchedEpisodes.map { async {
                         it.totalWatchPos = Long.MAX_VALUE
                         it.currentWatchPos = Long.MAX_VALUE

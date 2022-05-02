@@ -264,19 +264,19 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         }
     }
 
+    private fun listenAniListSeries(current: SeriesWithInfo, onLoaded: (MediaQuery.Medium?) -> Unit) = userViewModel.getAniListSeries(current).distinctUntilChanged().launchAndCollect { series ->
+        if (series != null) {
+            onLoaded.invoke(series)
+        }
+    }
+
+    private fun listenMalSeries(current: SeriesWithInfo, onLoaded: (AnimePreview?) -> Unit) = userViewModel.getUserMal { mal ->
+        userViewModel.getMalSeries(mal, current).distinctUntilChanged().launchAndCollect { preview ->
+            onLoaded.invoke(preview)
+        }
+    }
+
     private fun listenCover() = burningSeriesViewModel.seriesBSImage.launchAndCollect {
-        fun listenAniListSeries(current: SeriesWithInfo) = userViewModel.getAniListSeries(current).distinctUntilChanged().launchAndCollect { series ->
-            if (series != null) {
-                loadAniListData(series)
-            }
-        }
-
-        fun listenMalSeries(current: SeriesWithInfo) = userViewModel.getUserMal { mal ->
-            userViewModel.getMalSeries(mal, current).distinctUntilChanged().launchAndCollect { preview ->
-                loadMalData(preview)
-            }
-        }
-
         loadSavedImage(Constants.getBurningSeriesLink(it).substringAfterLast('/'))?.let { imageLoader ->
             binding.banner.load<Drawable>(imageLoader) {
                 fitCenter()
@@ -286,8 +286,8 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
         lifecycleScope.launch(Dispatchers.IO) {
             burningSeriesViewModel.currentSeriesData?.let { current ->
-                listenAniListSeries(current)
-                listenMalSeries(current)
+                listenAniListSeries(current) { series -> loadAniListData(series) }
+                listenMalSeries(current) { series -> loadMalData(series) }
             }
         }
     }
@@ -413,6 +413,11 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 }
             }
         }
+
+        burningSeriesViewModel.currentSeriesData?.let { current ->
+            listenMalSeries(current) { series -> syncMalData(series) }
+            listenAniListSeries(current) { series -> syncAniListData(series) }
+        }
     }
 
     private fun favIconColorApply(isFav: Boolean): Unit = with(binding) {
@@ -534,6 +539,21 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         }
     }
 
+    private fun syncMalData(preview: AnimePreview?) = lifecycleScope.launch(Dispatchers.IO) {
+        preview?.let {
+            val currentSeries = burningSeriesViewModel.currentSeriesData
+            if (currentSeries != null) {
+                userViewModel.syncMalSeries(
+                    it,
+                    burningSeriesViewModel.currentSeriesEpisodes.map { ep -> ep.episode },
+                    burningSeriesViewModel.continueSeriesEpisode?.episode,
+                    currentSeries.currentSeasonIsFirst,
+                    currentSeries.currentSeasonIsLast
+                )
+            }
+        }
+    }
+
     private fun loadMalData(preview: AnimePreview?) = lifecycleScope.launch(Dispatchers.IO) {
         val defaultUrl = burningSeriesViewModel.currentSeriesData?.series?.image?.let {
             return@let Constants.getBurningSeriesLink(it)
@@ -545,12 +565,17 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
         loadAnimeProviderImage(malImageUrl, defaultUrl, saveName)
 
-        preview?.let {
+        syncMalData(preview)
+    }
+
+    private fun syncAniListData(medium: MediaQuery.Medium?) = lifecycleScope.launch(Dispatchers.IO) {
+        medium?.let {
             val currentSeries = burningSeriesViewModel.currentSeriesData
             if (currentSeries != null) {
-                userViewModel.syncMalSeries(
+                userViewModel.syncAniListSeries(
                     it,
-                    currentSeries.episodes.map { ep -> ep.episode },
+                    burningSeriesViewModel.currentSeriesEpisodes.map { ep -> ep.episode },
+                    burningSeriesViewModel.continueSeriesEpisode?.episode,
                     currentSeries.currentSeasonIsFirst,
                     currentSeries.currentSeasonIsLast
                 )
@@ -567,22 +592,13 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
         loadAnimeProviderImage(aniListImageUrl, defaultUrl, saveName)
 
-        medium?.let {
-            val currentSeries = burningSeriesViewModel.currentSeriesData
-            if (currentSeries != null) {
-                userViewModel.syncAniListSeries(
-                    it,
-                    currentSeries.episodes.map { ep -> ep.episode },
-                    currentSeries.currentSeasonIsFirst,
-                    currentSeries.currentSeasonIsLast
-                )
-            }
-        }
+        syncAniListData(medium)
     }
 
     private fun applyContinueFab() {
         extendedFab?.let { fab ->
-            val continueEpisodeNumber = burningSeriesViewModel.continueSeriesEpisode?.episode?.episodeNumberOrListNumber
+            val continueEpisode = burningSeriesViewModel.continueSeriesEpisode
+            val continueEpisodeNumber = continueEpisode?.episode?.episodeNumberOrListNumber
             fab.visibility = if (burningSeriesViewModel.currentSeriesEpisodes.isNullOrEmpty()) View.GONE else View.VISIBLE
             fab.text = if (continueEpisodeNumber != null) {
                 if (continueEpisodeNumber <= 1) {
@@ -595,7 +611,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             }
             fab.setIconResource(R.drawable.ic_baseline_play_arrow_24)
             fab.setOnClickListener {
-                burningSeriesViewModel.continueSeriesEpisode?.let { episode -> episodeRecyclerClick(episode) }
+                (burningSeriesViewModel.continueSeriesEpisode ?: continueEpisode)?.let { episode -> episodeRecyclerClick(episode) }
             }
             binding.selectSeason.nextFocusRightId = fab.id
         }
