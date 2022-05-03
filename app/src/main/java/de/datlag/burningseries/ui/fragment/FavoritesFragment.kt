@@ -2,11 +2,12 @@ package de.datlag.burningseries.ui.fragment
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.dolatkia.animatedThemeManager.AppTheme
 import com.ferfalk.simplesearchview.SimpleSearchView
@@ -16,6 +17,7 @@ import de.datlag.burningseries.adapter.FavoriteRecyclerAdapter
 import de.datlag.burningseries.common.isOrientation
 import de.datlag.burningseries.common.isTelevision
 import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.safeNavigate
 import de.datlag.burningseries.databinding.FragmentFavoritesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
@@ -57,7 +59,7 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
         favoritesRecycler.adapter = favoritesRecyclerAdapter
 
         favoritesRecyclerAdapter.setOnClickListener { item ->
-            findNavController().navigate(FavoritesFragmentDirections.actionFavoritesFragmentToSeriesFragment(seriesWithInfo = item))
+            findNavController().safeNavigate(FavoritesFragmentDirections.actionFavoritesFragmentToSeriesFragment(seriesWithInfo = item))
         }
     }
 

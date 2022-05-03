@@ -49,7 +49,7 @@ class OpenInBrowserDialog : BottomSheetDialogFragment() {
         if (navArgs.seriesWithInfo != null) {
             binding.hosterButton.show()
             binding.hosterButton.setOnClickListener {
-                findNavController().navigate(OpenInBrowserDialogDirections.actionOpenInBrowserDialogToScrapeHosterFragment(
+                findNavController().safeNavigate(OpenInBrowserDialogDirections.actionOpenInBrowserDialogToScrapeHosterFragment(
                     navArgs.href,
                     navArgs.seriesWithInfo!!
                 ))

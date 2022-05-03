@@ -12,6 +12,7 @@ import de.datlag.burningseries.R
 import de.datlag.burningseries.common.expand
 import de.datlag.burningseries.common.isTvOrLandscape
 import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.safeNavigate
 import de.datlag.burningseries.databinding.DialogWebviewErrorBinding
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -40,12 +41,12 @@ class WebViewErrorDialog : BottomSheetDialogFragment() {
 
         binding.text.text = safeContext.getString(R.string.error_loading_text, navArgs.href)
         binding.backButton.setOnClickListener {
-            findNavController().navigate(WebViewErrorDialogDirections.actionWebViewErrorDialogToSeriesFragment(
+            findNavController().safeNavigate(WebViewErrorDialogDirections.actionWebViewErrorDialogToSeriesFragment(
                 seriesWithInfo = navArgs.seriesWithInfo
             ))
         }
         binding.retryButton.setOnClickListener {
-            findNavController().navigate(WebViewErrorDialogDirections.actionWebViewErrorDialogToScrapeHosterFragment(
+            findNavController().safeNavigate(WebViewErrorDialogDirections.actionWebViewErrorDialogToScrapeHosterFragment(
                 navArgs.href,
                 navArgs.seriesWithInfo
             ))

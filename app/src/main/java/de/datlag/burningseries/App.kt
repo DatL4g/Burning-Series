@@ -33,12 +33,14 @@ class App : MultiDexApplication() {
 
 	override fun onCreate() {
 		super.onCreate()
-		applyDarkMode()
-		applyFont()
-		
+
 		if (BuildConfig.DEBUG) {
 			Timber.plant(Timber.DebugTree())
 		}
+
+		applyDarkMode()
+		applyFont()
+
 		Thread.setDefaultUncaughtExceptionHandler { _, exception ->
 			val logFile = File(filesDir, Constants.LOG_FILE)
 

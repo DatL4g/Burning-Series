@@ -76,7 +76,12 @@ abstract class AdvancedFragment : ThemeFragment {
 	}
 
 	fun loadFileSavedText(name: String): String? = if (checkFileValid(name)) {
-		safeActivity?.let { File(it.filesDir, name) }?.readText()
+		val file = safeActivity?.let { File(it.filesDir, name) }
+		if (file != null && file.exists() && file.canRead()) {
+			file.readText()
+		} else {
+			null
+		}
 	} else {
 		null
 	}
@@ -88,6 +93,13 @@ abstract class AdvancedFragment : ThemeFragment {
 		0L
 	}
 
+	fun clearTextFile(name: String) {
+		val file = safeActivity?.let { File(it.filesDir, name) }
+		if (file != null && file.exists() && file.canWrite()) {
+			file.writeText(String())
+		}
+	}
+
 	fun getBurningSeriesHosterCount() = m3oRepository.getBurningSeriesHosterCount().filterNotNull()
 
 	fun extendedFabFavorite(directions: NavDirections) {
@@ -96,7 +108,7 @@ abstract class AdvancedFragment : ThemeFragment {
 			fab.text = safeContext.getString(R.string.favorites)
 			fab.setIconResource(R.drawable.ic_baseline_favorite_24)
 			fab.setOnClickListener {
-				findNavController().navigate(directions)
+				findNavController().safeNavigate(directions)
 			}
 		}
 	}
@@ -192,5 +204,4 @@ abstract class AdvancedFragment : ThemeFragment {
 
 	val nextFab: FloatingActionButton?
 		get() = if (safeActivity is FABNavigation) (safeActivity as FABNavigation).nextFab else null
-
 }

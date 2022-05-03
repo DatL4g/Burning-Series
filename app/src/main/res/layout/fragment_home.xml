@@ -50,6 +50,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/episodesHeader" />
 
+        <com.nex3z.notificationbadge.NotificationBadge
+            android:id="@+id/settingsBadge"
+            fontPath="fonts/Poppins-Bold.ttf"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:visibility="gone"
+            app:nbMaxTextLength="2"
+            app:layout_constraintStart_toEndOf="@id/settingsButton"
+            app:layout_constraintTop_toTopOf="@id/settingsButton"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/latestEpisodeRecycler"
             android:layout_width="match_parent"

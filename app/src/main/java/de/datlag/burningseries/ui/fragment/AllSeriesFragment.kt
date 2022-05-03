@@ -1,11 +1,12 @@
 package de.datlag.burningseries.ui.fragment
 
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.dolatkia.animatedThemeManager.AppTheme
 import com.ferfalk.simplesearchview.SimpleSearchView
@@ -13,6 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.AllSeriesRecyclerAdapter
 import de.datlag.burningseries.common.hideLoadingDialog
+import de.datlag.burningseries.common.safeNavigate
 import de.datlag.burningseries.common.showLoadingDialog
 import de.datlag.burningseries.databinding.FragmentAllSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
@@ -82,12 +84,12 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
 
         allSeriesRecyclerAdapter.setOnClickListener { item ->
             if (item is GenreModel.GenreItem) {
-                findNavController().navigate(AllSeriesFragmentDirections.actionAllSeriesFragmentToSeriesFragment(genreItem = item))
+                findNavController().safeNavigate(AllSeriesFragmentDirections.actionAllSeriesFragmentToSeriesFragment(genreItem = item))
             }
         }
         allSeriesRecyclerAdapter.setOnLongClickListener { item ->
             if (item is GenreModel.GenreItem) {
-                findNavController().navigate(AllSeriesFragmentDirections.actionAllSeriesFragmentToOpenInBrowserDialog(
+                findNavController().safeNavigate(AllSeriesFragmentDirections.actionAllSeriesFragmentToOpenInBrowserDialog(
                     Constants.getBurningSeriesLink(item.href),
                     item.title
                 ))

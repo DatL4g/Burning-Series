@@ -10,10 +10,7 @@ import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.datlag.burningseries.R
-import de.datlag.burningseries.common.expand
-import de.datlag.burningseries.common.isTvOrLandscape
-import de.datlag.burningseries.common.openInBrowser
-import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.DialogStreamUnavailableBinding
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -41,7 +38,7 @@ class StreamUnavailableDialog : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.hosterButton.setOnClickListener {
-            findNavController().navigate(StreamUnavailableDialogDirections.actionStreamUnavailableDialogToScrapeHosterFragment(
+            findNavController().safeNavigate(StreamUnavailableDialogDirections.actionStreamUnavailableDialogToScrapeHosterFragment(
                 navArgs.bsUrl,
                 navArgs.seriesWithInfo
             ))
@@ -51,7 +48,7 @@ class StreamUnavailableDialog : BottomSheetDialogFragment() {
             navArgs.href.toUri().openInBrowser(safeContext)
         }
         binding.backButton.setOnClickListener {
-            findNavController().navigate(StreamUnavailableDialogDirections.actionStreamUnavailableDialogToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
+            findNavController().safeNavigate(StreamUnavailableDialogDirections.actionStreamUnavailableDialogToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
         }
     }
 }

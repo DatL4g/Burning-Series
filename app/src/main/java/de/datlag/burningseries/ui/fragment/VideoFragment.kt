@@ -5,7 +5,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
-import android.view.*
+import android.view.KeyEvent
+import android.view.TextureView
+import android.view.View
+import android.view.WindowManager
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -14,7 +17,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.dolatkia.animatedThemeManager.AppTheme
 import com.github.rubensousa.previewseekbar.PreviewLoader
@@ -30,6 +32,7 @@ import de.datlag.burningseries.R
 import de.datlag.burningseries.common.hideLoadingDialog
 import de.datlag.burningseries.common.safeActivity
 import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.safeNavigate
 import de.datlag.burningseries.databinding.FragmentVideoBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.helper.lazyMutable
@@ -140,7 +143,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         player.setPreviewImage(ImageLoader.create(getVideoFrame(-1L)))
 
         player.setOnBackPressed {
-            findNavController().navigate(VideoFragmentDirections.actionVideoFragmentToSeriesFragment(
+            findNavController().safeNavigate(VideoFragmentDirections.actionVideoFragmentToSeriesFragment(
                 seriesWithInfo = navArgs.seriesWithInfo
             ))
         }
@@ -295,7 +298,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         super.onPlaybackStateChanged(playbackState)
         if (playbackState == Player.STATE_ENDED && nextEpisodeInfo != null && nextEpisodeStreams.isNotEmpty()) {
             val sameHosterOrFirst = nextEpisodeStreams.firstOrNull { it.hoster.equals(navArgs.videoStream.hoster, true) } ?: nextEpisodeStreams.first()
-            findNavController().navigate(VideoFragmentDirections.actionVideoFragmentSelf(sameHosterOrFirst, navArgs.seriesWithInfo, nextEpisodeInfo!!.episode))
+            findNavController().safeNavigate(VideoFragmentDirections.actionVideoFragmentSelf(sameHosterOrFirst, navArgs.seriesWithInfo, nextEpisodeInfo!!.episode))
         }
     }
 
@@ -314,11 +317,13 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     private fun nextSourceOrDialog() {
         val currentSourcePos = videoViewModel.videoSourcePos.value
         if (currentSourcePos >= navArgs.videoStream.url.size - 1) {
-            findNavController().navigate(VideoFragmentDirections.actionVideoFragmentToStreamUnavailableDialog(
-                navArgs.seriesWithInfo,
-                navArgs.videoStream.defaultUrl,
-                episodeInfo.href
-            ))
+            if (view != null) {
+                findNavController().safeNavigate(VideoFragmentDirections.actionVideoFragmentToStreamUnavailableDialog(
+                    navArgs.seriesWithInfo,
+                    navArgs.videoStream.defaultUrl,
+                    episodeInfo.href
+                ))
+            }
         } else lifecycleScope.launch(Dispatchers.IO) {
             videoViewModel.videoSourcePos.emit(currentSourcePos + 1)
         }

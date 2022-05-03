@@ -12,6 +12,7 @@ import de.datlag.burningseries.R
 import de.datlag.burningseries.common.expand
 import de.datlag.burningseries.common.isTvOrLandscape
 import de.datlag.burningseries.common.safeContext
+import de.datlag.burningseries.common.safeNavigate
 import de.datlag.burningseries.databinding.DialogSaveScrapedBinding
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -47,7 +48,7 @@ class SaveScrapedDialog : BottomSheetDialogFragment() {
             dismiss()
         }
         binding.backButton.setOnClickListener {
-            findNavController().navigate(SaveScrapedDialogDirections.actionSaveScrapedDialogToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
+            findNavController().safeNavigate(SaveScrapedDialogDirections.actionSaveScrapedDialogToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
         }
     }
 

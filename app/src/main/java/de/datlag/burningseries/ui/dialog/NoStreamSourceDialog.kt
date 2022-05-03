@@ -11,6 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.expand
 import de.datlag.burningseries.common.isTvOrLandscape
+import de.datlag.burningseries.common.safeNavigate
 import de.datlag.burningseries.databinding.DialogNoStreamSourceBinding
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -41,7 +42,7 @@ class NoStreamSourceDialog : BottomSheetDialogFragment() {
             dismiss()
         }
         binding.hosterButton.setOnClickListener {
-            findNavController().navigate(NoStreamSourceDialogDirections.actionNoStreamSourceDialogToScrapeHosterFragment(navArgs.bsUrl, navArgs.seriesWithInfo))
+            findNavController().safeNavigate(NoStreamSourceDialogDirections.actionNoStreamSourceDialogToScrapeHosterFragment(navArgs.bsUrl, navArgs.seriesWithInfo))
         }
     }
 }

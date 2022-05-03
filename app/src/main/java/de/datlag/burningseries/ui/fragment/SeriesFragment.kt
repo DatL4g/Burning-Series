@@ -222,7 +222,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         }
 
         episodeRecyclerAdapter.setOnLongClickListener { item ->
-            findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToOpenInBrowserDialog(
+            findNavController().safeNavigate(SeriesFragmentDirections.actionSeriesFragmentToOpenInBrowserDialog(
                 Constants.getBurningSeriesLink(item.episode.href),
                 item.episode.title,
                 burningSeriesViewModel.currentSeriesData!!
@@ -380,7 +380,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             chipBackgroundColor = ColorStateList.valueOf(applyBackgroundColor)
             text = genre.trim()
             setOnClickListener {
-                findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToAllSeriesFragment(bestGenre(genre)))
+                findNavController().safeNavigate(SeriesFragmentDirections.actionSeriesFragmentToAllSeriesFragment(bestGenre(genre)))
             }
         })
     }
@@ -447,61 +447,71 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     private fun getVideoSources(episode: EpisodeInfo, list: List<Stream>) {
         videoViewModel.getVideoSources(list).launchAndCollect {
             hideLoadingDialog()
-            if (it.isEmpty()) {
-                findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
-                    burningSeriesViewModel.currentSeriesData!!,
-                    episode.href
-                ))
-            } else {
-                selectionBottomSheet<VideoStream> {
-                    dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
-                    title(safeContext.getString(R.string.select_hoster))
-                    titleColor(getCompatColor(R.color.defaultContentColor))
-                    list(it)
-                    itemBinder { item -> item.hoster }
-                    confirmText(safeContext.getString(R.string.watch))
-                    defaultItemFirst()
-                    defaultItemConfirmable()
-                    itemColor(getCompatColor(R.color.defaultContentColor))
-                    selectionColor(getCompatColor(R.color.defaultContentColor))
-                    selectionDrawable(getCompatDrawable(R.drawable.ic_baseline_play_arrow_24))
-                    confirmDisabledBackgroundColor(getCompatColor(android.R.color.transparent))
-                    confirmDisabledTextColor(getCompatColor(R.color.defaultContentColor))
-                    confirmBackgroundColor(getCompatColor(R.color.defaultContentColor))
-                    confirmTextColor(getCompatColor(R.color.defaultBackgroundColor))
-                    setExpandState(ExpandState.ExpandCustom { isTvOrLandscape() })
-                    confirmListener { item ->
-                        if (item != null) {
-                            findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(item, burningSeriesViewModel.currentSeriesData!!, episode))
+            val current = burningSeriesViewModel.currentSeriesData
+            if (view != null && current != null) {
+                if (it.isEmpty()) {
+                    findNavController().safeNavigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
+                        current,
+                        episode.href
+                    ))
+                } else {
+                    selectionBottomSheet<VideoStream> {
+                        dragIndicatorColor(getCompatColor(R.color.defaultContentColor))
+                        title(safeContext.getString(R.string.select_hoster))
+                        titleColor(getCompatColor(R.color.defaultContentColor))
+                        list(it)
+                        itemBinder { item -> item.hoster }
+                        confirmText(safeContext.getString(R.string.watch))
+                        defaultItemFirst()
+                        defaultItemConfirmable()
+                        itemColor(getCompatColor(R.color.defaultContentColor))
+                        selectionColor(getCompatColor(R.color.defaultContentColor))
+                        selectionDrawable(getCompatDrawable(R.drawable.ic_baseline_play_arrow_24))
+                        confirmDisabledBackgroundColor(getCompatColor(android.R.color.transparent))
+                        confirmDisabledTextColor(getCompatColor(R.color.defaultContentColor))
+                        confirmBackgroundColor(getCompatColor(R.color.defaultContentColor))
+                        confirmTextColor(getCompatColor(R.color.defaultBackgroundColor))
+                        setExpandState(ExpandState.ExpandCustom { isTvOrLandscape() })
+                        confirmListener { item ->
+                            if (item != null) {
+                                findNavController().safeNavigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(
+                                    item,
+                                    current,
+                                    episode
+                                ))
+                            }
                         }
-                    }
-                }.show(this@SeriesFragment)
+                    }.show(this@SeriesFragment)
+                }
             }
         }
     }
 
     private fun episodeRecyclerClick(item: EpisodeWithHoster) = burningSeriesViewModel.getStream(item.hoster).launchAndCollect {
-        when (it.status) {
-            Resource.Status.LOADING -> {
-                showLoadingDialog()
-            }
-            Resource.Status.ERROR -> {
-                hideLoadingDialog()
-                findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
-                    burningSeriesViewModel.currentSeriesData!!,
-                    item.episode.href
-                ))
-            }
-            Resource.Status.SUCCESS -> {
-                val list = it.data ?: listOf()
-                if (list.isEmpty()) {
+        val current = burningSeriesViewModel.currentSeriesData
+        if (view != null && current != null) {
+            when (it.status) {
+                Resource.Status.LOADING -> {
+                    showLoadingDialog()
+                }
+                Resource.Status.ERROR -> {
                     hideLoadingDialog()
-                    findNavController().navigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
+                    findNavController().safeNavigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
                         burningSeriesViewModel.currentSeriesData!!,
                         item.episode.href
                     ))
-                } else {
-                    getVideoSources(item.episode, list)
+                }
+                Resource.Status.SUCCESS -> {
+                    val list = it.data ?: listOf()
+                    if (list.isEmpty()) {
+                        hideLoadingDialog()
+                        findNavController().safeNavigate(SeriesFragmentDirections.actionSeriesFragmentToNoStreamSourceDialog(
+                            burningSeriesViewModel.currentSeriesData!!,
+                            item.episode.href
+                        ))
+                    } else {
+                        getVideoSources(item.episode, list)
+                    }
                 }
             }
         }

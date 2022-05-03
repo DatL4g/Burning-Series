@@ -162,6 +162,7 @@ dependencies {
     implementation("net.openid:appauth:0.11.1")
 
     implementation("com.github.DATL4G:Android-Animated-Theme-Manager:release-SNAPSHOT")
+    implementation("com.github.DATL4G:NotificationBadge:master-SNAPSHOT")
 }
 
 protobuf.protobuf.run {

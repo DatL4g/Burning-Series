@@ -77,13 +77,13 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
             settingsViewModel.updateUserAniListAuth(it)
         }
         binding.librariesCard.setOnClickListener {
-            findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToAboutLibraries())
+            findNavController().safeNavigate(SettingsFragmentDirections.actionSettingsFragmentToAboutLibraries())
         }
         binding.githubCard.setOnClickListener {
             Constants.GITHUB_PROJECT.toUri().openInBrowser(safeContext, safeContext.getString(R.string.github_project))
         }
         binding.syncCard.setOnClickListener {
-            findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToSyncFragment())
+            findNavController().safeNavigate(SettingsFragmentDirections.actionSettingsFragmentToSyncFragment())
         }
 
         val errorText = loadFileSavedText(Constants.LOG_FILE)?.trim()
@@ -110,7 +110,11 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
             } catch (ignored: Exception) {
                 binding.errorText.text = errorText
             }
-            binding.errorButton.setOnClickListener {
+            binding.errorClearButton.setOnClickListener {
+                clearTextFile(Constants.LOG_FILE)
+                binding.latestErrorCard.hide()
+            }
+            binding.errorCopyButton.setOnClickListener {
                 safeContext.copyToClipboard(safeContext.getString(R.string.error_copy_tag), errorText)
             }
             binding.latestErrorCard.show()
