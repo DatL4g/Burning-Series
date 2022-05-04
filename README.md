@@ -17,6 +17,10 @@ Watch any series or videos on [Burning Series](https://bs.to/) easily with this 
 You can see the latest series and episodes, get an overview of all available series, save your favorites and start watching directly inside the app.
 **You can't login to your [Burning Series](https://bs.to/) Account because it's not using an official API.** Read the [Important Notice](#important-notice) for more info.
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="60">](https://f-droid.org/packages/de.datlag.burningseries/)
+
 - [Important Notice](#important-notice)
 - [Motivation](#motivation)
 - [Used Technologies](#used-technologies)
