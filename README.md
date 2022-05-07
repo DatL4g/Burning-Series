@@ -17,6 +17,10 @@ Watch any series or videos on [Burning Series](https://bs.to/) easily with this 
 You can see the latest series and episodes, get an overview of all available series, save your favorites and start watching directly inside the app.
 **You can't login to your [Burning Series](https://bs.to/) Account because it's not using an official API.** Read the [Important Notice](#important-notice) for more info.
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="60">](https://f-droid.org/packages/de.datlag.burningseries/)
+
 - [Important Notice](#important-notice)
 - [Motivation](#motivation)
 - [Used Technologies](#used-technologies)
@@ -73,6 +77,8 @@ All Android smartphones with version >=5.0 (Lollipop and up) as well as Android 
 
 To install the app head over to the [Release Section](https://github.com/DATL4G/BurningSeries-Android/releases) and download the ```.apk``` file. For more advanced users is an ```.aab``` file provided which can be installed using [bundletool](https://developer.android.com/studio/command-line/bundletool).
 Installing the ```.apk``` file is easy, just copy it to your phone (or download it directly on your phone) and open it to install. If this won't work you can use [ADB](https://developer.android.com/studio/command-line/adb) sideloading to install it from your pc on your phone.
+
+You can also download the app from [F-Droid](https://f-droid.org/packages/de.datlag.burningseries/).
 
 Search on the internet if you face any problems. Don't ask for help here!
 
