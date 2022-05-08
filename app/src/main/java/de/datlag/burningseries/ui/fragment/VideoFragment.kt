@@ -36,6 +36,7 @@ import de.datlag.burningseries.common.safeNavigate
 import de.datlag.burningseries.databinding.FragmentVideoBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.helper.lazyMutable
+import de.datlag.burningseries.ui.connector.BackPressedDispatcher
 import de.datlag.burningseries.ui.connector.KeyEventDispatcher
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
@@ -61,7 +62,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @Obfuscate
-class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, Player.Listener, KeyEventDispatcher {
+class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, Player.Listener, KeyEventDispatcher, BackPressedDispatcher {
 
     private val navArgs: VideoFragmentArgs by navArgs()
     private val binding: FragmentVideoBinding by viewBinding()
@@ -143,6 +144,12 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         player.setPreviewImage(ImageLoader.create(getVideoFrame(-1L)))
 
         player.setOnBackPressed {
+            onBackPressed()
+        }
+    }
+
+    override fun onBackPressed() {
+        if (!binding.player.isLocked) {
             findNavController().safeNavigate(VideoFragmentDirections.actionVideoFragmentToSeriesFragment(
                 seriesWithInfo = navArgs.seriesWithInfo
             ))

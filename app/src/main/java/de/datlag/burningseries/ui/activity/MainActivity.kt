@@ -14,10 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.databinding.ActivityMainBinding
 import de.datlag.burningseries.extend.AdvancedActivity
-import de.datlag.burningseries.ui.connector.FABExtended
-import de.datlag.burningseries.ui.connector.FABNavigation
-import de.datlag.burningseries.ui.connector.KeyEventDispatcher
-import de.datlag.burningseries.ui.connector.StatusBarAlertProvider
+import de.datlag.burningseries.ui.connector.*
 import de.datlag.burningseries.ui.theme.ApplicationTheme
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -57,6 +54,10 @@ class MainActivity : AdvancedActivity(), FABExtended, StatusBarAlertProvider, FA
 
 	override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
 		return ((getCurrentNavFragment() as? KeyEventDispatcher?)?.dispatchKeyEvent(event) ?: false) || super.dispatchKeyEvent(event)
+	}
+
+	override fun onBackPressed() {
+		(getCurrentNavFragment() as? BackPressedDispatcher?)?.onBackPressed() ?: super.onBackPressed()
 	}
 
 	override val extendedFab: ExtendedFloatingActionButton

@@ -38,7 +38,10 @@ class BsPlayerView :
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    private val isLocked: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _isLocked: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isLocked: Boolean
+        get() = _isLocked.value
+
     private val isFullscreen: MutableStateFlow<Boolean> = MutableStateFlow(false)
     var fullscreenRestored: Boolean = false
     private var fullscreenListener: ((Boolean) -> Unit)? = null
@@ -92,14 +95,14 @@ class BsPlayerView :
     }
 
     override fun onVisibilityChange(visibility: Int) {
-        setLocked(isLocked.value)
+        setLocked(_isLocked.value)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_UP) {
             if (isControllerFullyVisible) {
                 hideController()
-                setLocked(isLocked.value)
+                setLocked(_isLocked.value)
             } else {
                 showController()
                 if (controlsBinding.exoPlay.isVisible) {
@@ -107,7 +110,7 @@ class BsPlayerView :
                 } else {
                     controlsBinding.exoPause.requestFocus()
                 }
-                setLocked(isLocked.value)
+                setLocked(_isLocked.value)
             }
             return false
         }
@@ -150,15 +153,15 @@ class BsPlayerView :
     }
 
     fun setLockState(locked: Boolean) {
-        isLocked.forceEmit(locked, getSafeScope())
+        _isLocked.forceEmit(locked, getSafeScope())
     }
 
     fun toggleLockState() {
-        setLockState(!isLocked.value)
+        setLockState(!_isLocked.value)
     }
 
     private fun listenLockState() = lifecycleOwner?.let {
-        isLocked.launchAndCollectIn(it) { value ->
+        _isLocked.launchAndCollectIn(it) { value ->
             setLocked(value)
         }
     }
@@ -168,8 +171,8 @@ class BsPlayerView :
     }
 
     fun setPreviewImage(image: ImageLoader, placeholder: Any? = null): Unit = with(controlsBinding) {
-        exoProgress.isEnabled = isLocked.value
-        exoProgress.isClickable = isLocked.value
+        exoProgress.isEnabled = _isLocked.value
+        exoProgress.isClickable = _isLocked.value
         imageView.load<Drawable>(image) {
             placeholder(placeholder ?: image)
             error(placeholder ?: image)
@@ -178,8 +181,8 @@ class BsPlayerView :
 
     fun setPreviewEnabled(enabled: Boolean): Unit = with((controlsBinding.exoProgress)) {
         isPreviewEnabled = enabled
-        isEnabled = isLocked.value
-        isClickable = isLocked.value
+        isEnabled = _isLocked.value
+        isClickable = _isLocked.value
     }
 
     fun setFullscreenListener(listener: (Boolean) -> Unit) {
@@ -297,7 +300,7 @@ class BsPlayerView :
         val save = try {
             SaveState(
                 state,
-                isLocked.value,
+                _isLocked.value,
                 isFullscreen.value,
                 fullscreenListener
             )
@@ -311,7 +314,7 @@ class BsPlayerView :
         super.onRestoreInstanceState(saveState?.superSaveState ?: state)
 
         saveState?.let { save ->
-            isLocked.forceEmit(save.isLocked, getSafeScope())
+            _isLocked.forceEmit(save.isLocked, getSafeScope())
             isFullscreen.forceEmit(save.isFullscreen, getSafeScope())
             fullscreenRestored = true
             if (fullscreenListener == null) {
