@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.datlag.burningseries.common.indexOfLastWithItem
+import de.datlag.burningseries.common.toMutableSharedFlow
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
 import de.datlag.model.burningseries.home.LatestEpisode
@@ -31,13 +32,13 @@ class BurningSeriesViewModel @Inject constructor(
 	var showedHelpImprove: Boolean = false
 
 	val homeData = repository.getHomeData()
-	private val _favorites: MutableSharedFlow<List<SeriesWithInfo>> = MutableSharedFlow()
+	private val _favorites: MutableSharedFlow<List<SeriesWithInfo>> = repository.getSeriesFavorites().toMutableSharedFlow(viewModelScope)
 	val favorites = _favorites.asSharedFlow()
 
 	val allSeriesCount: StateFlow<Long> = repository.getAllSeriesCount().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
 	private val _allSeriesPagination: MutableStateFlow<Long> = MutableStateFlow(0)
 	private val _allSeriesPaginated: MutableSharedFlow<Resource<List<GenreWithItems>>> = MutableSharedFlow()
-	private val _allSeriesPaginatedFlat: MutableSharedFlow<Pair<Boolean, List<GenreModel>>> = MutableSharedFlow()
+	private val _allSeriesPaginatedFlat: MutableSharedFlow<Pair<Boolean, List<GenreModel>>> = _allSeriesPaginated.mapNotNull { it.data?.flatMap { item -> item.toGenreModel() }?.let { list -> true to list } }.toMutableSharedFlow(viewModelScope)
 	val allSeriesPagination = _allSeriesPagination.asSharedFlow()
 	val allSeriesPaginatedFlat = _allSeriesPaginatedFlat.asSharedFlow()
 
@@ -148,15 +149,6 @@ class BurningSeriesViewModel @Inject constructor(
 		get() = _genres.value
 
 	private var fetchSeriesJob: Job? = null
-
-	init {
-		getAllFavorites()
-		viewModelScope.launch(Dispatchers.IO) {
-			_allSeriesPaginated.collect {
-				it.data?.flatMap { item -> item.toGenreModel() }?.let { items -> _allSeriesPaginatedFlat.emit(true to items) }
-			}
-		}
-	}
 
 	fun getAllGenres() = viewModelScope.launch(Dispatchers.IO) {
 		_genres.emitAll(repository.getAllGenres())
