@@ -54,11 +54,13 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
             burningSeriesViewModel.getNewPaginationData()
         }
         burningSeriesViewModel.allSeriesPaginatedFlat.launchAndCollect {
-            if (it.isEmpty() && burningSeriesViewModel.allSeriesCount.value == 0L) {
+            if (it.second.isEmpty() && burningSeriesViewModel.allSeriesCount.value == 0L) {
                 showLoadingDialog()
             } else {
-                showLoadingDialog()
-                allSeriesRecyclerAdapter.submitList(it) {
+                if (it.first) {
+                    showLoadingDialog()
+                }
+                allSeriesRecyclerAdapter.submitList(it.second) {
                     hideLoadingDialog()
                 }
                 binding.allSeriesRecycler.smoothScrollToPosition(0)

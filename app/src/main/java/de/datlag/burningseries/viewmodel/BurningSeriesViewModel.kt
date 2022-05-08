@@ -37,7 +37,7 @@ class BurningSeriesViewModel @Inject constructor(
 	val allSeriesCount: StateFlow<Long> = repository.getAllSeriesCount().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
 	private val _allSeriesPagination: MutableStateFlow<Long> = MutableStateFlow(0)
 	private val _allSeriesPaginated: MutableSharedFlow<Resource<List<GenreWithItems>>> = MutableSharedFlow()
-	private val _allSeriesPaginatedFlat: MutableSharedFlow<List<GenreModel>> = MutableSharedFlow()
+	private val _allSeriesPaginatedFlat: MutableSharedFlow<Pair<Boolean, List<GenreModel>>> = MutableSharedFlow()
 	val allSeriesPagination = _allSeriesPagination.asSharedFlow()
 	val allSeriesPaginatedFlat = _allSeriesPaginatedFlat.asSharedFlow()
 
@@ -153,7 +153,7 @@ class BurningSeriesViewModel @Inject constructor(
 		getAllFavorites()
 		viewModelScope.launch(Dispatchers.IO) {
 			_allSeriesPaginated.collect {
-				it.data?.flatMap { item -> item.toGenreModel() }?.let { items -> _allSeriesPaginatedFlat.emit(items) }
+				it.data?.flatMap { item -> item.toGenreModel() }?.let { items -> _allSeriesPaginatedFlat.emit(true to items) }
 			}
 		}
 	}
@@ -198,7 +198,9 @@ class BurningSeriesViewModel @Inject constructor(
 	}
 
 	fun searchAllSeries(title: String) = viewModelScope.launch(Dispatchers.IO) {
-		_allSeriesPaginatedFlat.emitAll(repository.searchAllSeries(title))
+		repository.searchAllSeries(title).collect {
+			_allSeriesPaginatedFlat.emit(false to it)
+		}
 	}
 
 	fun getAllFavorites() = viewModelScope.launch(Dispatchers.IO) {

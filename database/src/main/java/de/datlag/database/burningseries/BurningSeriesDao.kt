@@ -292,6 +292,8 @@ interface BurningSeriesDao {
     fun getAllSeriesCount(): Flow<Long>
 
     @Transaction
-    @Query("SELECT *, matchinfo(GenreItemFTS) as matchInfo FROM GenreItemTable AS item JOIN GenreItemFTS AS fts ON item.href = fts.href WHERE GenreItemFTS MATCH '*' || :query || '*'")
-    fun searchAllSeries(query: String): Flow<List<GenreItemWithMatchInfo>>
+    @Query("SELECT DISTINCT * FROM (SELECT item.title as title, item.href as href, item.genreId as genreId, item.genreItemId as genreItemId, matchinfo(GenreItemFTS) as matchInfo FROM GenreItemTable AS item " +
+            "INNER JOIN GenreItemFTS AS fts ON item.href = fts.href WHERE GenreItemFTS MATCH '*' || :matchQuery || '*'" +
+            "UNION ALL SELECT *, NULL as matchInfo FROM GenreItemTable WHERE title LIKE '%' || :matchQuery ||'%' OR title LIKE '%' || :likeQuery || '%') GROUP BY genreItemId")
+    fun searchAllSeries(matchQuery: String, likeQuery: String): Flow<List<GenreItemWithMatchInfo>>
 }

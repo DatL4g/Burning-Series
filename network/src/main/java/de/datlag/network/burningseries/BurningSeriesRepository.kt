@@ -327,14 +327,14 @@ class BurningSeriesRepository @Inject constructor(
 	fun getAllSeriesCount() = burningSeriesDao.getAllSeriesCount().flowOn(Dispatchers.IO)
 
 	fun searchAllSeries(title: String): Flow<List<GenreModel>> = flow<List<GenreModel>> {
-		emitAll(burningSeriesDao.searchAllSeries(escapeSearchQuery(title)).map {
+		emitAll(burningSeriesDao.searchAllSeries(escapeSearchQuery(title), title).map {
 			it.sortedWith(compareByDescending<GenreItemWithMatchInfo> { item ->
 				item.genreItem.title.equals(title, true).toInt()
 			}.thenByDescending { item ->
 				item.genreItem.title.startsWith(title, true).toInt()
 			}.thenByDescending { item ->
 				item.genreItem.title.contains(title, true).toInt()
-			}.thenByDescending { item -> item.matchInfo.calculateScore() }).map { item ->
+			}.thenByDescending { item -> item.matchInfo?.calculateScore() }).map { item ->
 				item.genreItem
 			}
 		})

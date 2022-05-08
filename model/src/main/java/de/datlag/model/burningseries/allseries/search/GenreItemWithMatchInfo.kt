@@ -8,7 +8,7 @@ import io.michaelrocks.paranoid.Obfuscate
 @Obfuscate
 data class GenreItemWithMatchInfo(
     @Embedded val genreItem: GenreModel.GenreItem,
-    @ColumnInfo(name = "matchInfo") val matchInfo: ByteArray
+    @ColumnInfo(name = "matchInfo") val matchInfo: ByteArray?
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
