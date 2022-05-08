@@ -182,10 +182,11 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		if (view != null && it != null) {
 			showSettingsBadgeWith(safeContext.getString(R.string.arrow_up), true)
 		}
+		val installedFromFDroid = this@HomeFragment.safeContext.isInstalledFromFDroid()
 		while (view != null && !gitHubViewModel.showedNewVersion && it != null) {
 			if (burningSeriesViewModel.showedHelpImprove) {
 				try {
-					findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToNewReleaseDialog(it))
+					findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToNewReleaseDialog(it, installedFromFDroid))
 					gitHubViewModel.showedNewVersion = true
 					break
 				} catch (ignored: Exception) { }

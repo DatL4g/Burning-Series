@@ -60,6 +60,9 @@ object Constants {
 
 	const val LOG_FILE = "burningseries.log"
 
+	const val F_DROID_PACKAGE_NAME = "org.fdroid.fdroid"
+	const val F_DROID_PACKAGES_URL = "${PROTOCOL_HTTPS}f-droid.org/packages/"
+
 	fun getBurningSeriesLink(href: String): String {
 		return if (!href.matches("^\\w+?://.*".toRegex())) {
 			if (!href.startsWith("/")) {

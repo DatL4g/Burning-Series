@@ -318,7 +318,11 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                 safeContext.getString(if (release.isPreRelease) R.string.yes else R.string.no)
             )
             binding.viewButton.setOnClickListener {
-                release.htmlUrl.toUri().openInBrowser(safeContext)
+                if (safeContext.isInstalledFromFDroid()) {
+                    "${Constants.F_DROID_PACKAGES_URL}/${safeContext.packageName}".toUri()
+                } else {
+                    release.htmlUrl.toUri()
+                }.openInBrowser(safeContext)
             }
         } else {
             binding.latestReleaseCard.hide()

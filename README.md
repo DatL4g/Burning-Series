@@ -1,7 +1,7 @@
 # BurningSeries-Android
 
 [![Issues](https://img.shields.io/github/issues/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/issues)
-[![Stars](https://img.shields.io/github/stars/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android)
+[![Stars](https://img.shields.io/github/stars/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/stargazers)
 [![Forks](https://img.shields.io/github/forks/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/network/members)
 [![Contributors](https://img.shields.io/github/contributors/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/graphs/contributors)
 [![License](https://img.shields.io/github/license/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/blob/master/LICENSE)

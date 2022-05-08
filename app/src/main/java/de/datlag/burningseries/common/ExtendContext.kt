@@ -9,11 +9,13 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.ColorStateList
 import android.content.res.Resources
+import android.os.Build
 import android.util.TypedValue
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.devs.readmoreoption.ReadMoreOption
+import de.datlag.model.Constants
 import io.michaelrocks.paranoid.Obfuscate
 import kotlin.math.round
 
@@ -37,4 +39,30 @@ fun colorStateListOf(vararg mapping: Pair<IntArray, Int>): ColorStateList {
 fun Context.copyToClipboard(description: String, text: String) {
     val clipBoardManager = this.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager?
     clipBoardManager?.setPrimaryClip(ClipData.newPlainText(description, text))
+}
+
+fun Context.isInstalledFromFDroid(): Boolean {
+    fun installerPackage(): String? {
+        return try {
+            this.packageManager.getInstallerPackageName(this.packageName)
+        } catch (ignored: Exception) {
+            null
+        }
+    }
+
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        try {
+            val sourceInfo = this.packageManager.getInstallSourceInfo(this.packageName)
+            when {
+                sourceInfo.initiatingPackageName?.equals(Constants.F_DROID_PACKAGE_NAME, true) == true -> true
+                sourceInfo.originatingPackageName?.equals(Constants.F_DROID_PACKAGE_NAME, true) == true -> true
+                sourceInfo.installingPackageName?.equals(Constants.F_DROID_PACKAGE_NAME, true) == true -> true
+                else -> false
+            }
+        } catch (ignored: Exception) {
+            installerPackage()?.equals(Constants.F_DROID_PACKAGE_NAME, true) ?: false
+        }
+    } else {
+        installerPackage()?.equals(Constants.F_DROID_PACKAGE_NAME, true) ?: false
+    }
 }

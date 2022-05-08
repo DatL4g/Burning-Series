@@ -307,6 +307,9 @@
         <argument
             android:name="release"
             app:argType="de.datlag.model.github.Release" />
+        <argument
+            android:name="installedFromFDroid"
+            app:argType="boolean" />
     </dialog>
     <fragment
         android:id="@+id/syncFragment"

@@ -15,6 +15,7 @@ import de.datlag.burningseries.common.isTvOrLandscape
 import de.datlag.burningseries.common.openInBrowser
 import de.datlag.burningseries.common.safeContext
 import de.datlag.burningseries.databinding.DialogNewReleaseBinding
+import de.datlag.model.Constants
 import io.michaelrocks.paranoid.Obfuscate
 
 @Obfuscate
@@ -48,7 +49,11 @@ class NewReleaseDialog : BottomSheetDialogFragment() {
         )
         binding.viewButton.setOnClickListener {
             dismiss()
-            navArgs.release.htmlUrl.toUri().openInBrowser(safeContext, safeContext.getString(R.string.new_release))
+            if (navArgs.installedFromFDroid) {
+                "${Constants.F_DROID_PACKAGES_URL}/${this.safeContext.packageName}".toUri()
+            } else {
+                navArgs.release.htmlUrl.toUri()
+            }.openInBrowser(safeContext, safeContext.getString(R.string.new_release))
         }
         binding.backButton.setOnClickListener {
             dismiss()
