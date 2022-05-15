@@ -5,17 +5,17 @@ import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
 import de.datlag.model.burningseries.allseries.search.GenreItemWithMatchInfo
 import de.datlag.model.burningseries.home.LatestEpisode
+import de.datlag.model.burningseries.home.LatestEpisodeInfoFlags
 import de.datlag.model.burningseries.home.LatestSeries
+import de.datlag.model.burningseries.home.relation.LatestEpisodeInfoFlagsCrossRef
+import de.datlag.model.burningseries.home.relation.LatestEpisodeWithInfoFlags
 import de.datlag.model.burningseries.series.*
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
 import de.datlag.model.burningseries.series.relation.SeriesWithEpisode
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 
 @Dao
 @Obfuscate
@@ -35,7 +35,38 @@ interface BurningSeriesDao {
 
     @Transaction
     @Query("SELECT * FROM LatestEpisodeTable")
-    fun getAllLatestEpisode(): Flow<List<LatestEpisode>>
+    fun getAllLatestEpisode(): Flow<List<LatestEpisodeWithInfoFlags>>
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLatestEpisodeInfoFlags(latestEpisodeInfoFlags: LatestEpisodeInfoFlags): Long
+
+    suspend fun addLatestEpisodeInfoFlags(latestEpisodeInfoFlags: LatestEpisodeInfoFlags): Long {
+        if (latestEpisodeInfoFlags.latestEpisodeInfoFlagsId > 0L) {
+            return latestEpisodeInfoFlags.latestEpisodeInfoFlagsId
+        }
+        val valueFlags = getLatestEpisodeInfoFlagsByClass(latestEpisodeInfoFlags.classNames).firstOrNull()
+        if (valueFlags != null && valueFlags.latestEpisodeInfoFlagsId > 0L) {
+            return valueFlags.latestEpisodeInfoFlagsId
+        }
+        return insertLatestEpisodeInfoFlags(latestEpisodeInfoFlags)
+    }
+
+    @Transaction
+    @Delete
+    suspend fun deleteLatestEpisodeInfoFlags(latestEpisodeInfoFlags: LatestEpisodeInfoFlags)
+
+    @Transaction
+    @Query("SELECT * FROM LatestEpisodeInfoFlagsTable WHERE classNames = :classNames LIMIT 1")
+    fun getLatestEpisodeInfoFlagsByClass(classNames: String): Flow<LatestEpisodeInfoFlags>
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLatestEpisodeInfoFlagsCrossRef(latestEpisodeInfoFlagsCrossRef: LatestEpisodeInfoFlagsCrossRef)
+
+    @Transaction
+    @Delete
+    suspend fun deleteLatestEpisodeInfoFlagsCrossRef(latestEpisodeInfoFlagsCrossRef: LatestEpisodeInfoFlagsCrossRef)
 
 
 
@@ -135,7 +166,7 @@ interface BurningSeriesDao {
         if (languageData.languageId > 0L) {
             return languageData.languageId
         }
-        val valueLang = getLanguageDataByValue(languageData.value).first()
+        val valueLang = getLanguageDataByValue(languageData.value).firstOrNull()
         if (valueLang != null && valueLang.languageId > 0L) {
             return valueLang.languageId
         }

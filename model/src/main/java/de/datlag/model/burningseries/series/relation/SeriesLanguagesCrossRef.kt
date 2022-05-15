@@ -1,6 +1,7 @@
 package de.datlag.model.burningseries.series.relation
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import io.michaelrocks.paranoid.Obfuscate
@@ -19,6 +20,6 @@ import kotlinx.serialization.Serializable
 )
 @Obfuscate
 data class SeriesLanguagesCrossRef(
-    val seriesId: Long,
-    val languageId: Long
+    @ColumnInfo(name = "seriesId") val seriesId: Long,
+    @ColumnInfo(name = "languageId") val languageId: Long
 ) : Parcelable

@@ -10,6 +10,8 @@ import de.datlag.model.burningseries.allseries.search.GenreItemWithMatchInfo
 import de.datlag.model.burningseries.home.HomeData
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
+import de.datlag.model.burningseries.home.relation.LatestEpisodeInfoFlagsCrossRef
+import de.datlag.model.burningseries.home.relation.LatestEpisodeWithInfoFlags
 import de.datlag.model.burningseries.series.*
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
@@ -39,7 +41,15 @@ class BurningSeriesRepository @Inject constructor(
 		emit(Resource.loading(if (firstOrNullEpisodes.isNullOrEmpty() || firstOrNullSeries.isNullOrEmpty()) {
 			null
 		} else {
-			HomeData(firstOrNullEpisodes, firstOrNullSeries)
+			HomeData(firstOrNullEpisodes.map {
+				LatestEpisode(
+					it.latestEpisode.title,
+					it.latestEpisode.href,
+					it.latestEpisode.infoText,
+					it.latestEpisode.updatedAt,
+					it.infoFlags
+				)
+			}, firstOrNullSeries)
 		}))
 		val scrapeData = scraper.scrapeHomeData()
 
@@ -50,8 +60,8 @@ class BurningSeriesRepository @Inject constructor(
 			val currentRequest = Clock.System.now().epochSeconds
 			networkBoundResource(
 				fetchFromLocal = {
-					flow<Pair<List<LatestEpisode>, List<LatestSeries>>> {
-						val emitEpisodes: MutableList<LatestEpisode> = burningSeriesDao.getAllLatestEpisode().first().toMutableList()
+					flow<Pair<List<LatestEpisodeWithInfoFlags>, List<LatestSeries>>> {
+						val emitEpisodes: MutableList<LatestEpisodeWithInfoFlags> = burningSeriesDao.getAllLatestEpisode().first().toMutableList()
 						val emitSeries: MutableList<LatestSeries> = burningSeriesDao.getAllLatestSeries().first().toMutableList()
 						emit(Pair(emitEpisodes, emitSeries))
 
@@ -77,7 +87,7 @@ class BurningSeriesRepository @Inject constructor(
 				},
 				shouldFetchFromRemote = {
 					it == null || it.first.isNullOrEmpty() || it.second.isNullOrEmpty() || it.first.any { episode ->
-						currentRequest - Constants.DAY_IN_MILLI >= episode.updatedAt
+						currentRequest - Constants.DAY_IN_MILLI >= episode.latestEpisode.updatedAt
 					} || it.second.any { series ->
 						currentRequest - Constants.DAY_IN_MILLI >= series.updatedAt
 					}
@@ -94,12 +104,28 @@ class BurningSeriesRepository @Inject constructor(
 				when (it.status) {
 					Resource.Status.LOADING -> {
 						if (it.data != null) {
-							emit(Resource.loading(HomeData(it.data!!.first, it.data!!.second)))
+							emit(Resource.loading(HomeData(it.data!!.first.map { episode ->
+								LatestEpisode(
+									episode.latestEpisode.title,
+									episode.latestEpisode.href,
+									episode.latestEpisode.infoText,
+									episode.latestEpisode.updatedAt,
+									episode.infoFlags
+								)
+							}, it.data!!.second)))
 						}
 					}
 					Resource.Status.SUCCESS -> {
 						if (it.data != null) {
-							emit(Resource.success(HomeData(it.data!!.first, it.data!!.second)))
+							emit(Resource.success(HomeData(it.data!!.first.map { episode ->
+								LatestEpisode(
+									episode.latestEpisode.title,
+									episode.latestEpisode.href,
+									episode.latestEpisode.infoText,
+									episode.latestEpisode.updatedAt,
+									episode.infoFlags
+								)
+							}, it.data!!.second)))
 						}
 					}
 					Resource.Status.ERROR -> emit(Resource.error<HomeData>(it.message ?: String()))
@@ -112,11 +138,26 @@ class BurningSeriesRepository @Inject constructor(
 		burningSeriesDao.deleteAllLatestEpisode()
 		burningSeriesDao.deleteAllLatestSeries()
 
-		home.latestEpisodes.forEach {
-			burningSeriesDao.insertLatestEpisode(it)
-		}
-		home.latestSeries.forEach {
-			burningSeriesDao.insertLatestSeries(it)
+		coroutineScope {
+			home.latestEpisodes.map {
+				async(Dispatchers.IO) {
+					val latestEpisodeId = burningSeriesDao.insertLatestEpisode(it)
+
+					it.infoFlags.map { infoFlags ->
+						async(Dispatchers.IO) {
+							val latestEpisodeInfoFlagsId = burningSeriesDao.addLatestEpisodeInfoFlags(infoFlags)
+							burningSeriesDao.insertLatestEpisodeInfoFlagsCrossRef(
+								LatestEpisodeInfoFlagsCrossRef(latestEpisodeId, latestEpisodeInfoFlagsId)
+							)
+						}
+					}.awaitAll()
+				}
+			}.awaitAll()
+			home.latestSeries.map {
+				async(Dispatchers.IO) {
+					burningSeriesDao.insertLatestSeries(it)
+				}
+			}.awaitAll()
 		}
 	}
 

@@ -5,6 +5,7 @@ import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.home.HomeData
 import de.datlag.model.burningseries.home.LatestEpisode
+import de.datlag.model.burningseries.home.LatestEpisodeInfoFlags
 import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.*
 import de.datlag.network.common.getHref
@@ -12,6 +13,7 @@ import de.datlag.network.common.getSrc
 import de.datlag.network.common.getTitle
 import de.datlag.network.common.getValue
 import io.michaelrocks.paranoid.Obfuscate
+import kotlinx.datetime.Clock
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -35,9 +37,23 @@ class BurningSeriesScraper {
         latestEpisodesElements.forEach {
             val episodeTitle = it.selectFirst("li a")?.getTitle() ?: String()
             val episodeHref = it.selectFirst("li a")?.getHref() ?: String()
+            val episodeInfo = it.selectFirst("li .info")?.text() ?: String()
+            val episodeInfoFlagsElements = it.select("li .info i")
+            val episodeInfoFlags: MutableList<LatestEpisodeInfoFlags> = mutableListOf()
+            episodeInfoFlagsElements.forEach { infoFlags ->
+                val flagClass = infoFlags.selectFirst("i")?.className() ?: String()
+                val flagTitle = infoFlags.selectFirst("i")?.getTitle() ?: String()
+                episodeInfoFlags.add(LatestEpisodeInfoFlags(flagClass, flagTitle))
+            }
 
             if (episodeTitle.isNotEmpty() && episodeHref.isNotEmpty()) {
-                latestEpisodes.add(LatestEpisode(episodeTitle, episodeHref))
+                latestEpisodes.add(LatestEpisode(
+                    episodeTitle,
+                    episodeHref,
+                    episodeInfo,
+                    Clock.System.now().epochSeconds,
+                    episodeInfoFlags
+                ))
             }
         }
         latestSeriesElements.forEach {

@@ -1,0 +1,897 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 6,
+    "identityHash": "481355b5c4d87646bd8f8bda500ccc85",
+    "entities": [
+      {
+        "tableName": "LatestEpisodeTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `href` TEXT NOT NULL, `info` TEXT NOT NULL DEFAULT '', `updatedAt` INTEGER NOT NULL, `latestEpisodeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "href",
+            "columnName": "href",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "infoText",
+            "columnName": "info",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latestEpisodeId",
+            "columnName": "latestEpisodeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "latestEpisodeId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_LatestEpisodeTable_latestEpisodeId",
+            "unique": false,
+            "columnNames": [
+              "latestEpisodeId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LatestEpisodeTable_latestEpisodeId` ON `${TABLE_NAME}` (`latestEpisodeId`)"
+          },
+          {
+            "name": "index_LatestEpisodeTable_href",
+            "unique": true,
+            "columnNames": [
+              "href"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_LatestEpisodeTable_href` ON `${TABLE_NAME}` (`href`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "LatestSeriesTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `href` TEXT NOT NULL, `updatedAt` INTEGER NOT NULL, `latestSeriesId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "href",
+            "columnName": "href",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latestSeriesId",
+            "columnName": "latestSeriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "latestSeriesId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_LatestSeriesTable_latestSeriesId",
+            "unique": false,
+            "columnNames": [
+              "latestSeriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LatestSeriesTable_latestSeriesId` ON `${TABLE_NAME}` (`latestSeriesId`)"
+          },
+          {
+            "name": "index_LatestSeriesTable_href",
+            "unique": true,
+            "columnNames": [
+              "href"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_LatestSeriesTable_href` ON `${TABLE_NAME}` (`href`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "LatestEpisodeInfoFlagsTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`classNames` TEXT NOT NULL, `title` TEXT NOT NULL, `latestEpisodeInfoFlagsId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "classNames",
+            "columnName": "classNames",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latestEpisodeInfoFlagsId",
+            "columnName": "latestEpisodeInfoFlagsId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "latestEpisodeInfoFlagsId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_LatestEpisodeInfoFlagsTable_latestEpisodeInfoFlagsId",
+            "unique": false,
+            "columnNames": [
+              "latestEpisodeInfoFlagsId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LatestEpisodeInfoFlagsTable_latestEpisodeInfoFlagsId` ON `${TABLE_NAME}` (`latestEpisodeInfoFlagsId`)"
+          },
+          {
+            "name": "index_LatestEpisodeInfoFlagsTable_classNames",
+            "unique": true,
+            "columnNames": [
+              "classNames"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_LatestEpisodeInfoFlagsTable_classNames` ON `${TABLE_NAME}` (`classNames`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "SeriesTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `season` TEXT NOT NULL, `description` TEXT NOT NULL, `image` TEXT NOT NULL, `hrefTitle` TEXT NOT NULL, `href` TEXT NOT NULL, `updatedAt` INTEGER NOT NULL, `favoriteSince` INTEGER NOT NULL, `selectedLanguage` TEXT NOT NULL, `seriesId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "season",
+            "columnName": "season",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "image",
+            "columnName": "image",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hrefTitle",
+            "columnName": "hrefTitle",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "href",
+            "columnName": "href",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "favoriteSince",
+            "columnName": "favoriteSince",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selectedLanguage",
+            "columnName": "selectedLanguage",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "seriesId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_SeriesTable_seriesId",
+            "unique": false,
+            "columnNames": [
+              "seriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SeriesTable_seriesId` ON `${TABLE_NAME}` (`seriesId`)"
+          },
+          {
+            "name": "index_SeriesTable_hrefTitle",
+            "unique": true,
+            "columnNames": [
+              "hrefTitle"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_SeriesTable_hrefTitle` ON `${TABLE_NAME}` (`hrefTitle`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "InfoTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`header` TEXT NOT NULL, `data` TEXT NOT NULL, `seriesId` INTEGER NOT NULL, `infoId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`seriesId`) REFERENCES `SeriesTable`(`seriesId`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "header",
+            "columnName": "header",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data",
+            "columnName": "data",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "infoId",
+            "columnName": "infoId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "infoId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_InfoTable_infoId",
+            "unique": false,
+            "columnNames": [
+              "infoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_InfoTable_infoId` ON `${TABLE_NAME}` (`infoId`)"
+          },
+          {
+            "name": "index_InfoTable_seriesId",
+            "unique": false,
+            "columnNames": [
+              "seriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_InfoTable_seriesId` ON `${TABLE_NAME}` (`seriesId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "SeriesTable",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "seriesId"
+            ],
+            "referencedColumns": [
+              "seriesId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "SeasonTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `value` INTEGER NOT NULL, `seriesId` INTEGER NOT NULL, `seasonId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`seriesId`) REFERENCES `SeriesTable`(`seriesId`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "seasonId",
+            "columnName": "seasonId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "seasonId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_SeasonTable_seasonId",
+            "unique": false,
+            "columnNames": [
+              "seasonId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SeasonTable_seasonId` ON `${TABLE_NAME}` (`seasonId`)"
+          },
+          {
+            "name": "index_SeasonTable_seriesId",
+            "unique": false,
+            "columnNames": [
+              "seriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SeasonTable_seriesId` ON `${TABLE_NAME}` (`seriesId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "SeriesTable",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "seriesId"
+            ],
+            "referencedColumns": [
+              "seriesId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "LanguageTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`value` TEXT NOT NULL, `text` TEXT NOT NULL, `languageId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text",
+            "columnName": "text",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "languageId",
+            "columnName": "languageId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "languageId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_LanguageTable_languageId",
+            "unique": false,
+            "columnNames": [
+              "languageId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LanguageTable_languageId` ON `${TABLE_NAME}` (`languageId`)"
+          },
+          {
+            "name": "index_LanguageTable_value",
+            "unique": true,
+            "columnNames": [
+              "value"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_LanguageTable_value` ON `${TABLE_NAME}` (`value`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "EpisodeInfoTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`number` TEXT NOT NULL, `title` TEXT NOT NULL, `href` TEXT NOT NULL, `seriesId` INTEGER NOT NULL, `currentWatchPos` INTEGER NOT NULL DEFAULT 0, `totalWatchPos` INTEGER NOT NULL DEFAULT 0, `episodeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`seriesId`) REFERENCES `SeriesTable`(`seriesId`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "number",
+            "columnName": "number",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "href",
+            "columnName": "href",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "currentWatchPos",
+            "columnName": "currentWatchPos",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "totalWatchPos",
+            "columnName": "totalWatchPos",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "episodeId",
+            "columnName": "episodeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "episodeId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_EpisodeInfoTable_episodeId",
+            "unique": false,
+            "columnNames": [
+              "episodeId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_EpisodeInfoTable_episodeId` ON `${TABLE_NAME}` (`episodeId`)"
+          },
+          {
+            "name": "index_EpisodeInfoTable_seriesId",
+            "unique": false,
+            "columnNames": [
+              "seriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_EpisodeInfoTable_seriesId` ON `${TABLE_NAME}` (`seriesId`)"
+          },
+          {
+            "name": "index_EpisodeInfoTable_href",
+            "unique": true,
+            "columnNames": [
+              "href"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_EpisodeInfoTable_href` ON `${TABLE_NAME}` (`href`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "SeriesTable",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "seriesId"
+            ],
+            "referencedColumns": [
+              "seriesId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "HosterTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `href` TEXT NOT NULL, `episodeId` INTEGER NOT NULL, `hosterId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`episodeId`) REFERENCES `EpisodeInfoTable`(`episodeId`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "href",
+            "columnName": "href",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "episodeId",
+            "columnName": "episodeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hosterId",
+            "columnName": "hosterId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "hosterId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_HosterTable_hosterId",
+            "unique": false,
+            "columnNames": [
+              "hosterId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_HosterTable_hosterId` ON `${TABLE_NAME}` (`hosterId`)"
+          },
+          {
+            "name": "index_HosterTable_episodeId",
+            "unique": false,
+            "columnNames": [
+              "episodeId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_HosterTable_episodeId` ON `${TABLE_NAME}` (`episodeId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "EpisodeInfoTable",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "episodeId"
+            ],
+            "referencedColumns": [
+              "episodeId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "GenreTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`genre` TEXT NOT NULL, `updatedAt` INTEGER NOT NULL, `genreId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "genre",
+            "columnName": "genre",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "genreId",
+            "columnName": "genreId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "genreId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_GenreTable_genreId",
+            "unique": false,
+            "columnNames": [
+              "genreId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_GenreTable_genreId` ON `${TABLE_NAME}` (`genreId`)"
+          },
+          {
+            "name": "index_GenreTable_genre",
+            "unique": true,
+            "columnNames": [
+              "genre"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_GenreTable_genre` ON `${TABLE_NAME}` (`genre`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "GenreItemTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `href` TEXT NOT NULL, `genreId` INTEGER NOT NULL, `genreItemId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`genreId`) REFERENCES `GenreTable`(`genreId`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "href",
+            "columnName": "href",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "genreId",
+            "columnName": "genreId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "genreItemId",
+            "columnName": "genreItemId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "genreItemId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_GenreItemTable_genreItemId",
+            "unique": false,
+            "columnNames": [
+              "genreItemId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_GenreItemTable_genreItemId` ON `${TABLE_NAME}` (`genreItemId`)"
+          },
+          {
+            "name": "index_GenreItemTable_genreId",
+            "unique": false,
+            "columnNames": [
+              "genreId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_GenreItemTable_genreId` ON `${TABLE_NAME}` (`genreId`)"
+          },
+          {
+            "name": "index_GenreItemTable_href",
+            "unique": true,
+            "columnNames": [
+              "href"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_GenreItemTable_href` ON `${TABLE_NAME}` (`href`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "GenreTable",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "genreId"
+            ],
+            "referencedColumns": [
+              "genreId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "SeriesLanguagesCrossTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`seriesId` INTEGER NOT NULL, `languageId` INTEGER NOT NULL, PRIMARY KEY(`seriesId`, `languageId`))",
+        "fields": [
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "languageId",
+            "columnName": "languageId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "seriesId",
+            "languageId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_SeriesLanguagesCrossTable_seriesId",
+            "unique": false,
+            "columnNames": [
+              "seriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SeriesLanguagesCrossTable_seriesId` ON `${TABLE_NAME}` (`seriesId`)"
+          },
+          {
+            "name": "index_SeriesLanguagesCrossTable_languageId",
+            "unique": false,
+            "columnNames": [
+              "languageId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SeriesLanguagesCrossTable_languageId` ON `${TABLE_NAME}` (`languageId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "LatestEpisodeInfoFlagsCrossRef",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`latestEpisodeId` INTEGER NOT NULL, `latestEpisodeInfoFlagsId` INTEGER NOT NULL, PRIMARY KEY(`latestEpisodeId`, `latestEpisodeInfoFlagsId`))",
+        "fields": [
+          {
+            "fieldPath": "latestEpisodeId",
+            "columnName": "latestEpisodeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latestEpisodeInfoFlagsId",
+            "columnName": "latestEpisodeInfoFlagsId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "latestEpisodeId",
+            "latestEpisodeInfoFlagsId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_LatestEpisodeInfoFlagsCrossRef_latestEpisodeId",
+            "unique": false,
+            "columnNames": [
+              "latestEpisodeId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LatestEpisodeInfoFlagsCrossRef_latestEpisodeId` ON `${TABLE_NAME}` (`latestEpisodeId`)"
+          },
+          {
+            "name": "index_LatestEpisodeInfoFlagsCrossRef_latestEpisodeInfoFlagsId",
+            "unique": false,
+            "columnNames": [
+              "latestEpisodeInfoFlagsId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LatestEpisodeInfoFlagsCrossRef_latestEpisodeInfoFlagsId` ON `${TABLE_NAME}` (`latestEpisodeInfoFlagsId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "ftsVersion": "FTS4",
+        "ftsOptions": {
+          "tokenizer": "porter",
+          "tokenizerArgs": [],
+          "contentTable": "GenreItemTable",
+          "languageIdColumnName": "",
+          "matchInfo": "FTS4",
+          "notIndexedColumns": [],
+          "prefixSizes": [],
+          "preferredOrder": "ASC"
+        },
+        "contentSyncTriggers": [
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_GenreItemFTS_BEFORE_UPDATE BEFORE UPDATE ON `GenreItemTable` BEGIN DELETE FROM `GenreItemFTS` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_GenreItemFTS_BEFORE_DELETE BEFORE DELETE ON `GenreItemTable` BEGIN DELETE FROM `GenreItemFTS` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_GenreItemFTS_AFTER_UPDATE AFTER UPDATE ON `GenreItemTable` BEGIN INSERT INTO `GenreItemFTS`(`docid`, `title`, `href`) VALUES (NEW.`rowid`, NEW.`title`, NEW.`href`); END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_GenreItemFTS_AFTER_INSERT AFTER INSERT ON `GenreItemTable` BEGIN INSERT INTO `GenreItemFTS`(`docid`, `title`, `href`) VALUES (NEW.`rowid`, NEW.`title`, NEW.`href`); END"
+        ],
+        "tableName": "GenreItemFTS",
+        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`title` TEXT NOT NULL, `href` TEXT NOT NULL, tokenize=porter, content=`GenreItemTable`)",
+        "fields": [
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "href",
+            "columnName": "href",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '481355b5c4d87646bd8f8bda500ccc85')"
+    ]
+  }
+}

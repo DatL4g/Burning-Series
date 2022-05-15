@@ -8,7 +8,9 @@ import de.datlag.database.Converters
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.search.GenreItemFTS
 import de.datlag.model.burningseries.home.LatestEpisode
+import de.datlag.model.burningseries.home.LatestEpisodeInfoFlags
 import de.datlag.model.burningseries.home.LatestSeries
+import de.datlag.model.burningseries.home.relation.LatestEpisodeInfoFlagsCrossRef
 import de.datlag.model.burningseries.series.*
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
 import io.michaelrocks.paranoid.Obfuscate
@@ -17,6 +19,7 @@ import io.michaelrocks.paranoid.Obfuscate
 	entities = [
 		LatestEpisode::class,
 		LatestSeries::class,
+		LatestEpisodeInfoFlags::class,
 
 		SeriesData::class,
 		InfoData::class,
@@ -29,14 +32,16 @@ import io.michaelrocks.paranoid.Obfuscate
 		GenreModel.GenreItem::class,
 
 		SeriesLanguagesCrossRef::class,
+		LatestEpisodeInfoFlagsCrossRef::class,
 
 		GenreItemFTS::class
 	],
-	version = 5,
+	version = 6,
 	exportSchema = true,
 	autoMigrations = [
 		AutoMigration(from = 1, to = 2),
-		AutoMigration(from = 4, to = 5)
+		AutoMigration(from = 4, to = 5),
+		AutoMigration(from = 5, to = 6)
 	]
 )
 @TypeConverters(Converters::class)

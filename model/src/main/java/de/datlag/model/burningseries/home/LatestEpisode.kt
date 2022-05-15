@@ -1,11 +1,9 @@
 package de.datlag.model.burningseries.home
 
 import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 import de.datlag.model.burningseries.common.encodeToHref
+import de.datlag.model.burningseries.series.LanguageData
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.datetime.Clock
 import kotlinx.parcelize.IgnoredOnParcel
@@ -26,13 +24,22 @@ import kotlinx.serialization.Serializable
 data class LatestEpisode(
 	@ColumnInfo(name = "title") @SerialName("title") val title: String = String(),
 	@ColumnInfo(name = "href") @SerialName("href") val href: String = String(),
-	@ColumnInfo(name = "updatedAt") var updatedAt: Long = Clock.System.now().epochSeconds
+	@ColumnInfo(name = "info", defaultValue = "") @SerialName("infoText") val infoText: String = String(),
+	@ColumnInfo(name = "updatedAt") var updatedAt: Long = Clock.System.now().epochSeconds,
+	@Ignore @SerialName("infoFlags") val infoFlags: List<LatestEpisodeInfoFlags>
 ) : Parcelable {
 
 	@PrimaryKey(autoGenerate = true)
 	@IgnoredOnParcel
 	@ColumnInfo(name = "latestEpisodeId")
 	var latestEpisodeId: Long = 0L
+
+	constructor(
+		title: String = String(),
+		href: String = String(),
+		infoText: String = String(),
+		updatedAt: Long = Clock.System.now().epochSeconds,
+	) : this(title, href, infoText, updatedAt, listOf())
 
 	fun getEpisodeAndSeries(): Pair<String, String> {
 		val match = Regex(

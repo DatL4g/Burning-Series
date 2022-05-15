@@ -28,7 +28,7 @@ object Constants {
 	const val BS_TO_HEADER = "${API_BS_TO_BASE}/public/images/header.png"
 	const val URL_ADBLOCK_LIST = "https://raw.githubusercontent.com/Openadblockserverlist/adblockserverlist/master/adblockserverlist.txt"
 
-	const val API_WRAP_API_HOME_VERSION = "0.1.0"
+	const val API_WRAP_API_HOME_VERSION = "0.2.1"
 	const val API_WRAP_API_ALL_VERSION = "0.1.1"
 	const val API_WRAP_API_SERIES_VERSION = "0.2.6"
 	const val API_WRAP_API_DOWNLOAD_VIDEO = "0.1.2"

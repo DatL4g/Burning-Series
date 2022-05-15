@@ -71,7 +71,7 @@ class LatestEpisodeRecyclerAdapter(private val belowFocusViewId: Int) : ClickRec
 			binding.icon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(it.defaultContentColor(binding.icon.context), BlendModeCompat.SRC_IN)
 		}
 
-		binding.title.text = title
+		binding.title.text = "$title ${item.infoText} ${item.infoFlags.size}"
 		binding.text.text = text
 		if (position == differ.currentList.size - 1) {
 			binding.card.nextFocusDownId = belowFocusViewId
