@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/primaryLightColor</item>
@@ -19,12 +19,12 @@
         <item name="tint">@color/defaultContentColor</item>
     </style>
 
-    <style name="BottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
+    <style name="BottomSheetStyle" parent="Widget.Material3.BottomSheet.Modal">
         <item name="android:backgroundTint">@color/bottomSheetBackground</item>
         <item name="backgroundTint">@color/bottomSheetBackground</item>
     </style>
 
-    <style name="Widget.DialogSelection.Indicator" parent="@style/Widget.MaterialComponents.CardView">
+    <style name="Widget.Dialog.Indicator" parent="@style/Widget.Material3.CardView.Filled">
         <item name="cardBackgroundColor">@color/defaultContentColor</item>
     </style>
 </resources>

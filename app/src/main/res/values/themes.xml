@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/primaryLightColor</item>
@@ -19,7 +19,7 @@
         <item name="tint">@color/defaultContentColor</item>
     </style>
 
-    <style name="BottomSheetDialog" parent="Theme.MaterialComponents.BottomSheetDialog">
+    <style name="BottomSheetDialog" parent="Theme.Material3.DayNight.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
         <item name="shapeAppearanceLargeComponent">@style/RoundedBottomSheetComponent</item>
         <item name="indicatorStyle">@style/Widget.Dialog.Indicator</item>
@@ -33,7 +33,7 @@
         <item name="android:windowIsFloating">false</item>
     </style>
 
-    <style name="BottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
+    <style name="BottomSheetStyle" parent="Widget.Material3.BottomSheet.Modal">
         <item name="android:backgroundTint">@color/bottomSheetBackground</item>
         <item name="backgroundTint">@color/bottomSheetBackground</item>
         <item name="enableEdgeToEdge">true</item>
@@ -46,7 +46,7 @@
         <item name="android:windowIsFloating">false</item>
     </style>
 
-    <style name="RoundedBottomSheetComponent" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+    <style name="RoundedBottomSheetComponent" parent="ShapeAppearance.Material3.LargeComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">16dp</item>
         <item name="cornerRadius">16dp</item>
@@ -54,7 +54,7 @@
         <item name="enableEdgeToEdge">true</item>
     </style>
 
-    <style name="Widget.Dialog.Indicator" parent="@style/Widget.MaterialComponents.CardView">
+    <style name="Widget.Dialog.Indicator" parent="@style/Widget.Material3.CardView.Filled">
         <item name="android:maxWidth">24dp</item>
         <item name="android:minWidth">24dp</item>
         <item name="android:maxHeight">4dp</item>
@@ -77,19 +77,19 @@
         <item name="android:textSize">0sp</item>
     </style>
 
-    <style name="ShapeAppearance.ImageView.VideoFrame" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+    <style name="ShapeAppearance.ImageView.VideoFrame" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerRadius">8dp</item>
         <item name="cornerSize">8dp</item>
     </style>
 
-    <style name="ShapeAppearance.ImageView.Cover.Large" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+    <style name="ShapeAppearance.ImageView.Cover.Large" parent="ShapeAppearance.Material3.LargeComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeBottomLeft">16dp</item>
         <item name="cornerSizeBottomRight">16dp</item>
     </style>
 
-    <style name="ShapeAppearance.ImageView.Cover.Medium" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+    <style name="ShapeAppearance.ImageView.Cover.Medium" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">8dp</item>
     </style>
@@ -100,5 +100,11 @@
         <item name="windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
         <item name="windowSplashScreenAnimationDuration">800</item>
         <item name="postSplashScreenTheme">@style/AppTheme</item>
+    </style>
+
+    <style name="FragmentCardShape" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">20dp</item>
+        <item name="cornerSizeTopRight">20dp</item>
     </style>
 </resources>

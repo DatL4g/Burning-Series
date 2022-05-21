@@ -29,4 +29,34 @@ data class LatestEpisodeInfoFlags(
     @ColumnInfo(name = "latestEpisodeInfoFlagsId")
     @IgnoredOnParcel
     var latestEpisodeInfoFlagsId: Long = 0L
+
+    val isGerman: Boolean
+        get() = classNames.split("\\s".toRegex()).any {
+            it.matches("flag-de(\\s|\$)".toRegex())
+        }
+
+    val isEnglish: Boolean
+        get() = classNames.split("\\s".toRegex()).any {
+            it.matches("flag-en(\\s|\$)".toRegex())
+        }
+
+    val isJapanese: Boolean
+        get() = classNames.split("\\s".toRegex()).any {
+            it.matches("flag-jp(\\s|\$)".toRegex())
+        }
+
+    val isGermanSub: Boolean
+        get() = classNames.split("\\s".toRegex()).any {
+            it.matches("flag-des(\\s|\$)".toRegex())
+        }
+
+    val isEnglishSub: Boolean
+        get() = classNames.split("\\s".toRegex()).any {
+            it.matches("flag-ens(\\s|\$)".toRegex())
+        }
+
+    val isJapaneseSub: Boolean
+        get() = classNames.split("\\s".toRegex()).any {
+            it.matches("flag-jps(\\s|\$)".toRegex())
+        }
 }

@@ -87,7 +87,7 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     implementation("androidx.appcompat:appcompat:1.4.1")
-    implementation("com.google.android.material:material:1.5.0")
+    implementation("com.google.android.material:material:1.6.0")
     runtimeOnly("androidx.vectordrawable:vectordrawable-animated:1.1.0")
     implementation("androidx.core:core-splashscreen:1.0.0-beta02")
 
@@ -96,7 +96,7 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("com.github.devendroid:ReadMoreOption:1.0.3")
-    implementation("com.mikepenz:aboutlibraries:10.1.0")
+    implementation("com.mikepenz:aboutlibraries:10.2.0")
 
     implementation("com.google.android.exoplayer:exoplayer:2.17.1")
     implementation("com.github.DATL4G.PreviewSeekBar:previewseekbar-exoplayer:3.0.1")
@@ -130,8 +130,8 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.4.2")
     implementation("androidx.navigation:navigation-ui-ktx:2.4.2")
 
-    implementation("com.google.dagger:hilt-android:2.41")
-    kapt("com.google.dagger:hilt-android-compiler:2.41")
+    implementation("com.google.dagger:hilt-android:2.42")
+    kapt("com.google.dagger:hilt-android-compiler:2.42")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
     implementation("io.github.inflationx:viewpump:2.0.3")
@@ -140,10 +140,10 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
 
     implementation("com.github.bumptech.glide", "glide").version {
-        strictly("4.13.1")
+        strictly("4.13.2")
     }
     kapt("com.github.bumptech.glide", "compiler").version {
-        strictly("4.13.1")
+        strictly("4.13.2")
     }
     implementation("com.github.DatL4g:Coilifier-Android:1.2.2") {
         exclude("com.github.bumptech.glide", "glide")
