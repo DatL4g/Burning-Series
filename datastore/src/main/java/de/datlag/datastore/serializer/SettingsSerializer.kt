@@ -14,7 +14,6 @@ class SettingsSerializer(isTelevision: Boolean, defaultDarkMode: Boolean) : Seri
             .setDarkMode(defaultDarkMode)
             .setImproveDialog(!isTelevision))
         .setVideo(SettingsPreferences.Video.newBuilder()
-            .setAdvancedFetching(false)
             .setPreferMp4(false)
             .setPreviewEnabled(!isTelevision)
             .setDefaultFullscreen(true))

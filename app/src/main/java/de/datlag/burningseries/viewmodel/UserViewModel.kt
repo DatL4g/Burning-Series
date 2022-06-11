@@ -386,6 +386,24 @@ class UserViewModel @Inject constructor(
         }
     }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
+    fun getGitHubContributionStatus(user: User): Flow<Boolean> = flow {
+        if (!isGitHubAuthorized()) {
+            emit(false)
+        } else {
+            if (githubAuthState.needsTokenRefresh) {
+                githubFreshToken().firstOrNull()?.let {
+                    emitAll(gitHubRepository.isContributor(user.login, it))
+                } ?: emit(false)
+            } else {
+                githubAuthState.accessToken?.let {
+                    return@let emitAll(gitHubRepository.isContributor(user.login, it))
+                } ?: githubFreshToken().firstOrNull()?.let {
+                    emitAll(gitHubRepository.isContributor(user.login, it))
+                } ?: emit(false)
+            }
+        }
+    }.flowOn(Dispatchers.IO).distinctUntilChanged()
+
     private fun aniListFreshToken(): Flow<String?> = flow {
         anilistAuthService?.let {
             return@let anilistAuthState.performActionWithFreshTokens(it) { accessToken, _, ex ->

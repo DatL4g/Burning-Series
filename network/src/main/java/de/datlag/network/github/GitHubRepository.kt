@@ -1,5 +1,6 @@
 package de.datlag.network.github
 
+import android.util.Log
 import com.apollographql.apollo3.ApolloClient
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkResource
@@ -41,7 +42,8 @@ class GitHubRepository @Inject constructor(
         ).collect {
             when (it.status) {
                 Resource.Status.SUCCESS -> emit(it.data)
-                else -> emit(null)
+                Resource.Status.ERROR -> emit(null)
+                else -> {  }
             }
         }
     }.flowOn(Dispatchers.IO)
@@ -51,5 +53,22 @@ class GitHubRepository @Inject constructor(
         val response = apolloClientWithToken.query(SponsoringQuery(login)).execute()
         val data = response.data?.user?.sponsoring?.nodes?.mapNotNull { it?.onUser?.login } ?: listOf()
         emit(data.any { it.equals(Constants.GITHUB_OWNER, true) })
+    }.flowOn(Dispatchers.IO)
+
+    fun isContributor(login: String, token: String): Flow<Boolean> = flow {
+        networkResource(fetchFromRemote = {
+            service.getContributors("token $token")
+        }).collect {
+            when (it.status) {
+                Resource.Status.SUCCESS -> {
+                    val contributors = it.data ?: listOf()
+                    emit(contributors.any { user -> user.login.equals(login, true) })
+                }
+                Resource.Status.ERROR -> {
+                    emit(false)
+                }
+                else -> { }
+            }
+        }
     }.flowOn(Dispatchers.IO)
 }

@@ -151,27 +151,20 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
             },
             SettingsModel.Group(1, safeContext.getString(R.string.video)),
             SettingsModel.Switch(2,
-                safeContext.getString(R.string.advanced_fetching),
-                safeContext.getString(R.string.advanced_fetching_subtitle),
-                it.video.advancedFetching
-            ) { _, isChecked ->
-                settingsViewModel.updateVideoAdvancedFetching(isChecked)
-            },
-            SettingsModel.Switch(3,
                 safeContext.getString(R.string.prefer_mp4),
                 safeContext.getString(R.string.prefer_mp4_subtitle),
                 it.video.preferMp4
             ) { _, isChecked ->
                 settingsViewModel.updateVideoPreferMp4(isChecked)
             },
-            SettingsModel.Switch(4,
+            SettingsModel.Switch(3,
                 safeContext.getString(R.string.enable_preview),
                 safeContext.getString(R.string.enable_preview_subtitle),
                 it.video.previewEnabled
             ) { _, isChecked ->
                 settingsViewModel.updateVideoPreview(isChecked)
             },
-            SettingsModel.Switch(5,
+            SettingsModel.Switch(4,
                 getString(R.string.default_fullscreen),
                 getString(R.string.default_fullscreen_subtitle),
                 it.video.defaultFullscreen
@@ -195,7 +188,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                     malOAuthResultLauncher.launch(userViewModel.createMalAuthIntent(safeContext))
                 }
             },
-            SettingsModel.Switch(6,
+            SettingsModel.Switch(5,
                 getString(R.string.mal_images),
                 getString(R.string.mal_images_subtitle),
                 it.user.malImages && userViewModel.isMalAuthorized(),
@@ -218,7 +211,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                     anilistOAuthResultLauncher.launch(userViewModel.createAniListAuthIntent(safeContext))
                 }
             },
-            SettingsModel.Switch(7,
+            SettingsModel.Switch(6,
                 getString(R.string.anilist_images),
                 getString(R.string.anilist_images_subtitle),
                 it.user.aniListImages && userViewModel.isAniListAuthorized(),

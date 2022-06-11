@@ -44,6 +44,7 @@ object Constants {
 	const val GITHUB_OWNER = "DatL4g"
 	const val GITHUB_REPO = "BurningSeries-Android"
 	const val GITHUB_PROJECT = "${PROTOCOL_HTTPS}${HOST_GITHUB}/${GITHUB_OWNER}/${GITHUB_REPO}"
+	const val GITHUB_SPONSOR = "${PROTOCOL_HTTPS}${HOST_GITHUB}/sponsors/${GITHUB_OWNER}"
 
 	const val MAL_OAUTH_AUTH_URI = "${PROTOCOL_HTTPS}${HOST_MAL}/v1/oauth2/authorize"
 	const val MAL_OAUTH_TOKEN_URI = "${PROTOCOL_HTTPS}${HOST_MAL}/v1/oauth2/token"

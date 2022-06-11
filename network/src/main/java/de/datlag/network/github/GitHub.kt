@@ -24,4 +24,12 @@ interface GitHub {
     @Headers("Accept: ${Constants.MEDIATYPE_GITHUB_JSON}")
     @GET("/user")
     fun getUser(@Header("Authorization") token: String): Flow<ApiResponse<User>>
+
+    @Headers("Accept: ${Constants.MEDIATYPE_GITHUB_JSON}")
+    @GET("/repos/{owner}/{repo}/contributors")
+    fun getContributors(
+        @Header("Authorization") token: String,
+        @Path("owner") owner: String = Constants.GITHUB_OWNER,
+        @Path("repo") repo: String = Constants.GITHUB_REPO
+    ): Flow<ApiResponse<List<User>>>
 }

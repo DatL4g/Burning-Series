@@ -151,6 +151,9 @@ abstract class AdvancedFragment : Fragment {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		initActivityViews()
+		view.post {
+			initActivityViews()
+		}
 	}
 
 	override fun onResume() {
@@ -158,6 +161,9 @@ abstract class AdvancedFragment : Fragment {
 		hideLoadingDialog()
 		hideKeyboard()
 		initActivityViews()
+		view?.post {
+			initActivityViews()
+		}
 	}
 
 	fun showToolbarBackButton(toolbar: Toolbar? = materialToolbar) {

@@ -76,8 +76,8 @@
     <string name="anilist_login_subtitle">Synchronisiere deinen Fortschritt mit AniList</string>
     <string name="anilist_images">Benutze AniList Bilder</string>
     <string name="anilist_images_subtitle">Lädt AniList Cover von Serien</string>
-    <string name="github_login">GitHub Einloggem</string>
-    <string name="github_login_subtitle">Assoziiert deinen Sponsor Status mit der App</string>
+    <string name="github_login">GitHub Einloggen</string>
+    <string name="github_login_subtitle">Assoziiert deinen Sponsor und Contribution Status mit der App</string>
     <string name="burningseries_theme">BurningSeries Theme</string>
     <string name="burningseries_theme_subtitle">Nutze die BurningSeries Akzentfarbe</string>
     <string name="close">Schließen</string>
@@ -91,4 +91,7 @@
     <string name="add_to_favorites">Zu Favoriten hinzufügen</string>
     <string name="remove_from_favorites">Aus Favoriten entfernen</string>
     <string name="about">Über</string>
+    <string name="donate">Spenden</string>
+    <string name="sponsor_header">Sponsor das Projekt</string>
+    <string name="sponsor_text">Hey es sieht so aus als würdest du die App mögen.\nDu kannst mich unterstützen um die App am laufen zu halten, da der Service nicht kostenlos ist.\nEntweder du hilfst mit beim Programmieren oder sponsorst mich für 1€ im Monat.</string>
 </resources>

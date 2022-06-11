@@ -31,12 +31,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateVideoAdvancedFetching(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-        dataStore.updateData {
-            it.toBuilder().setVideo(it.video.toBuilder().setAdvancedFetching(newValue).build()).build()
-        }
-    }
-
     fun updateVideoPreferMp4(newValue: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         dataStore.updateData {
             it.toBuilder().setVideo(it.video.toBuilder().setPreferMp4(newValue).build()).build()

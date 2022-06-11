@@ -83,7 +83,7 @@
     <string name="anilist_images">Use AniList Images</string>
     <string name="anilist_images_subtitle">Loads AniList Covers of series</string>
     <string name="github_login">GitHub Login</string>
-    <string name="github_login_subtitle">Associates your sponsor status with the app</string>
+    <string name="github_login_subtitle">Associates your sponsor and contribution status with the app</string>
     <string name="burningseries_theme">BurningSeries Theme</string>
     <string name="burningseries_theme_subtitle">Use the BurningSeries accent color</string>
     <string name="close">Close</string>
@@ -100,4 +100,7 @@
     <string name="remove_from_favorites">Remove from favorites</string>
     <string name="copyright" translatable="false">Copyright © 2021-%d %s</string>
     <string name="about">About</string>
+    <string name="donate">Donate</string>
+    <string name="sponsor_header">Sponsor the Project</string>
+    <string name="sponsor_text">Hey it looks like you like the app.\nYou can support me to keep the app running as the service is not free.\nEither you help with the programming or sponsor me for 1€ a month.</string>
 </resources>

@@ -1,12 +1,8 @@
 package de.datlag.burningseries.ui.fragment
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.widget.PopupMenu
 import androidx.core.net.toUri
-import androidx.core.widget.PopupMenuCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,11 +18,11 @@ import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentHomeBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.*
-import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
 import io.michaelrocks.paranoid.Obfuscate
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
@@ -68,9 +64,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		checkIfErrorCaught()
 		listenImproveDialogSetting()
 		listenNewVersionDialog()
-		listenAppUsage()
 		listenAllSeriesCount()
-		listenIsSponsoring()
 
 		burningSeriesViewModel.homeData.distinctUntilChanged().launchAndCollect {
 			when (it.status) {
@@ -111,12 +105,44 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	}
 
 	private fun listenIsSponsoring() = userViewModel.getGitHubUser().launchAndCollect { user ->
+		fun displayDialog(isLoggedIn: Boolean) {
+			materialDialogBuilder {
+				setPositiveButtonIcon(R.drawable.ic_baseline_celebration_24)
+				setNegativeButtonIcon(R.drawable.ic_baseline_close_24)
+				if (!isLoggedIn) {
+					setNeutralButtonIcon(R.drawable.ic_github)
+				}
+				builder {
+					setTitle(R.string.sponsor_header)
+					setMessage(R.string.sponsor_text)
+					setPositiveButton(R.string.donate) { dialog, _ ->
+						dialog.dismiss()
+						Constants.GITHUB_SPONSOR.toUri().openInBrowser(safeContext, safeContext.getString(R.string.sponsor_header))
+					}
+					setNegativeButton(R.string.close) { dialog, _ ->
+						dialog.cancel()
+					}
+					if (!isLoggedIn) {
+						setNeutralButton(R.string.login) { dialog, _ ->
+							dialog.dismiss()
+							findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToSettingsFragment())
+						}
+					}
+				}
+			}.show()
+			usageViewModel.showedDonate = true
+		}
+
 		if (user != null) {
-			userViewModel.getGitHubSponsorStatus(user).launchAndCollect {
-				Timber.e(it.toString())
+			combine(userViewModel.getGitHubSponsorStatus(user), userViewModel.getGitHubContributionStatus(user)) { sponsor, contributor ->
+				sponsor || contributor
+			}.launchAndCollect { isSponsorOrContributor ->
+				if (!isSponsorOrContributor) {
+					displayDialog(true)
+				}
 			}
 		} else {
-			Timber.e("Not sponsoring or contributor")
+			displayDialog(false)
 		}
 	}
 
@@ -154,14 +180,12 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	}
 
 	private fun listenAppUsage() = settingsViewModel.data.map { it.usage.spentTime }.launchAndCollect {
-		if (it >= Constants.WEEK_IN_SECONDS && !usageViewModel.showedDonate) {
-			materialDialogBuilder {
-				builder {
-					setTitle("Seems like you enjoy this app")
-					setMessage("The app does not work for free and depends on paid services, help by donating")
-				}
+		if (it <= Constants.WEEK_IN_SECONDS && !usageViewModel.showedDonate) {
+			if (Math.random() < 0.5) {
+				usageViewModel.showedDonate = true
+			} else {
+				listenIsSponsoring()
 			}
-			usageViewModel.showedDonate = true
 		}
 	}
 
@@ -175,6 +199,8 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 
 	private fun recoverGitHubAuthState() = settingsViewModel.data.map { it.user.githubAuth }.launchAndCollect {
 		userViewModel.loadGitHubAuth(it)
+
+		listenAppUsage()
 	}
 
 	private fun listenNewVersionDialog() = gitHubViewModel.getLatestRelease().launchAndCollect {

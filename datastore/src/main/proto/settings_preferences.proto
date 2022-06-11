@@ -10,10 +10,9 @@ message SettingsPreferences {
   }
   Appearance appearance = 1;
   message Video {
-    bool advancedFetching = 1;
-    bool preferMp4 = 2;
-    bool previewEnabled = 3;
-    bool defaultFullscreen = 4;
+    bool preferMp4 = 1;
+    bool previewEnabled = 2;
+    bool defaultFullscreen = 3;
   }
   Video video = 2;
   message User {

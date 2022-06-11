@@ -87,7 +87,7 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     implementation("androidx.appcompat:appcompat:1.4.2")
-    implementation("com.google.android.material:material:1.6.1")
+    implementation("com.google.android.material:material:1.7.0-alpha02")
     runtimeOnly("androidx.vectordrawable:vectordrawable-animated:1.1.0")
     implementation("androidx.core:core-splashscreen:1.0.0-rc01")
 
