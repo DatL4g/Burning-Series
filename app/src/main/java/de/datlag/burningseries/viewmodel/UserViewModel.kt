@@ -14,11 +14,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
+import de.datlag.model.github.User
 import de.datlag.network.anilist.AniListRepository
 import de.datlag.network.anilist.MediaQuery
 import de.datlag.network.anilist.ViewerQuery
 import de.datlag.network.anilist.type.MediaListStatus
 import de.datlag.network.burningseries.BurningSeriesRepository
+import de.datlag.network.github.GitHubRepository
 import de.datlag.network.myanimelist.MyAnimeListRepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +31,7 @@ import kotlinx.coroutines.launch
 import net.openid.appauth.*
 import net.openid.appauth.browser.BrowserDenyList
 import net.openid.appauth.browser.BrowserMatcher
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -38,9 +41,12 @@ class UserViewModel @Inject constructor(
     val bsRepository: BurningSeriesRepository,
     val malRepository: MyAnimeListRepository,
     val anilistRepository : AniListRepository,
+    val gitHubRepository: GitHubRepository,
     @Named("malClientId") val malClientId: String,
     @Named("anilistClientId") val anilistClientId: String,
-    @Named("anilistClientSecret") val anilistClientSecret: String
+    @Named("anilistClientSecret") val anilistClientSecret: String,
+    @Named("githubClientId") val githubClientId: String,
+    @Named("githubClientSecret") val githubClientSecret: String
 ) : ViewModel() {
 
     private var malServiceConfig = AuthorizationServiceConfiguration(
@@ -58,6 +64,14 @@ class UserViewModel @Inject constructor(
     private var anilistAuthState = AuthState(anilistServiceConfig)
     private var anilistAuthService : AuthorizationService? = null
     private var saveAniListListener: ((String) -> Unit)? = null
+
+    private var githubServiceConfig = AuthorizationServiceConfiguration(
+        Constants.GITHUB_OAUTH_AUTH_URI.toUri(),
+        Constants.GITHUB_OAUTH_TOKEN_URI.toUri()
+    )
+    private var githubAuthState = AuthState(githubServiceConfig)
+    private var githubAuthService: AuthorizationService? = null
+    private var saveGitHubAuthListener: ((String) -> Unit)? = null
 
     private val appAuthConfig = AppAuthConfiguration.Builder()
         .setBrowserMatcher(BrowserDenyList(
@@ -105,6 +119,25 @@ class UserViewModel @Inject constructor(
         }
     }
 
+    fun githubResultLauncherCallback(result: ActivityResult?) {
+        if (result?.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            val resp = data?.let { AuthorizationResponse.fromIntent(it) }
+            val ex = AuthorizationException.fromIntent(data)
+            githubAuthState.update(resp, ex)
+
+            if (!resp?.authorizationCode.isNullOrEmpty()) {
+                resp?.createTokenExchangeRequest()?.let {
+                    val clientAuth = ClientSecretBasic(githubClientSecret)
+                    githubAuthService?.performTokenRequest(it, clientAuth) { response, tokenEx ->
+                        githubAuthState.update(response, tokenEx)
+                        saveGitHubAuthListener?.invoke(githubAuthState.jsonSerializeString())
+                    }
+                }
+            }
+        }
+    }
+
     fun createMalAuthIntent(context: Context): Intent? {
         val codeVerifier = CodeVerifierUtil.generateRandomCodeVerifier()
         val authRequest = AuthorizationRequest.Builder(
@@ -136,6 +169,19 @@ class UserViewModel @Inject constructor(
         return anilistAuthService?.getAuthorizationRequestIntent(authRequest)
     }
 
+    fun createGitHubAuthIntent(context: Context): Intent? {
+        val authRequest = AuthorizationRequest.Builder(
+            githubServiceConfig,
+            githubClientId,
+            Constants.GITHUB_RESPONSE_TYPE,
+
+            Constants.GITHUB_REDIRECT_URI.toUri()
+        ).setScope("read:user").build()
+
+        githubAuthService = AuthorizationService(context, appAuthConfig)
+        return githubAuthService?.getAuthorizationRequestIntent(authRequest)
+    }
+
     fun endMalAuth() {
         malAuthState = AuthState(malServiceConfig)
         saveMalAuthListener?.invoke(String())
@@ -144,6 +190,11 @@ class UserViewModel @Inject constructor(
     fun endAniListAuth() {
         anilistAuthState = AuthState(anilistServiceConfig)
         saveAniListListener?.invoke(String())
+    }
+
+    fun endGitHubAuth() {
+        githubAuthState = AuthState(githubServiceConfig)
+        saveGitHubAuthListener?.invoke(String())
     }
 
     fun loadMalAuth(auth: String) {
@@ -158,6 +209,12 @@ class UserViewModel @Inject constructor(
         }
     }
 
+    fun loadGitHubAuth(auth: String) {
+        if (auth.isNotEmpty()) {
+            githubAuthState = AuthState.jsonDeserialize(auth)
+        }
+    }
+
     fun setSaveMalAuthListener(listener: (String) -> Unit) {
         saveMalAuthListener = listener
     }
@@ -166,9 +223,15 @@ class UserViewModel @Inject constructor(
         saveAniListListener = listener
     }
 
+    fun setSaveGitHubAuthListener(listener: (String) -> Unit) {
+        saveGitHubAuthListener = listener
+    }
+
     fun isMalAuthorized() = malAuthState.isAuthorized
 
     fun isAniListAuthorized() = anilistAuthState.isAuthorized
+
+    fun isGitHubAuthorized() = githubAuthState.isAuthorized
 
     fun getUserMal(callback: (mal: MyAnimeList?) -> Unit) {
         fun malWithFreshToken() {
@@ -287,6 +350,42 @@ class UserViewModel @Inject constructor(
         }
     }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
+    fun getGitHubUser(): Flow<User?> = flow {
+        if (!isGitHubAuthorized()) {
+            emit(null)
+        } else {
+            if (githubAuthState.needsTokenRefresh) {
+                githubFreshToken().firstOrNull()?.let {
+                    emitAll(gitHubRepository.getUser(it))
+                } ?: emit(null)
+            } else {
+                githubAuthState.accessToken?.let {
+                    return@let emitAll(gitHubRepository.getUser(it))
+                } ?: githubFreshToken().firstOrNull()?.let {
+                    emitAll(gitHubRepository.getUser(it))
+                } ?: emit(null)
+            }
+        }
+    }.flowOn(Dispatchers.IO).distinctUntilChanged()
+
+    fun getGitHubSponsorStatus(user: User): Flow<Boolean> = flow<Boolean> {
+        if (!isGitHubAuthorized()) {
+            emit(false)
+        } else {
+            if (githubAuthState.needsTokenRefresh) {
+                githubFreshToken().firstOrNull()?.let {
+                    emitAll(gitHubRepository.isSponsoring(user.login, it))
+                } ?: emit(false)
+            } else {
+                githubAuthState.accessToken?.let {
+                    return@let emitAll(gitHubRepository.isSponsoring(user.login, it))
+                } ?: githubFreshToken().firstOrNull()?.let {
+                    emitAll(gitHubRepository.isSponsoring(user.login, it))
+                } ?: emit(false)
+            }
+        }
+    }.flowOn(Dispatchers.IO).distinctUntilChanged()
+
     private fun aniListFreshToken(): Flow<String?> = flow {
         anilistAuthService?.let {
             return@let anilistAuthState.performActionWithFreshTokens(it) { accessToken, _, ex ->
@@ -297,6 +396,22 @@ class UserViewModel @Inject constructor(
                 } else {
                     viewModelScope.launch(Dispatchers.IO) {
                         emit(accessToken)
+                    }
+                }
+            }
+        } ?: emit(null)
+    }.flowOn(Dispatchers.IO).distinctUntilChanged()
+
+    private fun githubFreshToken(): Flow<String?> = flow {
+        githubAuthService?.let {
+            return@let githubAuthState.performActionWithFreshTokens(it) {access, _, ex ->
+                if (access.isNullOrEmpty() || ex != null) {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        emit(null)
+                    }
+                } else {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        emit(access)
                     }
                 }
             }
@@ -401,5 +516,6 @@ class UserViewModel @Inject constructor(
         super.onCleared()
         malAuthService = null
         anilistAuthService = null
+        githubAuthService = null
     }
 }

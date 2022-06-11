@@ -4,9 +4,9 @@
 
     <stroke
         android:width="2dp"
-        android:color="@color/datlagColor" />
+        android:color="?attr/colorPrimary" />
 
     <corners android:radius="8dp" />
 
-    <solid android:color="@color/defaultBackgroundColor" />
+    <solid android:color="?attr/colorPrimaryDark" />
 </shape>

@@ -12,7 +12,6 @@ class SettingsSerializer(isTelevision: Boolean, defaultDarkMode: Boolean) : Seri
     override val defaultValue: SettingsPreferences = SettingsPreferences.newBuilder()
         .setAppearance(SettingsPreferences.Appearance.newBuilder()
             .setDarkMode(defaultDarkMode)
-            .setTheme(0)
             .setImproveDialog(!isTelevision))
         .setVideo(SettingsPreferences.Video.newBuilder()
             .setAdvancedFetching(false)
@@ -21,7 +20,10 @@ class SettingsSerializer(isTelevision: Boolean, defaultDarkMode: Boolean) : Seri
             .setDefaultFullscreen(true))
         .setUser(SettingsPreferences.User.newBuilder()
             .setMalAuth(String())
-            .setMalImages(true))
+            .setMalImages(true)
+            .setGithubAuth(String()))
+        .setUsage(SettingsPreferences.Usage.newBuilder()
+            .setSpentTime(0L))
         .build()
 
     override suspend fun readFrom(input: InputStream): SettingsPreferences {

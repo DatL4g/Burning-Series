@@ -2,57 +2,56 @@ package de.datlag.network.burningseries
 
 import com.hadiyarajesh.flower.ApiResponse
 import de.datlag.model.Constants
-import de.datlag.model.burningseries.allseries.AllSeries
-import de.datlag.model.burningseries.home.Home
-import de.datlag.model.burningseries.series.Series
+import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.home.HomeData
+import de.datlag.model.burningseries.series.SeriesData
+import de.datlag.model.burningseries.stream.Stream
+import de.datlag.model.video.InsertStream
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.Flow
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.Path
-import retrofit2.http.Query
+import okhttp3.RequestBody
+import retrofit2.Call
+import retrofit2.http.*
 
 @Obfuscate
 interface BurningSeries {
 	
 	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
-	@GET("${Constants.API_WRAP_API_PREFIX}/home/{version}")
-	fun getHomeData(
-		@Path("version") version: String = Constants.API_WRAP_API_HOME_VERSION,
-		@Query("wrapAPIKey") apiKey: String
-	): Flow<ApiResponse<Home>>
+	@GET("/bs/home")
+	fun getHomeData(): Flow<ApiResponse<HomeData>>
 
 	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
-	@GET("${Constants.API_WRAP_API_PREFIX}/series/{version}")
+	@GET("/bs/series/{series}/")
 	fun getSeriesData(
-		@Path("version") version: String = Constants.API_WRAP_API_SERIES_VERSION,
-		@Query("wrapAPIKey") apiKey: String,
-		@Query("serie") series: String
-	): Flow<ApiResponse<Series>>
+		@Path("series") series: String
+	): Flow<ApiResponse<SeriesData>>
 
 	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
-	@GET("${Constants.API_WRAP_API_PREFIX}/series/{version}")
+	@GET("/bs/series/{series}/{season}/")
 	fun getSeriesData(
-		@Path("version") version: String = Constants.API_WRAP_API_SERIES_VERSION,
-		@Query("wrapAPIKey") apiKey: String,
-		@Query("serie") series: String,
-		@Query("season") season: String
-	): Flow<ApiResponse<Series>>
+		@Path("series") series: String,
+		@Path("season") season: String
+	): Flow<ApiResponse<SeriesData>>
 
 	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
-	@GET("${Constants.API_WRAP_API_PREFIX}/series/{version}")
+	@GET("/bs/series/{series}/{season}/{lang}/")
 	fun getSeriesData(
-		@Path("version") version: String = Constants.API_WRAP_API_SERIES_VERSION,
-		@Query("wrapAPIKey") apiKey: String,
-		@Query("serie") series: String,
-		@Query("season") season: String,
-		@Query("language") language: String
-	): Flow<ApiResponse<Series>>
+		@Path("series") series: String,
+		@Path("season") season: String,
+		@Path("lang") language: String
+	): Flow<ApiResponse<SeriesData>>
 
 	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
-	@GET("${Constants.API_WRAP_API_PREFIX}/all/{version}")
-	fun getAllSeries(
-		@Path("version") version: String = Constants.API_WRAP_API_ALL_VERSION,
-		@Query("wrapAPIKey") apiKey: String
-	): Flow<ApiResponse<AllSeries>>
+	@GET("/bs/all")
+	fun getAllSeries(): Flow<ApiResponse<List<GenreModel.GenreData>>>
+
+	@GET("/bs/video/count")
+	fun getSeriesCount(): Flow<ApiResponse<String>>
+
+	@POST("/bs/video")
+	fun saveScraped(@Body body: RequestBody): Flow<ApiResponse<InsertStream>>
+
+	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
+	@POST("/bs/video/streams")
+	fun getStreams(@Body body: RequestBody): Flow<ApiResponse<List<Stream>>>
 }

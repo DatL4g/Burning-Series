@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Burning-Series</string>
-    <string name="font_path" translatable="false">fonts/Poppins-Regular.ttf</string>
-    <string name="font_path_medium" translatable="false">fonts/Poppins-Medium.ttf</string>
-    <string name="font_path_bold" translatable="false">fonts/Poppins-Bold.ttf</string>
+    <string name="font_path" translatable="false">fonts/OpenSans-Regular.ttf</string>
+    <string name="font_path_medium" translatable="false">fonts/OpenSans-Medium.ttf</string>
+    <string name="font_path_bold" translatable="false">fonts/OpenSans-Bold.ttf</string>
 
     <string name="favorites">Favorites</string>
     <string name="search">Search</string>
@@ -12,7 +12,7 @@
     <string name="more">More…</string>
     <string name="less">Less…</string>
     <string name="help_improve_header">Help Improve</string>
-    <string name="help_improve_text">In order for the app to work properly, it depends on YOUR help. Videos cannot always be viewed directly because of the captcha. If a video is not available, please start it on the website (the app will automatically ask you for it). As soon as you have started it, it should also be available directly in the app. The number below shows how many videos are available:</string>
+    <string name="help_improve_text">In order for the app to work properly, it depends on YOUR help. Videos cannot always be viewed directly because of the captcha. If a video is not available, please start it on the website (the app will automatically ask you for it). As soon as you have started it, it should also be available directly in the app.\nCurrently available videos: %d</string>
     <string name="i_understand">I understand</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
@@ -57,14 +57,14 @@
     <string name="open_in_browser">Open in Browser</string>
     <string name="open_in_browser_text">Do you want to open \"%s\" in a browser?</string>
     <string name="open">Open</string>
-    <string name="of">von</string>
+    <string name="of">of</string>
     <string name="new_release">New Release</string>
-    <string name="new_release_text">Hey a new version is available you should check it out!\n\nVersion: \t\t\t\t%s\nInstalled: \t\t\t%s\nPreRelease: \t%s</string>
+    <string name="new_release_text">Hey a new version is available you should check it out!\n\nVersion: \t\t\t\t\t%s\nInstalled: \t\t\t%s</string>
     <string name="view">View</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="opensource_libs">OpenSource Libraries</string>
-    <string name="github_project">GitHub Project</string>
+    <string name="github" translatable="false">GitHub</string>
     <string name="confirm">Confirm</string>
     <string name="default_fullscreen">Default Fullscreen</string>
     <string name="default_fullscreen_subtitle">Automatically switch to fullscreen mode when watching a video</string>
@@ -82,6 +82,8 @@
     <string name="anilist_login_subtitle">Sync your progress with AniList</string>
     <string name="anilist_images">Use AniList Images</string>
     <string name="anilist_images_subtitle">Loads AniList Covers of series</string>
+    <string name="github_login">GitHub Login</string>
+    <string name="github_login_subtitle">Associates your sponsor status with the app</string>
     <string name="burningseries_theme">BurningSeries Theme</string>
     <string name="burningseries_theme_subtitle">Use the BurningSeries accent color</string>
     <string name="close">Close</string>
@@ -93,4 +95,9 @@
     <string name="clear">Clear</string>
     <string name="arrow_up" translatable="false">↑</string>
     <string name="exclamation_mark" translatable="false">!</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+    <string name="copyright" translatable="false">Copyright © 2021-%d %s</string>
+    <string name="about">About</string>
 </resources>

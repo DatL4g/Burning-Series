@@ -25,17 +25,11 @@
             android:id="@+id/action_homeFragment_to_allSeriesFragment"
             app:destination="@id/allSeriesFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_helpImproveDialog"
-            app:destination="@id/helpImproveDialog" />
-        <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_openInBrowserDialog"
-            app:destination="@id/openInBrowserDialog" />
-        <action
-            android:id="@+id/action_homeFragment_to_newReleaseDialog"
-            app:destination="@id/newReleaseDialog" />
+            android:id="@+id/action_homeFragment_to_about_libraries"
+            app:destination="@id/about_libraries" />
     </fragment>
     <fragment
         android:id="@+id/seriesFragment"
@@ -81,12 +75,6 @@
         <action
             android:id="@+id/action_seriesFragment_to_scrapeHosterFragment"
             app:destination="@id/scrapeHosterFragment" />
-        <action
-            android:id="@+id/action_seriesFragment_to_noStreamSourceDialog"
-            app:destination="@id/noStreamSourceDialog" />
-        <action
-            android:id="@+id/action_seriesFragment_to_openInBrowserDialog"
-            app:destination="@id/openInBrowserDialog" />
     </fragment>
     <fragment
         android:id="@+id/favoritesFragment"
@@ -129,9 +117,6 @@
         <action
             android:id="@+id/action_allSeriesFragment_to_favoritesFragment"
             app:destination="@id/favoritesFragment" />
-        <action
-            android:id="@+id/action_allSeriesFragment_to_openInBrowserDialog"
-            app:destination="@id/openInBrowserDialog" />
         <argument
             android:name="defaultGenre"
             app:argType="de.datlag.model.burningseries.allseries.GenreModel$GenreData"
@@ -154,9 +139,6 @@
         <action
             android:id="@+id/action_videoFragment_to_scrapeHosterFragment"
             app:destination="@id/scrapeHosterFragment" />
-        <action
-            android:id="@+id/action_videoFragment_to_streamUnavailableDialog"
-            app:destination="@id/streamUnavailableDialog" />
         <argument
             android:name="seriesWithInfo"
             app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
@@ -167,15 +149,6 @@
             android:id="@+id/action_videoFragment_self"
             app:destination="@id/videoFragment" />
     </fragment>
-    <dialog
-        android:id="@+id/helpImproveDialog"
-        android:name="de.datlag.burningseries.ui.dialog.HelpImproveDialog"
-        android:label="HelpImproveDialog"
-        tools:layout="@layout/dialog_help_improve">
-        <argument
-            android:name="count"
-            app:argType="long" />
-    </dialog>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="de.datlag.burningseries.ui.fragment.SettingsFragment"
@@ -184,12 +157,6 @@
         <action
             android:id="@+id/action_settingsFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_about_libraries"
-            app:destination="@id/about_libraries" />
-        <action
-            android:id="@+id/action_settingsFragment_to_syncFragment"
-            app:destination="@id/syncFragment" />
     </fragment>
     <fragment
         android:id="@+id/scrapeHosterFragment"
@@ -199,121 +166,11 @@
         <argument
             android:name="href"
             app:argType="string" />
-        <action
-            android:id="@+id/action_scrapeHosterFragment_to_saveScrapedDialog"
-            app:destination="@id/saveScrapedDialog" />
         <argument
             android:name="seriesWithInfo"
             app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
         <action
-            android:id="@+id/action_scrapeHosterFragment_to_webViewErrorDialog"
-            app:destination="@id/webViewErrorDialog" />
+            android:id="@+id/action_scrapeHosterFragment_to_seriesFragment"
+            app:destination="@id/seriesFragment" />
     </fragment>
-    <dialog
-        android:id="@+id/saveScrapedDialog"
-        android:name="de.datlag.burningseries.ui.dialog.SaveScrapedDialog"
-        android:label="SaveScrapedDialog"
-        tools:layout="@layout/dialog_save_scraped">
-        <argument
-            android:name="saved"
-            app:argType="boolean" />
-        <action
-            android:id="@+id/action_saveScrapedDialog_to_seriesFragment"
-            app:destination="@id/seriesFragment" />
-        <argument
-            android:name="seriesWithInfo"
-            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
-    </dialog>
-    <dialog
-        android:id="@+id/streamUnavailableDialog"
-        android:name="de.datlag.burningseries.ui.dialog.StreamUnavailableDialog"
-        android:label="StreamUnavailableDialog"
-        tools:layout="@layout/dialog_stream_unavailable">
-        <action
-            android:id="@+id/action_streamUnavailableDialog_to_scrapeHosterFragment"
-            app:destination="@id/scrapeHosterFragment" />
-        <action
-            android:id="@+id/action_streamUnavailableDialog_to_seriesFragment"
-            app:destination="@id/seriesFragment" />
-        <argument
-            android:name="seriesWithInfo"
-            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
-        <argument
-            android:name="href"
-            app:argType="string" />
-        <argument
-            android:name="bsUrl"
-            app:argType="string" />
-    </dialog>
-    <dialog
-        android:id="@+id/noStreamSourceDialog"
-        android:name="de.datlag.burningseries.ui.dialog.NoStreamSourceDialog"
-        android:label="NoStreamSourceDialog"
-        tools:layout="@layout/dialog_no_stream_source">
-        <action
-            android:id="@+id/action_noStreamSourceDialog_to_scrapeHosterFragment"
-            app:destination="@id/scrapeHosterFragment" />
-        <argument
-            android:name="seriesWithInfo"
-            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
-        <argument
-            android:name="bsUrl"
-            app:argType="string" />
-    </dialog>
-    <dialog
-        android:id="@+id/webViewErrorDialog"
-        android:name="de.datlag.burningseries.ui.dialog.WebViewErrorDialog"
-        android:label="WebViewErrorDialog"
-        tools:layout="@layout/dialog_webview_error">
-        <action
-            android:id="@+id/action_webViewErrorDialog_to_seriesFragment"
-            app:destination="@id/seriesFragment" />
-        <argument
-            android:name="href"
-            app:argType="string" />
-        <argument
-            android:name="seriesWithInfo"
-            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
-        <action
-            android:id="@+id/action_webViewErrorDialog_to_scrapeHosterFragment"
-            app:destination="@id/scrapeHosterFragment" />
-    </dialog>
-    <dialog
-        android:id="@+id/openInBrowserDialog"
-        android:name="de.datlag.burningseries.ui.dialog.OpenInBrowserDialog"
-        android:label="OpenInBrowserDialog"
-        tools:layout="@layout/dialog_open_in_browser">
-        <argument
-            android:name="href"
-            app:argType="string" />
-        <argument
-            android:name="title"
-            app:argType="string"
-            app:nullable="true" />
-        <action
-            android:id="@+id/action_openInBrowserDialog_to_scrapeHosterFragment"
-            app:destination="@id/scrapeHosterFragment" />
-        <argument
-            android:name="seriesWithInfo"
-            app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo"
-            app:nullable="true"
-            android:defaultValue="@null" />
-    </dialog>
-    <dialog
-        android:id="@+id/newReleaseDialog"
-        android:name="de.datlag.burningseries.ui.dialog.NewReleaseDialog"
-        android:label="NewReleaseDialog"
-        tools:layout="@layout/dialog_new_release">
-        <argument
-            android:name="release"
-            app:argType="de.datlag.model.github.Release" />
-        <argument
-            android:name="installedFromFDroid"
-            app:argType="boolean" />
-    </dialog>
-    <fragment
-        android:id="@+id/syncFragment"
-        android:name="de.datlag.burningseries.ui.fragment.SyncFragment"
-        android:label="SyncFragment"
-        tools:layout="@layout/fragment_sync"/>
 </navigation>

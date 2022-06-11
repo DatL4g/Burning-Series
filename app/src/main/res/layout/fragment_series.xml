@@ -2,48 +2,12 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/defaultBackgroundColor">
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/banner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitCenter"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/title"
-            fontPath="fonts/Poppins-Bold.ttf"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="start|center_vertical"
-            android:textColor="@color/defaultContentColor"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="16dp"
-            android:textSize="20sp"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintTop_toBottomOf="@id/banner"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/favIcon"/>
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/favIcon"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="0dp"
-            android:layout_marginEnd="16dp"
-            android:scaleType="centerInside"
-            app:layout_constraintTop_toTopOf="@id/title"
-            app:layout_constraintBottom_toBottomOf="@id/title"
-            app:layout_constraintStart_toEndOf="@id/title"
-            app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_height="match_parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/selectLanguage"
@@ -51,11 +15,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:textColor="@color/button_text_selector"
-            android:nextFocusLeft="@id/favIcon"
             android:nextFocusRight="@id/selectSeason"
-            app:backgroundTint="@color/button_background_selector"
-            app:layout_constraintTop_toBottomOf="@id/title" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/selectSeason"
@@ -64,9 +25,7 @@
             android:visibility="gone"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:textColor="@color/defaultBackgroundColor"
             android:nextFocusLeft="@id/selectLanguage"
-            app:backgroundTint="@color/defaultContentColor"
             app:layout_constraintTop_toBottomOf="@id/selectLanguage" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -74,7 +33,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:textColor="@color/defaultContentColor"
             app:layout_constraintTop_toBottomOf="@id/selectSeason"/>
 
         <com.google.android.material.chip.ChipGroup

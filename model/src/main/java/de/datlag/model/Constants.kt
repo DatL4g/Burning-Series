@@ -15,14 +15,11 @@ object Constants {
 	const val HOST_MAL = "myanimelist.net"
 	const val HOST_ANILIST = "anilist.co"
 
-	const val API_M3O = "${PROTOCOL_HTTPS}api.m3o.com"
 	const val API_JSONBASE = "${PROTOCOL_HTTPS}jsonbase.com"
 	const val API_JSONBASE_PREFIX = "/bs-decaptcha"
 	const val API_BS_TO_BASE = "${PROTOCOL_HTTPS}${HOST_BS_TO}"
 	const val API_BS_TO_ALL = "${API_BS_TO_BASE}/andere-serien"
-	const val API_WRAP_API_BASE = "${PROTOCOL_HTTPS}wrapapi.com"
-	const val API_WRAP_API_PREFIX = "/use/DatLag/burning-series"
-	const val API_WRAP_API_VIDEO_PREFIX = "/use/DatLag/videofetcher"
+
 	const val API_GITHUB = "${PROTOCOL_HTTPS}api.${HOST_GITHUB}"
 
 	const val BS_TO_HEADER = "${API_BS_TO_BASE}/public/images/header.png"
@@ -40,7 +37,9 @@ object Constants {
 	const val NAMED_JSON_CONVERTER = "JSON_CONVERTER"
 	const val NAMED_JSON_RETROFIT = "JSON_RETROFIT"
 
-	const val DAY_IN_MILLI = 1000 * 60 * 60 * 24
+	const val HOUR_IN_SECONDS = 60 * 60
+	const val DAY_IN_SECONDS = HOUR_IN_SECONDS * 24
+	const val WEEK_IN_SECONDS = DAY_IN_SECONDS * 7
 
 	const val GITHUB_OWNER = "DatL4g"
 	const val GITHUB_REPO = "BurningSeries-Android"
@@ -55,6 +54,11 @@ object Constants {
 	const val ANILIST_OAUTH_TOKEN_URI = "${PROTOCOL_HTTPS}${HOST_ANILIST}/api/v2/oauth/token"
 	const val ANILIST_RESPONSE_TYPE = "code"
 	const val ANILIST_REDIRECT_URI = "datlag://burningseries/anilist"
+
+	const val GITHUB_OAUTH_AUTH_URI = "${PROTOCOL_HTTPS}${HOST_GITHUB}/login/oauth/authorize"
+	const val GITHUB_OAUTH_TOKEN_URI = "${PROTOCOL_HTTPS}${HOST_GITHUB}/login/oauth/access_token"
+	const val GITHUB_RESPONSE_TYPE = "code"
+	const val GITHUB_REDIRECT_URI = "datlag://burningseries/github"
 
 	val OAUTH_BROWSER_DENY = listOf("com.vewd.core.integration.dia")
 

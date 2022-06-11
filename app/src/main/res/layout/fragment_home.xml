@@ -4,61 +4,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/defaultBackgroundColor">
+    android:animateLayoutChanges="false">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/defaultBackgroundColor">
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/banner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitCenter"
-            app:layout_constraintTop_toTopOf="parent" />
+        android:padding="0dp">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/episodesHeader"
-            fontPath="fonts/Poppins-Bold.ttf"
-            android:layout_width="0dp"
+            fontPath="@string/font_path_bold"
+            android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:text="@string/latest_episodes"
             android:gravity="start|center_vertical"
-            android:textColor="@color/defaultContentColor"
             android:layout_margin="16dp"
             app:autoSizeTextType="uniform"
             app:autoSizeMinTextSize="18sp"
             app:autoSizeMaxTextSize="24sp"
-            app:layout_constraintTop_toBottomOf="@id/banner"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/settingsButton"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/settingsButton"
-            android:layout_width="wrap_content"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/settings"
-            android:textColor="@color/defaultBackgroundColor"
-            android:nextFocusRight="@id/allSeriesButton"
-            app:backgroundTint="@color/defaultContentColor"
-            app:layout_constraintTop_toBottomOf="@id/banner"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/episodesHeader" />
-
-        <com.nex3z.notificationbadge.NotificationBadge
-            android:id="@+id/settingsBadge"
-            fontPath="fonts/Poppins-Bold.ttf"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:visibility="gone"
-            app:nbMaxTextLength="2"
-            app:layout_constraintStart_toEndOf="@id/settingsButton"
-            app:layout_constraintTop_toTopOf="@id/settingsButton"/>
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/latestEpisodeRecycler"
@@ -67,17 +32,15 @@
             android:nestedScrollingEnabled="false"
             android:descendantFocusability="afterDescendants"
             android:animateLayoutChanges="false"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/episodesHeader"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/seriesHeader"
-            fontPath="fonts/Poppins-Bold.ttf"
+            fontPath="@string/font_path_bold"
             android:layout_width="0dp"
             android:layout_height="?attr/actionBarSize"
             android:text="@string/latest_series"
             android:gravity="start|center_vertical"
-            android:textColor="@color/defaultContentColor"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             app:autoSizeTextType="uniform"
@@ -94,9 +57,6 @@
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
             android:text="@string/more"
-            android:textColor="@color/defaultBackgroundColor"
-            android:nextFocusLeft="@id/settingsButton"
-            app:backgroundTint="@color/defaultContentColor"
             app:layout_constraintTop_toBottomOf="@id/latestEpisodeRecycler"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/seriesHeader" />
@@ -107,7 +67,6 @@
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             android:animateLayoutChanges="false"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/seriesHeader"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

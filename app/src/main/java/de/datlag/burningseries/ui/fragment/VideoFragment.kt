@@ -9,6 +9,7 @@ import android.view.KeyEvent
 import android.view.TextureView
 import android.view.View
 import android.view.WindowManager
+import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -18,7 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.dolatkia.animatedThemeManager.AppTheme
 import com.github.rubensousa.previewseekbar.PreviewLoader
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -29,10 +29,7 @@ import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
-import de.datlag.burningseries.common.hideLoadingDialog
-import de.datlag.burningseries.common.safeActivity
-import de.datlag.burningseries.common.safeContext
-import de.datlag.burningseries.common.safeNavigate
+import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentVideoBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.helper.lazyMutable
@@ -281,8 +278,10 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
                     if (nextNum != null) {
                         nextEpisodeInfo = burningSeriesDao.getEpisodeInfoBySeriesAndNumber(episodeInfo.seriesId, nextNum.toString()).first()
-                        burningSeriesViewModel.getStream(nextEpisodeInfo?.hoster ?: nextEpisodeInfo?.episode?.hoster ?: listOf()).mapNotNull { it.data }.launchAndCollect {
-                            nextEpisodeStreams.addAll(videoViewModel.getVideoSources(it).first())
+                        burningSeriesViewModel.getStream(
+                            nextEpisodeInfo?.hoster ?: nextEpisodeInfo?.episode?.hoster ?: listOf()
+                        ).mapNotNull { it.data }.launchAndCollect { streams ->
+                            nextEpisodeStreams.addAll(videoViewModel.getVideoSources(streams).first())
                         }
                     }
                 }
@@ -294,11 +293,6 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
         nextSourceOrDialog()
-    }
-
-    override fun onIsPlayingChanged(isPlaying: Boolean) {
-        super.onIsPlayingChanged(isPlaying)
-        binding.player.onPlayingChanged(isPlaying)
     }
 
     override fun onPlaybackStateChanged(playbackState: Int): Unit = with(binding) {
@@ -324,13 +318,30 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     private fun nextSourceOrDialog() {
         val currentSourcePos = videoViewModel.videoSourcePos.value
         if (currentSourcePos >= navArgs.videoStream.url.size - 1) {
-            if (view != null) {
-                findNavController().safeNavigate(VideoFragmentDirections.actionVideoFragmentToStreamUnavailableDialog(
-                    navArgs.seriesWithInfo,
-                    navArgs.videoStream.defaultUrl,
-                    episodeInfo.href
-                ))
-            }
+            materialDialogBuilder {
+                setPositiveButtonIcon(R.drawable.ic_baseline_edit_24)
+                setNegativeButtonIcon(R.drawable.ic_baseline_close_24)
+                setNeutralButtonIcon(R.drawable.ic_baseline_arrow_outward_24)
+                builder {
+                    setTitle(R.string.stream_unavailable)
+                    setMessage(R.string.stream_unavailable_text)
+                    setPositiveButton(R.string.activate) { dialog, _ ->
+                        dialog.dismiss()
+                        findNavController().safeNavigate(VideoFragmentDirections.actionVideoFragmentToScrapeHosterFragment(
+                            episodeInfo.href,
+                            navArgs.seriesWithInfo
+                        ))
+                    }
+                    setNegativeButton(R.string.back) { dialog, _ ->
+                        dialog.cancel()
+                        findNavController().safeNavigate(VideoFragmentDirections.actionVideoFragmentToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
+                    }
+                    setNeutralButton(R.string.browser) { dialog, _, ->
+                        dialog.dismiss()
+                        navArgs.videoStream.defaultUrl.toUri().openInBrowser(safeContext)
+                    }
+                }
+            }.show()
         } else lifecycleScope.launch(Dispatchers.IO) {
             videoViewModel.videoSourcePos.emit(currentSourcePos + 1)
         }
@@ -354,35 +365,29 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         }
     }
 
-    override fun syncTheme(appTheme: AppTheme) { }
-
-    override fun onResume() {
-        super.onResume()
-        extendedFab?.visibility = View.GONE
-        hideNavigationFabs()
-        hideLoadingDialog()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            safeActivity?.window?.attributes?.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-        }
-        safeActivity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        safeActivity?.window?.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        safeActivity?.window?.let { WindowCompat.setDecorFitsSystemWindows(it, false) }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            safeActivity?.window?.attributes?.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
-        }
-        safeActivity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        safeActivity?.window?.let { WindowCompat.setDecorFitsSystemWindows(it, true) }
-    }
-
     override fun onDestroyView() {
-        super.onDestroyView()
         exoPlayer.release()
         retriever.release()
         safeActivity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        super.onDestroyView()
+    }
+
+    override fun onStop() {
+        exoPlayer.pause()
+        safeActivity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        super.onStop()
+    }
+
+    override fun initActivityViews() {
+        super.initActivityViews()
+
+        appBarLayout?.setExpanded(false, false)
+        hideSeriesArc()
+        extendedFab?.gone()
+        appBarLayout?.gone()
+        hideNavigationFabs()
+        hideLoadingDialog()
+        enterFullScreen()
     }
 
     companion object {

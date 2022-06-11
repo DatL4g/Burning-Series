@@ -3,21 +3,16 @@ package de.datlag.burningseries.adapter
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.graphics.BlendModeColorFilterCompat
-import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.dolatkia.animatedThemeManager.ThemeManager
 import de.datlag.burningseries.R
-import de.datlag.burningseries.common.clearTint
-import de.datlag.burningseries.common.hide
+import de.datlag.burningseries.common.gone
 import de.datlag.burningseries.common.inflateView
-import de.datlag.burningseries.common.show
+import de.datlag.burningseries.common.visible
 import de.datlag.burningseries.databinding.RecyclerEpisodeBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
-import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.coilifier.commons.load
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import io.michaelrocks.paranoid.Obfuscate
@@ -69,15 +64,6 @@ class EpisodeRecyclerAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
         val item = differ.currentList[position]
 
-        val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
-        appTheme?.let {
-            binding.card.setBackgroundColor(it.defaultBackgroundColor(binding.card.context))
-            binding.number.setTextColor(it.defaultContentColor(binding.number.context))
-            binding.title.setTextColor(it.defaultContentColor(binding.title.context))
-            binding.progressIcon.clearTint()
-            binding.progressIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(it.defaultContentColor(binding.progressIcon.context), BlendModeCompat.SRC_IN)
-        }
-
         if (rightFocusViewId != null) {
             binding.card.nextFocusRightId = rightFocusViewId
         }
@@ -87,15 +73,15 @@ class EpisodeRecyclerAdapter(
         when {
             watchedProgress == 0F -> {
                 binding.progressIcon.load<Drawable>(null)
-                binding.progressIcon.hide()
+                binding.progressIcon.gone()
             }
             watchedProgress >= 85F -> {
                 binding.progressIcon.load<Drawable>(R.drawable.ic_baseline_check_24)
-                binding.progressIcon.show()
+                binding.progressIcon.visible()
             }
             watchedProgress > 0F -> {
                 binding.progressIcon.load<Drawable>(R.drawable.ic_baseline_play_arrow_24)
-                binding.progressIcon.show()
+                binding.progressIcon.visible()
             }
         }
     }

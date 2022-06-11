@@ -10,12 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import de.datlag.model.Constants
 import de.datlag.network.adblock.AdBlock
 import de.datlag.network.burningseries.BurningSeries
-import de.datlag.network.burningseries.BurningSeriesScraper
 import de.datlag.network.github.GitHub
-import de.datlag.network.jsonbase.JsonBase
-import de.datlag.network.m3o.DB
-import de.datlag.network.m3o.Image
-import de.datlag.network.video.DownloadVideo
 import de.datlag.network.video.VideoScraper
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.serialization.json.Json
@@ -65,9 +60,9 @@ object NetworkModule {
 	@Provides
 	@Singleton
 	fun provideCallFactory(): OkHttpClient = OkHttpClient.Builder()
-		.connectTimeout(60, TimeUnit.SECONDS)
-		.readTimeout(60, TimeUnit.SECONDS)
-		.writeTimeout(60, TimeUnit.SECONDS)
+		.connectTimeout(2, TimeUnit.MINUTES)
+		.readTimeout(2, TimeUnit.MINUTES)
+		.writeTimeout(2, TimeUnit.MINUTES)
 		.addInterceptor(loggingInterceptor)
 		.build()
 
@@ -87,53 +82,13 @@ object NetworkModule {
 	fun provideBurningSeriesService(
 		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
 	): BurningSeries = builder
-		.baseUrl(Constants.API_WRAP_API_BASE)
+		.baseUrl("https://api.datlag.dev")
 		.build()
 		.create(BurningSeries::class.java)
 
 	@Provides
 	@Singleton
-	fun provideBurningSeriesScraper() = BurningSeriesScraper()
-
-	@Provides
-	@Singleton
-	fun provideM3OImageService(
-		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
-	): Image = builder
-		.baseUrl(Constants.API_M3O)
-		.build()
-		.create(Image::class.java)
-
-	@Provides
-	@Singleton
-	fun provideM3ODBService(
-		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
-	): DB = builder
-		.baseUrl(Constants.API_M3O)
-		.build()
-		.create(DB::class.java)
-
-	@Provides
-	@Singleton
-	fun provideJsonBaseService(
-		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
-	): JsonBase = builder
-		.baseUrl(Constants.API_JSONBASE)
-		.build()
-		.create(JsonBase::class.java)
-
-	@Provides
-	@Singleton
 	fun provideVideoScraper() = VideoScraper()
-
-	@Provides
-	@Singleton
-	fun provideDownloadVideoService(
-		@Named(Constants.NAMED_JSON_RETROFIT) builder: Retrofit.Builder
-	): DownloadVideo = builder
-		.baseUrl(Constants.API_WRAP_API_BASE)
-		.build()
-		.create(DownloadVideo::class.java)
 
 	@Provides
 	@Singleton
@@ -154,5 +109,11 @@ object NetworkModule {
 
 	@Provides
 	@Singleton
+	@Named("anilistApollo")
 	fun provideAniListApolloClient() = ApolloClient.Builder().serverUrl("https://graphql.anilist.co").build()
+
+	@Provides
+	@Singleton
+	@Named("githubApollo")
+	fun provideGitHubApolloClient() = ApolloClient.Builder().serverUrl("https://api.github.com/graphql").build()
 }

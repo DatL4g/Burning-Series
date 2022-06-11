@@ -2,10 +2,8 @@ package de.datlag.network.video
 
 import android.net.Uri
 import androidx.datastore.core.DataStore
-import com.hadiyarajesh.flower.Resource
-import com.hadiyarajesh.flower.networkResource
 import de.datlag.datastore.SettingsPreferences
-import de.datlag.model.jsonbase.Stream
+import de.datlag.model.burningseries.stream.Stream
 import de.datlag.model.video.VideoStream
 import de.datlag.network.common.toInt
 import io.michaelrocks.paranoid.Obfuscate
@@ -22,9 +20,7 @@ import javax.inject.Named
 
 @Obfuscate
 class VideoRepository @Inject constructor(
-    val scraper: VideoScraper,
-    @Named("wrapApiToken") val wrapApiToken: String,
-    val service: DownloadVideo
+    val scraper: VideoScraper
 ) {
 
     @Inject
@@ -35,15 +31,9 @@ class VideoRepository @Inject constructor(
             emit(list.map {
                 async {
                     val scraped = scraper.scrapeVideosFrom(it.url)
-                    val api = if (settingsDataStore.data.first().video.advancedFetching) {
-                        getDownloadVideo(it.url).first()
-                    } else {
-                        emptyList()
-                    }
                     val completeList: MutableSet<String> = mutableSetOf()
 
                     completeList.addAll(scraped)
-                    completeList.addAll(api)
 
                     if (completeList.isEmpty()) {
                         null
@@ -61,26 +51,4 @@ class VideoRepository @Inject constructor(
             }.awaitAll().filterNotNull().sortedBy { it.hoster })
         }
     }.flowOn(Dispatchers.IO)
-
-    private suspend fun getDownloadVideo(url: String): Flow<List<String>> = flow {
-        networkResource(fetchFromRemote = {
-            service.getDownloadVideo(apiKey = wrapApiToken, site = url)
-        }).collect {
-            when (it.status) {
-                Resource.Status.SUCCESS -> {
-                    it.data?.let { safeData ->
-                        if (safeData.success && !safeData.url.isNullOrEmpty()) {
-                            emit(listOf(safeData.url!!))
-                        } else {
-                            emit(emptyList<String>())
-                        }
-                    }
-                }
-                Resource.Status.ERROR -> {
-                    emit(emptyList<String>())
-                }
-                else -> { }
-            }
-        }
-    }
 }

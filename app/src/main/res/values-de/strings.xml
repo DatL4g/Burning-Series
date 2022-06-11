@@ -35,8 +35,8 @@
     <string name="select_season">Staffel auswählen</string>
     <string name="season_placeholder">Staffel %d</string>
     <string name="select_hoster">Hoster auswählen</string>
-    <string name="watch">Anschauen</string>
-    <string name="help_improve_text">Damit die App richtig funktioniert, hängt es von DEINER Hilfe ab. Videos können aufgrund des Captchas nicht immer direkt angesehen werden. Sollte ein Video nicht verfügbar sein, starte es bitte auf der Website (die App fragt automatisch danach). Sobald du es gestartet hast, sollte es auch direkt in der App verfügbar sein. Die folgende Zahl zeigt an, wie viele Videos verfügbar sind:</string>
+    <string name="watch">Schauen</string>
+    <string name="help_improve_text">Damit die App richtig funktioniert, hängt es von DEINER Hilfe ab. Videos können aufgrund des Captchas nicht immer direkt angesehen werden. Sollte ein Video nicht verfügbar sein, starte es bitte auf der Website (die App fragt automatisch danach). Sobald du es gestartet hast, sollte es auch direkt in der App verfügbar sein.\nMomentan verfügbare Videos: %d</string>
     <string name="scraped_save_success">Hoster erfolgreich gespeichert. Du kannst jetzt zurückgehen oder weiter surfen und weitere Hoster aktivieren :)</string>
     <string name="scraped_save_failed">Hoster konnte nicht gespeichert werden. Vielleicht ist es bereits gespeichert, versuche es mit einem anderen Hoster oder gehe zurück.</string>
     <string name="stream_unavailable_text">Dieses Video kann nicht gestreamt werden. Hast du deine Netzwerkverbindung überprüft? Du kannst zurückgehen und einen anderen Hoster ausprobieren, das Video im Browser öffnen oder einen Hoster aktivieren, damit es in der App gestreamt werden kann.</string>
@@ -56,12 +56,11 @@
     <string name="open">Öffnen</string>
     <string name="of">von</string>
     <string name="new_release">Neue Version</string>
-    <string name="new_release_text">Hey eine neue Version ist verfügbar, das solltest du dir ansehen!\n\nVersion: \t\t\t\t\t\t%s\nInstalliert: \t\t\t\t\t%s\nVorabversion: \t%s</string>
+    <string name="new_release_text">Hey eine neue Version ist verfügbar, das solltest du dir ansehen!\n\nVersion: \t\t\t\t\t\t\t%s\nInstalliert: \t\t\t\t\t%s</string>
     <string name="view">Ansehen</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="opensource_libs">OpenSource Bibliotheken</string>
-    <string name="github_project">GitHub Projekt</string>
     <string name="confirm">Bestätigen</string>
     <string name="default_fullscreen">Vollbild standartmäßig</string>
     <string name="default_fullscreen_subtitle">Automatisch zu Vollbild wechseln beim Video schauen</string>
@@ -77,6 +76,8 @@
     <string name="anilist_login_subtitle">Synchronisiere deinen Fortschritt mit AniList</string>
     <string name="anilist_images">Benutze AniList Bilder</string>
     <string name="anilist_images_subtitle">Lädt AniList Cover von Serien</string>
+    <string name="github_login">GitHub Einloggem</string>
+    <string name="github_login_subtitle">Assoziiert deinen Sponsor Status mit der App</string>
     <string name="burningseries_theme">BurningSeries Theme</string>
     <string name="burningseries_theme_subtitle">Nutze die BurningSeries Akzentfarbe</string>
     <string name="close">Schließen</string>
@@ -86,4 +87,8 @@
     <string name="start_episode">Start [Ep. %d]</string>
     <string name="continue_episode">Weiter [Ep. %d]</string>
     <string name="clear">Löschen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="add_to_favorites">Zu Favoriten hinzufügen</string>
+    <string name="remove_from_favorites">Aus Favoriten entfernen</string>
+    <string name="about">Über</string>
 </resources>

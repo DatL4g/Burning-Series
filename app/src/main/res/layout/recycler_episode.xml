@@ -4,7 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card"
-    app:cardBackgroundColor="@color/defaultBackgroundColor"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize">
 
@@ -14,10 +13,9 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/number"
-            fontPath="fonts/Poppins-Bold.ttf"
+            fontPath="@string/font_path_bold"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="match_parent"
-            android:textColor="@color/defaultContentColor"
             android:gravity="center"
             android:maxLines="1"
             android:singleLine="true"
@@ -28,10 +26,9 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
-            fontPath="fonts/Poppins-Bold.ttf"
+            fontPath="@string/font_path_bold"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:textColor="@color/defaultContentColor"
             android:gravity="start|center_vertical"
             android:maxLines="1"
             android:singleLine="true"
@@ -48,7 +45,6 @@
             android:layout_height="match_parent"
             android:visibility="gone"
             tools:visibility="visible"
-            app:tint="@color/defaultContentColor"
             android:scaleType="centerInside"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

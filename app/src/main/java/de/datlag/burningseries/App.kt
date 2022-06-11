@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.core.DataStore
 import androidx.multidex.MultiDexApplication
 import dagger.hilt.android.HiltAndroidApp
+import de.datlag.burningseries.helper.AppUsageTracker
 import de.datlag.burningseries.helper.NightMode
 import de.datlag.datastore.SettingsPreferences
 import de.datlag.model.Constants
@@ -29,8 +30,6 @@ class App : MultiDexApplication() {
 	@Inject
 	lateinit var settingsDataStore: DataStore<SettingsPreferences>
 
-	var themeId: Int = 0
-
 	override fun onCreate() {
 		super.onCreate()
 
@@ -38,7 +37,7 @@ class App : MultiDexApplication() {
 			Timber.plant(Timber.DebugTree())
 		}
 
-		applyDarkMode()
+		applySettings()
 		applyFont()
 
 		Thread.setDefaultUncaughtExceptionHandler { _, exception ->
@@ -76,13 +75,21 @@ class App : MultiDexApplication() {
 		}
 	}
 
-	private fun applyDarkMode() = GlobalScope.launch(Dispatchers.IO) {
-		settingsDataStore.data.map { it.appearance }.collect {
-			val mode = if (it.darkMode) NightMode.Mode.DARK else NightMode.Mode.LIGHT
-			themeId = it.theme
+	private fun applySettings() = GlobalScope.launch(Dispatchers.IO) {
+		settingsDataStore.data.collect {
+			val mode = if (it.appearance.darkMode) NightMode.Mode.DARK else NightMode.Mode.LIGHT
 			withContext(Dispatchers.Main) {
+				registerActivityLifecycleCallbacks(AppUsageTracker(it.usage.spentTime) { spentTime ->
+					saveUsage(spentTime)
+				})
 				AppCompatDelegate.setDefaultNightMode(mode.toDelegateMode())
 			}
+		}
+	}
+
+	private fun saveUsage(spentTime: Long) = GlobalScope.launch(Dispatchers.IO) {
+		settingsDataStore.updateData {
+			it.toBuilder().setUsage(it.usage.toBuilder().setSpentTime(spentTime).build()).build()
 		}
 	}
 

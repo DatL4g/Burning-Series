@@ -4,16 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="@color/defaultBackgroundColor">
+    android:layout_height="?attr/actionBarSize">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
-        fontPath="fonts/Poppins-Bold.ttf"
+        fontPath="@string/font_path_bold"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:textColor="@color/defaultContentColor"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:autoSizeTextType="uniform"

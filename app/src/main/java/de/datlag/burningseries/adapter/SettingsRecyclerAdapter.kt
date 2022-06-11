@@ -5,17 +5,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.dolatkia.animatedThemeManager.ThemeManager
 import de.datlag.burningseries.R
-import de.datlag.burningseries.common.hide
+import de.datlag.burningseries.common.gone
 import de.datlag.burningseries.common.inflateView
-import de.datlag.burningseries.common.show
+import de.datlag.burningseries.common.visible
 import de.datlag.burningseries.databinding.RecyclerSettingsGroupBinding
 import de.datlag.burningseries.databinding.RecyclerSettingsServiceBinding
 import de.datlag.burningseries.databinding.RecyclerSettingsSwitchBinding
 import de.datlag.burningseries.extend.RecyclerAdapter
 import de.datlag.burningseries.model.SettingsModel
-import de.datlag.burningseries.ui.theme.ApplicationTheme
 import io.michaelrocks.paranoid.Obfuscate
 
 @Obfuscate
@@ -38,12 +36,6 @@ class SettingsRecyclerAdapter : RecyclerAdapter<SettingsModel, SettingsRecyclerA
         private fun bindGroup(item: SettingsModel.Group) {
             val binding = RecyclerSettingsGroupBinding.bind(itemView)
 
-            val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
-            appTheme?.let {
-                binding.card.setBackgroundColor(it.defaultBackgroundColor(binding.card.context))
-                binding.title.setTextColor(it.defaultContentColor(binding.title.context))
-            }
-
             binding.title.text = item.title
         }
 
@@ -51,21 +43,12 @@ class SettingsRecyclerAdapter : RecyclerAdapter<SettingsModel, SettingsRecyclerA
             val binding = RecyclerSettingsSwitchBinding.bind(itemView)
             binding.switcher.setOnCheckedChangeListener(null)
 
-            val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
-            appTheme?.let {
-                binding.card.setBackgroundColor(it.defaultBackgroundColor(binding.card.context))
-                binding.title.setTextColor(it.defaultContentColor(binding.title.context))
-                binding.text.setTextColor(it.defaultContentColor(binding.text.context))
-                binding.switcher.thumbTintList = it.switchThumbStateList(binding.switcher.context)
-                binding.switcher.trackTintList = it.switchTrackStateList(binding.switcher.context)
-            }
-
             binding.title.text = item.title
             binding.text.text = item.text
             if (item.text.isEmpty()) {
-                binding.text.hide()
+                binding.text.gone()
             } else {
-                binding.text.show()
+                binding.text.visible()
             }
             binding.switcher.isChecked = item.defaultValue
             binding.switcher.isEnabled = item.enabled
@@ -101,22 +84,13 @@ class SettingsRecyclerAdapter : RecyclerAdapter<SettingsModel, SettingsRecyclerA
             val binding = RecyclerSettingsServiceBinding.bind(itemView)
             binding.button.setOnClickListener(null)
 
-            val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
-            appTheme?.let {
-                binding.card.setBackgroundColor(it.defaultBackgroundColor(binding.card.context))
-                binding.title.setTextColor(it.defaultContentColor(binding.title.context))
-                binding.text.setTextColor(it.defaultContentColor(binding.text.context))
-                binding.button.setBackgroundColor(it.defaultContentColor(binding.button.context))
-                binding.button.setTextColor(it.defaultBackgroundColor(binding.button.context))
-            }
-
             item.imageBind.invoke(binding.icon)
             binding.title.text = item.title
             binding.text.text = item.text
             if (item.text.isEmpty()) {
-                binding.text.hide()
+                binding.text.gone()
             } else {
-                binding.text.show()
+                binding.text.visible()
             }
             binding.button.text = item.buttonText
             binding.button.setOnClickListener {

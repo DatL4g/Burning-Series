@@ -9,13 +9,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.dolatkia.animatedThemeManager.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
-import de.datlag.burningseries.common.hideLoadingDialog
-import de.datlag.burningseries.common.safeContext
-import de.datlag.burningseries.common.safeNavigate
-import de.datlag.burningseries.common.showLoadingDialog
+import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentScrapeHosterBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.ui.webview.AdBlockWebViewClient
@@ -48,10 +44,23 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
 
     private val lazyErrorListener: (Uri?) -> Unit = {
         hideLoadingDialog()
-        findNavController().safeNavigate(ScrapeHosterFragmentDirections.actionScrapeHosterFragmentToWebViewErrorDialog(
-            it?.toString() ?: binding.webView.url ?: navArgs.href,
-            navArgs.seriesWithInfo
-        ))
+        materialDialogBuilder {
+            setPositiveButtonIcon(R.drawable.ic_baseline_refresh_24)
+            setNegativeButtonIcon(R.drawable.ic_baseline_close_24)
+            builder {
+                setTitle(R.string.error_loading)
+                setMessage(safeContext.getString(R.string.error_loading_text, navArgs.href))
+                setPositiveButton(R.string.retry) { dialog, _ ->
+                    dialog.dismiss()
+                    binding.webView.loadUrl(Constants.getBurningSeriesLink(navArgs.href))
+                }
+                setNegativeButton(R.string.back) { dialog, _ ->
+                    dialog.cancel()
+                    findNavController().safeNavigate(ScrapeHosterFragmentDirections.actionScrapeHosterFragmentToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
+                }
+                setCancelable(false)
+            }
+        }.show()
     }
 
     private val adBlockWebViewClient = AdBlockWebViewClient(setOf(Constants.HOST_BS_TO), loadingStartedListener, loadingFinishedListener, lazyErrorListener)
@@ -70,8 +79,6 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
         binding.webView.loadUrl(Constants.getBurningSeriesLink(navArgs.href))
         saveStream()
     }
-
-    override fun syncTheme(appTheme: AppTheme) { }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView(): Unit = with(binding) {
@@ -111,12 +118,29 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
     }
 
     private fun saveScrapedData(data: String) = viewModel.saveIfNotPresent(data).launchAndCollect {
-        findNavController().safeNavigate(ScrapeHosterFragmentDirections.actionScrapeHosterFragmentToSaveScrapedDialog(it, navArgs.seriesWithInfo))
+        materialDialogBuilder {
+            setPositiveButtonIcon(R.drawable.ic_baseline_edit_24)
+            setNegativeButtonIcon(R.drawable.ic_baseline_close_24)
+            builder {
+                setTitle(if (it) R.string.save_success else R.string.save_failed)
+                setMessage(if (it) R.string.scraped_save_success else R.string.scraped_save_failed)
+                setPositiveButton(R.string.continue_string) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                setNegativeButton(R.string.back) { dialog, _ ->
+                    dialog.cancel()
+                    findNavController().safeNavigate(ScrapeHosterFragmentDirections.actionScrapeHosterFragmentToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
+                }
+            }
+        }.show()
     }
 
-    override fun onResume() {
-        super.onResume()
-        extendedFab?.visibility = View.GONE
+    override fun initActivityViews() {
+        super.initActivityViews()
+
+        exitFullScreen()
+        hideSeriesArc()
+        extendedFab?.gone()
         hideNavigationFabs()
     }
 }

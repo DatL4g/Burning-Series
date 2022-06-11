@@ -7,20 +7,25 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.dolatkia.animatedThemeManager.ThemeManager
 import de.datlag.burningseries.R
+import de.datlag.burningseries.common.anyHeight
+import de.datlag.burningseries.common.anyWidth
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerFavoriteBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
-import de.datlag.burningseries.ui.theme.ApplicationTheme
+import de.datlag.coilifier.BlurHash
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import io.michaelrocks.paranoid.Obfuscate
+import java.io.File
 
 @Obfuscate
-class FavoriteRecyclerAdapter(private val fragment: AdvancedFragment) : ClickRecyclerAdapter<SeriesWithInfo, FavoriteRecyclerAdapter.ViewHolder>() {
+class FavoriteRecyclerAdapter(
+    private val coversDir: File,
+    private val blurHash: BlurHash
+) : ClickRecyclerAdapter<SeriesWithInfo, FavoriteRecyclerAdapter.ViewHolder>() {
 
     override val diffCallback = object : DiffUtil.ItemCallback<SeriesWithInfo>() {
         override fun areItemsTheSame(oldItem: SeriesWithInfo, newItem: SeriesWithInfo): Boolean {
@@ -53,16 +58,20 @@ class FavoriteRecyclerAdapter(private val fragment: AdvancedFragment) : ClickRec
     override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
         val item = differ.currentList[position]
 
-        val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
-        appTheme?.let {
-            binding.parent.setBackgroundColor(it.defaultBackgroundColor(binding.parent.context))
-            binding.card.setCardBackgroundColor(it.defaultBackgroundColor(binding.card.context))
-            binding.cover.setBackgroundColor(it.defaultBackgroundColor(binding.cover.context))
-            binding.title.setTextColor(it.defaultContentColor(binding.title.context))
-        }
+        val cover = item.cover ?: item.series.cover
+        val errorImage = cover.loadBase64Image(coversDir)
 
-        fragment.loadImageAndSave(Constants.getBurningSeriesLink(item.series.image)) {
-            binding.cover.load<Drawable>(it)
+        binding.cover.load<Drawable>(Constants.getBurningSeriesLink(cover.href)) {
+            val width = binding.cover.anyWidth ?: 0
+            val height = binding.cover.anyHeight ?: 0
+
+            if (errorImage != null) {
+                error(errorImage)
+            } else if (cover.blurHash.isNotEmpty() && width > 0 && height > 0) {
+                error(cover.loadBlurHash {
+                    blurHash.execute(cover.blurHash, width, height)
+                })
+            }
         }
         binding.title.text = item.series.title
     }

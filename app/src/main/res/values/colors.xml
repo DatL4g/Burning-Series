@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primaryColor">#ffffff</color>
-    <color name="primaryLightColor">#ffffff</color>
-    <color name="primaryDarkColor">#ffffff</color>
-    <color name="defaultBackgroundColor">#ffffffff</color>
-    <color name="defaultBackgroundColorHalfAlpha">#78ffffff</color>
-    <color name="defaultContentColor">#ff121212</color>
-    <color name="defaultContentColorHalfAlpha">#78121212</color>
-    <color name="bottomSheetBackground">#ffffff</color>
-    <color name="rippleColor">#40000000</color>
-    <color name="rippleColorInvert">#40ffffff</color>
-    <color name="successBackgroundColor">#689957</color>
-    <color name="errorBackgroundColor">#db3236</color>
-    <color name="successContentColor">#ffffff</color>
-    <color name="errorContentColor">#ffffff</color>
-    <color name="favIconColorTrue">#db3236</color>
-    <color name="favIconColorFalse">@color/defaultContentColor</color>
+    <color name="primaryColor">#084475</color>
+    <color name="primaryLightColor">#466fa4</color>
+    <color name="primaryDarkColor">#001e49</color>
+    <color name="primaryTextColor">#fafafa</color>
 
-    <color name="black">#000000</color>
-    <color name="blackHalfAlpha">#78000000</color>
+    <color name="errorColor">#db3236</color>
+    <color name="errorTextColor">#fafafa</color>
 
-    <color name="datlagColor">#db3236</color>
-    <color name="datlagContentColor">#ffffff</color>
-    <color name="datlagColorHalfAlpha">#78db3236</color>
+    <color name="coloredBackground">#ebecf4</color>
+    <color name="coloredBackgroundTextColor">@color/primaryColor</color>
 
-    <color name="bsColor">#094576</color>
-    <color name="bsColorHalfAlpha">#78094576</color>
+    <color name="backgroundColor">#fafafa</color>
+    <color name="backgroundTextColor">#121212</color>
 </resources>

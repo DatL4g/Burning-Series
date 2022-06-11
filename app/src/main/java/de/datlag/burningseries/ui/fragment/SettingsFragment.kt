@@ -15,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.devs.readmoreoption.ReadMoreOption
-import com.dolatkia.animatedThemeManager.AppTheme
 import com.kttdevelopment.mal4j.MyAnimeList
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.BuildConfig
@@ -26,9 +25,6 @@ import de.datlag.burningseries.databinding.FragmentSettingsBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.helper.NightMode
 import de.datlag.burningseries.model.SettingsModel
-import de.datlag.burningseries.ui.theme.ApplicationTheme
-import de.datlag.burningseries.ui.theme.BurningSeriesTheme
-import de.datlag.burningseries.ui.theme.DefaultTheme
 import de.datlag.burningseries.viewmodel.GitHubViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.UserViewModel
@@ -40,9 +36,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
@@ -63,6 +61,10 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
         result -> userViewModel.aniListResultLauncherCallback(result)
     }
 
+    private val githubOAuthResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        result -> userViewModel.githubResultLauncherCallback(result)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -76,19 +78,17 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
         userViewModel.setSaveAniListListener {
             settingsViewModel.updateUserAniListAuth(it)
         }
-        binding.librariesCard.setOnClickListener {
-            findNavController().safeNavigate(SettingsFragmentDirections.actionSettingsFragmentToAboutLibraries())
+        userViewModel.setSaveGitHubAuthListener {
+            settingsViewModel.updateUserGitHubAuth(it)
         }
-        binding.githubCard.setOnClickListener {
-            Constants.GITHUB_PROJECT.toUri().openInBrowser(safeContext, safeContext.getString(R.string.github_project))
-        }
-        binding.syncCard.setOnClickListener {
-            findNavController().safeNavigate(SettingsFragmentDirections.actionSettingsFragmentToSyncFragment())
-        }
+        binding.version.text = safeContext.getString(R.string.copyright,
+            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year,
+            Constants.GITHUB_OWNER
+        )
 
         val errorText = loadFileSavedText(Constants.LOG_FILE)?.trim()
         if (errorText.isNullOrEmpty()) {
-            binding.latestErrorCard.hide()
+            binding.latestErrorCard.gone()
         } else {
             val errorLastModified = fileLastModifiedOrCreated(Constants.LOG_FILE)
             if (errorLastModified > 0L) {
@@ -101,8 +101,6 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                 moreLabel("\t${safeContext.getString(R.string.more)}")
                 lessLabel("\t${safeContext.getString(R.string.less)}")
                 labelUnderLine(true)
-                moreLabelColor(safeContext.getColorCompat(R.color.datlagContentColor))
-                lessLabelColor(safeContext.getColorCompat(R.color.datlagContentColor))
                 expandAnimation(true)
             }
             try {
@@ -112,41 +110,12 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
             }
             binding.errorClearButton.setOnClickListener {
                 clearTextFile(Constants.LOG_FILE)
-                binding.latestErrorCard.hide()
+                binding.latestErrorCard.gone()
             }
             binding.errorCopyButton.setOnClickListener {
                 safeContext.copyToClipboard(safeContext.getString(R.string.error_copy_tag), errorText)
             }
-            binding.latestErrorCard.show()
-        }
-    }
-
-    override fun syncTheme(appTheme: AppTheme) {
-        val currentTheme = appTheme as? ApplicationTheme?
-        currentTheme?.let {
-            binding.parent.setBackgroundColor(it.defaultBackgroundColor(safeContext))
-            binding.settingsHeader.setTextColor(it.defaultContentColor(safeContext))
-            binding.latestReleaseCard.setCardBackgroundColor(it.defaultContentColor(safeContext))
-            binding.title.setTextColor(it.defaultBackgroundColor(safeContext))
-            binding.date.setTextColor(it.defaultBackgroundColor(safeContext))
-            binding.text.setTextColor(it.defaultBackgroundColor(safeContext))
-            binding.viewButton.setTextColor(it.defaultContentColor(safeContext))
-            binding.viewButton.setBackgroundColor(it.defaultBackgroundColor(safeContext))
-
-            binding.librariesCard.setCardBackgroundColor(it.defaultContentColor(safeContext))
-            binding.aboutIcon.clearTint()
-            binding.aboutIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(it.defaultBackgroundColor(safeContext), BlendModeCompat.SRC_IN)
-            binding.about.setTextColor(it.defaultBackgroundColor(safeContext))
-
-            binding.githubCard.setCardBackgroundColor(it.defaultContentColor(safeContext))
-            binding.githubIcon.clearTint()
-            binding.githubIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(it.defaultBackgroundColor(safeContext), BlendModeCompat.SRC_IN)
-            binding.github.setTextColor(it.defaultBackgroundColor(safeContext))
-
-            binding.syncCard.setCardBackgroundColor(it.defaultContentColor(safeContext))
-            binding.syncIcon.clearTint()
-            binding.syncIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(it.defaultBackgroundColor(safeContext), BlendModeCompat.SRC_IN)
-            binding.sync.setTextColor(it.defaultBackgroundColor(safeContext))
+            binding.latestErrorCard.visible()
         }
     }
 
@@ -158,6 +127,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
     private fun setSettingsData() = settingsViewModel.data.distinctUntilChanged().launchAndCollect {
         userViewModel.loadMalAuth(it.user.malAuth)
         userViewModel.loadAniListAuth(it.user.anilistAuth)
+        userViewModel.loadGitHubAuth(it.user.githubAuth)
 
         settingsAdapter.submitList(listOf(
             SettingsModel.Group(0,safeContext.getString(R.string.appearance)),
@@ -173,22 +143,6 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                 settingsViewModel.updateAppearanceDarkMode(isChecked)
             },
             SettingsModel.Switch(1,
-                safeContext.getString(R.string.burningseries_theme),
-                safeContext.getString(R.string.burningseries_theme_subtitle),
-                it.appearance.theme > 0
-            ) { view, isChecked ->
-                val id = if (isChecked) {
-                    themeManager.changeTheme(BurningSeriesTheme(), view, 0)
-                    1
-                } else {
-                    themeManager.reverseChangeTheme(DefaultTheme(), view, 0)
-                    0
-                }
-                settingsAdapter.notifyDataSetChanged()
-
-                settingsViewModel.updateAppearanceBurningSeriesTheme(id)
-            },
-            SettingsModel.Switch(2,
                 safeContext.getString(R.string.display_improve_dialog),
                 safeContext.getString(R.string.display_improve_dialog_subtitle),
                 it.appearance.improveDialog
@@ -196,28 +150,28 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                 settingsViewModel.updateAppearanceImproveDialog(isChecked)
             },
             SettingsModel.Group(1, safeContext.getString(R.string.video)),
-            SettingsModel.Switch(3,
+            SettingsModel.Switch(2,
                 safeContext.getString(R.string.advanced_fetching),
                 safeContext.getString(R.string.advanced_fetching_subtitle),
                 it.video.advancedFetching
             ) { _, isChecked ->
                 settingsViewModel.updateVideoAdvancedFetching(isChecked)
             },
-            SettingsModel.Switch(4,
+            SettingsModel.Switch(3,
                 safeContext.getString(R.string.prefer_mp4),
                 safeContext.getString(R.string.prefer_mp4_subtitle),
                 it.video.preferMp4
             ) { _, isChecked ->
                 settingsViewModel.updateVideoPreferMp4(isChecked)
             },
-            SettingsModel.Switch(5,
+            SettingsModel.Switch(4,
                 safeContext.getString(R.string.enable_preview),
                 safeContext.getString(R.string.enable_preview_subtitle),
                 it.video.previewEnabled
             ) { _, isChecked ->
                 settingsViewModel.updateVideoPreview(isChecked)
             },
-            SettingsModel.Switch(6,
+            SettingsModel.Switch(5,
                 getString(R.string.default_fullscreen),
                 getString(R.string.default_fullscreen_subtitle),
                 it.video.defaultFullscreen
@@ -241,7 +195,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                     malOAuthResultLauncher.launch(userViewModel.createMalAuthIntent(safeContext))
                 }
             },
-            SettingsModel.Switch(7,
+            SettingsModel.Switch(6,
                 getString(R.string.mal_images),
                 getString(R.string.mal_images_subtitle),
                 it.user.malImages && userViewModel.isMalAuthorized(),
@@ -264,7 +218,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                     anilistOAuthResultLauncher.launch(userViewModel.createAniListAuthIntent(safeContext))
                 }
             },
-            SettingsModel.Switch(8,
+            SettingsModel.Switch(7,
                 getString(R.string.anilist_images),
                 getString(R.string.anilist_images_subtitle),
                 it.user.aniListImages && userViewModel.isAniListAuthorized(),
@@ -272,50 +226,66 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
             ) { _, isChecked ->
                 settingsViewModel.updateUserAniListImages(isChecked)
             },
+            SettingsModel.Group(4, getString(R.string.github)),
+            SettingsModel.Service(2,
+                getString(R.string.github_login),
+                getString(R.string.github_login_subtitle),
+                getString(if (userViewModel.isGitHubAuthorized()) R.string.logout else R.string.login),
+                { view ->
+                    loadGitHubUser(view)
+                }
+            ) {
+                if (userViewModel.isGitHubAuthorized()) {
+                    userViewModel.endGitHubAuth()
+                } else {
+                    githubOAuthResultLauncher.launch(userViewModel.createGitHubAuthIntent(safeContext))
+                }
+            }
         ))
     }
 
     private fun loadUserImage(mal: MyAnimeList?, view: ImageView) = lifecycleScope.launch(Dispatchers.IO) {
-        val picture = mal?.authenticatedUser?.pictureURL
+        val authUser = mal?.authenticatedUser
+        val picture = authUser?.pictureURL
+        val name = authUser?.name
         withContext(Dispatchers.Main) {
-            view.clearTint()
-            if (picture.isNullOrEmpty()) {
-                view.load<Drawable>(R.drawable.ic_myanimelist)
-            } else {
-                view.load<Drawable>(picture) {
-                    transform(RoundedCorners(safeContext.dpToPx(12).toInt()))
-                    error(R.drawable.ic_myanimelist)
-                    placeholder(R.drawable.ic_myanimelist)
-                    fallback(R.drawable.ic_myanimelist)
-                }
+            view.load<Drawable>(picture) {
+                transform(RoundedCorners(safeContext.dpToPx(12).toInt()))
+                error(R.drawable.ic_myanimelist)
+                placeholder(R.drawable.ic_myanimelist)
+                fallback(R.drawable.ic_myanimelist)
             }
+            view.contentDescription = name
         }
     }
 
     private fun loadAniListUserImage(view: ImageView) = userViewModel.getAniListUser().distinctUntilChanged().launchAndCollect {
-        val picture = it?.avatar?.large ?: it?.avatar?.medium
-        withContext(Dispatchers.Main) {
-            if (picture.isNullOrEmpty()) {
-                view.load<Drawable>(R.drawable.ic_anilist)
-            } else {
-                view.load<Drawable>(picture) {
-                    transform(RoundedCorners(safeContext.dpToPx(12).toInt()))
-                    error(R.drawable.ic_anilist)
-                    placeholder(R.drawable.ic_anilist)
-                    fallback(R.drawable.ic_anilist)
-                }
-            }
+        view.load<Drawable>(it?.avatar?.large ?: it?.avatar?.medium) {
+            transform(RoundedCorners(safeContext.dpToPx(12).toInt()))
+            error(R.drawable.ic_anilist)
+            placeholder(R.drawable.ic_anilist)
+            fallback(R.drawable.ic_anilist)
         }
+        view.contentDescription = it?.name
+    }
+
+    private fun loadGitHubUser(view: ImageView) = userViewModel.getGitHubUser().distinctUntilChanged().launchAndCollect {
+        view.load<Drawable>(it?.avatarUrl) {
+            transform(RoundedCorners(safeContext.dpToPx(12).toInt()))
+            error(R.drawable.ic_github)
+            placeholder(R.drawable.ic_github)
+            fallback(R.drawable.ic_github)
+        }
+        view.contentDescription = it?.name ?: it?.login
     }
 
     private fun listenNewVersion() = gitHubViewModel.getLatestRelease().launchAndCollect { release ->
         if (release != null) {
-            binding.latestReleaseCard.show()
+            binding.latestReleaseCard.visible()
             binding.date.text = release.publishedAtIsoDate()
             binding.text.text = safeContext.getString(
                 R.string.new_release_text, release.tagName,
-                BuildConfig.VERSION_NAME,
-                safeContext.getString(if (release.isPreRelease) R.string.yes else R.string.no)
+                BuildConfig.VERSION_NAME
             )
             binding.viewButton.setOnClickListener {
                 if (safeContext.isInstalledFromFDroid()) {
@@ -325,13 +295,21 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                 }.openInBrowser(safeContext)
             }
         } else {
-            binding.latestReleaseCard.hide()
+            binding.latestReleaseCard.gone()
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        extendedFab?.visibility = View.GONE
+    override fun initActivityViews() {
+        super.initActivityViews()
+
+        exitFullScreen()
+        hideSeriesArc()
+        extendedFab?.gone()
         hideNavigationFabs()
+        showToolbarBackButton()
+        hideSeriesArc()
+        appBarLayout?.setExpanded(false, false)
+        appBarLayout?.setExpandable(false)
+        setToolbarTitle(R.string.settings)
     }
 }

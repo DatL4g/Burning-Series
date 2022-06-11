@@ -70,9 +70,9 @@ class GitHubViewModel @Inject constructor(
                 val installedTagNumber: Int? = current.tagAsNumberString()?.toIntOrNull()
                 val tagNumberList = list.toMutableList().map { Pair(it, it.tagAsNumberString()?.toIntOrNull()) }.filterNot { it.second == null }
                 if (installedTagNumber != null && tagNumberList.isNotEmpty()) {
-                    val highestRelease = tagNumberList.sortedByDescending { it.second }.first()
-                    if (highestRelease.second ?: 0 > installedTagNumber) {
-                        highestRelease.first
+                    val highestRelease = tagNumberList.maxByOrNull { it.second ?: 0 }
+                    if ((highestRelease?.second ?: 0) > installedTagNumber) {
+                        highestRelease?.first
                     } else {
                         null
                     }
@@ -80,7 +80,7 @@ class GitHubViewModel @Inject constructor(
                     null
                 }
             } else {
-                dateList.sortedByDescending { it.publishedAtSeconds }.first()
+                dateList.maxByOrNull { it.publishedAtSeconds }
             }
         } else {
             null

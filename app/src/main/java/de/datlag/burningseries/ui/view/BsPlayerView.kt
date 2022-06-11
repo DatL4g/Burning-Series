@@ -6,19 +6,16 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.dolatkia.animatedThemeManager.ThemeManager
 import com.github.rubensousa.previewseekbar.PreviewLoader
 import com.google.android.exoplayer2.ui.StyledPlayerControlView
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.ExoplayerControlsBinding
-import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.coilifier.ImageLoader
 import de.datlag.coilifier.commons.load
 import io.michaelrocks.paranoid.Obfuscate
@@ -26,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.parcelize.Parcelize
+import timber.log.Timber
 
 @Obfuscate
 class BsPlayerView :
@@ -66,11 +64,11 @@ class BsPlayerView :
 
     private fun initViews(): Unit = with(controlsBinding) {
         if (context.packageManager.isTelevision()) {
-            lockButton.hide()
+            lockButton.gone()
             exoFullscreen.invisible()
         } else {
-            lockButton.show()
-            exoFullscreen.show()
+            lockButton.visible()
+            exoFullscreen.visible()
         }
 
         backButton.setOnClickListener {
@@ -82,20 +80,16 @@ class BsPlayerView :
         exoFullscreen.setOnClickListener {
             toggleFullscreenState()
         }
-        exoPlay.setOnClickListener {
-            this@BsPlayerView.player?.play()
-        }
-        exoPause.setOnClickListener {
-            this@BsPlayerView.player?.pause()
-        }
-        (ThemeManager.currentTheme as? ApplicationTheme?)?.let {
-            exoProgress.setPlayedColor(it.playerSeekBarPlayedColor(context))
-            exoProgress.scrubberColor = it.playerSeekBarScrubberColor(context)
-        }
     }
 
     override fun onVisibilityChange(visibility: Int) {
-        setLocked(_isLocked.value)
+        try {
+            setLocked(_isLocked.value)
+        } catch (ignored: Throwable) {
+            controlsBinding.root.post {
+                setLocked(_isLocked.value)
+            }
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -105,11 +99,6 @@ class BsPlayerView :
                 setLocked(_isLocked.value)
             } else {
                 showController()
-                if (controlsBinding.exoPlay.isVisible) {
-                    controlsBinding.exoPlay.requestFocus()
-                } else {
-                    controlsBinding.exoPause.requestFocus()
-                }
                 setLocked(_isLocked.value)
             }
             return false
@@ -123,28 +112,10 @@ class BsPlayerView :
 
     fun setTitle(title: String?): Unit = with(controlsBinding.title) {
         if (title.isNullOrEmpty()) {
-            hide()
+            gone()
         } else {
             text = title
-            show()
-        }
-    }
-
-    fun onPlayingChanged(isPlaying: Boolean): Unit = with(controlsBinding) {
-        if (isPlaying) {
-            val playFocused = exoPlay.isFocused
-            exoPlay.hide()
-            exoPause.show()
-            if (playFocused) {
-                exoPause.requestFocus()
-            }
-        } else {
-            val pauseFocused = exoPause.isFocused
-            exoPause.hide()
-            exoPlay.show()
-            if (pauseFocused) {
-                exoPlay.requestFocus()
-            }
+            visible()
         }
     }
 
@@ -205,54 +176,45 @@ class BsPlayerView :
 
     private fun setLocked(toLocked: Boolean): Unit = with(controlsBinding) {
         if (toLocked) {
-            lockButton.load<Drawable>(R.drawable.ic_baseline_lock_24)
+            lockButton.load<Drawable>(R.drawable.ic_baseline_lock_24) {
+                centerInside()
+            }
             exoFullscreen.invisible()
-            backButton.hide()
-            exoFfwd.hide()
-            exoPause.hide()
-            exoPlay.hide()
-            exoRew.hide()
+            backButton.gone()
+            exoPlayPause.gone()
+            exoFfwd.gone()
+            exoRew.gone()
+            exoPlayPause.post { exoPlayPause.gone() }
             exoFullscreen.post { exoFullscreen.invisible() }
-            backButton.post { backButton.hide() }
-            exoFfwd.post { exoFfwd.hide() }
-            exoPause.post { exoPause.hide() }
-            exoPlay.post { exoPlay.hide() }
-            exoRew.post { exoRew.hide() }
+            backButton.post { backButton.gone() }
+            exoFfwd.post { exoFfwd.gone() }
+            exoRew.post { exoRew.gone() }
         } else {
-            lockButton.load<Drawable>(R.drawable.ic_baseline_lock_open_24)
+            lockButton.load<Drawable>(R.drawable.ic_baseline_lock_open_24) {
+                centerInside()
+            }
             if (!context.packageManager.isTelevision()) {
-                exoFullscreen.show()
-                exoFullscreen.post { exoFullscreen.show() }
+                exoFullscreen.visible()
+                exoFullscreen.post { exoFullscreen.visible() }
             } else {
                 exoFullscreen.invisible()
                 exoFullscreen.post { exoFullscreen.invisible() }
             }
-            backButton.show()
-            backButton.post { backButton.show() }
-            exoFfwd.show()
-            exoFfwd.post { exoFfwd.show() }
-            if (this@BsPlayerView.player?.isPlaying == true) {
-                exoPause.show()
-                exoPause.post { exoPause.show() }
-                exoPlay.hide()
-                exoPlay.post { exoPlay.hide() }
-            } else {
-                exoPlay.show()
-                exoPlay.post { exoPlay.show() }
-                exoPause.hide()
-                exoPause.post { exoPause.hide() }
-            }
-            exoRew.show()
-            exoRew.post { exoRew.show() }
+            backButton.visible()
+            backButton.post { backButton.visible() }
+            exoPlayPause.visible()
+            exoPlayPause.post { exoPlayPause.visible() }
+            exoFfwd.visible()
+            exoFfwd.post { exoFfwd.visible() }
+            exoRew.visible()
+            exoRew.post { exoRew.visible() }
         }
         exoFullscreen.isEnabled = !toLocked
         backButton.isEnabled = !toLocked
         exoFfwd.isEnabled = !toLocked
         exoFfwd.isClickable = !toLocked
-        exoPause.isEnabled = !toLocked
-        exoPause.isClickable = !toLocked
-        exoPlay.isEnabled = !toLocked
-        exoPlay.isClickable = !toLocked
+        exoPlayPause.isEnabled = !toLocked
+        exoPlayPause.isClickable = !toLocked
         exoRew.isEnabled = !toLocked
         exoRew.isClickable = !toLocked
         exoProgress.isEnabled = !toLocked
@@ -264,13 +226,9 @@ class BsPlayerView :
             exoFfwd.isEnabled = !toLocked
             exoFfwd.isClickable = !toLocked
         }
-        exoPause.post {
-            exoPause.isEnabled = !toLocked
-            exoPause.isClickable = !toLocked
-        }
-        exoPlay.post {
-            exoPlay.isEnabled = !toLocked
-            exoPlay.isClickable = !toLocked
+        exoPlayPause.post {
+            exoPlayPause.isEnabled = !toLocked
+            exoPlayPause.isClickable = !toLocked
         }
         exoRew.post {
             exoRew.isEnabled = !toLocked
@@ -284,9 +242,13 @@ class BsPlayerView :
 
     private fun setFullScreen(toFullScreen: Boolean) = with(controlsBinding) {
         if (toFullScreen) {
-            exoFullscreen.load<Drawable>(R.drawable.ic_baseline_fullscreen_exit_24)
+            exoFullscreen.load<Drawable>(R.drawable.ic_baseline_fullscreen_exit_24) {
+                centerInside()
+            }
         } else {
-            exoFullscreen.load<Drawable>(R.drawable.ic_baseline_fullscreen_24)
+            exoFullscreen.load<Drawable>(R.drawable.ic_baseline_fullscreen_24) {
+                centerInside()
+            }
         }
         fullscreenListener?.invoke(toFullScreen)
     }

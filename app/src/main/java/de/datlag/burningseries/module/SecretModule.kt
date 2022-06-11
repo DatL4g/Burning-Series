@@ -22,22 +22,6 @@ object SecretModule {
 
     @Provides
     @Singleton
-    @Named("m3oToken")
-    fun provideM3OToken(
-        @ApplicationContext app: Context,
-        secrets: Secrets
-    ): String = secrets.getM3OToken(app.packageName)
-
-    @Provides
-    @Singleton
-    @Named("wrapApiToken")
-    fun provideWrapApiToken(
-        @ApplicationContext app: Context,
-        secrets: Secrets
-    ): String = secrets.getWrapAPIToken(app.packageName)
-
-    @Provides
-    @Singleton
     @Named("malClientId")
     fun provideMALClientId(
         @ApplicationContext app: Context,
@@ -59,4 +43,20 @@ object SecretModule {
         @ApplicationContext app: Context,
         secrets: Secrets
     ): String = secrets.getAniListClientSecret(app.packageName)
+
+    @Provides
+    @Singleton
+    @Named("githubClientId")
+    fun provideGitHubClientId(
+        @ApplicationContext app: Context,
+        secrets: Secrets
+    ): String = secrets.getGitHubClientId(app.packageName)
+
+    @Provides
+    @Singleton
+    @Named("githubClientSecret")
+    fun provideGitHubClientSecret(
+        @ApplicationContext app: Context,
+        secrets: Secrets
+    ): String = secrets.getGitHubClientSecret(app.packageName)
 }

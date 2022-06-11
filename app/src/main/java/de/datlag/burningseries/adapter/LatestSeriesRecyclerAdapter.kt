@@ -1,22 +1,32 @@
 package de.datlag.burningseries.adapter
 
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.dolatkia.animatedThemeManager.ThemeManager
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import de.datlag.burningseries.R
+import de.datlag.burningseries.common.anyHeight
+import de.datlag.burningseries.common.anyWidth
+import de.datlag.burningseries.common.dpToPx
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerLatestSeriesBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
-import de.datlag.burningseries.ui.theme.ApplicationTheme
+import de.datlag.coilifier.BlurHash
+import de.datlag.coilifier.commons.load
+import de.datlag.model.Constants
 import de.datlag.model.burningseries.home.LatestSeries
 import io.michaelrocks.paranoid.Obfuscate
+import java.io.File
 
 @Obfuscate
 class LatestSeriesRecyclerAdapter(
+	private val coversDir: File,
+	private val blurHash: BlurHash,
 	private val aboveFocusViewId: Int? = null,
 	private val belowFocusViewId: Int? = null
 ) : ClickRecyclerAdapter<LatestSeries, LatestSeriesRecyclerAdapter.ViewHolder>() {
@@ -57,21 +67,20 @@ class LatestSeriesRecyclerAdapter(
 	override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
 		val item = differ.currentList[position]
 
-		val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
-		appTheme?.let {
-			binding.card.setCardBackgroundColor(it.defaultBackgroundColor(binding.card.context))
-			binding.title.setTextColor(it.defaultContentColor(binding.title.context))
-			binding.title.setBackgroundColor(it.defaultBackgroundColor(binding.title.context))
-		}
+		val errorImage = item.cover.loadBase64Image(coversDir)
+		binding.cover.load<Drawable>(Constants.getBurningSeriesLink(item.cover.href)) {
+			val width = binding.cover.anyWidth ?: 0
+			val height = binding.cover.anyHeight ?: 0
 
+			if (errorImage != null) {
+				error(errorImage)
+			} else if (item.cover.blurHash.isNotEmpty() && width > 0 && height > 0) {
+				error(item.cover.loadBlurHash {
+					blurHash.execute(item.cover.blurHash, width, height)
+				})
+			}
+		}
 		binding.title.text = item.title
-
-		if (position == 0 && aboveFocusViewId != null) {
-			binding.card.nextFocusUpId = aboveFocusViewId
-		}
-
-		if (position == differ.currentList.size - 1 && belowFocusViewId != null) {
-			binding.card.nextFocusDownId = belowFocusViewId
-		}
+		// ToDo("nextFocus")
 	}
 }

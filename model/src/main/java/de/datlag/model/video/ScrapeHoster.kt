@@ -10,7 +10,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Obfuscate
 data class ScrapeHoster(
-    @SerialName("id") val id: String = String(),
-    @SerialName("url") val url: String = String(),
-    @SerialName("embed") val embed: Boolean = false
+    @SerialName("href") val href: String = String(),
+    @SerialName("url") val url: String = String()
 ) : Parcelable

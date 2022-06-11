@@ -86,17 +86,17 @@ dependencies {
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
-    implementation("androidx.appcompat:appcompat:1.4.1")
-    implementation("com.google.android.material:material:1.6.0")
+    implementation("androidx.appcompat:appcompat:1.4.2")
+    implementation("com.google.android.material:material:1.6.1")
     runtimeOnly("androidx.vectordrawable:vectordrawable-animated:1.1.0")
-    implementation("androidx.core:core-splashscreen:1.0.0-beta02")
+    implementation("androidx.core:core-splashscreen:1.0.0-rc01")
 
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.3")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("com.github.devendroid:ReadMoreOption:1.0.3")
-    implementation("com.mikepenz:aboutlibraries:10.2.0")
+    implementation("com.mikepenz:aboutlibraries:10.3.0")
 
     implementation("com.google.android.exoplayer:exoplayer:2.17.1")
     implementation("com.github.DATL4G.PreviewSeekBar:previewseekbar-exoplayer:3.0.1")
@@ -114,7 +114,7 @@ dependencies {
         strictly("1.5.6")
     }
 
-    implementation("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.core:core-ktx:1.8.0")
     implementation("androidx.activity:activity-ktx:1.4.0")
     implementation("androidx.fragment:fragment-ktx:1.4.1")
     implementation("androidx.room:room-ktx:2.4.2")
@@ -123,8 +123,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
     implementation("androidx.lifecycle:lifecycle-common-java8:2.4.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2")
 
     implementation("androidx.navigation:navigation-runtime-ktx:2.4.2")
     implementation("androidx.navigation:navigation-fragment-ktx:2.4.2")
@@ -153,20 +153,17 @@ dependencies {
     implementation("androidx.datastore:datastore:1.0.0")
 
     implementation("com.github.DATL4G:SelectionBottomSheet:2.0.1")
-
-    implementation("com.github.DatL4g:StatusBarAlert:2.0.1")
     implementation("com.github.Ferfalk:SimpleSearchView:0.2.0")
 
     implementation("com.github.SamuelGjk:RoundCornerProgressBar:1.0")
     implementation("com.github.DatL4g.Klient2Klient:Klient2Klient:0.1.1")
     implementation("net.openid:appauth:0.11.1")
 
-    implementation("com.github.DATL4G:Android-Animated-Theme-Manager:release-SNAPSHOT")
-    implementation("com.github.DATL4G:NotificationBadge:master-SNAPSHOT")
+    implementation("io.github.florent37:shapeofview:1.4.7")
 }
 
 protobuf.protobuf.run {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.20.1"
+        artifact = "com.google.protobuf:protoc:3.21.1"
     }
 }

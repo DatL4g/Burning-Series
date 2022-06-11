@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
     id("kotlin-kapt")
     id("io.michaelrocks.paranoid")
-    id("com.apollographql.apollo3") version "3.2.2"
+    id("com.apollographql.apollo3") version "3.3.0"
 }
 
 android {
@@ -39,9 +39,9 @@ dependencies {
     implementation(project(mapOf("path" to ":database")))
     implementation(project(mapOf("path" to ":datastore")))
 
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.4.1")
-    implementation("com.google.android.material:material:1.5.0")
+    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.appcompat:appcompat:1.4.2")
+    implementation("com.google.android.material:material:1.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
@@ -58,14 +58,32 @@ dependencies {
         strictly("4.9.3")
     }
     implementation("javax.inject:javax.inject:1")
-    implementation("org.jsoup:jsoup:1.14.3")
+    implementation("org.jsoup:jsoup:1.15.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
-    api("com.kttdevelopment:mal4j:2.7.4")
-    api("com.apollographql.apollo3:apollo-runtime:3.2.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2")
+    api("com.kttdevelopment:mal4j:2.8.0")
+    api("com.apollographql.apollo3:apollo-runtime:3.3.0")
 }
 
 apollo {
-    packageName.set("de.datlag.network.anilist")
+    service("anilist") {
+        srcDir("src/main/graphql/anilist")
+        packageName.set("de.datlag.network.anilist")
+
+        introspection {
+            endpointUrl.set("https://graphql.anilist.co")
+            schemaFile.set(file("src/main/graphql/anilist/schema.graphqls"))
+        }
+    }
+    service("github") {
+        srcDir("src/main/graphql/github")
+        packageName.set("de.datlag.network.github")
+
+        introspection {
+            headers.set(mapOf("Authorization" to "Bearer token"))
+            endpointUrl.set("https://api.github.com/graphql")
+            schemaFile.set(file("src/main/graphql/github/schema.graphqls"))
+        }
+    }
 }

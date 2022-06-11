@@ -1,25 +1,36 @@
 package de.datlag.burningseries.adapter
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.graphics.BlendModeColorFilterCompat
-import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.dolatkia.animatedThemeManager.ThemeManager
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import de.datlag.burningseries.R
-import de.datlag.burningseries.common.clearTint
+import de.datlag.burningseries.common.anyHeight
+import de.datlag.burningseries.common.anyWidth
+import de.datlag.burningseries.common.dpToPx
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerLatestEpisodeBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
-import de.datlag.burningseries.ui.theme.ApplicationTheme
+import de.datlag.coilifier.BlurHash
+import de.datlag.coilifier.Scale
+import de.datlag.coilifier.commons.load
+import de.datlag.model.Constants
 import de.datlag.model.burningseries.home.LatestEpisode
 import io.michaelrocks.paranoid.Obfuscate
+import java.io.File
 
 @Obfuscate
-class LatestEpisodeRecyclerAdapter(private val belowFocusViewId: Int) : ClickRecyclerAdapter<LatestEpisode, LatestEpisodeRecyclerAdapter.ViewHolder>() {
+class LatestEpisodeRecyclerAdapter(
+	private val coversDir: File,
+	private val blurHash: BlurHash,
+	private val belowFocusViewId: Int
+) : ClickRecyclerAdapter<LatestEpisode, LatestEpisodeRecyclerAdapter.ViewHolder>() {
 
 	override val diffCallback = object : DiffUtil.ItemCallback<LatestEpisode>() {
 		override fun areItemsTheSame(oldItem: LatestEpisode, newItem: LatestEpisode): Boolean {
@@ -60,21 +71,31 @@ class LatestEpisodeRecyclerAdapter(private val belowFocusViewId: Int) : ClickRec
 		val item = differ.currentList[position]
 		val (title, text) = item.getEpisodeAndSeries()
 
-		val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
-		appTheme?.let {
-			binding.card.setCardBackgroundColor(it.defaultBackgroundColor(binding.card.context))
-			binding.title.setTextColor(it.defaultContentColor(binding.title.context))
-			binding.title.setBackgroundColor(it.defaultBackgroundColor(binding.title.context))
-			binding.text.setTextColor(it.defaultContentColor(binding.text.context))
-			binding.text.setBackgroundColor(it.defaultBackgroundColor(binding.text.context))
-			binding.icon.clearTint()
-			binding.icon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(it.defaultContentColor(binding.icon.context), BlendModeCompat.SRC_IN)
-		}
+		val errorImage = item.cover.loadBase64Image(coversDir)
 
-		binding.title.text = "$title ${item.infoText} ${item.infoFlags.size}"
+		binding.cover.load<Drawable>(Constants.getBurningSeriesLink(item.cover.href)) {
+			val width = binding.cover.anyWidth ?: 0
+			val height = binding.cover.anyHeight ?: 0
+
+			if (errorImage != null) {
+				error(errorImage)
+			} else if (item.cover.blurHash.isNotEmpty() && width > 0 && height > 0) {
+				error(item.cover.loadBlurHash {
+					blurHash.execute(item.cover.blurHash, width, height)
+				})
+			}
+		}
+		binding.title.text = title
 		binding.text.text = text
-		if (position == differ.currentList.size - 1) {
-			binding.card.nextFocusDownId = belowFocusViewId
+		// ToDo("nextFocus")
+		binding.flag.load<Drawable>(if (item.isJapanese) {
+			R.drawable.ic_japan
+		} else if (item.isGerman) {
+			R.drawable.ic_germany
+		} else {
+			null
+		}) {
+			transform(FitCenter(), RoundedCorners(binding.flag.context.dpToPx(4).toInt()))
 		}
 	}
 }

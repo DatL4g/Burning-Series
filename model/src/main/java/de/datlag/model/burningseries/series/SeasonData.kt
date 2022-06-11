@@ -5,6 +5,7 @@ import androidx.room.*
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Parcelize
@@ -27,8 +28,8 @@ import kotlinx.serialization.Serializable
 )
 @Obfuscate
 data class SeasonData(
-    @ColumnInfo(name = "title") val title: String = String(),
-    @ColumnInfo(name = "value") val value: Int = 1,
+    @ColumnInfo(name = "title") @SerialName("title") val title: String = String(),
+    @ColumnInfo(name = "value") @SerialName("name") val value: Int = 1,
     @ColumnInfo(name = "seriesId") var seriesId: Long = 0L
 ) : Parcelable {
     @PrimaryKey(autoGenerate = true)

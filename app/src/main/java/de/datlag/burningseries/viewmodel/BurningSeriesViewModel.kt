@@ -6,6 +6,7 @@ import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.datlag.burningseries.common.indexOfLastWithItem
 import de.datlag.burningseries.common.toMutableSharedFlow
+import de.datlag.model.burningseries.Cover
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
 import de.datlag.model.burningseries.home.LatestEpisode
@@ -14,7 +15,6 @@ import de.datlag.model.burningseries.series.*
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.network.burningseries.BurningSeriesRepository
-import de.datlag.network.m3o.M3ORepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,8 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 @Obfuscate
 class BurningSeriesViewModel @Inject constructor(
-	val repository: BurningSeriesRepository,
-	val m3ORepository: M3ORepository
+	val repository: BurningSeriesRepository
 ): ViewModel() {
 
 	var showedHelpImprove: Boolean = false
@@ -83,9 +82,9 @@ class BurningSeriesViewModel @Inject constructor(
 				series.series.episodes.map { EpisodeWithHoster(it, it.hoster) }
 			}
 		}
-	val seriesBSImage: Flow<String> = seriesData.map { it?.series?.image ?: String() }.distinctUntilChanged()
+	val seriesBSImage: Flow<Cover> = seriesData.mapNotNull { it?.cover ?: it?.series?.cover }.distinctUntilChanged()
 	val seriesTitle: Flow<String> = seriesData.map { it?.series?.title ?: String() }.distinctUntilChanged()
-	val seriesFavorite: Flow<Boolean> = seriesData.map { (it?.series?.favoriteSince ?: 0) > 0 }.distinctUntilChanged()
+	val seriesFavorite: StateFlow<Boolean> = seriesData.map { (it?.series?.favoriteSince ?: 0) > 0 }.distinctUntilChanged().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 	val seriesLanguages: Flow<List<LanguageData>> = seriesData.map {
 		it?.let { seriesWithInfo ->
 			return@let if (!seriesWithInfo.languages.isNullOrEmpty()) {
@@ -273,7 +272,9 @@ class BurningSeriesViewModel @Inject constructor(
 		repository.updateEpisodeInfo(episodeInfo)
 	}
 
-	fun getStream(list: List<HosterData>) = m3ORepository.getAnyStream(list)
+	fun getStream(list: List<HosterData>) = repository.getStreams(list.map { it.href })
 
 	fun getAllSeriesCountJoined() = repository.getAllSeriesCountJoined()
+
+	fun getSeriesCount() = repository.getSeriesCount()
 }

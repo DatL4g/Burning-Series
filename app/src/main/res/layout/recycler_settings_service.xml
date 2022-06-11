@@ -5,8 +5,7 @@
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
-    android:background="@color/defaultBackgroundColor">
+    android:layout_marginBottom="16dp">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/icon"
@@ -21,11 +20,10 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
-        fontPath="fonts/Poppins-Bold.ttf"
+        fontPath="@string/font_path_bold"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="start|center_vertical"
-        android:textColor="@color/defaultContentColor"
         android:singleLine="true"
         android:maxLines="1"
         android:textSize="14sp"
@@ -41,7 +39,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="start|center_vertical"
-        android:textColor="@color/defaultContentColor"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:textSize="12sp"
@@ -57,8 +54,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:textColor="@color/defaultBackgroundColor"
-        app:backgroundTint="@color/defaultContentColor"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

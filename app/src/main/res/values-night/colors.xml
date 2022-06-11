@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="defaultBackgroundColor">#ff121212</color>
-    <color name="defaultBackgroundColorHalfAlpha">#78121212</color>
-    <color name="defaultContentColor">#ffffffff</color>
-    <color name="defaultContentColorHalfAlpha">#78ffffff</color>
-    <color name="bottomSheetBackground">#353535</color>
-    <color name="rippleColor">#40ffffff</color>
-    <color name="rippleColorInvert">#40000000</color>
-    <color name="favIconColorFalse">@color/defaultContentColor</color>
+    <color name="coloredBackground">#191f28</color>
+    <color name="coloredBackgroundTextColor">@color/primaryTextColor</color>
+
+    <color name="backgroundColor">#121212</color>
+    <color name="backgroundTextColor">#fafafa</color>
 </resources>

@@ -16,12 +16,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.math.abs
 import kotlin.math.max
 
 @Obfuscate
 class AniListRepository @Inject constructor(
-    private val apolloClient: ApolloClient
+    @Named("anilistApollo") private val apolloClient: ApolloClient
 ) {
 
     fun getViewer(token: String): Flow<ViewerQuery.Viewer?> = flow {

@@ -20,14 +20,14 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:src="@drawable/ic_baseline_arrow_back_24"
-            android:tint="@color/datlagContentColor"
             android:background="?attr/actionBarItemBackground"
+            android:tint="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/title"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
-            fontPath="fonts/Poppins-Bold.ttf"
+            fontPath="@string/font_path_bold"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:paddingStart="16dp"
@@ -40,8 +40,7 @@
             app:layout_constraintStart_toEndOf="@id/backButton"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:textColor="@color/datlagContentColor"/>
+            app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -56,28 +55,23 @@
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@id/exo_rew"
-            android:tint="@color/datlagContentColor"
             android:src="@drawable/ic_baseline_replay_10_24"
             android:background="?attr/actionBarItemBackground"
+            android:tint="@android:color/white"
             style="@style/ExoMediaButton.Rewind" />
 
         <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@id/exo_play"
-            android:tint="@color/datlagContentColor"
+            android:id="@id/exo_play_pause"
             android:background="?attr/actionBarItemBackground"
-            style="@style/ExoMediaButton.Play" />
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@id/exo_pause"
-            android:tint="@color/datlagContentColor"
-            android:background="?attr/actionBarItemBackground"
-            style="@style/ExoMediaButton.Pause" />
+            android:tint="@android:color/white"
+            android:scaleType="centerInside"
+            style="@style/ExoStyledControls.Button.Center.PlayPause" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@id/exo_ffwd"
-            android:tint="@color/datlagContentColor"
             android:src="@drawable/ic_baseline_forward_10_24"
             android:background="?attr/actionBarItemBackground"
+            android:tint="@android:color/white"
             style="@style/ExoMediaButton.FastForward" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -87,21 +81,22 @@
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
         android:src="@drawable/ic_baseline_lock_open_24"
-        android:tint="@color/datlagContentColor"
         android:background="?attr/actionBarItemBackground"
+        android:tint="@android:color/white"
         android:layout_marginEnd="16dp"
         android:visibility="gone"
+        tools:visibility="visible"
+        android:scaleType="centerInside"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@id/exo_position"
-        fontPath="fonts/Poppins-Bold.ttf"
+        fontPath="@string/font_path_bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
-        android:textColor="@color/datlagContentColor"
         android:textSize="12sp"
         android:textStyle="bold"
         android:layout_marginStart="8dp"
@@ -122,19 +117,16 @@
         app:layout_constraintTop_toTopOf="@+id/exo_position"
         app:previewAnimationEnabled="true"
         app:previewFrameLayout="@id/previewFrameLayout"
-        app:played_color="@color/datlagColor"
         app:scrubber_dragged_size="24dp"
-        app:scrubber_enabled_size="16dp"
-        app:scrubber_color="@color/datlagColor" />
+        app:scrubber_enabled_size="16dp" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@id/exo_duration"
-        fontPath="fonts/Poppins-Bold.ttf"
+        fontPath="@string/font_path_bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:includeFontPadding="false"
-        android:textColor="@color/datlagContentColor"
         android:textSize="12sp"
         android:textStyle="bold"
         android:layout_marginStart="8dp"
@@ -174,9 +166,10 @@
         android:layout_width="?attr/actionBarSize"
         android:layout_height="?attr/actionBarSize"
         android:id="@id/exo_fullscreen"
-        android:tint="@color/datlagContentColor"
         android:background="?attr/actionBarItemBackground"
         android:src="@drawable/ic_baseline_fullscreen_24"
+        android:scaleType="centerInside"
+        android:tint="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 

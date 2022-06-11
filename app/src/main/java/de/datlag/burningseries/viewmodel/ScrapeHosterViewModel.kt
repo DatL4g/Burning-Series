@@ -3,7 +3,7 @@ package de.datlag.burningseries.viewmodel
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.datlag.model.video.ScrapeHoster
-import de.datlag.network.m3o.M3ORepository
+import de.datlag.network.burningseries.BurningSeriesRepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emitAll
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 @Obfuscate
 class ScrapeHosterViewModel @Inject constructor(
-    val repository: M3ORepository,
+    val repository: BurningSeriesRepository,
     val jsonBuilder: Json
 ) : ViewModel() {
     private val streamSet: MutableSet<ScrapeHoster> = mutableSetOf()

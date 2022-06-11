@@ -7,7 +7,6 @@ message SettingsPreferences {
   message Appearance {
     bool darkMode = 1;
     bool improveDialog = 2;
-    int32 theme = 3;
   }
   Appearance appearance = 1;
   message Video {
@@ -22,6 +21,11 @@ message SettingsPreferences {
     bool malImages = 2;
     string anilistAuth = 3;
     bool aniListImages = 4;
+    string githubAuth = 5;
   }
   User user = 3;
+  message Usage {
+    int64 spentTime = 1;
+  }
+  Usage usage = 4;
 }

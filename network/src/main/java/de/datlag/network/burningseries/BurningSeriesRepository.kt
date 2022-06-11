@@ -2,37 +2,43 @@ package de.datlag.network.burningseries
 
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkBoundResource
+import com.hadiyarajesh.flower.networkResource
 import de.datlag.database.burningseries.BurningSeriesDao
 import de.datlag.model.Constants
+import de.datlag.model.burningseries.Cover
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
 import de.datlag.model.burningseries.allseries.search.GenreItemWithMatchInfo
 import de.datlag.model.burningseries.home.HomeData
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
-import de.datlag.model.burningseries.home.relation.LatestEpisodeInfoFlagsCrossRef
-import de.datlag.model.burningseries.home.relation.LatestEpisodeWithInfoFlags
+import de.datlag.model.burningseries.home.relation.*
 import de.datlag.model.burningseries.series.*
+import de.datlag.model.burningseries.series.relation.SeriesCoverCrossRef
 import de.datlag.model.burningseries.series.relation.SeriesLanguagesCrossRef
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
+import de.datlag.model.burningseries.stream.Stream
 import de.datlag.model.common.calculateScore
+import de.datlag.model.video.ScrapeHoster
 import de.datlag.network.common.toInt
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Named
 
 @Obfuscate
 class BurningSeriesRepository @Inject constructor(
 	private val service: BurningSeries,
-	@Named("wrapApiToken") val wrapApiToken: String,
 	private val burningSeriesDao: BurningSeriesDao,
-	private val scraper: BurningSeriesScraper
+	@Named("coversDir") private val coversDir: File,
+	val jsonBuilder: Json
 ) {
 
 	fun getHomeData(): Flow<Resource<HomeData>> = flow {
@@ -41,98 +47,110 @@ class BurningSeriesRepository @Inject constructor(
 		emit(Resource.loading(if (firstOrNullEpisodes.isNullOrEmpty() || firstOrNullSeries.isNullOrEmpty()) {
 			null
 		} else {
-			HomeData(firstOrNullEpisodes.map {
-				LatestEpisode(
-					it.latestEpisode.title,
-					it.latestEpisode.href,
-					it.latestEpisode.infoText,
-					it.latestEpisode.updatedAt,
-					it.infoFlags
-				)
-			}, firstOrNullSeries)
+			HomeData(
+				mapLatestEpisodeWithInfoToLatestEpisode(firstOrNullEpisodes),
+				mapLatestSeriesWithCoverToLatestSeries(firstOrNullSeries)
+			)
 		}))
-		val scrapeData = scraper.scrapeHomeData()
 
-		if (scrapeData != null) {
-			saveHomeData(scrapeData)
-			emit(Resource.success(scrapeData))
-		} else {
-			val currentRequest = Clock.System.now().epochSeconds
-			networkBoundResource(
-				fetchFromLocal = {
-					flow<Pair<List<LatestEpisodeWithInfoFlags>, List<LatestSeries>>> {
-						val emitEpisodes: MutableList<LatestEpisodeWithInfoFlags> = burningSeriesDao.getAllLatestEpisode().first().toMutableList()
-						val emitSeries: MutableList<LatestSeries> = burningSeriesDao.getAllLatestSeries().first().toMutableList()
-						emit(Pair(emitEpisodes, emitSeries))
+		val currentRequest = Clock.System.now().epochSeconds
+		networkBoundResource(
+			fetchFromLocal = {
+				flow<Pair<List<LatestEpisodeWithInfoFlags>, List<LatestSeriesWithCover>>> {
+					val emitEpisodes: MutableList<LatestEpisodeWithInfoFlags> = burningSeriesDao.getAllLatestEpisode().first().sortedWith(
+						compareBy<LatestEpisodeWithInfoFlags> { it.latestEpisode.title }.thenByDescending { it.latestEpisode.updatedAt }).toMutableList()
+					val emitSeries: MutableList<LatestSeriesWithCover> = burningSeriesDao.getAllLatestSeries().first().sortedWith(
+						compareBy<LatestSeriesWithCover> { it.latestSeries.title }.thenByDescending { it.latestSeries.updatedAt }
+					).toMutableList()
+					emit(Pair(emitEpisodes, emitSeries))
 
-						burningSeriesDao.getAllLatestEpisode().collect {
-							if (!emitEpisodes.containsAll(it)) {
-								emitEpisodes.clear()
-								emitEpisodes.addAll(it)
-								if (emitEpisodes.isNotEmpty() && emitSeries.isNotEmpty()) {
-									emit(Pair(emitEpisodes, emitSeries))
-								}
+					burningSeriesDao.getAllLatestEpisode().collect {
+						if (!emitEpisodes.containsAll(it)) {
+							emitEpisodes.clear()
+							emitEpisodes.addAll(it)
+							if (emitEpisodes.isNotEmpty() && emitSeries.isNotEmpty()) {
+								emit(Pair(emitEpisodes, emitSeries))
 							}
 						}
-						burningSeriesDao.getAllLatestSeries().collect {
-							if (!emitSeries.containsAll(it)) {
-								emitSeries.clear()
-								emitSeries.addAll(it)
-								if (emitEpisodes.isNotEmpty() && emitSeries.isNotEmpty()) {
-									emit(Pair(emitEpisodes, emitSeries))
-								}
+					}
+					burningSeriesDao.getAllLatestSeries().collect {
+						if (!emitSeries.containsAll(it)) {
+							emitSeries.clear()
+							emitSeries.addAll(it)
+							if (emitEpisodes.isNotEmpty() && emitSeries.isNotEmpty()) {
+								emit(Pair(emitEpisodes, emitSeries))
 							}
 						}
-					}.flowOn(Dispatchers.IO)
-				},
-				shouldFetchFromRemote = {
-					it == null || it.first.isNullOrEmpty() || it.second.isNullOrEmpty() || it.first.any { episode ->
-						currentRequest - Constants.DAY_IN_MILLI >= episode.latestEpisode.updatedAt
-					} || it.second.any { series ->
-						currentRequest - Constants.DAY_IN_MILLI >= series.updatedAt
 					}
-				},
-				fetchFromRemote = {
-					service.getHomeData(apiKey = wrapApiToken)
-				},
-				saveRemoteData = {
-					if (it.success && it.data.latestEpisodes.isNotEmpty() && it.data.latestSeries.isNotEmpty()) {
-						saveHomeData(it.data)
+				}.flowOn(Dispatchers.IO)
+			},
+			shouldFetchFromRemote = {
+				it == null || it.first.isEmpty() || it.second.isEmpty() || it.first.any { episode ->
+					currentRequest - Constants.HOUR_IN_SECONDS >= episode.latestEpisode.updatedAt
+				} || it.second.any { series ->
+					currentRequest - Constants.HOUR_IN_SECONDS >= series.latestSeries.updatedAt
+				}
+			},
+			fetchFromRemote = {
+				service.getHomeData()
+			},
+			saveRemoteData = {
+				if (it.latestEpisodes.isNotEmpty() && it.latestSeries.isNotEmpty()) {
+					saveHomeData(it)
+				}
+			}
+		).collect {
+			when (it.status) {
+				Resource.Status.LOADING -> {
+					if (it.data != null) {
+						emit(Resource.loading(HomeData(
+							mapLatestEpisodeWithInfoToLatestEpisode(it.data!!.first),
+							mapLatestSeriesWithCoverToLatestSeries(it.data!!.second)
+						)))
 					}
 				}
-			).collect {
-				when (it.status) {
-					Resource.Status.LOADING -> {
-						if (it.data != null) {
-							emit(Resource.loading(HomeData(it.data!!.first.map { episode ->
-								LatestEpisode(
-									episode.latestEpisode.title,
-									episode.latestEpisode.href,
-									episode.latestEpisode.infoText,
-									episode.latestEpisode.updatedAt,
-									episode.infoFlags
-								)
-							}, it.data!!.second)))
-						}
+				Resource.Status.SUCCESS -> {
+					if (it.data != null) {
+						emit(Resource.success(HomeData(
+							mapLatestEpisodeWithInfoToLatestEpisode(it.data!!.first),
+							mapLatestSeriesWithCoverToLatestSeries(it.data!!.second)
+						)))
 					}
-					Resource.Status.SUCCESS -> {
-						if (it.data != null) {
-							emit(Resource.success(HomeData(it.data!!.first.map { episode ->
-								LatestEpisode(
-									episode.latestEpisode.title,
-									episode.latestEpisode.href,
-									episode.latestEpisode.infoText,
-									episode.latestEpisode.updatedAt,
-									episode.infoFlags
-								)
-							}, it.data!!.second)))
-						}
-					}
-					Resource.Status.ERROR -> emit(Resource.error<HomeData>(it.message ?: String()))
 				}
+				Resource.Status.ERROR -> emit(Resource.error<HomeData>(it.message ?: String()))
 			}
 		}
 	}.flowOn(Dispatchers.IO)
+
+	private fun mapLatestEpisodeWithInfoToLatestEpisode(list: List<LatestEpisodeWithInfoFlags>): List<LatestEpisode> {
+		return list.map {
+			LatestEpisode(
+				it.latestEpisode.title,
+				it.latestEpisode.href,
+				it.latestEpisode.infoText,
+				it.latestEpisode.updatedAt,
+				it.latestEpisode.nsfw,
+				if (it.cover?.isDefault() == true) it.latestEpisode.cover else it.cover ?: it.latestEpisode.cover,
+				it.infoFlags
+			).apply { latestEpisodeId = it.latestEpisode.latestEpisodeId }
+		}.sortedWith(
+			compareBy<LatestEpisode> { it.title }.thenByDescending { it.updatedAt }
+		)
+	}
+
+	private fun mapLatestSeriesWithCoverToLatestSeries(list: List<LatestSeriesWithCover>): List<LatestSeries> {
+		return list.map {
+			LatestSeries(
+				it.latestSeries.title,
+				it.latestSeries.href,
+				it.latestSeries.updatedAt,
+				it.latestSeries.nsfw,
+				if (it.cover?.isDefault() == true) it.latestSeries.cover else it.cover ?: it.latestSeries.cover
+			).apply { latestSeriesId = it.latestSeries.latestSeriesId }
+		}.sortedWith(
+			compareBy<LatestSeries> { it.title }.thenByDescending { it.updatedAt }
+		)
+	}
 
 	private suspend fun saveHomeData(home: HomeData) {
 		burningSeriesDao.deleteAllLatestEpisode()
@@ -142,10 +160,16 @@ class BurningSeriesRepository @Inject constructor(
 			home.latestEpisodes.map {
 				async(Dispatchers.IO) {
 					val latestEpisodeId = burningSeriesDao.insertLatestEpisode(it)
+					val coverId = burningSeriesDao.addCover(it.cover, this@coroutineScope)
+					burningSeriesDao.insertLatestEpisodeCoverCrossRef(
+						LatestEpisodeCoverCrossRef(latestEpisodeId, coverId)
+					)
+
+					saveCover(it.cover)
 
 					it.infoFlags.map { infoFlags ->
 						async(Dispatchers.IO) {
-							val latestEpisodeInfoFlagsId = burningSeriesDao.addLatestEpisodeInfoFlags(infoFlags)
+							val latestEpisodeInfoFlagsId = burningSeriesDao.addLatestEpisodeInfoFlags(infoFlags, this@coroutineScope)
 							burningSeriesDao.insertLatestEpisodeInfoFlagsCrossRef(
 								LatestEpisodeInfoFlagsCrossRef(latestEpisodeId, latestEpisodeInfoFlagsId)
 							)
@@ -155,9 +179,36 @@ class BurningSeriesRepository @Inject constructor(
 			}.awaitAll()
 			home.latestSeries.map {
 				async(Dispatchers.IO) {
-					burningSeriesDao.insertLatestSeries(it)
+					val latestSeriesId = burningSeriesDao.insertLatestSeries(it)
+					val coverId = burningSeriesDao.addCover(it.cover, this@coroutineScope)
+					burningSeriesDao.insertLatestSeriesCoverCrossRef(
+						LatestSeriesCoverCrossRef(latestSeriesId, coverId)
+					)
+
+					saveCover(it.cover)
 				}
 			}.awaitAll()
+		}
+	}
+
+	private suspend fun saveCover(cover: Cover) = withContext(Dispatchers.IO) {
+		if (cover.href.isNotEmpty() && cover.base64.isNotEmpty()) {
+			if (!coversDir.exists()) {
+				try {
+					coversDir.mkdirs()
+				} catch (ignored: Throwable) { }
+			}
+			val coverFile = File(coversDir, cover.href.substringAfterLast('/'))
+			if (!coverFile.exists()) {
+				try {
+					coverFile.createNewFile()
+				} catch (ignored: Throwable) { }
+			}
+			if (try {
+			    coverFile.readText().isEmpty()
+			} catch (ignored: Throwable) { true }) {
+				coverFile.writeText(cover.base64)
+			}
 		}
 	}
 
@@ -168,87 +219,24 @@ class BurningSeriesRepository @Inject constructor(
 	fun getSeriesData(genreItem: GenreModel.GenreItem) = getSeriesData(genreItem.href, genreItem.getHrefTitle())
 
 	fun getSeriesData(href: String, hrefTitle: String, forceLoad: Boolean = false): Flow<Resource<SeriesWithInfo?>> = flow {
-		val hrefData = hrefDataFromHref(href)
-		emit(Resource.loading(burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle).firstOrNull()))
-		val scrapeData = scraper.scrapeSeriesData(rebuildHrefFromData(hrefData))
-
-		if (scrapeData != null) {
-			saveSeriesData(scrapeData)
-			emitAll(burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle).map { Resource.success(it) })
-		} else {
-			val currentRequest = Clock.System.now().epochSeconds
-			emitAll(networkBoundResource(
-				fetchFromLocal = {
-					burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle)
-				},
-				shouldFetchFromRemote = {
-					it == null || forceLoad || currentRequest - Constants.DAY_IN_MILLI >= it.series.updatedAt || it.episodes.isEmpty()
-				},
-				fetchFromRemote = {
-					if (hrefData.second != null && hrefData.third != null) {
-						service.getSeriesData(
-							apiKey = wrapApiToken,
-							series = hrefData.first,
-							season = hrefData.second!!,
-							language = hrefData.third!!
-						)
-					} else if (hrefData.second != null && hrefData.third == null) {
-						service.getSeriesData(
-							apiKey = wrapApiToken,
-							series = hrefData.first,
-							season = hrefData.second!!
-						)
-					} else {
-						service.getSeriesData(
-							apiKey = wrapApiToken,
-							series = hrefData.first
-						)
-					}
-				},
-				saveRemoteData = { series ->
-					if (series.success) {
-						series.data?.let {
-							saveSeriesData(it.apply {
-								this.href = href
-							})
-						}
-					}
-				}
-			))
-		}
-	}.flowOn(Dispatchers.IO)
-
-	private fun hrefDataFromHref(href: String): Triple<String, String?, String?> {
-		var newHref = href
-		if (newHref.startsWith('/')) {
-			newHref = newHref.substring(1)
-		}
-		val hrefSplit = newHref.split('/')
-		val season = if (hrefSplit.size >= 3) hrefSplit[2] else null
-		val language = if (hrefSplit.size >= 4) hrefSplit[3] else null
-		val fallbackLanguage = if (hrefSplit.size >= 5) hrefSplit[4] else null
-		return Triple(
-			hrefSplit[1],
-			if (season.isNullOrEmpty()) null else season,
-			if (fallbackLanguage != null && fallbackLanguage.isNotEmpty()) {
-				fallbackLanguage
-			} else {
-				if (language.isNullOrEmpty()) null else language
+		val currentRequest = Clock.System.now().epochSeconds
+		emitAll(networkBoundResource(
+			fetchFromLocal = {
+				burningSeriesDao.getSeriesWithInfoBestMatch(hrefTitle)
+			},
+			shouldFetchFromRemote = {
+				it == null || forceLoad || currentRequest - Constants.HOUR_IN_SECONDS >= it.series.updatedAt || it.episodes.isEmpty()
+			},
+			fetchFromRemote = {
+				service.getSeriesData(href)
+			},
+			saveRemoteData = { series ->
+				saveSeriesData(series.apply {
+					this.href = href
+				})
 			}
-		)
-	}
-
-	private fun rebuildHrefFromData(hrefData: Triple<String, String?, String?>): String {
-		return if (hrefData.second != null && hrefData.third != null) {
-			"serie/${hrefData.first}/${hrefData.second}/${hrefData.third}"
-		} else if (hrefData.second != null && hrefData.third == null) {
-			"serie/${hrefData.first}/${hrefData.second}"
-		} else if (hrefData.second == null && hrefData.third != null) {
-			"serie/${hrefData.first}/${hrefData.third}"
-		} else {
-			"serie/${hrefData.first}"
-		}
-	}
+		))
+	}.flowOn(Dispatchers.IO)
 
 	private suspend fun saveSeriesData(
 		seriesData: SeriesData,
@@ -256,7 +244,7 @@ class BurningSeriesRepository @Inject constructor(
 		seasons: List<SeasonData> = seriesData.seasons,
 		languages: List<LanguageData> = seriesData.languages,
 		episodes: Map<EpisodeInfo, List<HosterData>> = seriesData.episodes.associateWith { it.hoster }
-	) {
+	) = withContext(Dispatchers.IO) {
 		val previousSeries = burningSeriesDao.getSeriesWithEpisodesBestMatch(seriesData.hrefTitle).firstOrNull()
 
 		val favSince = previousSeries?.series?.favoriteSince ?: seriesData.favoriteSince
@@ -267,6 +255,12 @@ class BurningSeriesRepository @Inject constructor(
 		seriesData.favoriteSince = favSince
 
 		val seriesId = burningSeriesDao.insertSeriesData(seriesData)
+		val coverId = burningSeriesDao.addCover(seriesData.cover, this)
+		burningSeriesDao.insertSeriesCoverCrossRef(
+			SeriesCoverCrossRef(seriesId, coverId)
+		)
+
+		saveCover(seriesData.cover)
 
 		coroutineScope {
 			infos.map {
@@ -284,7 +278,7 @@ class BurningSeriesRepository @Inject constructor(
 
 			languages.map {
 				async(Dispatchers.IO) {
-					val langId = burningSeriesDao.addLanguageData(it)
+					val langId = burningSeriesDao.addLanguageData(it, this@coroutineScope)
 					burningSeriesDao.insertSeriesLanguagesCrossRef(SeriesLanguagesCrossRef(seriesId, langId))
 				}
 			}.awaitAll()
@@ -311,8 +305,6 @@ class BurningSeriesRepository @Inject constructor(
 		}
 	}
 
-	fun getSeriesById(id: Long) = burningSeriesDao.getSeriesWithInfoById(id)
-
 	suspend fun updateSeriesFavorite(seriesData: SeriesData) = burningSeriesDao.updateSeriesFavorite(seriesData.seriesId, seriesData.favoriteSince)
 
 	suspend fun updateEpisodeInfo(episodeInfo: EpisodeInfo) {
@@ -333,30 +325,22 @@ class BurningSeriesRepository @Inject constructor(
 			val first = burningSeriesDao.getAllSeries(pagination).first()
 			val currentRequest = Clock.System.now().epochSeconds
 
-			if (first.isEmpty() || first.any { currentRequest - Constants.DAY_IN_MILLI >= it.genre.updatedAt }) {
+			if (first.isEmpty() || first.any { currentRequest - Constants.DAY_IN_SECONDS >= it.genre.updatedAt }) {
 				emit(Resource.loading(first))
-				val scrapeData = scraper.scrapeAllSeries()
-				if (scrapeData.isNotEmpty()) {
-					saveGenreData(scrapeData)
-					emitAll(burningSeriesDao.getAllSeries().map { Resource.success(it) })
-				} else {
-					emitAll(networkBoundResource(
-						fetchFromLocal = {
-							burningSeriesDao.getAllSeries(pagination)
-						},
-						shouldFetchFromRemote = {
-							it.isNullOrEmpty() || it.any { item -> currentRequest - Constants.DAY_IN_MILLI >= item.genre.updatedAt }
-						},
-						fetchFromRemote = {
-							service.getAllSeries(apiKey = wrapApiToken)
-						},
-						saveRemoteData = { all ->
-							if (all.success) {
-								saveGenreData(all.data)
-							}
-						}
-					))
-				}
+				emitAll(networkBoundResource(
+					fetchFromLocal = {
+						burningSeriesDao.getAllSeries(pagination)
+					},
+					shouldFetchFromRemote = {
+						it.isNullOrEmpty() || it.any { item -> currentRequest - Constants.DAY_IN_SECONDS >= item.genre.updatedAt }
+					},
+					fetchFromRemote = {
+						service.getAllSeries()
+					},
+					saveRemoteData = { all ->
+						saveGenreData(all)
+					}
+				))
 			} else {
 				emit(Resource.success(first))
 			}
@@ -396,19 +380,47 @@ class BurningSeriesRepository @Inject constructor(
 		}
 	}
 
-	fun getSeriesToSync() = burningSeriesDao.getSeriesFavoritesAndWatched().flowOn(Dispatchers.IO)
-
-	suspend fun saveSyncSeries(
-		seriesWithEpisode: SeriesWithInfo
-	) = saveSeriesData(
-		seriesWithEpisode.series,
-		seriesWithEpisode.infos,
-		seriesWithEpisode.seasons,
-		seriesWithEpisode.languages,
-		seriesWithEpisode.episodes.associate { it.episode to it.hoster }
-	)
-
 	fun getAllSeriesCountJoined() = burningSeriesDao.getAllSeriesCountJoined()
 
 	fun getAllGenres() = burningSeriesDao.getAllGenres()
+
+	fun getSeriesCount() = flow<Long?> {
+		networkResource(
+			fetchFromRemote = {
+				service.getSeriesCount()
+			}
+		).collect {
+			emit(it.data?.toLongOrNull())
+		}
+	}.flowOn(Dispatchers.IO).distinctUntilChanged()
+
+	fun saveScrapedHoster(scraped: ScrapeHoster): Flow<Boolean> = flow {
+		val entry = jsonBuilder.encodeToString(
+			scraped
+		).toRequestBody(Constants.MEDIATYPE_JSON.toMediaType())
+		networkResource(fetchFromRemote = {
+			service.saveScraped(entry)
+		}).collect {
+			when (it.status) {
+				Resource.Status.SUCCESS -> {
+					if ((it.data?.failed ?: 0) <= 0) {
+						emit(true)
+					} else {
+						emit(false)
+					}
+				}
+				Resource.Status.ERROR -> emit(false)
+				else -> { }
+			}
+		}
+	}.flowOn(Dispatchers.IO)
+
+	fun getStreams(hrefList: List<String>) = flow<Resource<List<Stream>>> {
+		val entries = jsonBuilder.encodeToString(
+			hrefList
+		).toRequestBody(Constants.MEDIATYPE_JSON.toMediaType())
+		emitAll(networkResource(fetchFromRemote = {
+			service.getStreams(entries)
+		}))
+	}.flowOn(Dispatchers.IO)
 }

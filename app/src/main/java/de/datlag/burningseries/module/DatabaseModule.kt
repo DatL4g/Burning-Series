@@ -3,6 +3,7 @@ package de.datlag.burningseries.module
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import dagger.Module
 import dagger.Provides
@@ -37,5 +38,4 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideBurningSeriesDao(db: BurningSeriesDatabase) = db.getBurningSeriesDao()
-
 }

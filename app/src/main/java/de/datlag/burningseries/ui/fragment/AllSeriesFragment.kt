@@ -4,24 +4,23 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.dolatkia.animatedThemeManager.AppTheme
 import com.ferfalk.simplesearchview.SimpleSearchView
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.AllSeriesRecyclerAdapter
-import de.datlag.burningseries.common.hideLoadingDialog
-import de.datlag.burningseries.common.safeNavigate
-import de.datlag.burningseries.common.showLoadingDialog
+import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentAllSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.allseries.GenreModel
 import io.michaelrocks.paranoid.Obfuscate
+import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
@@ -79,9 +78,8 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         }
     }
 
-    override fun syncTheme(appTheme: AppTheme) { }
-
     private fun initRecycler(): Unit = with(binding) {
+        allSeriesRecycler.isNestedScrollingEnabled = false
         allSeriesRecycler.adapter = allSeriesRecyclerAdapter
 
         allSeriesRecyclerAdapter.setOnClickListener { item ->
@@ -91,17 +89,28 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         }
         allSeriesRecyclerAdapter.setOnLongClickListener { item ->
             if (item is GenreModel.GenreItem) {
-                findNavController().safeNavigate(AllSeriesFragmentDirections.actionAllSeriesFragmentToOpenInBrowserDialog(
-                    Constants.getBurningSeriesLink(item.href),
-                    item.title
-                ))
+                materialDialogBuilder {
+                    setPositiveButtonIcon(R.drawable.ic_baseline_arrow_outward_24)
+                    setNegativeButtonIcon(R.drawable.ic_baseline_close_24)
+                    builder {
+                        setTitle(R.string.open_in_browser)
+                        setMessage(safeContext.getString(R.string.open_in_browser_text, item.title))
+                        setPositiveButton(R.string.open) { dialog, _ ->
+                            dialog.dismiss()
+                            Constants.getBurningSeriesLink(item.href).toUri().openInBrowser(safeContext, item.title)
+                        }
+                        setNegativeButton(R.string.close) { dialog, _ ->
+                            dialog.cancel()
+                        }
+                    }
+                }.show()
             }
             true
         }
     }
 
-    private fun initSearchView(): Unit = with(binding) {
-        searchView.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
+    private fun initSearchView() {
+        toolbarSearchView?.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isNotEmpty()) {
                     burningSeriesViewModel.searchAllSeries(newText)
@@ -125,24 +134,29 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         menu.clear()
         inflater.inflate(R.menu.all_series_menu, menu)
         val item = menu.findItem(R.id.action_search)
-        binding.searchView.setMenuItem(item)
+        toolbarSearchView?.setMenuItem(item)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onResume() {
         super.onResume()
-        extendedFabFavorite(AllSeriesFragmentDirections.actionAllSeriesFragmentToFavoritesFragment())
-        showNavigationFabs()
-        setSupportActionBar(binding.toolbar)
-        setHasOptionsMenu(true)
-        showToolbarBackButton(binding.toolbar)
         burningSeriesViewModel.cancelFetchSeries()
         burningSeriesViewModel.setSeriesData(null)
     }
 
-    override fun onStop() {
-        super.onStop()
-        setSupportActionBar(null)
+    override fun initActivityViews() {
+        super.initActivityViews()
+
+        exitFullScreen()
+        hideSeriesArc()
+        extendedFabFavorite(AllSeriesFragmentDirections.actionAllSeriesFragmentToFavoritesFragment())
+        showNavigationFabs()
+        setHasOptionsMenu(true)
+        showToolbarBackButton()
+        hideSeriesArc()
+        setToolbarTitle(R.string.all_series)
+        appBarLayout?.setExpanded(false, false)
+        appBarLayout?.setExpandable(false)
     }
 }

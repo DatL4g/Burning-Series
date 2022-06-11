@@ -52,6 +52,9 @@
                 <data android:scheme="datlag"
                     android:host="burningseries"
                     android:path="/anilist" />
+                <data android:scheme="datlag"
+                    android:host="burningseries"
+                    android:path="/github" />
             </intent-filter>
         </activity>
     </application>

@@ -1,6 +1,7 @@
 package de.datlag.burningseries.ui.fragment
 
 import android.content.res.Configuration
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -9,19 +10,18 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.dolatkia.animatedThemeManager.AppTheme
 import com.ferfalk.simplesearchview.SimpleSearchView
+import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.FavoriteRecyclerAdapter
-import de.datlag.burningseries.common.isOrientation
-import de.datlag.burningseries.common.isTelevision
-import de.datlag.burningseries.common.safeContext
-import de.datlag.burningseries.common.safeNavigate
+import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentFavoritesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
+import de.datlag.coilifier.commons.load
 import io.michaelrocks.paranoid.Obfuscate
+import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
@@ -30,7 +30,9 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
     private val binding: FragmentFavoritesBinding by viewBinding()
     private val burningSeriesViewModel: BurningSeriesViewModel by activityViewModels()
 
-    private val favoritesRecyclerAdapter = FavoriteRecyclerAdapter(this)
+    private val favoritesRecyclerAdapter by lazy {
+        FavoriteRecyclerAdapter(coversDir, blurHash)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,8 +45,6 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
         }
         burningSeriesViewModel.getAllFavorites()
     }
-
-    override fun syncTheme(appTheme: AppTheme) { }
 
     private fun initRecycler(): Unit = with(binding) {
         val gridSpanCount = if (isTelevision && isOrientation(Configuration.ORIENTATION_LANDSCAPE)) {
@@ -64,7 +64,7 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
     }
 
     private fun initSearchView(): Unit = with(binding) {
-        searchView.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
+        toolbarSearchView?.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isNotEmpty()) {
                     burningSeriesViewModel.searchFavorites(newText)
@@ -90,24 +90,29 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
         menu.clear()
         inflater.inflate(R.menu.favorites_menu, menu)
         val item = menu.findItem(R.id.action_search)
-        binding.searchView.setMenuItem(item)
+        toolbarSearchView?.setMenuItem(item)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onResume() {
         super.onResume()
-        extendedFab?.visibility = View.GONE
-        hideNavigationFabs()
-        setSupportActionBar(binding.toolbar)
-        setHasOptionsMenu(true)
-        showToolbarBackButton(binding.toolbar)
         burningSeriesViewModel.cancelFetchSeries()
         burningSeriesViewModel.setSeriesData(null)
     }
 
-    override fun onStop() {
-        super.onStop()
-        setSupportActionBar(null)
+    override fun initActivityViews() {
+        super.initActivityViews()
+
+        exitFullScreen()
+        hideSeriesArc()
+        extendedFab?.gone()
+        hideNavigationFabs()
+        setHasOptionsMenu(true)
+        showToolbarBackButton()
+        hideSeriesArc()
+        setToolbarTitle(R.string.favorites)
+        appBarLayout?.setExpanded(false, false)
+        appBarLayout?.setExpandable(false)
     }
 }

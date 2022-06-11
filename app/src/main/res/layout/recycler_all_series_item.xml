@@ -5,7 +5,6 @@
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    app:cardBackgroundColor="@color/defaultBackgroundColor"
     android:elevation="0dp"
     app:cardElevation="0dp"
     app:cardMaxElevation="0dp">
@@ -14,8 +13,6 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textColor="@color/defaultContentColor"
-        android:background="@color/defaultBackgroundColor"
         android:gravity="start|center_vertical"
         android:maxLines="2"
         android:ellipsize="end"

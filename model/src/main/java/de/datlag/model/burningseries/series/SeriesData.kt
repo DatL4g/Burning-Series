@@ -2,6 +2,7 @@ package de.datlag.model.burningseries.series
 
 import android.os.Parcelable
 import androidx.room.*
+import de.datlag.model.burningseries.Cover
 import de.datlag.model.burningseries.common.encodeToHref
 import de.datlag.model.burningseries.common.getDigitsOrNull
 import io.michaelrocks.paranoid.Obfuscate
@@ -25,7 +26,7 @@ data class SeriesData(
 	@ColumnInfo(name = "title") @SerialName("title") val title: String = String(),
 	@ColumnInfo(name = "season") @SerialName("season") var season: String = String(),
 	@ColumnInfo(name = "description") @SerialName("description") val description: String = String(),
-	@ColumnInfo(name = "image") @SerialName("image") val image: String = String(),
+	@Ignore @SerialName("cover") val cover: Cover = Cover(),
 	@ColumnInfo(name = "hrefTitle") val hrefTitle: String = title.encodeToHref(),
 	@ColumnInfo(name = "href") var href: String = "serie/$hrefTitle",
 	@ColumnInfo(name = "updatedAt") var updatedAt: Long = Clock.System.now().epochSeconds,
@@ -45,7 +46,6 @@ data class SeriesData(
 		title: String = String(),
 		season: String = String(),
 		description: String = String(),
-		image: String = String(),
 		hrefTitle: String = title.encodeToHref(),
 		href: String = "serie/$hrefTitle",
 		updatedAt: Long = Clock.System.now().epochSeconds,
@@ -55,7 +55,7 @@ data class SeriesData(
 		title,
 		season,
 		description,
-		image,
+		Cover(),
 		hrefTitle,
 		href,
 		updatedAt,

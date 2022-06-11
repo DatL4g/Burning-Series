@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
+import de.datlag.model.burningseries.Cover
+import de.datlag.model.burningseries.home.relation.LatestEpisodeCoverCrossRef
 import de.datlag.model.burningseries.series.*
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.parcelize.Parcelize
@@ -15,6 +17,11 @@ import kotlin.math.max
 @Obfuscate
 data class SeriesWithInfo(
     @Embedded val series: SeriesData,
+    @Relation(
+        parentColumn = "seriesId",
+        entityColumn = "coverId",
+        associateBy = Junction(SeriesCoverCrossRef::class)
+    ) val cover: Cover? = Cover(),
     @Relation(
         entity = InfoData::class,
         parentColumn = "seriesId",

@@ -3,30 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/defaultBackgroundColor">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/defaultBackgroundColor">
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/settingsHeader"
-            fontPath="fonts/Poppins-Bold.ttf"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_margin="16dp"
-            android:gravity="center"
-            android:text="@string/settings"
-            android:textColor="@color/defaultContentColor"
-            app:autoSizeMaxTextSize="24sp"
-            app:autoSizeMinTextSize="18sp"
-            app:autoSizeTextType="uniform"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/latestReleaseCard"
@@ -34,8 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:visibility="gone"
-            app:cardBackgroundColor="@color/defaultContentColor"
-            app:layout_constraintTop_toBottomOf="@id/settingsHeader"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -45,11 +26,10 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/title"
-                    fontPath="fonts/Poppins-Bold.ttf"
+                    fontPath="@string/font_path_bold"
                     android:layout_width="0dp"
                     android:layout_height="?attr/actionBarSize"
                     android:gravity="start|center_vertical"
-                    android:textColor="@color/defaultBackgroundColor"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/new_release"
@@ -68,7 +48,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="?attr/actionBarSize"
                     android:gravity="end|center_vertical"
-                    android:textColor="@color/defaultBackgroundColor"
                     android:layout_marginEnd="16dp"
                     android:textSize="12sp"
                     tools:text="2021-12-24"
@@ -81,7 +60,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start|center_vertical"
-                    android:textColor="@color/defaultBackgroundColor"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:textSize="14sp"
@@ -97,8 +75,6 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="12dp"
                     android:text="@string/view"
-                    android:textColor="@color/defaultContentColor"
-                    app:backgroundTint="@color/defaultBackgroundColor"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/text"
                     app:layout_constraintBottom_toBottomOf="parent"/>
@@ -111,7 +87,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:visibility="gone"
-            app:cardBackgroundColor="@color/datlagColor"
             app:layout_constraintTop_toBottomOf="@id/latestReleaseCard"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -122,11 +97,10 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/errorTitle"
-                    fontPath="fonts/Poppins-Bold.ttf"
+                    fontPath="@string/font_path_bold"
                     android:layout_width="0dp"
                     android:layout_height="?attr/actionBarSize"
                     android:gravity="start|center_vertical"
-                    android:textColor="@color/datlagContentColor"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/last_exception"
@@ -145,7 +119,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="?attr/actionBarSize"
                     android:gravity="end|center_vertical"
-                    android:textColor="@color/datlagContentColor"
                     android:layout_marginEnd="16dp"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -157,7 +130,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start|center_vertical"
-                    android:textColor="@color/datlagContentColor"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:textSize="14sp"
@@ -173,8 +145,6 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="12dp"
                     android:text="@string/clear"
-                    android:textColor="@color/datlagColor"
-                    app:backgroundTint="@color/datlagContentColor"
                     app:layout_constraintEnd_toStartOf="@id/errorCopyButton"
                     app:layout_constraintTop_toBottomOf="@id/errorText"
                     app:layout_constraintBottom_toBottomOf="parent"/>
@@ -186,8 +156,6 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="12dp"
                     android:text="@string/copy"
-                    android:textColor="@color/datlagColor"
-                    app:backgroundTint="@color/datlagContentColor"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/errorText"
                     app:layout_constraintBottom_toBottomOf="parent"/>
@@ -198,154 +166,19 @@
             android:id="@+id/settingsRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/latestErrorCard"
-            app:layout_constraintBottom_toTopOf="@id/librariesCard"
+            app:layout_constraintBottom_toTopOf="@id/version"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/librariesCard"
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardBackgroundColor="@color/defaultContentColor"
-            app:layout_constraintBottom_toTopOf="@id/githubCard"
+            android:layout_height="?attr/actionBarSize"
+            android:id="@+id/version"
+            android:gravity="center"
             app:layout_constraintTop_toBottomOf="@id/settingsRecycler"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/aboutIcon"
-                    android:layout_width="?attr/actionBarSize"
-                    android:layout_height="?attr/actionBarSize"
-                    android:scaleType="centerInside"
-                    app:tint="@color/defaultBackgroundColor"
-                    app:srcCompat="@drawable/ic_outline_info_24"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/about"
-                    fontPath="fonts/Poppins-Bold.ttf"
-                    android:layout_width="0dp"
-                    android:layout_height="?attr/actionBarSize"
-                    android:gravity="start|center_vertical"
-                    android:textColor="@color/defaultBackgroundColor"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="@string/opensource_libs"
-                    android:singleLine="true"
-                    android:maxLines="1"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="14sp"
-                    app:autoSizeMaxTextSize="18sp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/aboutIcon"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/githubCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardBackgroundColor="@color/defaultContentColor"
-            app:layout_constraintTop_toBottomOf="@id/librariesCard"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/githubIcon"
-                    android:layout_width="?attr/actionBarSize"
-                    android:layout_height="24dp"
-                    android:scaleType="centerInside"
-                    app:tint="@color/defaultBackgroundColor"
-                    app:srcCompat="@drawable/ic_github"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/github"
-                    fontPath="fonts/Poppins-Bold.ttf"
-                    android:layout_width="0dp"
-                    android:layout_height="?attr/actionBarSize"
-                    android:gravity="start|center_vertical"
-                    android:textColor="@color/defaultBackgroundColor"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="@string/github_project"
-                    android:singleLine="true"
-                    android:maxLines="1"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="14sp"
-                    app:autoSizeMaxTextSize="18sp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/githubIcon"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/syncCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardBackgroundColor="@color/defaultContentColor"
-            app:layout_constraintTop_toBottomOf="@id/githubCard"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/syncIcon"
-                    android:layout_width="?attr/actionBarSize"
-                    android:layout_height="24dp"
-                    android:scaleType="centerInside"
-                    app:tint="@color/defaultBackgroundColor"
-                    app:srcCompat="@drawable/ic_baseline_sync_24"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/sync"
-                    fontPath="fonts/Poppins-Bold.ttf"
-                    android:layout_width="0dp"
-                    android:layout_height="?attr/actionBarSize"
-                    android:gravity="start|center_vertical"
-                    android:textColor="@color/defaultBackgroundColor"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="@string/sync_with_other_device"
-                    android:singleLine="true"
-                    android:maxLines="1"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="14sp"
-                    app:autoSizeMaxTextSize="18sp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/syncIcon"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
+            app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

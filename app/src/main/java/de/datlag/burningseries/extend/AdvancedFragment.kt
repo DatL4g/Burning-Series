@@ -1,81 +1,108 @@
 package de.datlag.burningseries.extend
 
 import android.content.Context
-import android.content.res.ColorStateList
+import android.graphics.Insets
+import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.util.Size
 import android.view.View
+import android.view.WindowInsets
+import android.view.WindowManager
+import android.view.WindowMetrics
 import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
-import com.dolatkia.animatedThemeManager.ThemeFragment
-import com.fede987.statusbaralert.StatusBarAlert
+import com.ferfalk.simplesearchview.SimpleSearchView
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.*
-import de.datlag.burningseries.ui.connector.FABExtended
-import de.datlag.burningseries.ui.connector.FABNavigation
-import de.datlag.burningseries.ui.connector.StatusBarAlertProvider
-import de.datlag.burningseries.ui.theme.ApplicationTheme
-import de.datlag.coilifier.ImageLoader
-import de.datlag.network.m3o.M3ORepository
+import de.datlag.burningseries.ui.connector.*
+import de.datlag.coilifier.BlurHash
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
+import javax.inject.Named
+
 
 @AndroidEntryPoint
 @Obfuscate
-abstract class AdvancedFragment : ThemeFragment {
+abstract class AdvancedFragment : Fragment {
 
 	@ApplicationContext
 	lateinit var appContext: Context
 
 	@Inject
-	lateinit var m3oRepository: M3ORepository
+	@Named("coversDir")
+	lateinit var coversDir: File
+
+	@Inject
+	lateinit var blurHash: BlurHash
+
+	private var currentScrollRange = appBarLayout?.totalScrollRange ?: 0
+
+	private val notExpandableOffsetChangedListener = AppBarLayout.OnOffsetChangedListener { appBarLayout, offset ->
+		if (!appBarLayout.isLayoutRequested && currentScrollRange != offset) {
+			appBarLayout.setExpanded(false, false)
+			currentScrollRange = offset
+		}
+	}
+
+	fun AppBarLayout.setExpandable(expandable: Boolean) {
+		if (expandable) {
+			this.removeOnOffsetChangedListener(notExpandableOffsetChangedListener)
+		} else {
+			this.addOnOffsetChangedListener(notExpandableOffsetChangedListener)
+		}
+	}
 
 	constructor() : super()
 	constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
 
-	fun loadImageAndSave(
-		url: String,
-		name: String = url.substringAfterLast("/"),
-		onLoaded: (ImageLoader?) -> Unit
-	) {
-		if (checkFileValid(name)) {
-			safeActivity?.let {
-				onLoaded.invoke(ImageLoader.create(File(it.filesDir, name)))
+	fun getDisplayWidth(): Int {
+		val windowManager = safeContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+		return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			val metrics = windowManager.currentWindowMetrics
+			val windowInsets = metrics.windowInsets
+			var insets = windowInsets.getInsets(WindowInsets.Type.navigationBars())
+			val cutout = windowInsets.displayCutout
+			if (cutout != null) {
+				val cutoutSafeInsets = Insets.of(cutout.safeInsetLeft, cutout.safeInsetTop, cutout.safeInsetRight, cutout.safeInsetBottom)
+				insets = Insets.max(insets, cutoutSafeInsets)
 			}
+
+			val insetsWidth = insets.right + insets.left
+			val insetsHeight = insets.top + insets.bottom
+			val legacySize =  Size(metrics.bounds.width() - insetsWidth, metrics.bounds.height() - insetsHeight)
+			legacySize.width
 		} else {
-			m3oRepository.getImageFromURL(url).launchAndCollect {
-				it.data?.let { bytes ->
-					saveFileInternal(name, bytes)
-					onLoaded.invoke(ImageLoader.create(bytes))
-				} ?: run {
-					onLoaded.invoke(null)
-				}
-			}
+			safeContext.resources.displayMetrics.widthPixels
 		}
 	}
 
-	fun loadSavedImage(name: String): ImageLoader? {
-		return if (checkFileValid(name)) {
-			safeActivity?.let {
-				ImageLoader.create(File(it.filesDir, name))
-			}
-		} else {
-			null
-		}
-	}
-
-	fun loadFileSavedText(name: String): String? = if (checkFileValid(name)) {
+	fun loadFileSavedText(name: String): String? = if (checkFileValid(null, name)) {
 		val file = safeActivity?.let { File(it.filesDir, name) }
 		if (file != null && file.exists() && file.canRead()) {
 			file.readText()
@@ -86,7 +113,7 @@ abstract class AdvancedFragment : ThemeFragment {
 		null
 	}
 
-	fun fileLastModifiedOrCreated(name: String): Long = if (checkFileValid(name)) {
+	fun fileLastModifiedOrCreated(name: String): Long = if (checkFileValid(null, name)) {
 		val file = safeActivity?.let { File(it.filesDir, name) }
 		file?.lastModified() ?: 0L
 	} else {
@@ -100,8 +127,6 @@ abstract class AdvancedFragment : ThemeFragment {
 		}
 	}
 
-	fun getBurningSeriesHosterCount() = m3oRepository.getBurningSeriesHosterCount().filterNotNull()
-
 	fun extendedFabFavorite(directions: NavDirections) {
 		extendedFab?.let { fab ->
 			fab.visibility = View.VISIBLE
@@ -114,94 +139,112 @@ abstract class AdvancedFragment : ThemeFragment {
 	}
 
 	fun hideNavigationFabs() {
-		previousFab?.visibility = View.GONE
-		nextFab?.visibility = View.GONE
+		previousFab?.gone()
+		nextFab?.gone()
 	}
 
 	fun showNavigationFabs() {
-		previousFab?.visibility = View.VISIBLE
-		nextFab?.visibility = View.VISIBLE
+		previousFab?.visible()
+		nextFab?.visible()
 	}
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		hideLoadingDialog()
-	}
-
-	override fun onDestroyView() {
-		super.onDestroyView()
-		statusBarAlert?.hide(false)
-		hideLoadingDialog()
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		super.onViewCreated(view, savedInstanceState)
+		initActivityViews()
 	}
 
 	override fun onResume() {
 		super.onResume()
-		statusBarAlert?.hide(false)
 		hideLoadingDialog()
 		hideKeyboard()
-		(themeManager.currentTheme as? ApplicationTheme?)?.let {
-			applyFabColors(it)
-		}
+		initActivityViews()
 	}
 
-	override fun onPause() {
-		super.onPause()
-		statusBarAlert?.hide(false)
-		hideLoadingDialog()
-	}
-
-	fun setSupportActionBar(toolbar: Toolbar?) {
-		(safeActivity as? AppCompatActivity?)?.delegate?.setSupportActionBar(toolbar)
-	}
-
-	fun showToolbarBackButton(toolbar: Toolbar) {
+	fun showToolbarBackButton(toolbar: Toolbar? = materialToolbar) {
 		supportActionBar?.setDisplayHomeAsUpEnabled(true)
 		supportActionBar?.setDisplayShowHomeEnabled(true)
-		toolbar.setNavigationOnClickListener { safeActivity?.onBackPressed() }
+		toolbar?.setNavigationOnClickListener { safeActivity?.onBackPressed() }
 	}
 
-	fun showLoadingStatusBar() = statusBarAlert?.showLoading(
-		safeContext.getString(R.string.loading),
-		R.color.defaultContentColor,
-		R.color.defaultBackgroundColor
-	)
+	fun hideToolbarBackButton(toolbar: Toolbar? = materialToolbar) {
+		supportActionBar?.setDisplayHomeAsUpEnabled(false)
+		supportActionBar?.setDisplayShowHomeEnabled(false)
+		toolbar?.setNavigationOnClickListener(null)
+	}
 
-	fun showErrorStatusBar() = statusBarAlert?.showError(
-		safeContext.getString(R.string.error),
-		R.color.errorBackgroundColor,
-		R.color.errorContentColor
-	)
+	fun setToolbarTitle(@StringRes resId: Int) = setToolbarTitle(safeContext.getString(resId))
 
-	fun showSuccessStatusBar() = statusBarAlert?.showSuccess(
-		safeContext.getString(R.string.success),
-		R.color.successBackgroundColor,
-		R.color.successContentColor
-	)
+	fun setToolbarTitle(title: CharSequence?) {
+		collapsingToolbar?.title = title
+		materialToolbar?.title = title
+	}
 
-	protected fun applyFabColors(appTheme: ApplicationTheme) {
-		extendedFab?.setBackgroundColor(appTheme.defaultContentColor(safeContext))
-		extendedFab?.setTextColor(appTheme.defaultBackgroundColor(safeContext))
-		extendedFab?.iconTint = ColorStateList.valueOf(appTheme.defaultBackgroundColor(safeContext))
-		nextFab?.setBackgroundColor(appTheme.defaultContentColor(safeContext))
-		nextFab?.supportImageTintList = ColorStateList.valueOf(appTheme.defaultBackgroundColor(safeContext))
-		previousFab?.setBackgroundColor(appTheme.defaultContentColor(safeContext))
-		previousFab?.supportImageTintList = ColorStateList.valueOf(appTheme.defaultBackgroundColor(safeContext))
+	fun showSeriesArc() {
+		toolbarInfo?.seriesCover?.visible()
+		toolbarInfo?.seriesArc?.visible()
+		toolbarInfo?.seriesArcWrapper?.visible()
+	}
+
+	fun hideSeriesArc() {
+		toolbarInfo?.seriesCover?.gone()
+		toolbarInfo?.seriesArc?.gone()
+		toolbarInfo?.seriesArcWrapper?.gone()
+	}
+
+	fun enterFullScreen() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+			safeActivity?.window?.attributes?.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+		}
+		safeActivity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+		safeActivity?.window?.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+		safeActivity?.window?.let { WindowCompat.setDecorFitsSystemWindows(it, false) }
+	}
+
+	fun exitFullScreen() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+			safeActivity?.window?.attributes?.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
+		}
+		safeActivity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+		safeActivity?.window?.let { WindowCompat.setDecorFitsSystemWindows(it, true) }
+		val controllerCompat = safeActivity?.window?.let { controller -> return@let WindowInsetsControllerCompat(controller, controller.decorView) }
+		controllerCompat?.show(WindowInsetsCompat.Type.statusBars())
 	}
 
 	inline fun <T> Flow<T>.launchAndCollect(crossinline action: suspend CoroutineScope.(T) -> Unit) = this.launchAndCollectIn(viewLifecycleOwner, action = action)
 
-	val extendedFab: ExtendedFloatingActionButton?
-		get() = if (safeActivity is FABExtended) (safeActivity as FABExtended).extendedFab else null
+	open fun initActivityViews() {
+		toolbarSearchView?.closeSearch(false)
+	}
 
-	val statusBarAlert: StatusBarAlert?
-		get() = if (safeActivity is StatusBarAlertProvider) (safeActivity as StatusBarAlertProvider).statusBarAlert else null
+	override fun onStop() {
+		appBarLayout?.setExpandable(true)
+		super.onStop()
+	}
+
+	val extendedFab: ExtendedFloatingActionButton?
+		get() = (safeActivity as? FABExtended?)?.extendedFab
 
 	val supportActionBar: ActionBar?
 		get() = if (safeActivity is AppCompatActivity) (safeActivity as AppCompatActivity).supportActionBar else null
 
 	val previousFab: FloatingActionButton?
-		get() = if (safeActivity is FABNavigation) (safeActivity as FABNavigation).previousFab else null
+		get() = (safeActivity as? FABNavigation?)?.previousFab
 
 	val nextFab: FloatingActionButton?
-		get() = if (safeActivity is FABNavigation) (safeActivity as FABNavigation).nextFab else null
+		get() = (safeActivity as? FABNavigation?)?.nextFab
+
+	val toolbarSearchView: SimpleSearchView?
+		get() = (safeActivity as? ToolbarSearchView?)?.searchView
+
+	val collapsingToolbar: CollapsingToolbarLayout?
+		get() = (safeActivity as? ToolbarCollapsingLayout?)?.collapsingToolbarLayout
+
+	val appBarLayout: AppBarLayout?
+		get() = (safeActivity as? ToolbarAppbarLayout?)?.appbarLayout
+
+	val materialToolbar: MaterialToolbar?
+		get() = (safeActivity as? ToolbarMaterialToolbar?)?.toolbar
+
+	val toolbarInfo: ToolbarInfo?
+		get() = safeActivity as? ToolbarInfo?
 }

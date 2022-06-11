@@ -6,12 +6,10 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.dolatkia.animatedThemeManager.ThemeManager
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerSeriesInfoBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
-import de.datlag.burningseries.ui.theme.ApplicationTheme
 import de.datlag.model.burningseries.series.InfoData
 import io.michaelrocks.paranoid.Obfuscate
 
@@ -46,12 +44,6 @@ class SeriesInfoAdapter : ClickRecyclerAdapter<InfoData, SeriesInfoAdapter.ViewH
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = with(holder) {
         val item = differ.currentList[position]
-
-        val appTheme = ThemeManager.currentTheme as? ApplicationTheme?
-        appTheme?.let {
-            binding.header.setTextColor(it.defaultContentColor(binding.header.context))
-            binding.info.setTextColor(it.defaultContentColor(binding.info.context))
-        }
 
         binding.header.text = item.header.trim()
         binding.info.text = item.data.trim()

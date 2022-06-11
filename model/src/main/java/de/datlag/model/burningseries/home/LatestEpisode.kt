@@ -2,6 +2,7 @@ package de.datlag.model.burningseries.home
 
 import android.os.Parcelable
 import androidx.room.*
+import de.datlag.model.burningseries.Cover
 import de.datlag.model.burningseries.common.encodeToHref
 import de.datlag.model.burningseries.series.LanguageData
 import io.michaelrocks.paranoid.Obfuscate
@@ -26,6 +27,8 @@ data class LatestEpisode(
 	@ColumnInfo(name = "href") @SerialName("href") val href: String = String(),
 	@ColumnInfo(name = "info", defaultValue = "") @SerialName("infoText") val infoText: String = String(),
 	@ColumnInfo(name = "updatedAt") var updatedAt: Long = Clock.System.now().epochSeconds,
+	@ColumnInfo(name = "nsfw", defaultValue = "false") @SerialName("isNsfw") val nsfw: Boolean = false,
+	@Ignore @SerialName("cover") val cover: Cover = Cover(),
 	@Ignore @SerialName("infoFlags") val infoFlags: List<LatestEpisodeInfoFlags>
 ) : Parcelable {
 
@@ -39,7 +42,8 @@ data class LatestEpisode(
 		href: String = String(),
 		infoText: String = String(),
 		updatedAt: Long = Clock.System.now().epochSeconds,
-	) : this(title, href, infoText, updatedAt, listOf())
+		nsfw: Boolean = false
+	) : this(title, href, infoText, updatedAt, nsfw, Cover(), listOf())
 
 	fun getEpisodeAndSeries(): Pair<String, String> {
 		val match = Regex(
@@ -65,4 +69,22 @@ data class LatestEpisode(
 		val hrefSplit = href.split('/')
 		return hrefSplit.subList(0, 3).joinToString("/")
 	}
+
+	val isJapanese: Boolean
+		get() = infoFlags.any { it.isJapanese }
+
+	val isGerman: Boolean
+		get() = infoFlags.any { it.isGerman }
+
+	val isEnglish: Boolean
+		get() = infoFlags.any { it.isEnglish }
+
+	val isJapaneseSub: Boolean
+		get() = infoFlags.any { it.isJapaneseSub }
+
+	val isGermanSub: Boolean
+		get() = infoFlags.any { it.isGermanSub }
+
+	val isEnglishSub: Boolean
+		get() = infoFlags.any { it.isEnglishSub }
 }

@@ -11,9 +11,7 @@ fun NavController.safeNavigate(directions: NavDirections) {
     fun tryNavigation() {
         try {
             navigate(directions)
-        } catch (ignored: Throwable) {
-            Timber.e(ignored)
-        }
+        } catch (ignored: Throwable) { }
     }
 
     val destinationId = currentDestination?.getAction(directions.actionId)?.destinationId ?: 0

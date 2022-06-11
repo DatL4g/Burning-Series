@@ -2,34 +2,34 @@ package de.datlag.burningseries.ui.fragment
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
+import android.view.*
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.net.toUri
+import androidx.core.widget.PopupMenuCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.dolatkia.animatedThemeManager.AppTheme
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.AndroidEntryPoint
+import de.datlag.burningseries.BuildConfig
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.LatestEpisodeRecyclerAdapter
 import de.datlag.burningseries.adapter.LatestSeriesRecyclerAdapter
 import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentHomeBinding
 import de.datlag.burningseries.extend.AdvancedFragment
-import de.datlag.burningseries.ui.theme.ApplicationTheme
-import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
-import de.datlag.burningseries.viewmodel.GitHubViewModel
-import de.datlag.burningseries.viewmodel.SettingsViewModel
-import de.datlag.burningseries.viewmodel.UserViewModel
+import de.datlag.burningseries.viewmodel.*
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
+import de.datlag.model.burningseries.home.LatestEpisode
+import de.datlag.model.burningseries.home.LatestSeries
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
@@ -40,13 +40,17 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	private val settingsViewModel: SettingsViewModel by activityViewModels()
 	private val gitHubViewModel: GitHubViewModel by activityViewModels()
 	private val userViewModel: UserViewModel by activityViewModels()
+	private val usageViewModel: UsageViewModel by activityViewModels()
 
 	private val latestEpisodeRecyclerAdapter by lazy {
-		LatestEpisodeRecyclerAdapter(binding.allSeriesButton.id)
+		LatestEpisodeRecyclerAdapter(coversDir, blurHash, binding.allSeriesButton.id)
 	}
 	private val latestSeriesRecyclerAdapter by lazy {
-		LatestSeriesRecyclerAdapter(binding.allSeriesButton.id, extendedFab?.id)
+		LatestSeriesRecyclerAdapter(coversDir, blurHash, binding.allSeriesButton.id, extendedFab?.id)
 	}
+
+	private var showingHelpImprove: Boolean = false
+	private var showingNewVersion: Boolean = false
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -56,90 +60,47 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 
-		binding.settingsBadge.translationZ = Float.MAX_VALUE
+		recoverMalAuthState()
+		recoverAniListAuthState()
+		recoverGitHubAuthState()
 
 		initRecycler()
 		checkIfErrorCaught()
 		listenImproveDialogSetting()
 		listenNewVersionDialog()
+		listenAppUsage()
 		listenAllSeriesCount()
-		recoverMalAuthState()
-		recoverAniListAuthState()
+		listenIsSponsoring()
 
 		burningSeriesViewModel.homeData.distinctUntilChanged().launchAndCollect {
 			when (it.status) {
 				Resource.Status.LOADING -> {
-					showLoadingStatusBar()
+					// TODO("show loading indicator")
+					it.data?.let { home ->
+						latestEpisodeRecyclerAdapter.submitList(home.latestEpisodes)
+						latestSeriesRecyclerAdapter.submitList(home.latestSeries)
+					}
 				}
 				Resource.Status.SUCCESS -> {
 					latestSeriesRecyclerAdapter.submitList(it.data?.latestSeries ?: listOf())
-					latestEpisodeRecyclerAdapter.submitList(it.data?.latestEpisodes ?: listOf())
-					showSuccessStatusBar()
+					latestEpisodeRecyclerAdapter.submitList((it.data?.latestEpisodes ?: listOf()))
+					// TODO("hide loading indicator")
 				}
 				Resource.Status.ERROR -> {
-					showErrorStatusBar()
+					// TODO("show error snackbar or something")
 				}
 			}
-		}
-
-		loadImageAndSave(Constants.BS_TO_HEADER) {
-			binding.banner.load<Drawable>(it)
 		}
 
 		binding.allSeriesButton.setOnClickListener {
 			findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToAllSeriesFragment())
 		}
 
-		binding.settingsButton.setOnClickListener {
-			findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToSettingsFragment())
-		}
-
 		extendedFabFavorite(HomeFragmentDirections.actionHomeFragmentToFavoritesFragment())
 		extendedFab?.id?.let { binding.allSeriesButton.nextFocusRightId = it }
 	}
 
-	override fun syncTheme(appTheme: AppTheme) {
-		val currentTheme = appTheme as? ApplicationTheme?
-		currentTheme?.let {
-			binding.parent.setBackgroundColor(it.defaultBackgroundColor(safeContext))
-			binding.episodesHeader.setTextColor(it.defaultContentColor(safeContext))
-			binding.settingsButton.setBackgroundColor(it.defaultContentColor(safeContext))
-			binding.settingsButton.setTextColor(it.defaultBackgroundColor(safeContext))
-			binding.seriesHeader.setTextColor(it.defaultContentColor(safeContext))
-			binding.allSeriesButton.setBackgroundColor(it.defaultContentColor(safeContext))
-			binding.allSeriesButton.setTextColor(it.defaultBackgroundColor(safeContext))
-
-			latestEpisodeRecyclerAdapter.resubmitList()
-		}
-	}
-
 	private fun showSettingsBadgeWith(text: CharSequence?, success: Boolean) {
-		binding.settingsBadge.setText(text, false)
-		binding.settingsBadge.badgeBackgroundDrawable = if (success) {
-			AppCompatResources.getDrawable(safeContext, R.drawable.badge_green)
-		} else {
-			AppCompatResources.getDrawable(safeContext, R.drawable.badge_red)
-		}
-		binding.settingsBadge.invisible()
-
-		binding.settingsBadge.post {
-			val params = binding.settingsBadge.layoutParams as ViewGroup.MarginLayoutParams
-			params.apply {
-				var measuredW = binding.settingsBadge.measuredWidth
-				if (measuredW == 0) {
-					measuredW = binding.settingsBadge.width
-				}
-
-				var measuredH = binding.settingsBadge.measuredHeight
-				if (measuredH == 0) {
-					measuredH = binding.settingsBadge.height
-				}
-				leftMargin = -(measuredW / 2)
-				topMargin = -(measuredH / 4)
-			}
-			binding.settingsBadge.layoutParams = params
-			binding.settingsBadge.show()
-		}
 	}
 
 	private fun checkIfErrorCaught() {
@@ -149,24 +110,58 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		}
 	}
 
+	private fun listenIsSponsoring() = userViewModel.getGitHubUser().launchAndCollect { user ->
+		if (user != null) {
+			userViewModel.getGitHubSponsorStatus(user).launchAndCollect {
+				Timber.e(it.toString())
+			}
+		} else {
+			Timber.e("Not sponsoring or contributor")
+		}
+	}
+
 	private fun listenImproveDialogSetting() = settingsViewModel.data.map { it.appearance.improveDialog }.launchAndCollect {
 		if (it) {
 			if (!burningSeriesViewModel.showedHelpImprove) {
-				getBurningSeriesHosterCount().launchAndCollect { count ->
-					while (view != null && !burningSeriesViewModel.showedHelpImprove) {
-						try {
-							findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToHelpImproveDialog(count))
+				burningSeriesViewModel.getSeriesCount().launchAndCollect { count ->
+					if (count != null) {
+						if (!burningSeriesViewModel.showedHelpImprove && !showingNewVersion) {
+							materialDialogBuilder {
+								setPositiveButtonIcon(R.drawable.ic_baseline_check_24)
+								builder {
+									setTitle(R.string.help_improve_header)
+									setMessage(safeContext.getString(R.string.help_improve_text, count))
+									setPositiveButton(R.string.i_understand) { dialog, _ ->
+										dialog.dismiss()
+									}
+									setOnCancelListener {
+										showingHelpImprove = false
+									}
+									setOnDismissListener {
+										showingHelpImprove = false
+									}
+								}
+							}.show()
+							showingHelpImprove = true
 							burningSeriesViewModel.showedHelpImprove = true
-							break
-						} catch (ignored: Exception) { }
-						withContext(Dispatchers.IO) {
-							delay(1000)
 						}
 					}
 				}
 			}
 		} else {
 			burningSeriesViewModel.showedHelpImprove = true
+		}
+	}
+
+	private fun listenAppUsage() = settingsViewModel.data.map { it.usage.spentTime }.launchAndCollect {
+		if (it >= Constants.WEEK_IN_SECONDS && !usageViewModel.showedDonate) {
+			materialDialogBuilder {
+				builder {
+					setTitle("Seems like you enjoy this app")
+					setMessage("The app does not work for free and depends on paid services, help by donating")
+				}
+			}
+			usageViewModel.showedDonate = true
 		}
 	}
 
@@ -178,22 +173,43 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		userViewModel.loadAniListAuth(it)
 	}
 
+	private fun recoverGitHubAuthState() = settingsViewModel.data.map { it.user.githubAuth }.launchAndCollect {
+		userViewModel.loadGitHubAuth(it)
+	}
+
 	private fun listenNewVersionDialog() = gitHubViewModel.getLatestRelease().launchAndCollect {
 		if (view != null && it != null) {
 			showSettingsBadgeWith(safeContext.getString(R.string.arrow_up), true)
 		}
 		val installedFromFDroid = this@HomeFragment.safeContext.isInstalledFromFDroid()
-		while (view != null && !gitHubViewModel.showedNewVersion && it != null) {
-			if (burningSeriesViewModel.showedHelpImprove) {
-				try {
-					findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToNewReleaseDialog(it, installedFromFDroid))
-					gitHubViewModel.showedNewVersion = true
-					break
-				} catch (ignored: Exception) { }
-			}
-			withContext(Dispatchers.IO) {
-				delay(1000)
-			}
+		if (it != null && !gitHubViewModel.showedNewVersion && !showingHelpImprove) {
+			materialDialogBuilder {
+				setPositiveButtonIcon(R.drawable.ic_baseline_remove_red_eye_24)
+				setNegativeButtonIcon(R.drawable.ic_baseline_close_24)
+				builder {
+					setTitle(it.title)
+					setMessage(safeContext.getString(R.string.new_release_text, "[0-9.]+".toRegex().find(it.tagName)?.value, BuildConfig.VERSION_NAME))
+					setPositiveButton(R.string.view) { dialog, _ ->
+						dialog.dismiss()
+						if (installedFromFDroid) {
+							"${Constants.F_DROID_PACKAGES_URL}/${this@HomeFragment.safeContext.packageName}".toUri()
+						} else {
+							it.htmlUrl.toUri()
+						}.openInBrowser(safeContext, safeContext.getString(R.string.new_release))
+					}
+					setNegativeButton(R.string.close) { dialog, _ ->
+						dialog.cancel()
+					}
+					setOnCancelListener {
+						showingNewVersion = false
+					}
+					setOnDismissListener {
+						showingNewVersion = false
+					}
+				}
+			}.show()
+			showingNewVersion = true
+			gitHubViewModel.showedNewVersion = true
 		}
 	}
 
@@ -206,6 +222,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	}
 
 	private fun initRecycler(): Unit = with(binding) {
+		latestEpisodeRecycler.layoutManager = GridLayoutManager(safeContext, 2, RecyclerView.HORIZONTAL, false)
 		latestEpisodeRecycler.adapter = latestEpisodeRecyclerAdapter
 		latestEpisodeRecyclerAdapter.setOnClickListener { item ->
 			findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
@@ -214,15 +231,12 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		}
 		
 		latestEpisodeRecyclerAdapter.setOnLongClickListener { item ->
-			val (title, episode) = item.getEpisodeAndSeries()
-			findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToOpenInBrowserDialog(
-				Constants.getBurningSeriesLink(item.href),
-				"$episode ${safeContext.getString(R.string.of)} \"$title"
-			))
+			openInBrowser(episode = item)
 			true
 		}
 		
 
+		latestSeriesRecycler.layoutManager = GridLayoutManager(safeContext, 2, RecyclerView.HORIZONTAL, false)
 		latestSeriesRecycler.adapter = latestSeriesRecyclerAdapter
 		latestSeriesRecyclerAdapter.setOnClickListener { item ->
 			findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
@@ -231,19 +245,82 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		}
 
 		latestSeriesRecyclerAdapter.setOnLongClickListener { item ->
-			findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToOpenInBrowserDialog(
-				Constants.getBurningSeriesLink(item.href),
-				item.title
-			))
+			openInBrowser(series = item)
 			true
+		}
+	}
+
+	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+		menu.clear()
+		inflater.inflate(R.menu.home_menu, menu)
+
+		super.onCreateOptionsMenu(menu, inflater)
+	}
+
+	override fun onOptionsItemSelected(item: MenuItem): Boolean {
+		return when (item.itemId) {
+			R.id.home_github -> {
+				Constants.GITHUB_PROJECT.toUri().openInBrowser(safeContext, safeContext.getString(R.string.github))
+				true
+			}
+			R.id.home_settings -> {
+				findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToSettingsFragment())
+				true
+			}
+			R.id.home_about -> {
+				findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToAboutLibraries())
+				true
+			}
+			else -> super.onOptionsItemSelected(item)
 		}
 	}
 
 	override fun onResume() {
 		super.onResume()
-		extendedFab?.visibility = View.VISIBLE
-		hideNavigationFabs()
 		burningSeriesViewModel.cancelFetchSeries()
 		burningSeriesViewModel.setSeriesData(null)
+	}
+
+	override fun onDestroyView() {
+		super.onDestroyView()
+		Timber.e("Destroyed View in Home")
+	}
+
+	private fun openInBrowser(episode: LatestEpisode? = null, series: LatestSeries? = null) {
+		val text = safeContext.getString(R.string.open_in_browser_text, (if (episode != null) {
+			val (title, episodeTitle) = episode.getEpisodeAndSeries()
+			"$episodeTitle\" ${safeContext.getString(R.string.of)} \"$title"
+		} else series?.title ?: String()))
+		val title = episode?.getEpisodeAndSeries()?.second ?: series?.title
+		materialDialogBuilder {
+			setPositiveButtonIcon(R.drawable.ic_baseline_arrow_outward_24)
+			setNegativeButtonIcon(R.drawable.ic_baseline_close_24)
+			builder {
+				setTitle(R.string.open_in_browser)
+				setMessage(text)
+				setPositiveButton(R.string.open) { dialog, _ ->
+					dialog.dismiss()
+					Constants.getBurningSeriesLink(episode?.href ?: series?.href ?: String()).toUri().openInBrowser(safeContext, title)
+				}
+				setNegativeButton(R.string.close) { dialog, _ ->
+					dialog.cancel()
+				}
+			}
+		}.show()
+	}
+
+	override fun initActivityViews() {
+		super.initActivityViews()
+
+		exitFullScreen()
+		hideSeriesArc()
+		extendedFab?.visible()
+		hideNavigationFabs()
+		setHasOptionsMenu(true)
+		hideToolbarBackButton()
+		hideSeriesArc()
+		appBarLayout?.setExpanded(false, false)
+		appBarLayout?.setExpandable(false)
+		setToolbarTitle(R.string.app_name)
 	}
 }
