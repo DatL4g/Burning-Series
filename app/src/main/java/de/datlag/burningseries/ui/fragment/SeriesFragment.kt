@@ -207,6 +207,14 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     }
 
     private fun initRecycler(): Unit = with(binding) {
+        root.setOnScrollChangeListener { view, _, scrollY, _, _ ->
+            if (!view.isInTouchMode && scrollY >= 100) {
+                appBarLayout?.setExpanded(false, true)
+            } else if (!view.isInTouchMode && scrollY < 100) {
+                appBarLayout?.setExpanded(true, true)
+            }
+        }
+
         infoRecycler.itemAnimator = null
         seriesInfoAdapter.submitList(listOf())
         infoRecycler.adapter = seriesInfoAdapter

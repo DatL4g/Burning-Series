@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -75,7 +77,7 @@ class LatestEpisodeRecyclerAdapter(
 
 		binding.cover.load<Drawable>(Constants.getBurningSeriesLink(item.cover.href)) {
 			val width = binding.cover.anyWidth ?: 0
-			val height = binding.cover.anyHeight ?: 0
+			val height = binding.cover.anyHeight ?: (width.toFloat() * 1.6F).toInt()
 
 			if (errorImage != null) {
 				error(errorImage)
@@ -88,7 +90,6 @@ class LatestEpisodeRecyclerAdapter(
 		binding.title.text = title
 		binding.text.text = text
 		// ToDo("nextFocusLeft to toolbar")
-		// ToDo("margin on first and last item")
 		binding.flag.load<Drawable>(if (item.isJapanese) {
 			R.drawable.ic_japan
 		} else if (item.isGerman) {
