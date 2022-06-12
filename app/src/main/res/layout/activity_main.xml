@@ -26,6 +26,7 @@
             app:maxLines="2">
 
             <View
+                android:id="@+id/collapsingSizeHolder"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/collapsingToolbarLayoutMediumSize"
                 android:visibility="invisible"/>

@@ -1,15 +1,19 @@
 package de.datlag.burningseries.ui.fragment
 
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.LinearLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.net.toUri
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -17,6 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.bumptech.glide.Glide
 import com.devs.readmoreoption.ReadMoreOption
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
@@ -563,7 +568,26 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     }
 
     private fun loadAnimeProviderImage(imageUrl: String?, defaultCover: Cover?) = lifecycleScope.launch(Dispatchers.Main) {
-        // ToDo("load from imageUrl or ignore")
+        val width = toolbarInfo?.seriesCover?.anyWidth ?: getDisplayWidth()
+        val height = toolbarInfo?.seriesCover?.anyHeight ?: (getDisplayWidth().toFloat() * 1.6F).toInt()
+
+        val errorBitmap = defaultCover?.loadBase64Image(coversDir)?.let { bitmap ->
+            val origWidth = bitmap.width
+            val origHeight = bitmap.height
+            val widthMultiplier = width.toFloat() / origWidth.toFloat()
+            Bitmap.createScaledBitmap(bitmap, width, (origHeight.toFloat() * widthMultiplier).toInt(), true)
+        }
+
+        toolbarInfo?.seriesCover?.load<Drawable>(imageUrl) {
+            fitCenter()
+            error(
+                Glide.with(safeContext)
+                .load(defaultCover?.href?.let { Constants.getBurningSeriesLink(it) })
+                .error(errorBitmap?.let { BitmapDrawable(safeContext.resources, it) } ?: defaultCover?.loadBlurHash {
+                    blurHash.execute(defaultCover.blurHash, width, height)
+                } ?: toolbarInfo?.seriesCover?.drawable)
+            )
+        }
     }
 
     private fun syncMalData(preview: AnimePreview?) = lifecycleScope.launch(Dispatchers.IO) {
@@ -666,13 +690,15 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
     override fun initActivityViews() {
         super.initActivityViews()
+        setHasOptionsMenu(true)
 
+        showAppBarLayout()
         exitFullScreen()
         hideNavigationFabs()
         showToolbarBackButton()
-        setHasOptionsMenu(true)
-        appBarLayout?.setExpandable(true)
         showSeriesArc()
+
+        appBarLayout?.setExpandable(true)
         appBarLayout?.setExpanded(true, false)
         if (view != null) {
             applyContinueFab()

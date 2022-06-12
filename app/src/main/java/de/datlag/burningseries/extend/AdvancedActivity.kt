@@ -4,20 +4,12 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
-import de.datlag.burningseries.common.forceEmit
-import de.datlag.burningseries.ui.connector.ToolbarAppbarLayout
+import de.datlag.burningseries.ui.connector.ToolbarInfo
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
@@ -65,7 +57,7 @@ abstract class AdvancedActivity() : AppCompatActivity() {
 	}
 
 	private val appBarLayout: AppBarLayout?
-		get() = (this as? ToolbarAppbarLayout?)?.appbarLayout
+		get() = (this as? ToolbarInfo?)?.appbarLayout
 
 	companion object {
 		init {

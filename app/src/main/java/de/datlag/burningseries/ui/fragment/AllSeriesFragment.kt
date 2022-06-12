@@ -110,7 +110,7 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
     }
 
     private fun initSearchView() {
-        toolbarSearchView?.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
+        searchView?.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isNotEmpty()) {
                     burningSeriesViewModel.searchAllSeries(newText)
@@ -134,7 +134,7 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         menu.clear()
         inflater.inflate(R.menu.all_series_menu, menu)
         val item = menu.findItem(R.id.action_search)
-        toolbarSearchView?.setMenuItem(item)
+        searchView?.setMenuItem(item)
 
         super.onCreateOptionsMenu(menu, inflater)
     }

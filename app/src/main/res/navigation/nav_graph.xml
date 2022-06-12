@@ -138,7 +138,9 @@
             app:argType="de.datlag.model.video.VideoStream" />
         <action
             android:id="@+id/action_videoFragment_to_scrapeHosterFragment"
-            app:destination="@id/scrapeHosterFragment" />
+            app:destination="@id/scrapeHosterFragment"
+            app:popUpTo="@id/seriesFragment"
+            app:popUpToInclusive="true" />
         <argument
             android:name="seriesWithInfo"
             app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
@@ -147,7 +149,9 @@
             app:argType="de.datlag.model.burningseries.series.EpisodeInfo" />
         <action
             android:id="@+id/action_videoFragment_self"
-            app:destination="@id/videoFragment" />
+            app:destination="@id/videoFragment"
+            app:popUpTo="@id/seriesFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"

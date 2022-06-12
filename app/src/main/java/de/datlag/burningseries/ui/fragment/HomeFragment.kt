@@ -64,27 +64,9 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		checkIfErrorCaught()
 		listenImproveDialogSetting()
 		listenNewVersionDialog()
-		listenAllSeriesCount()
 
-		burningSeriesViewModel.homeData.distinctUntilChanged().launchAndCollect {
-			when (it.status) {
-				Resource.Status.LOADING -> {
-					// TODO("show loading indicator")
-					it.data?.let { home ->
-						latestEpisodeRecyclerAdapter.submitList(home.latestEpisodes)
-						latestSeriesRecyclerAdapter.submitList(home.latestSeries)
-					}
-				}
-				Resource.Status.SUCCESS -> {
-					latestSeriesRecyclerAdapter.submitList(it.data?.latestSeries ?: listOf())
-					latestEpisodeRecyclerAdapter.submitList((it.data?.latestEpisodes ?: listOf()))
-					// TODO("hide loading indicator")
-				}
-				Resource.Status.ERROR -> {
-					// TODO("show error snackbar or something")
-				}
-			}
-		}
+		listenHomeData()
+		listenAllSeriesCount()
 
 		binding.allSeriesButton.setOnClickListener {
 			findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToAllSeriesFragment())
@@ -101,6 +83,36 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		val errorText = loadFileSavedText(Constants.LOG_FILE)?.trim()
 		if (!errorText.isNullOrEmpty()) {
 			showSettingsBadgeWith(safeContext.getString(R.string.exclamation_mark), false)
+		}
+	}
+
+	private fun listenHomeData() = burningSeriesViewModel.homeData.distinctUntilChanged().launchAndCollect {
+		when (it.status) {
+			Resource.Status.LOADING -> {
+				// TODO("show loading indicator")
+				it.data?.let { home ->
+					latestEpisodeRecyclerAdapter.submitList(home.latestEpisodes) {
+						binding.latestEpisodeRecycler.scrollToPosition(0)
+						binding.latestEpisodeRecycler.requestFocus()
+					}
+					latestSeriesRecyclerAdapter.submitList(home.latestSeries) {
+						binding.latestSeriesRecycler.scrollToPosition(0)
+					}
+				}
+			}
+			Resource.Status.SUCCESS -> {
+				latestEpisodeRecyclerAdapter.submitList((it.data?.latestEpisodes ?: listOf())) {
+					binding.latestEpisodeRecycler.scrollToPosition(0)
+					binding.latestEpisodeRecycler.requestFocus()
+				}
+				latestSeriesRecyclerAdapter.submitList(it.data?.latestSeries ?: listOf()) {
+					binding.latestSeriesRecycler.scrollToPosition(0)
+				}
+				// TODO("hide loading indicator")
+			}
+			Resource.Status.ERROR -> {
+				// TODO("show error snackbar or something")
+			}
 		}
 	}
 
@@ -180,7 +192,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	}
 
 	private fun listenAppUsage() = settingsViewModel.data.map { it.usage.spentTime }.launchAndCollect {
-		if (it <= Constants.WEEK_IN_SECONDS && !usageViewModel.showedDonate) {
+		if (it >= Constants.WEEK_IN_SECONDS && !usageViewModel.showedDonate) {
 			if (Math.random() < 0.5) {
 				usageViewModel.showedDonate = true
 			} else {
@@ -248,7 +260,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	}
 
 	private fun initRecycler(): Unit = with(binding) {
-		latestEpisodeRecycler.layoutManager = GridLayoutManager(safeContext, 2, RecyclerView.HORIZONTAL, false)
+		latestEpisodeRecycler.layoutManager = GridLayoutManager(safeContext, if (isTelevision) 1 else 2, RecyclerView.HORIZONTAL, false)
 		latestEpisodeRecycler.adapter = latestEpisodeRecyclerAdapter
 		latestEpisodeRecyclerAdapter.setOnClickListener { item ->
 			findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
@@ -262,7 +274,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		}
 		
 
-		latestSeriesRecycler.layoutManager = GridLayoutManager(safeContext, 2, RecyclerView.HORIZONTAL, false)
+		latestSeriesRecycler.layoutManager = GridLayoutManager(safeContext, if (isTelevision) 1 else 2, RecyclerView.HORIZONTAL, false)
 		latestSeriesRecycler.adapter = latestSeriesRecyclerAdapter
 		latestSeriesRecyclerAdapter.setOnClickListener { item ->
 			findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
@@ -305,11 +317,6 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		super.onResume()
 		burningSeriesViewModel.cancelFetchSeries()
 		burningSeriesViewModel.setSeriesData(null)
-	}
-
-	override fun onDestroyView() {
-		super.onDestroyView()
-		Timber.e("Destroyed View in Home")
 	}
 
 	private fun openInBrowser(episode: LatestEpisode? = null, series: LatestSeries? = null) {

@@ -152,13 +152,8 @@ dependencies {
 
     implementation("androidx.datastore:datastore:1.0.0")
 
-    implementation("com.github.DATL4G:SelectionBottomSheet:2.0.1")
     implementation("com.github.Ferfalk:SimpleSearchView:0.2.0")
-
-    implementation("com.github.SamuelGjk:RoundCornerProgressBar:1.0")
-    implementation("com.github.DatL4g.Klient2Klient:Klient2Klient:0.1.1")
     implementation("net.openid:appauth:0.11.1")
-
     implementation("io.github.florent37:shapeofview:1.4.7")
 }
 

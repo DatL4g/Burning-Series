@@ -5,8 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
+    android:keepScreenOn="true"
     android:fitsSystemWindows="true"
-    android:keepScreenOn="true">
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent">
 
     <de.datlag.burningseries.ui.view.BsPlayerView
         android:id="@+id/player"

@@ -10,15 +10,18 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.WindowMetrics
+import android.widget.LinearLayout
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDirections
@@ -151,9 +154,6 @@ abstract class AdvancedFragment : Fragment {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		initActivityViews()
-		view.post {
-			initActivityViews()
-		}
 	}
 
 	override fun onResume() {
@@ -161,9 +161,6 @@ abstract class AdvancedFragment : Fragment {
 		hideLoadingDialog()
 		hideKeyboard()
 		initActivityViews()
-		view?.post {
-			initActivityViews()
-		}
 	}
 
 	fun showToolbarBackButton(toolbar: Toolbar? = materialToolbar) {
@@ -211,15 +208,27 @@ abstract class AdvancedFragment : Fragment {
 			safeActivity?.window?.attributes?.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
 		}
 		safeActivity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-		safeActivity?.window?.let { WindowCompat.setDecorFitsSystemWindows(it, true) }
 		val controllerCompat = safeActivity?.window?.let { controller -> return@let WindowInsetsControllerCompat(controller, controller.decorView) }
-		controllerCompat?.show(WindowInsetsCompat.Type.statusBars())
+		controllerCompat?.show(WindowInsetsCompat.Type.systemBars())
+		safeActivity?.window?.let { WindowCompat.setDecorFitsSystemWindows(it, false) }
+	}
+
+	fun hideAppBarLayout() {
+		appBarLayout?.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+			height = 0
+		}
+	}
+
+	fun showAppBarLayout() {
+		appBarLayout?.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+			height = LinearLayout.LayoutParams.WRAP_CONTENT
+		}
 	}
 
 	inline fun <T> Flow<T>.launchAndCollect(crossinline action: suspend CoroutineScope.(T) -> Unit) = this.launchAndCollectIn(viewLifecycleOwner, action = action)
 
 	open fun initActivityViews() {
-		toolbarSearchView?.closeSearch(false)
+		searchView?.closeSearch(false)
 	}
 
 	override fun onStop() {
@@ -239,18 +248,18 @@ abstract class AdvancedFragment : Fragment {
 	val nextFab: FloatingActionButton?
 		get() = (safeActivity as? FABNavigation?)?.nextFab
 
-	val toolbarSearchView: SimpleSearchView?
-		get() = (safeActivity as? ToolbarSearchView?)?.searchView
-
-	val collapsingToolbar: CollapsingToolbarLayout?
-		get() = (safeActivity as? ToolbarCollapsingLayout?)?.collapsingToolbarLayout
-
-	val appBarLayout: AppBarLayout?
-		get() = (safeActivity as? ToolbarAppbarLayout?)?.appbarLayout
-
-	val materialToolbar: MaterialToolbar?
-		get() = (safeActivity as? ToolbarMaterialToolbar?)?.toolbar
-
 	val toolbarInfo: ToolbarInfo?
 		get() = safeActivity as? ToolbarInfo?
+
+	val searchView: SimpleSearchView?
+		get() = toolbarInfo?.searchView
+
+	val collapsingToolbar: CollapsingToolbarLayout?
+		get() = toolbarInfo?.collapsingToolbarLayout
+
+	val appBarLayout: AppBarLayout?
+		get() = toolbarInfo?.appbarLayout
+
+	val materialToolbar: MaterialToolbar?
+		get() = toolbarInfo?.toolbar
 }

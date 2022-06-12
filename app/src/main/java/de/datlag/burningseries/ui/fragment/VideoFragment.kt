@@ -3,16 +3,17 @@ package de.datlag.burningseries.ui.fragment
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.TextureView
 import android.view.View
 import android.view.WindowManager
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.net.toUri
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.*
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -54,6 +55,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import wseemann.media.FFmpegMediaMetadataRetriever
 import javax.inject.Inject
 
@@ -381,13 +383,17 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     override fun initActivityViews() {
         super.initActivityViews()
 
-        appBarLayout?.setExpanded(false, false)
-        hideSeriesArc()
-        extendedFab?.gone()
-        appBarLayout?.gone()
-        hideNavigationFabs()
-        hideLoadingDialog()
+        hideAppBarLayout()
         enterFullScreen()
+        hideNavigationFabs()
+        extendedFab?.gone()
+
+        if (view != null) {
+            Timber.e("Margin: ${binding.root.marginTop}")
+            Timber.e("Padding: ${binding.root.paddingTop}")
+            view?.requestLayout()
+            view?.invalidate()
+        }
     }
 
     companion object {

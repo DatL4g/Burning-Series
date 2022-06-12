@@ -87,11 +87,18 @@ class LatestEpisodeRecyclerAdapter(
 		}
 		binding.title.text = title
 		binding.text.text = text
-		// ToDo("nextFocus")
+		// ToDo("nextFocusLeft to toolbar")
+		// ToDo("margin on first and last item")
 		binding.flag.load<Drawable>(if (item.isJapanese) {
 			R.drawable.ic_japan
 		} else if (item.isGerman) {
 			R.drawable.ic_germany
+		} else if (item.isEnglish) {
+			R.drawable.ic_usa
+		} else if (item.isGermanSub) {
+			R.drawable.ic_des
+		} else if (item.isJapaneseSub) {
+			R.drawable.ic_jps
 		} else {
 			null
 		}) {

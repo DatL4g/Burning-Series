@@ -48,9 +48,9 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
 
     private fun initRecycler(): Unit = with(binding) {
         val gridSpanCount = if (isTelevision && isOrientation(Configuration.ORIENTATION_LANDSCAPE)) {
-            6
-        } else if (!isTelevision && isOrientation(Configuration.ORIENTATION_LANDSCAPE)) {
             4
+        } else if (!isTelevision && isOrientation(Configuration.ORIENTATION_LANDSCAPE)) {
+            3
         } else {
             2
         }
@@ -64,7 +64,7 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
     }
 
     private fun initSearchView(): Unit = with(binding) {
-        toolbarSearchView?.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
+        searchView?.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isNotEmpty()) {
                     burningSeriesViewModel.searchFavorites(newText)
@@ -90,7 +90,7 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
         menu.clear()
         inflater.inflate(R.menu.favorites_menu, menu)
         val item = menu.findItem(R.id.action_search)
-        toolbarSearchView?.setMenuItem(item)
+        searchView?.setMenuItem(item)
 
         super.onCreateOptionsMenu(menu, inflater)
     }

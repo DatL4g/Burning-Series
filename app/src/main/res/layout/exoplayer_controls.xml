@@ -33,6 +33,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:gravity="start|center_vertical"
+            android:textColor="@android:color/white"
             app:layout_constraintHorizontal_weight="1"
             app:autoSizeTextType="uniform"
             app:autoSizeMinTextSize="18sp"
@@ -101,6 +102,7 @@
         android:textStyle="bold"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toTopOf="@id/exo_fullscreen"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="00:00" />
@@ -118,7 +120,9 @@
         app:previewAnimationEnabled="true"
         app:previewFrameLayout="@id/previewFrameLayout"
         app:scrubber_dragged_size="24dp"
-        app:scrubber_enabled_size="16dp" />
+        app:scrubber_enabled_size="16dp"
+        app:played_color="@color/primaryColor"
+        app:scrubber_color="@color/primaryColor"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@id/exo_duration"
@@ -131,6 +135,7 @@
         android:textStyle="bold"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:textColor="@android:color/white"
         app:layout_constraintBaseline_toBaselineOf="@id/exo_position"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="00:00" />

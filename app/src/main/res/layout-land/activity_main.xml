@@ -13,7 +13,6 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:translationZ="10dp"
         android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -29,6 +28,7 @@
             app:expandedTitleMarginStart="232dp"> <!-- Image width + margin -->
 
             <View
+                android:id="@+id/collapsingSizeHolder"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/collapsingToolbarLayoutMediumSize"
                 android:visibility="invisible"/>
@@ -60,7 +60,6 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/transparent"
                 app:layout_collapseMode="pin"/>
 
             <com.ferfalk.simplesearchview.SimpleSearchView
@@ -91,7 +90,6 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fab_wrapper"
         android:layout_width="match_parent"
@@ -99,7 +97,6 @@
         android:layout_gravity="bottom"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:translationZ="15dp"
         android:fitsSystemWindows="true"
         app:layout_anchorGravity="bottom"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior">

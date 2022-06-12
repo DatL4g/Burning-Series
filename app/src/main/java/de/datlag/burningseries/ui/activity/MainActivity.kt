@@ -2,6 +2,7 @@ package de.datlag.burningseries.ui.activity
 
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -30,8 +31,7 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
-class MainActivity : AdvancedActivity(), FABExtended, FABNavigation, ToolbarSearchView,
-	ToolbarCollapsingLayout, ToolbarAppbarLayout, ToolbarMaterialToolbar, ToolbarInfo {
+class MainActivity : AdvancedActivity(), FABExtended, FABNavigation, ToolbarInfo {
 
 	private val binding: ActivityMainBinding by viewBinding(CreateMethod.INFLATE)
 
@@ -108,5 +108,8 @@ class MainActivity : AdvancedActivity(), FABExtended, FABNavigation, ToolbarSear
 
 	override val seriesArc: ArcView?
 		get() = binding.seriesArc
+
+	override val sizeHolder: View
+		get() = binding.collapsingSizeHolder
 
 }
