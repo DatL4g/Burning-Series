@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "f29c611f6e4058fa2d2bb3f7b1fa4f58",
+    "identityHash": "90cf6c109204fb9177839948fe2954a8",
     "entities": [
       {
         "tableName": "CoverTable",
@@ -685,6 +685,87 @@
         ]
       },
       {
+        "tableName": "LinkedSeriesTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`isSpinOff` INTEGER NOT NULL, `isMainStory` INTEGER NOT NULL, `title` TEXT NOT NULL, `href` TEXT NOT NULL, `seriesId` INTEGER NOT NULL, `linkedSeriesId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`seriesId`) REFERENCES `SeriesTable`(`seriesId`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "isSpinOff",
+            "columnName": "isSpinOff",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isMainStory",
+            "columnName": "isMainStory",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "href",
+            "columnName": "href",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "seriesId",
+            "columnName": "seriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "linkedSeriesId",
+            "columnName": "linkedSeriesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "linkedSeriesId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_LinkedSeriesTable_linkedSeriesId",
+            "unique": false,
+            "columnNames": [
+              "linkedSeriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LinkedSeriesTable_linkedSeriesId` ON `${TABLE_NAME}` (`linkedSeriesId`)"
+          },
+          {
+            "name": "index_LinkedSeriesTable_seriesId",
+            "unique": false,
+            "columnNames": [
+              "seriesId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LinkedSeriesTable_seriesId` ON `${TABLE_NAME}` (`seriesId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "SeriesTable",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "seriesId"
+            ],
+            "referencedColumns": [
+              "seriesId"
+            ]
+          }
+        ]
+      },
+      {
         "tableName": "GenreTable",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`genre` TEXT NOT NULL, `updatedAt` INTEGER NOT NULL, `genreId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
@@ -1088,7 +1169,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f29c611f6e4058fa2d2bb3f7b1fa4f58')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '90cf6c109204fb9177839948fe2954a8')"
     ]
   }
 }

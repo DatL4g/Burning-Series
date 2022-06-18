@@ -48,33 +48,45 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
             }
         }
 
-        burningSeriesViewModel.allSeriesPagination.launchAndCollect {
-            showLoadingDialog()
-            burningSeriesViewModel.getNewPaginationData()
-        }
-        burningSeriesViewModel.allSeriesPaginatedFlat.launchAndCollect {
-            if (it.second.isEmpty() && burningSeriesViewModel.allSeriesCount.value == 0L) {
-                showLoadingDialog()
-            } else {
-                if (it.first) {
-                    showLoadingDialog()
-                }
-                allSeriesRecyclerAdapter.submitList(it.second) {
-                    hideLoadingDialog()
-                }
-                binding.allSeriesRecycler.smoothScrollToPosition(0)
-            }
-        }
-        burningSeriesViewModel.allSeriesCount.launchAndCollect {
-            if (it == 0L) {
-                showLoadingDialog()
-            }
-        }
         nextFab?.setOnClickListener {
             burningSeriesViewModel.getAllSeriesNext()
         }
         previousFab?.setOnClickListener {
             burningSeriesViewModel.getAllSeriesPrevious()
+        }
+
+        collectPagination()
+        collectPaginatedData()
+        collectSeriesCount()
+    }
+
+    private fun collectPagination() = burningSeriesViewModel.allSeriesPagination.launchAndCollect {
+        binding.allSeriesRecycler.gone()
+        binding.loadingView.visible()
+        burningSeriesViewModel.getNewPaginationData()
+    }
+
+    private fun collectPaginatedData() = burningSeriesViewModel.allSeriesPaginatedFlat.launchAndCollect {
+        if (it.second.isEmpty() && burningSeriesViewModel.allSeriesCount.value == 0L) {
+            binding.allSeriesRecycler.gone()
+            binding.loadingView.visible()
+        } else {
+            if (it.first) {
+                binding.allSeriesRecycler.gone()
+                binding.loadingView.visible()
+            }
+            allSeriesRecyclerAdapter.submitList(it.second) {
+                binding.allSeriesRecycler.visible()
+                binding.loadingView.gone()
+                binding.allSeriesRecycler.smoothScrollToPosition(0)
+            }
+        }
+    }
+
+    private fun collectSeriesCount() = burningSeriesViewModel.allSeriesCount.launchAndCollect {
+        if (it == 0L) {
+            binding.allSeriesRecycler.gone()
+            binding.loadingView.visible()
         }
     }
 
@@ -97,7 +109,7 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
                         setMessage(safeContext.getString(R.string.open_in_browser_text, item.title))
                         setPositiveButton(R.string.open) { dialog, _ ->
                             dialog.dismiss()
-                            Constants.getBurningSeriesLink(item.href).toUri().openInBrowser(safeContext, item.title)
+                            Constants.getBurningSeriesLink(item.href).toUri().openInBrowser(safeContext)
                         }
                         setNegativeButton(R.string.close) { dialog, _ ->
                             dialog.cancel()
@@ -128,6 +140,7 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
                 return false
             }
         })
+        searchView?.setKeepQuery(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -143,6 +156,11 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         super.onResume()
         burningSeriesViewModel.cancelFetchSeries()
         burningSeriesViewModel.setSeriesData(null)
+    }
+
+    override fun onDestroyView() {
+        burningSeriesViewModel.cancelSearch()
+        super.onDestroyView()
     }
 
     override fun initActivityViews() {

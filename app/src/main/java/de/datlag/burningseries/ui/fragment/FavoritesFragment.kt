@@ -41,7 +41,9 @@ class FavoritesFragment : AdvancedFragment(R.layout.fragment_favorites) {
         initSearchView()
 
         burningSeriesViewModel.favorites.launchAndCollect {
-            favoritesRecyclerAdapter.submitList(it)
+            favoritesRecyclerAdapter.submitList(it) {
+                binding.favoritesRecycler.scrollToPosition(0)
+            }
         }
         burningSeriesViewModel.getAllFavorites()
     }

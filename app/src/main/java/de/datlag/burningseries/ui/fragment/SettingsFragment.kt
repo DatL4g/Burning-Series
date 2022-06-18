@@ -102,6 +102,8 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
                 lessLabel("\t${safeContext.getString(R.string.less)}")
                 labelUnderLine(true)
                 expandAnimation(true)
+                moreLabelColor(safeContext.getColor(R.color.errorTextColor))
+                lessLabelColor(safeContext.getColor(R.color.errorTextColor))
             }
             try {
                 readMoreOption.addReadMoreTo(binding.errorText, errorText)

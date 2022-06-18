@@ -263,8 +263,7 @@ class BsPlayerView :
             SaveState(
                 state,
                 _isLocked.value,
-                isFullscreen.value,
-                fullscreenListener
+                isFullscreen.value
             )
         } catch (ignored: Exception) { state }
 
@@ -279,9 +278,6 @@ class BsPlayerView :
             _isLocked.forceEmit(save.isLocked, getSafeScope())
             isFullscreen.forceEmit(save.isFullscreen, getSafeScope())
             fullscreenRestored = true
-            if (fullscreenListener == null) {
-                fullscreenListener = save.fullScreenListener
-            }
         }
     }
 
@@ -290,6 +286,5 @@ class BsPlayerView :
         val superSaveState: Parcelable?,
         val isLocked: Boolean,
         val isFullscreen: Boolean,
-        val fullScreenListener: ((Boolean) -> Unit)?
     ) : View.BaseSavedState(superSaveState), Parcelable
 }

@@ -287,6 +287,14 @@ interface BurningSeriesDao {
     @Delete
     suspend fun deleteSeriesLanguagesCrossRef(seriesLanguagesCrossRef: SeriesLanguagesCrossRef)
 
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSeriesLinkedSeries(linked: LinkedSeriesData): Long
+
+    @Transaction
+    @Delete
+    suspend fun deleteSeriesLinkedSeries(linked: LinkedSeriesData)
+
 
 
     @Transaction

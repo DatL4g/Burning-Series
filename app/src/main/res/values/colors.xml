@@ -13,4 +13,10 @@
 
     <color name="backgroundColor">#fafafa</color>
     <color name="backgroundTextColor">#121212</color>
+
+    <color name="shimmerBaseColor">@color/coloredBackground</color>
+    <color name="shimmerHighlightColor">@color/backgroundColor</color>
+
+    <color name="warningColor">#f0b03a</color>
+    <color name="warningTextColor">#121212</color>
 </resources>

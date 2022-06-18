@@ -6,8 +6,13 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -19,8 +24,11 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.mikepenz.aboutlibraries.LibsBuilder
+import com.mikepenz.aboutlibraries.LibsConfiguration
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
+import de.datlag.burningseries.common.safeActivity
 import de.datlag.burningseries.databinding.ActivityMainBinding
 import de.datlag.burningseries.extend.AdvancedActivity
 import de.datlag.burningseries.ui.connector.*
@@ -35,6 +43,13 @@ class MainActivity : AdvancedActivity(), FABExtended, FABNavigation, ToolbarInfo
 
 	private val binding: ActivityMainBinding by viewBinding(CreateMethod.INFLATE)
 
+	private val navListener = NavController.OnDestinationChangedListener { _, _, _ ->
+		appbarLayout.setExpandable(true)
+		supportActionBar?.setDisplayHomeAsUpEnabled(false)
+		supportActionBar?.setDisplayShowHomeEnabled(false)
+		toolbar.setNavigationOnClickListener(null)
+	}
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		if (savedInstanceState != null) {
 			this.setTheme(R.style.AppTheme)
@@ -44,6 +59,18 @@ class MainActivity : AdvancedActivity(), FABExtended, FABNavigation, ToolbarInfo
 		WindowCompat.setDecorFitsSystemWindows(window, false)
 		super.onCreate(savedInstanceState)
 		setContentView(binding.root)
+
+		LibsConfiguration.uiListener = object : LibsConfiguration.LibsUIListener {
+			override fun preOnCreateView(view: View): View { return view }
+
+			override fun postOnCreateView(view: View): View {
+				appbarLayout.setExpandable(false)
+				supportActionBar?.setDisplayHomeAsUpEnabled(true)
+				supportActionBar?.setDisplayShowHomeEnabled(true)
+				toolbar.setNavigationOnClickListener { onBackPressed() }
+				return view
+			}
+		}
 
 		setSupportActionBar(binding.toolbar)
 		binding.searchView.setOnSearchViewListener(object : SimpleSearchView.SearchViewListener{
@@ -69,6 +96,14 @@ class MainActivity : AdvancedActivity(), FABExtended, FABNavigation, ToolbarInfo
 				binding.collapsingToolbar.isTitleEnabled = false
 			}
 		})
+		ContextCompat.getDrawable(this, R.drawable.ic_baseline_close_24)?.apply {
+			colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+				ContextCompat.getColor(this@MainActivity, R.color.coloredBackgroundTextColor),
+				BlendModeCompat.SRC_IN
+			)
+		}?.let {
+			binding.searchView.setClearIconDrawable(it)
+		}
 	}
 
 	override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
@@ -77,6 +112,16 @@ class MainActivity : AdvancedActivity(), FABExtended, FABNavigation, ToolbarInfo
 
 	override fun onBackPressed() {
 		(getCurrentNavFragment() as? BackPressedDispatcher?)?.onBackPressed() ?: super.onBackPressed()
+	}
+
+	override fun onResume() {
+		super.onResume()
+		findNavController(this, R.id.nav_host_fragment).addOnDestinationChangedListener(navListener)
+	}
+
+	override fun onPause() {
+		super.onPause()
+		findNavController(this, R.id.nav_host_fragment).removeOnDestinationChangedListener(navListener)
 	}
 
 	override val extendedFab: ExtendedFloatingActionButton

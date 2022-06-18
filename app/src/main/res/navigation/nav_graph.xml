@@ -36,9 +36,6 @@
         android:name="de.datlag.burningseries.ui.fragment.SeriesFragment"
         android:label="SeriesFragment"
         tools:layout="@layout/fragment_series">
-        <action
-            android:id="@+id/action_seriesFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
         <argument
             android:name="latestSeries"
             app:argType="de.datlag.model.burningseries.home.LatestSeries"
@@ -71,23 +68,28 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@android:anim/fade_in"
-            app:popExitAnim="@android:anim/fade_out" />
+            app:popExitAnim="@android:anim/fade_out"
+            app:popUpTo="@id/seriesFragment"
+            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_seriesFragment_to_scrapeHosterFragment"
-            app:destination="@id/scrapeHosterFragment" />
+            app:destination="@id/scrapeHosterFragment"
+            app:popUpTo="@id/seriesFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_seriesFragment_self"
+            app:destination="@id/seriesFragment" />
+        <argument
+            android:name="linkedSeries"
+            app:argType="de.datlag.model.burningseries.series.LinkedSeriesData"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/favoritesFragment"
         android:name="de.datlag.burningseries.ui.fragment.FavoritesFragment"
         android:label="FavoritesFragment"
         tools:layout="@layout/fragment_favorites">
-        <action
-            android:id="@+id/action_favoritesFragment_to_homeFragment"
-            app:destination="@id/homeFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out"
-            app:popEnterAnim="@android:anim/fade_in"
-            app:popExitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_favoritesFragment_to_seriesFragment"
             app:destination="@id/seriesFragment"
@@ -104,9 +106,6 @@
         android:name="de.datlag.burningseries.ui.fragment.AllSeriesFragment"
         android:label="AllSeriesFragment"
         tools:layout="@layout/fragment_all_series">
-        <action
-            android:id="@+id/action_allSeriesFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
         <action
             android:id="@+id/action_allSeriesFragment_to_seriesFragment"
             app:destination="@id/seriesFragment"
@@ -128,11 +127,6 @@
         android:name="de.datlag.burningseries.ui.fragment.VideoFragment"
         android:label="VideoFragment"
         tools:layout="@layout/fragment_video">
-        <action
-            android:id="@+id/action_videoFragment_to_seriesFragment"
-            app:popUpToInclusive="true"
-            app:popUpTo="@id/seriesFragment"
-            app:destination="@id/seriesFragment" />
         <argument
             android:name="videoStream"
             app:argType="de.datlag.model.video.VideoStream" />
@@ -151,17 +145,13 @@
             android:id="@+id/action_videoFragment_self"
             app:destination="@id/videoFragment"
             app:popUpTo="@id/seriesFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="de.datlag.burningseries.ui.fragment.SettingsFragment"
         android:label="SettingsFragment"
-        tools:layout="@layout/fragment_settings">
-        <action
-            android:id="@+id/action_settingsFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_settings"/>
     <fragment
         android:id="@+id/scrapeHosterFragment"
         android:name="de.datlag.burningseries.ui.fragment.ScrapeHosterFragment"
@@ -173,8 +163,5 @@
         <argument
             android:name="seriesWithInfo"
             app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
-        <action
-            android:id="@+id/action_scrapeHosterFragment_to_seriesFragment"
-            app:destination="@id/seriesFragment" />
     </fragment>
 </navigation>

@@ -12,6 +12,8 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/latestReleaseCard"
+            style="?attr/materialCardViewFilledStyle"
+            app:cardBackgroundColor="@color/coloredBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -35,6 +37,7 @@
                     android:text="@string/new_release"
                     android:singleLine="true"
                     android:maxLines="1"
+                    android:textColor="@color/coloredBackgroundTextColor"
                     app:layout_constraintHorizontal_weight="1"
                     app:autoSizeTextType="uniform"
                     app:autoSizeMinTextSize="16sp"
@@ -50,6 +53,7 @@
                     android:gravity="end|center_vertical"
                     android:layout_marginEnd="16dp"
                     android:textSize="12sp"
+                    android:textColor="@color/coloredBackgroundTextColor"
                     tools:text="2021-12-24"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/title"
@@ -64,6 +68,7 @@
                     android:layout_marginEnd="16dp"
                     android:textSize="14sp"
                     android:text="@string/new_release_text"
+                    android:textColor="@color/coloredBackgroundTextColor"
                     app:layout_constraintTop_toBottomOf="@id/title"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
@@ -83,13 +88,15 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/latestErrorCard"
+            style="?attr/materialCardViewFilledStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/latestReleaseCard"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:cardBackgroundColor="@color/errorColor">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -106,6 +113,7 @@
                     android:text="@string/last_exception"
                     android:singleLine="true"
                     android:maxLines="1"
+                    android:textColor="@color/errorTextColor"
                     app:layout_constraintHorizontal_weight="1"
                     app:autoSizeTextType="uniform"
                     app:autoSizeMinTextSize="16sp"
@@ -121,6 +129,7 @@
                     android:gravity="end|center_vertical"
                     android:layout_marginEnd="16dp"
                     android:textSize="12sp"
+                    android:textColor="@color/errorTextColor"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/errorTitle"
                     app:layout_constraintTop_toTopOf="parent"/>
@@ -133,6 +142,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:textSize="14sp"
+                    android:textColor="@color/errorTextColor"
                     android:text="@string/new_release_text"
                     app:layout_constraintTop_toBottomOf="@id/errorTitle"
                     app:layout_constraintStart_toStartOf="parent"
@@ -145,6 +155,8 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="12dp"
                     android:text="@string/clear"
+                    app:backgroundTint="@color/errorTextColor"
+                    android:textColor="@color/errorColor"
                     app:layout_constraintEnd_toStartOf="@id/errorCopyButton"
                     app:layout_constraintTop_toBottomOf="@id/errorText"
                     app:layout_constraintBottom_toBottomOf="parent"/>
@@ -156,6 +168,8 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="12dp"
                     android:text="@string/copy"
+                    app:backgroundTint="@color/errorTextColor"
+                    android:textColor="@color/errorColor"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/errorText"
                     app:layout_constraintBottom_toBottomOf="parent"/>

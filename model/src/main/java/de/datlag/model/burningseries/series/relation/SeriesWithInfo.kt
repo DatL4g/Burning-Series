@@ -41,7 +41,12 @@ data class SeriesWithInfo(
         entity = EpisodeInfo::class,
         parentColumn = "seriesId",
         entityColumn = "seriesId"
-    ) val episodes: List<EpisodeWithHoster>
+    ) val episodes: List<EpisodeWithHoster>,
+    @Relation(
+        entity = LinkedSeriesData::class,
+        parentColumn = "seriesId",
+        entityColumn = "seriesId"
+    ) val linkedSeries: List<LinkedSeriesData>
 ) : Parcelable {
 
     private val currentSeasonMaxValue: Int

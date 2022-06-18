@@ -42,7 +42,7 @@ class GitHubRepository @Inject constructor(
         ).collect {
             when (it.status) {
                 Resource.Status.SUCCESS -> emit(it.data)
-                Resource.Status.ERROR -> emit(null)
+                is Resource.Status.ERROR -> emit(null)
                 else -> {  }
             }
         }
@@ -64,7 +64,7 @@ class GitHubRepository @Inject constructor(
                     val contributors = it.data ?: listOf()
                     emit(contributors.any { user -> user.login.equals(login, true) })
                 }
-                Resource.Status.ERROR -> {
+                is Resource.Status.ERROR -> {
                     emit(false)
                 }
                 else -> { }

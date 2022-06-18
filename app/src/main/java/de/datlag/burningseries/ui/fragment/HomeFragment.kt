@@ -2,12 +2,17 @@ package de.datlag.burningseries.ui.fragment
 
 import android.os.Bundle
 import android.view.*
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.snackbar.Snackbar
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.BuildConfig
@@ -39,10 +44,10 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	private val usageViewModel: UsageViewModel by activityViewModels()
 
 	private val latestEpisodeRecyclerAdapter by lazy {
-		LatestEpisodeRecyclerAdapter(coversDir, blurHash, binding.allSeriesButton.id)
+		LatestEpisodeRecyclerAdapter(coversDir, blurHash)
 	}
 	private val latestSeriesRecyclerAdapter by lazy {
-		LatestSeriesRecyclerAdapter(coversDir, blurHash, binding.allSeriesButton.id, extendedFab?.id)
+		LatestSeriesRecyclerAdapter(coversDir, blurHash)
 	}
 
 	private var showingHelpImprove: Boolean = false
@@ -61,7 +66,6 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		recoverGitHubAuthState()
 
 		initRecycler()
-		checkIfErrorCaught()
 		listenImproveDialogSetting()
 		listenNewVersionDialog()
 
@@ -74,44 +78,67 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 
 		extendedFabFavorite(HomeFragmentDirections.actionHomeFragmentToFavoritesFragment())
 		extendedFab?.id?.let { binding.allSeriesButton.nextFocusRightId = it }
-	}
-
-	private fun showSettingsBadgeWith(text: CharSequence?, success: Boolean) {
-	}
-
-	private fun checkIfErrorCaught() {
-		val errorText = loadFileSavedText(Constants.LOG_FILE)?.trim()
-		if (!errorText.isNullOrEmpty()) {
-			showSettingsBadgeWith(safeContext.getString(R.string.exclamation_mark), false)
-		}
+		burningSeriesViewModel.getHomeData()
 	}
 
 	private fun listenHomeData() = burningSeriesViewModel.homeData.distinctUntilChanged().launchAndCollect {
 		when (it.status) {
 			Resource.Status.LOADING -> {
-				// TODO("show loading indicator")
 				it.data?.let { home ->
-					latestEpisodeRecyclerAdapter.submitList(home.latestEpisodes) {
-						binding.latestEpisodeRecycler.scrollToPosition(0)
-						binding.latestEpisodeRecycler.requestFocus()
+					if (home.latestEpisodes.isNotEmpty()) {
+						binding.episodeLoadingBar.visible()
+						latestEpisodeRecyclerAdapter.submitList(home.latestEpisodes) {
+							binding.latestEpisodeRecycler.unVeil()
+							binding.latestEpisodeRecycler.getRecyclerView().scrollToPosition(0)
+							binding.latestEpisodeRecycler.getRecyclerView().requestFocus()
+						}
+					} else {
+						binding.episodeLoadingBar.gone()
 					}
-					latestSeriesRecyclerAdapter.submitList(home.latestSeries) {
-						binding.latestSeriesRecycler.scrollToPosition(0)
+
+					if (home.latestSeries.isNotEmpty()) {
+						binding.seriesLoadingBar.visible()
+						latestSeriesRecyclerAdapter.submitList(home.latestSeries) {
+							binding.latestSeriesRecycler.unVeil()
+							binding.latestSeriesRecycler.getRecyclerView().scrollToPosition(0)
+						}
+					} else {
+						binding.seriesLoadingBar.gone()
 					}
+				} ?: run {
+					binding.episodeLoadingBar.gone()
+					binding.seriesLoadingBar.gone()
+					binding.latestEpisodeRecycler.veil()
+					binding.latestSeriesRecycler.veil()
 				}
 			}
 			Resource.Status.SUCCESS -> {
+				binding.episodeLoadingBar.gone()
 				latestEpisodeRecyclerAdapter.submitList((it.data?.latestEpisodes ?: listOf())) {
-					binding.latestEpisodeRecycler.scrollToPosition(0)
-					binding.latestEpisodeRecycler.requestFocus()
+					binding.latestEpisodeRecycler.unVeil()
+					binding.latestEpisodeRecycler.getRecyclerView().scrollToPosition(0)
+					binding.latestEpisodeRecycler.getRecyclerView().requestFocus()
 				}
+
+				binding.seriesLoadingBar.gone()
 				latestSeriesRecyclerAdapter.submitList(it.data?.latestSeries ?: listOf()) {
-					binding.latestSeriesRecycler.scrollToPosition(0)
+					binding.latestSeriesRecycler.unVeil()
+					binding.latestSeriesRecycler.getRecyclerView().scrollToPosition(0)
 				}
-				// TODO("hide loading indicator")
 			}
-			Resource.Status.ERROR -> {
-				// TODO("show error snackbar or something")
+			is Resource.Status.ERROR -> {
+				binding.episodeLoadingBar.gone()
+				binding.seriesLoadingBar.gone()
+
+				val errorStatus = it.status as Resource.Status.ERROR
+				val (stringId, displayRetry) = errorStatus.mapToMessageAndDisplayAction()
+				safeContext.errorSnackbar(binding.root, stringId, Snackbar.LENGTH_LONG).apply {
+					if (displayRetry) {
+						this.setAction(R.string.retry) {
+							burningSeriesViewModel.getHomeData()
+						}
+					}
+				}.show()
 			}
 		}
 	}
@@ -129,7 +156,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 					setMessage(R.string.sponsor_text)
 					setPositiveButton(R.string.donate) { dialog, _ ->
 						dialog.dismiss()
-						Constants.GITHUB_SPONSOR.toUri().openInBrowser(safeContext, safeContext.getString(R.string.sponsor_header))
+						Constants.GITHUB_SPONSOR.toUri().openInBrowser(safeContext)
 					}
 					setNegativeButton(R.string.close) { dialog, _ ->
 						dialog.cancel()
@@ -216,9 +243,6 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	}
 
 	private fun listenNewVersionDialog() = gitHubViewModel.getLatestRelease().launchAndCollect {
-		if (view != null && it != null) {
-			showSettingsBadgeWith(safeContext.getString(R.string.arrow_up), true)
-		}
 		val installedFromFDroid = this@HomeFragment.safeContext.isInstalledFromFDroid()
 		if (it != null && !gitHubViewModel.showedNewVersion && !showingHelpImprove) {
 			materialDialogBuilder {
@@ -233,7 +257,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 							"${Constants.F_DROID_PACKAGES_URL}/${this@HomeFragment.safeContext.packageName}".toUri()
 						} else {
 							it.htmlUrl.toUri()
-						}.openInBrowser(safeContext, safeContext.getString(R.string.new_release))
+						}.openInBrowser(safeContext)
 					}
 					setNegativeButton(R.string.close) { dialog, _ ->
 						dialog.cancel()
@@ -260,8 +284,10 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	}
 
 	private fun initRecycler(): Unit = with(binding) {
-		latestEpisodeRecycler.layoutManager = GridLayoutManager(safeContext, if (isTelevision) 1 else 2, RecyclerView.HORIZONTAL, false)
-		latestEpisodeRecycler.adapter = latestEpisodeRecyclerAdapter
+		latestEpisodeRecycler.getRecyclerView().layoutManager = GridLayoutManager(safeContext, if (isTelevision) 1 else 2, RecyclerView.HORIZONTAL, false)
+		latestEpisodeRecycler.getVeiledRecyclerView().layoutManager = GridLayoutManager(safeContext, if (isTvOrLandscape()) 4 else 2)
+		latestEpisodeRecycler.setAdapter(latestEpisodeRecyclerAdapter)
+		latestEpisodeRecycler.addVeiledItems(if (isTvOrLandscape()) 4 else 2)
 		latestEpisodeRecyclerAdapter.setOnClickListener { item ->
 			findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
 				latestEpisode = item
@@ -274,8 +300,10 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 		}
 		
 
-		latestSeriesRecycler.layoutManager = GridLayoutManager(safeContext, if (isTelevision) 1 else 2, RecyclerView.HORIZONTAL, false)
-		latestSeriesRecycler.adapter = latestSeriesRecyclerAdapter
+		latestSeriesRecycler.getRecyclerView().layoutManager = GridLayoutManager(safeContext, if (isTelevision) 1 else 2, RecyclerView.HORIZONTAL, false)
+		latestSeriesRecycler.getVeiledRecyclerView().layoutManager = GridLayoutManager(safeContext, if (isTvOrLandscape()) 4 else 2)
+		latestSeriesRecycler.setAdapter(latestSeriesRecyclerAdapter)
+		latestSeriesRecycler.addVeiledItems(if (isTvOrLandscape()) 4 else 2)
 		latestSeriesRecyclerAdapter.setOnClickListener { item ->
 			findNavController().safeNavigate(HomeFragmentDirections.actionHomeFragmentToSeriesFragment(
 				latestSeries = item
@@ -298,7 +326,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		return when (item.itemId) {
 			R.id.home_github -> {
-				Constants.GITHUB_PROJECT.toUri().openInBrowser(safeContext, safeContext.getString(R.string.github))
+				Constants.GITHUB_PROJECT.toUri().openInBrowser(safeContext)
 				true
 			}
 			R.id.home_settings -> {
@@ -333,7 +361,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 				setMessage(text)
 				setPositiveButton(R.string.open) { dialog, _ ->
 					dialog.dismiss()
-					Constants.getBurningSeriesLink(episode?.href ?: series?.href ?: String()).toUri().openInBrowser(safeContext, title)
+					Constants.getBurningSeriesLink(episode?.href ?: series?.href ?: String()).toUri().openInBrowser(safeContext)
 				}
 				setNegativeButton(R.string.close) { dialog, _ ->
 					dialog.cancel()

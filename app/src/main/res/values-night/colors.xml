@@ -5,4 +5,7 @@
 
     <color name="backgroundColor">#121212</color>
     <color name="backgroundTextColor">#fafafa</color>
+
+    <color name="shimmerBaseColor">@color/coloredBackground</color>
+    <color name="shimmerHighlightColor">#0f1318</color>
 </resources>

@@ -3,15 +3,10 @@ package de.datlag.burningseries.ui.fragment
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.TextureView
 import android.view.View
-import android.view.WindowManager
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.net.toUri
 import androidx.core.view.*
 import androidx.fragment.app.activityViewModels
@@ -97,10 +92,6 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
         findActualEpisodeInfo()
         initPlayer()
-        listenSettingsState()
-        listenVideoSourceState()
-        listenPositionState()
-        listenPlayingState()
     }
 
     private fun findActualEpisodeInfo(
@@ -114,14 +105,16 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         retriever = FFmpegMediaMetadataRetriever()
 
         val extractorFactory = DefaultExtractorsFactory().setTsExtractorFlags(FLAG_DETECT_ACCESS_UNITS)
-        exoPlayer = ExoPlayer.Builder(safeContext).apply {
-            setSeekBackIncrementMs(10000)
-            setSeekForwardIncrementMs(10000)
-            setPauseAtEndOfMediaItems(true)
-            setMediaSourceFactory(DefaultMediaSourceFactory(safeContext, extractorFactory))
-        }.build().apply {
-            addListener(this@VideoFragment)
-            playWhenReady = true
+        if (!::exoPlayer.isInitialized) {
+            exoPlayer = ExoPlayer.Builder(safeContext).apply {
+                setSeekBackIncrementMs(10000)
+                setSeekForwardIncrementMs(10000)
+                setPauseAtEndOfMediaItems(true)
+                setMediaSourceFactory(DefaultMediaSourceFactory(safeContext, extractorFactory))
+            }.build().apply {
+                addListener(this@VideoFragment)
+                playWhenReady = true
+            }
         }
         player.player = exoPlayer
 
@@ -145,14 +138,11 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         player.setOnBackPressed {
             onBackPressed()
         }
-    }
 
-    override fun onBackPressed() {
-        if (!binding.player.isLocked) {
-            findNavController().safeNavigate(VideoFragmentDirections.actionVideoFragmentToSeriesFragment(
-                seriesWithInfo = navArgs.seriesWithInfo
-            ))
-        }
+        listenSettingsState()
+        listenVideoSourceState()
+        listenPositionState()
+        listenPlayingState()
     }
 
     private fun listenSettingsState() = settingsViewModel.data.launchAndCollect {
@@ -317,6 +307,12 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         }
     }
 
+    override fun onBackPressed() {
+        if (!binding.player.isLocked) {
+            findNavController().popBackStack()
+        }
+    }
+
     private fun nextSourceOrDialog() {
         val currentSourcePos = videoViewModel.videoSourcePos.value
         if (currentSourcePos >= navArgs.videoStream.url.size - 1) {
@@ -336,7 +332,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
                     }
                     setNegativeButton(R.string.back) { dialog, _ ->
                         dialog.cancel()
-                        findNavController().safeNavigate(VideoFragmentDirections.actionVideoFragmentToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
+                        findNavController().popBackStack()
                     }
                     setNeutralButton(R.string.browser) { dialog, _, ->
                         dialog.dismiss()
@@ -350,13 +346,17 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+        outState.putLong(PLAYER_POSITION, episodeInfo.currentWatchPos)
+        outState.putBoolean(PLAYER_PLAYING, exoPlayer.isPlaying || autoPlay())
 
+        super.onSaveInstanceState(outState)
+    }
+
+    private fun autoPlay(): Boolean {
         val currentPos = exoPlayer.contentPosition
         val savedPos = episodeInfo.currentWatchPos
         val inRange = currentPos in 0..1000 || currentPos in (savedPos - 500) .. (savedPos + 500)
-        outState.putLong(PLAYER_POSITION, episodeInfo.currentWatchPos)
-        outState.putBoolean(PLAYER_PLAYING, exoPlayer.isPlaying || (exoPlayer.playWhenReady && inRange))
+        return inRange && (exoPlayer.playWhenReady || playingState.value)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -387,13 +387,6 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         enterFullScreen()
         hideNavigationFabs()
         extendedFab?.gone()
-
-        if (view != null) {
-            Timber.e("Margin: ${binding.root.marginTop}")
-            Timber.e("Padding: ${binding.root.paddingTop}")
-            view?.requestLayout()
-            view?.invalidate()
-        }
     }
 
     companion object {

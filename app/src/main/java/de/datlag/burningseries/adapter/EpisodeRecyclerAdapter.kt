@@ -40,12 +40,17 @@ class EpisodeRecyclerAdapter(
 
     override val differ = AsyncListDiffer(this, diffCallback)
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener,
+        View.OnLongClickListener,
+        View.OnFocusChangeListener {
+
         val binding: RecyclerEpisodeBinding by viewBinding(RecyclerEpisodeBinding::bind)
 
         init {
             binding.card.setOnClickListener(this)
             binding.card.setOnLongClickListener(this)
+            binding.card.onFocusChangeListener = this
         }
 
         override fun onClick(v: View?) {
@@ -54,6 +59,10 @@ class EpisodeRecyclerAdapter(
 
         override fun onLongClick(v: View?): Boolean {
             return longClickListener?.invoke(differ.currentList[absoluteAdapterPosition]) ?: false
+        }
+
+        override fun onFocusChange(v: View?, hasFocus: Boolean) {
+            focusChangeListener?.onFocusChange(v, hasFocus)
         }
     }
 
@@ -83,6 +92,13 @@ class EpisodeRecyclerAdapter(
                 binding.progressIcon.load<Drawable>(R.drawable.ic_baseline_play_arrow_24)
                 binding.progressIcon.visible()
             }
+        }
+        if (item.episode.hoster.isEmpty() && item.hoster.isEmpty()) {
+            binding.card.isEnabled = false
+            binding.card.alpha = 0.5F
+        } else {
+            binding.card.isEnabled = true
+            binding.card.alpha = 1F
         }
     }
 

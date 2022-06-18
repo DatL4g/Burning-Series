@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Burning-Series</string>
+
+    <string name="aboutLibraries_description_text">Auf Burning Series zahlreiche Serien kostenlos online sehen!</string>
+
     <string name="favorites">Favoriten</string>
     <string name="search">Suchen</string>
     <string name="all_series">Alle Serien</string>
@@ -94,4 +97,16 @@
     <string name="donate">Spenden</string>
     <string name="sponsor_header">Sponsor das Projekt</string>
     <string name="sponsor_text">Hey es sieht so aus als würdest du die App mögen.\nDu kannst mich unterstützen um die App am laufen zu halten, da der Service nicht kostenlos ist.\nEntweder du hilfst mit beim Programmieren oder sponsorst mich für 1€ im Monat.</string>
+    <string name="error_internet_connecton">Bitte überprüfe deine Internetverbindung.</string>
+    <string name="error_bad_request">Server hat fehlerhafte Daten empfangen.</string>
+    <string name="error_server_error">Server konnte Daten nicht verarbeiten.</string>
+    <string name="error_could_not_load">Daen konnten nicht geladen werden.</string>
+    <string name="activate_stream">Stream aktivieren</string>
+    <string name="linked_series">Verlinkte Serien</string>
+
+    <string name="check_stream">Überprüfe ob Stream verfügbar ist…</string>
+    <string name="loading_stream">Stream wird geladen…</string>
+    <string name="no_stream">Kein Stream verfügbar</string>
+
+    <string name="loading_series">Lade Serien Information…</string>
 </resources>

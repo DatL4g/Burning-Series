@@ -60,9 +60,9 @@ object NetworkModule {
 	@Provides
 	@Singleton
 	fun provideCallFactory(): OkHttpClient = OkHttpClient.Builder()
-		.connectTimeout(2, TimeUnit.MINUTES)
-		.readTimeout(2, TimeUnit.MINUTES)
-		.writeTimeout(2, TimeUnit.MINUTES)
+		.connectTimeout(3, TimeUnit.MINUTES)
+		.readTimeout(3, TimeUnit.MINUTES)
+		.writeTimeout(3, TimeUnit.MINUTES)
 		.addInterceptor(loggingInterceptor)
 		.build()
 

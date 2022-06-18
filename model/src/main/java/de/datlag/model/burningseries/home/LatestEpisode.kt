@@ -3,6 +3,7 @@ package de.datlag.model.burningseries.home
 import android.os.Parcelable
 import androidx.room.*
 import de.datlag.model.burningseries.Cover
+import de.datlag.model.burningseries.HrefTitleBuilder
 import de.datlag.model.burningseries.common.encodeToHref
 import de.datlag.model.burningseries.series.LanguageData
 import io.michaelrocks.paranoid.Obfuscate
@@ -24,13 +25,13 @@ import kotlinx.serialization.Serializable
 @Obfuscate
 data class LatestEpisode(
 	@ColumnInfo(name = "title") @SerialName("title") val title: String = String(),
-	@ColumnInfo(name = "href") @SerialName("href") val href: String = String(),
+	@ColumnInfo(name = "href") @SerialName("href") override val href: String = String(),
 	@ColumnInfo(name = "info", defaultValue = "") @SerialName("infoText") val infoText: String = String(),
 	@ColumnInfo(name = "updatedAt") var updatedAt: Long = Clock.System.now().epochSeconds,
 	@ColumnInfo(name = "nsfw", defaultValue = "false") @SerialName("isNsfw") val nsfw: Boolean = false,
 	@Ignore @SerialName("cover") val cover: Cover = Cover(),
 	@Ignore @SerialName("infoFlags") val infoFlags: List<LatestEpisodeInfoFlags>
-) : Parcelable {
+) : Parcelable, HrefTitleBuilder() {
 
 	@PrimaryKey(autoGenerate = true)
 	@IgnoredOnParcel
@@ -57,12 +58,8 @@ data class LatestEpisode(
 		)
 	}
 
-	fun getHrefTitle(): String {
-		val normHref = if (href.startsWith("/")) {
-			href.substring(1)
-		} else { href }
-		val match = Regex("(/(\\w|-)+)").find(normHref)
-		return match?.groupValues?.getOrNull(1)?.replace("/", "") ?: getEpisodeAndSeries().first.encodeToHref()
+	override fun hrefTitleFallback(): String {
+		return getEpisodeAndSeries().first.encodeToHref()
 	}
 
 	fun getHrefWithoutEpisode(): String {

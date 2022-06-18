@@ -30,8 +30,7 @@ import java.io.File
 @Obfuscate
 class LatestEpisodeRecyclerAdapter(
 	private val coversDir: File,
-	private val blurHash: BlurHash,
-	private val belowFocusViewId: Int
+	private val blurHash: BlurHash
 ) : ClickRecyclerAdapter<LatestEpisode, LatestEpisodeRecyclerAdapter.ViewHolder>() {
 
 	override val diffCallback = object : DiffUtil.ItemCallback<LatestEpisode>() {
@@ -89,7 +88,6 @@ class LatestEpisodeRecyclerAdapter(
 		}
 		binding.title.text = title
 		binding.text.text = text
-		// ToDo("nextFocusLeft to toolbar")
 		binding.flag.load<Drawable>(if (item.isJapanese) {
 			R.drawable.ic_japan
 		} else if (item.isGerman) {

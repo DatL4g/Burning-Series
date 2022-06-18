@@ -85,17 +85,6 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         recoverMalAuthState()
         recoverAniListAuthState()
 
-        listenSeriesStatus()
-        listenCover()
-        listenTitle()
-        listenIsFavorite()
-        listenSelectedLanguage()
-        listenLanguages()
-        listenSelectedSeason()
-        listenSeasons()
-        listenDescription()
-        listenInfo()
-
         readMoreOption = safeContext.readMoreOption {
             textLength(3)
             textLengthType(ReadMoreOption.TYPE_LINE)
@@ -122,10 +111,25 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             burningSeriesViewModel.getSeriesData(item)
             listenEpisodes()
         }
+        navArgs.linkedSeries?.let { linked ->
+            burningSeriesViewModel.getSeriesData(linked)
+            listenEpisodes()
+        }
+
+        listenSeriesStatus()
+        listenCover()
+        listenTitle()
+        listenLinkedSeries()
+        listenIsFavorite()
+        listenSelectedLanguage()
+        listenLanguages()
+        listenSelectedSeason()
+        listenSeasons()
+        listenDescription()
+        listenInfo()
     }
 
     private fun seriesLanguageSelector(languageData: LanguageData) {
-        // TODO("works with new deployed backend")
         val items = burningSeriesViewModel.currentSeriesLanguages.sortedBy { it.text }
         var defaultSelection = items.indexOf(languageData)
         if (defaultSelection <= -1) {
@@ -167,7 +171,6 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     }
 
     private fun seriesSeasonSelector(seasonData: SeasonData) {
-        // TODO("works with new deployed backend")
         val items = burningSeriesViewModel.currentSeriesSeasons.sortedWith(compareBy<SeasonData> { it.value }.thenBy { it.title.toIntOrNull() }.thenBy { it.title })
         var defaultSelection = items.indexOf(seasonData)
         if (defaultSelection <= -1) {
@@ -237,7 +240,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                     setMessage(safeContext.getString(R.string.open_in_browser_text, item.episode.title))
                     setPositiveButton(R.string.open) { dialog, _ ->
                         dialog.dismiss()
-                        item.episode.href.toUri().openInBrowser(safeContext, item.episode.title)
+                        item.episode.href.toUri().openInBrowser(safeContext)
                     }
                     setNegativeButton(R.string.close) { dialog, _ ->
                         dialog.cancel()
@@ -253,28 +256,36 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             }.show()
             true
         }
+
+        episodeRecyclerAdapter.setOnFocusChangeListener { view, hasFocus ->
+            if (!view.isInTouchMode && hasFocus) {
+                appBarLayout?.setExpanded(false, true)
+            }
+        }
     }
 
     private fun listenSeriesStatus() = burningSeriesViewModel.seriesStatus.distinctUntilChanged().launchAndCollect {
         when (it) {
             Resource.Status.LOADING -> {
-                // TODO("show loading indicator, only one")
+                safeContext.warningSnackbar(binding.root, R.string.loading_series, Snackbar.LENGTH_SHORT).show()
             }
-            Resource.Status.ERROR -> {
-                // TODO("show error snackbar or something")
-                Snackbar.make(binding.root, "Error loading series", Snackbar.LENGTH_LONG).setAction("Retry") {
-                    val seriesData = burningSeriesViewModel.currentSeriesData?.series
-                    val newHref = seriesData?.currentSeason(burningSeriesViewModel.currentSeriesSeasons)?.let { season ->
-                        seriesData.hrefBuilder(season.value, seriesData.selectedLanguage)
-                    }
-                    if (newHref != null) {
-                        burningSeriesViewModel.getSeriesData(newHref, seriesData.hrefTitle, true)
+            is Resource.Status.ERROR -> {
+                val (stringId, displayRetry) = it.mapToMessageAndDisplayAction()
+                safeContext.errorSnackbar(binding.root, stringId, Snackbar.LENGTH_LONG).apply {
+                    if (displayRetry) {
+                        this.setAction(R.string.retry) {
+                            val seriesData = burningSeriesViewModel.currentSeriesData?.series
+                            val newHref = seriesData?.currentSeason(burningSeriesViewModel.currentSeriesSeasons)?.let { season ->
+                                seriesData.hrefBuilder(season.value, seriesData.selectedLanguage)
+                            }
+                            if (newHref != null) {
+                                burningSeriesViewModel.getSeriesData(newHref, seriesData.hrefTitle, true)
+                            }
+                        }
                     }
                 }.show()
             }
-            Resource.Status.SUCCESS -> {
-                // TODO("hide loading indicator")
-            }
+            else -> { }
         }
     }
 
@@ -303,6 +314,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
         toolbarInfo?.seriesCover?.load<Drawable>(Constants.getBurningSeriesLink(it.href)) {
             fitCenter()
+            override(width, height)
             error(errorBitmap ?: it.loadBlurHash {
                 blurHash.execute(it.blurHash, width, height)
             })
@@ -318,6 +330,10 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
     private fun listenTitle() = burningSeriesViewModel.seriesTitle.launchAndCollect {
         setToolbarTitle(it)
+    }
+
+    private fun listenLinkedSeries() = burningSeriesViewModel.linkedSeries.launchAndCollect {
+        linkedSeriesApply(it.isNotEmpty(), null)
     }
 
     private fun listenIsFavorite() = burningSeriesViewModel.seriesFavorite.launchAndCollect { isFav ->
@@ -396,7 +412,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     }
 
     private fun addGenre(genre: String) = lifecycleScope.launch(Dispatchers.Main) {
-        binding.genreGroup.addView(Chip(safeContext).apply {
+        binding.genreGroup.addView(Chip(safeContext, null, R.style.Widget_Material3_Chip_Filter).apply {
             text = genre.trim()
             setOnClickListener {
                 findNavController().safeNavigate(SeriesFragmentDirections.actionSeriesFragmentToAllSeriesFragment(bestGenre(genre)))
@@ -439,6 +455,17 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         }
     }
 
+    private fun linkedSeriesApply(display: Boolean, item: MenuItem?) {
+        val menuItem = item ?: materialToolbar?.menu?.findItem(R.id.series_linked)
+        if (display) {
+            menuItem?.isVisible = true
+            menuItem?.isEnabled = true
+        } else {
+            menuItem?.isVisible = false
+            menuItem?.isEnabled = false
+        }
+    }
+
     private fun favIconColorApply(isFav: Boolean, item: MenuItem?) {
         val menuItem = item ?: materialToolbar?.menu?.findItem(R.id.series_favorite)
         if (isFav) {
@@ -468,13 +495,12 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
     private fun getVideoSources(episode: EpisodeInfo, list: List<Stream>) {
         videoViewModel.getVideoSources(list).launchAndCollect {
-            // ToDo("remove episode loading indicator")
             val current = burningSeriesViewModel.currentSeriesData
             if (view != null && current != null) {
                 if (it.isEmpty()) {
+                    safeContext.errorSnackbar(binding.root, R.string.no_stream, Snackbar.LENGTH_LONG).show()
                     noStreamSourceDialog(episode.href, current)
                 } else {
-                    // TODO("show hoster selection, or start auto by default order in settings?!, view earlier commits for logic")
                     if (it.size == 1) {
                         findNavController().safeNavigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(
                             it.first(),
@@ -525,20 +551,19 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         if (view != null && current != null) {
             when (it.status) {
                 Resource.Status.LOADING -> {
-                    // ToDo("display episode loading indicator")
+                    safeContext.warningSnackbar(binding.root, R.string.check_stream, Snackbar.LENGTH_SHORT).show()
                 }
-                Resource.Status.ERROR -> {
-                    // ToDo("remove episode loading indicator")
-                    Timber.e("Got ${it.message}")
+                is Resource.Status.ERROR -> {
+                    safeContext.errorSnackbar(binding.root, R.string.no_stream, Snackbar.LENGTH_LONG).show()
                     noStreamSourceDialog(item.episode.href)
                 }
                 Resource.Status.SUCCESS -> {
                     val list = it.data ?: listOf()
-                    Timber.e("Got $list")
                     if (list.isEmpty()) {
-                        // ToDo("remove episode loading indicator")
+                        safeContext.errorSnackbar(binding.root, R.string.no_stream, Snackbar.LENGTH_LONG).show()
                         noStreamSourceDialog(item.episode.href)
                     } else {
+                        safeContext.warningSnackbar(binding.root, R.string.loading_stream, Snackbar.LENGTH_SHORT).show()
                         getVideoSources(item.episode, list)
                     }
                 }
@@ -588,6 +613,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
 
         toolbarInfo?.seriesCover?.load<Drawable>(imageUrl) {
             fitCenter()
+            override(width, height)
             error(
                 Glide.with(safeContext)
                 .load(defaultCover?.href?.let { Constants.getBurningSeriesLink(it) })
@@ -676,6 +702,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         menu.clear()
         inflater.inflate(R.menu.series_menu, menu)
         favIconColorApply(burningSeriesViewModel.seriesFavorite.value, menu.findItem(R.id.series_favorite))
+        linkedSeriesApply(burningSeriesViewModel.currentSeriesLinkedSeries.isNotEmpty(), menu.findItem(R.id.series_linked))
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -689,6 +716,35 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                 if (emit != null) {
                     burningSeriesViewModel.updateSeriesFavorite(emit)
                     favIconColorApply(emit.series.favoriteSince > 0, item)
+                }
+                true
+            }
+            R.id.series_linked -> {
+                val current = burningSeriesViewModel.currentSeriesLinkedSeries
+                if (current.isNotEmpty()) {
+                    val items = current.sortedBy { it.isMainStory }
+                    var selected = -1
+                    materialDialogBuilder {
+                        setPositiveButtonIcon(R.drawable.ic_baseline_remove_red_eye_24)
+                        setNegativeButtonIcon(R.drawable.ic_baseline_close_24)
+                        builder {
+                            setTitle(R.string.linked_series)
+                            setSingleChoiceItems(items.map { it.title }.toTypedArray(), selected) { _, i ->
+                                selected = i
+                            }
+                            setPositiveButton(R.string.view) { dialog, _ ->
+                                dialog.dismiss()
+                                if (selected >= 0) {
+                                    findNavController().safeNavigate(SeriesFragmentDirections.actionSeriesFragmentSelf(
+                                        linkedSeries = items[selected]
+                                    ))
+                                }
+                            }
+                            setNegativeButton(R.string.close) { dialog, _ ->
+                                dialog.cancel()
+                            }
+                        }
+                    }.show()
                 }
                 true
             }

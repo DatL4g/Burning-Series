@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
     id("kotlin-kapt")
     id("io.michaelrocks.paranoid")
-    id("com.apollographql.apollo3") version "3.3.0"
+    id("com.apollographql.apollo3") version "3.3.2"
 }
 
 android {
@@ -45,16 +45,16 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     
-    api("io.github.hadiyarajesh:flower:2.0.0")
+    api("io.github.hadiyarajesh:flower:2.0.3")
     api("com.squareup.retrofit2:retrofit:2.9.0") {
         exclude("com.squareup.okhttp3", "okhttp")
         exclude("com.squareup.okhttp3", "logging-interceptor")
     }
     api("com.squareup.okhttp3", "okhttp").version {
-        strictly("4.9.3")
+        strictly("4.10.0")
     }
     api("com.squareup.okhttp3", "logging-interceptor").version {
-        strictly("4.9.3")
+        strictly("4.10.0")
     }
     implementation("javax.inject:javax.inject:1")
     implementation("org.jsoup:jsoup:1.15.1")
@@ -62,7 +62,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2")
     api("com.kttdevelopment:mal4j:2.8.1")
-    api("com.apollographql.apollo3:apollo-runtime:3.3.0")
+    api("com.apollographql.apollo3:apollo-runtime:3.3.2")
 }
 
 apollo {

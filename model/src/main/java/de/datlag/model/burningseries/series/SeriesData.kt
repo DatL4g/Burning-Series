@@ -35,7 +35,8 @@ data class SeriesData(
 	@Ignore @SerialName("infos") val infos: List<InfoData>,
 	@Ignore @SerialName("languages") val languages: List<LanguageData>,
 	@Ignore @SerialName("seasons") val seasons: List<SeasonData>,
-	@Ignore @SerialName("episodes") val episodes: List<EpisodeInfo>
+	@Ignore @SerialName("episodes") val episodes: List<EpisodeInfo>,
+	@Ignore @SerialName("linkedSeries") val linkedSeries: List<LinkedSeriesData>
 ) : Parcelable {
 	@PrimaryKey(autoGenerate = true)
 	@ColumnInfo(name = "seriesId")
@@ -61,6 +62,7 @@ data class SeriesData(
 		updatedAt,
 		favoriteSince,
 		selectedLanguage,
+		listOf(),
 		listOf(),
 		listOf(),
 		listOf(),

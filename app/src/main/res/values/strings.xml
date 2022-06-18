@@ -4,6 +4,12 @@
     <string name="font_path_medium" translatable="false">fonts/OpenSans-Medium.ttf</string>
     <string name="font_path_bold" translatable="false">fonts/OpenSans-Bold.ttf</string>
 
+    <string name="aboutLibraries_showLicense" translatable="false">true</string>
+    <string name="aboutLibraries_description_showIcon" translatable="false">true</string>
+    <string name="aboutLibraries_description_showVersionName" translatable="false">true</string>
+    <string name="aboutLibraries_description_showVersionCode" translatable="false">false</string>
+    <string name="aboutLibraries_description_text">Watch numerous series online for free on Burning Series!</string>
+
     <string name="favorites">Favorites</string>
     <string name="search">Search</string>
     <string name="all_series">All Series</string>
@@ -59,7 +65,7 @@
     <string name="open">Open</string>
     <string name="of">of</string>
     <string name="new_release">New Release</string>
-    <string name="new_release_text">Hey a new version is available you should check it out!\n\nVersion: \t\t\t\t\t%s\nInstalled: \t\t\t%s</string>
+    <string name="new_release_text">Hey a new version is available you should check it out!\n\nVersion: \t\t\t\t%s\nInstalled: \t\t\t%s</string>
     <string name="view">View</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -93,8 +99,6 @@
     <string name="start_episode">Start [Ep. %d]</string>
     <string name="continue_episode">Continue [Ep. %d]</string>
     <string name="clear">Clear</string>
-    <string name="arrow_up" translatable="false">↑</string>
-    <string name="exclamation_mark" translatable="false">!</string>
     <string name="cancel">Cancel</string>
     <string name="add_to_favorites">Add to favorites</string>
     <string name="remove_from_favorites">Remove from favorites</string>
@@ -103,4 +107,16 @@
     <string name="donate">Donate</string>
     <string name="sponsor_header">Sponsor the Project</string>
     <string name="sponsor_text">Hey it looks like you like the app.\nYou can support me to keep the app running as the service is not free.\nEither you help with the programming or sponsor me for 1€ a month.</string>
+    <string name="error_internet_connecton">Please check your internet connection.</string>
+    <string name="error_bad_request">Server received malformed data.</string>
+    <string name="error_server_error">Server could not process data.</string>
+    <string name="error_could_not_load">Could not load data.</string>
+    <string name="activate_stream">Activate Stream</string>
+    <string name="linked_series">Linked Series</string>
+
+    <string name="check_stream">Check if stream is available…</string>
+    <string name="loading_stream">Stream is loading…</string>
+    <string name="no_stream">No Stream available</string>
+
+    <string name="loading_series">Loading series information…</string>
 </resources>

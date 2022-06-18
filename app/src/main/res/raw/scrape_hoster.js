@@ -17,12 +17,12 @@
         const links = player.getElementsByTagName("a");
         if ((links !== null && links !== undefined) && links.length > 0) {
             const link = links[0].getAttribute("href");
-            return {id: activeHoster, url: link, embed: false};
+            return {href: activeHoster, url: link, embed: false};
         } else {
             const frames = player.getElementsByTagName("iframe");
             if ((frames !== null && frames !== undefined) && frames.length > 0) {
                 const link = frames[0].getAttribute("src");
-                return {id: activeHoster, url: link, embed: true};
+                return {href: activeHoster, url: link, embed: true};
             } else {
                 return null;
             }

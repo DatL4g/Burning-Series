@@ -68,6 +68,54 @@
         <item name="android:textColor">@color/primaryColor</item>
     </style>
 
+    <style name="MaterialErrorSnackbar" parent="Widget.Material3.Snackbar">
+        <item name="backgroundTint">@color/errorColor</item>
+        <item name="android:backgroundTint">@color/errorColor</item>
+    </style>
+
+    <style name="MaterialErrorSnackbar.TextView" parent="Widget.Material3.Snackbar.TextView">
+        <item name="android:textColor">@color/errorTextColor</item>
+    </style>
+
+    <style name="MaterialErrorSnackbar.Button" parent="Widget.Material3.Button.TextButton.Snackbar">
+        <item name="android:textColor">@color/errorTextColor</item>
+    </style>
+
+    <style name="MaterialWarningSnackbar" parent="Widget.Material3.Snackbar">
+        <item name="backgroundTint">@color/warningColor</item>
+        <item name="android:backgroundTint">@color/warningColor</item>
+    </style>
+
+    <style name="MaterialWarningSnackbar.TextView" parent="Widget.Material3.Snackbar.TextView">
+        <item name="android:textColor">@color/warningTextColor</item>
+    </style>
+
+    <style name="MaterialWarningSnackbar.Button" parent="Widget.Material3.Button.TextButton.Snackbar">
+        <item name="android:textColor">@color/warningTextColor</item>
+    </style>
+
+    <style name="MaterialErrorSnackbarTheme">
+        <item name="snackbarStyle">@style/MaterialErrorSnackbar</item>
+        <item name="snackbarTextViewStyle">@style/MaterialErrorSnackbar.TextView</item>
+        <item name="snackbarButtonStyle">@style/MaterialErrorSnackbar.Button</item>
+    </style>
+
+    <style name="MaterialWarningSnackbarTheme">
+        <item name="snackbarStyle">@style/MaterialWarningSnackbar</item>
+        <item name="snackbarTextViewStyle">@style/MaterialWarningSnackbar.TextView</item>
+        <item name="snackbarButtonStyle">@style/MaterialWarningSnackbar.Button</item>
+    </style>
+
+    <style name="MaterialFullCardView" parent="Widget.Material3.CardView.Filled">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.Medium.DefaultCorner</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Medium.DefaultCorner" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerRadius">0dp</item>
+        <item name="cornerSize">0dp</item>
+    </style>
+
     <style name="BottomSheetDialog" parent="Theme.Material3.DayNight.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
         <item name="shapeAppearanceLargeComponent">@style/RoundedBottomSheetComponent</item>

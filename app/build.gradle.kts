@@ -98,7 +98,7 @@ dependencies {
     implementation("com.github.devendroid:ReadMoreOption:1.0.3")
     implementation("com.mikepenz:aboutlibraries:10.3.0")
 
-    implementation("com.google.android.exoplayer:exoplayer:2.17.1")
+    implementation("com.google.android.exoplayer:exoplayer:2.18.0")
     implementation("com.github.DATL4G.PreviewSeekBar:previewseekbar-exoplayer:3.0.1")
     implementation("com.github.wseemann:FFmpegMediaMetadataRetriever-core:1.0.16")
     implementation("com.github.wseemann:FFmpegMediaMetadataRetriever-native:1.0.16")
@@ -155,6 +155,7 @@ dependencies {
     implementation("com.github.Ferfalk:SimpleSearchView:0.2.0")
     implementation("net.openid:appauth:0.11.1")
     implementation("io.github.florent37:shapeofview:1.4.7")
+    implementation("com.github.skydoves:androidveil:1.1.2")
 }
 
 protobuf.protobuf.run {

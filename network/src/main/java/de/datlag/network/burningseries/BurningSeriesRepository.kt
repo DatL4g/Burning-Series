@@ -1,5 +1,6 @@
 package de.datlag.network.burningseries
 
+import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkBoundResource
 import com.hadiyarajesh.flower.networkResource
@@ -117,7 +118,10 @@ class BurningSeriesRepository @Inject constructor(
 						)))
 					}
 				}
-				Resource.Status.ERROR -> emit(Resource.error<HomeData>(it.message ?: String()))
+				is Resource.Status.ERROR -> {
+					val errorStatus = it.status as Resource.Status.ERROR
+					emit(Resource.error<HomeData>(errorStatus.message, errorStatus.statusCode))
+				}
 			}
 		}
 	}.flowOn(Dispatchers.IO)
@@ -218,6 +222,8 @@ class BurningSeriesRepository @Inject constructor(
 
 	fun getSeriesData(genreItem: GenreModel.GenreItem) = getSeriesData(genreItem.href, genreItem.getHrefTitle())
 
+	fun getSeriesData(linkedSeries: LinkedSeriesData) = getSeriesData(linkedSeries.href, linkedSeries.getHrefTitle())
+
 	fun getSeriesData(href: String, hrefTitle: String, forceLoad: Boolean = false): Flow<Resource<SeriesWithInfo?>> = flow {
 		val currentRequest = Clock.System.now().epochSeconds
 		emitAll(networkBoundResource(
@@ -243,7 +249,8 @@ class BurningSeriesRepository @Inject constructor(
 		infos: List<InfoData> = seriesData.infos,
 		seasons: List<SeasonData> = seriesData.seasons,
 		languages: List<LanguageData> = seriesData.languages,
-		episodes: Map<EpisodeInfo, List<HosterData>> = seriesData.episodes.associateWith { it.hoster }
+		episodes: Map<EpisodeInfo, List<HosterData>> = seriesData.episodes.associateWith { it.hoster },
+		linkedSeries: List<LinkedSeriesData> = seriesData.linkedSeries
 	) = withContext(Dispatchers.IO) {
 		val previousSeries = burningSeriesDao.getSeriesWithEpisodesBestMatch(seriesData.hrefTitle).firstOrNull()
 
@@ -300,6 +307,13 @@ class BurningSeriesRepository @Inject constructor(
 							burningSeriesDao.insertHoster(it)
 						}
 					}.awaitAll()
+				}
+			}.awaitAll()
+
+			linkedSeries.map { linked ->
+				async(Dispatchers.IO) {
+					linked.seriesId = seriesId
+					burningSeriesDao.insertSeriesLinkedSeries(linked)
 				}
 			}.awaitAll()
 		}
@@ -409,7 +423,7 @@ class BurningSeriesRepository @Inject constructor(
 						emit(false)
 					}
 				}
-				Resource.Status.ERROR -> emit(false)
+				is Resource.Status.ERROR -> emit(false)
 				else -> { }
 			}
 		}

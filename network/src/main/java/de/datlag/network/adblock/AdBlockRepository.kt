@@ -22,7 +22,10 @@ class AdBlockRepository @Inject constructor(
         }).collect {
             when (it.status) {
                 Resource.Status.LOADING -> emit(Resource.loading(null))
-                Resource.Status.ERROR -> emit(Resource.error(it.message ?: it.status.toString()))
+                is Resource.Status.ERROR -> {
+                    val errorStatus = it.status as Resource.Status.ERROR
+                    emit(Resource.error(errorStatus.message, errorStatus.statusCode))
+                }
                 Resource.Status.SUCCESS -> emit(Resource.success(it.data?.byteStream()))
             }
         }

@@ -15,23 +15,14 @@ object Constants {
 	const val HOST_MAL = "myanimelist.net"
 	const val HOST_ANILIST = "anilist.co"
 
-	const val API_JSONBASE = "${PROTOCOL_HTTPS}jsonbase.com"
-	const val API_JSONBASE_PREFIX = "/bs-decaptcha"
 	const val API_BS_TO_BASE = "${PROTOCOL_HTTPS}${HOST_BS_TO}"
-	const val API_BS_TO_ALL = "${API_BS_TO_BASE}/andere-serien"
 
 	const val API_GITHUB = "${PROTOCOL_HTTPS}api.${HOST_GITHUB}"
 
 	const val BS_TO_HEADER = "${API_BS_TO_BASE}/public/images/header.png"
 	const val URL_ADBLOCK_LIST = "https://raw.githubusercontent.com/Openadblockserverlist/adblockserverlist/master/adblockserverlist.txt"
 
-	const val API_WRAP_API_HOME_VERSION = "0.2.1"
-	const val API_WRAP_API_ALL_VERSION = "0.1.1"
-	const val API_WRAP_API_SERIES_VERSION = "0.2.6"
-	const val API_WRAP_API_DOWNLOAD_VIDEO = "0.1.2"
-
 	const val DATABASE_BURNING_SERIES = "BurningSeriesDatabase"
-	const val M3O_BURNING_SERIES_TABLE = "BurningSeries"
 
 	const val NAMED_JSON = "JSON"
 	const val NAMED_JSON_CONVERTER = "JSON_CONVERTER"

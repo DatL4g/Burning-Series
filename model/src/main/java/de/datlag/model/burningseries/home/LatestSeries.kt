@@ -3,6 +3,7 @@ package de.datlag.model.burningseries.home
 import android.os.Parcelable
 import androidx.room.*
 import de.datlag.model.burningseries.Cover
+import de.datlag.model.burningseries.HrefTitleBuilder
 import de.datlag.model.burningseries.common.encodeToHref
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.datetime.Clock
@@ -23,11 +24,11 @@ import kotlinx.serialization.Serializable
 @Obfuscate
 data class LatestSeries(
 	@ColumnInfo(name = "title") @SerialName("title") val title: String = String(),
-	@ColumnInfo(name = "href") @SerialName("href") val href: String = String(),
+	@ColumnInfo(name = "href") @SerialName("href") override val href: String = String(),
 	@ColumnInfo(name = "updatedAt") var updatedAt: Long = Clock.System.now().epochSeconds,
 	@ColumnInfo(name = "nsfw", defaultValue = "false") @SerialName("isNsfw") val nsfw: Boolean = false,
 	@Ignore @SerialName("cover") val cover: Cover
-) : Parcelable {
+) : Parcelable, HrefTitleBuilder() {
 
 	@PrimaryKey(autoGenerate = true)
 	@IgnoredOnParcel
@@ -41,11 +42,7 @@ data class LatestSeries(
 		nsfw: Boolean = false
 	) : this(title, href, updatedAt, nsfw, Cover())
 
-	fun getHrefTitle(): String {
-		val normHref = if (href.startsWith("/")) {
-			href.substring(1)
-		} else { href }
-		val match = Regex("(/(\\w|-)+)").find(normHref)
-		return match?.groupValues?.getOrNull(1)?.replace("/", "") ?: title.encodeToHref()
+	override fun hrefTitleFallback(): String {
+		return title.encodeToHref()
 	}
 }

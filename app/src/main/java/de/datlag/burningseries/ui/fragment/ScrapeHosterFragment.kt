@@ -24,6 +24,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
@@ -56,7 +57,7 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
                 }
                 setNegativeButton(R.string.back) { dialog, _ ->
                     dialog.cancel()
-                    findNavController().safeNavigate(ScrapeHosterFragmentDirections.actionScrapeHosterFragmentToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
+                    findNavController().popBackStack()
                 }
                 setCancelable(false)
             }
@@ -104,8 +105,8 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
         val scrapeJsInput = safeContext.resources.openRawResource(R.raw.scrape_hoster)
         val jsText = String(scrapeJsInput.readBytes())
         while (view != null) {
-            if (view != null) {
-                withContext(Dispatchers.Main) {
+            withContext(Dispatchers.Main) {
+                if (view != null) {
                     binding.webView.evaluateJavascript(jsText) {
                         if (it != null && it.isNotEmpty() && !it.equals("null", true)) {
                             saveScrapedData(it)
@@ -129,7 +130,7 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
                 }
                 setNegativeButton(R.string.back) { dialog, _ ->
                     dialog.cancel()
-                    findNavController().safeNavigate(ScrapeHosterFragmentDirections.actionScrapeHosterFragmentToSeriesFragment(seriesWithInfo = navArgs.seriesWithInfo))
+                    findNavController().popBackStack()
                 }
             }
         }.show()
@@ -142,5 +143,6 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
         hideSeriesArc()
         extendedFab?.gone()
         hideNavigationFabs()
+        setToolbarTitle(R.string.activate_stream)
     }
 }

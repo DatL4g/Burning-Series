@@ -12,6 +12,7 @@ import android.widget.ImageView
 import androidx.annotation.LayoutRes
 import androidx.core.widget.ImageViewCompat
 import androidx.viewbinding.ViewBinding
+import com.google.android.material.snackbar.Snackbar
 import io.michaelrocks.paranoid.Obfuscate
 
 val ViewBinding.context: Context

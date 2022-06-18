@@ -26,9 +26,7 @@ import java.io.File
 @Obfuscate
 class LatestSeriesRecyclerAdapter(
 	private val coversDir: File,
-	private val blurHash: BlurHash,
-	private val aboveFocusViewId: Int? = null,
-	private val belowFocusViewId: Int? = null
+	private val blurHash: BlurHash
 ) : ClickRecyclerAdapter<LatestSeries, LatestSeriesRecyclerAdapter.ViewHolder>() {
 
 	override val diffCallback = object: DiffUtil.ItemCallback<LatestSeries>() {
@@ -70,7 +68,7 @@ class LatestSeriesRecyclerAdapter(
 		val errorImage = item.cover.loadBase64Image(coversDir)
 		binding.cover.load<Drawable>(Constants.getBurningSeriesLink(item.cover.href)) {
 			val width = binding.cover.anyWidth ?: 0
-			val height = binding.cover.anyHeight ?: 0
+			val height = binding.cover.anyHeight ?: (width.toFloat() * 1.6F).toInt()
 
 			if (errorImage != null) {
 				error(errorImage)
@@ -81,6 +79,5 @@ class LatestSeriesRecyclerAdapter(
 			}
 		}
 		binding.title.text = item.title
-		// ToDo("nextFocus")
 	}
 }

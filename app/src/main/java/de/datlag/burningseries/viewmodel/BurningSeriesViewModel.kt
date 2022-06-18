@@ -9,6 +9,7 @@ import de.datlag.burningseries.common.toMutableSharedFlow
 import de.datlag.model.burningseries.Cover
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
+import de.datlag.model.burningseries.home.HomeData
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.*
@@ -20,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,14 +32,21 @@ class BurningSeriesViewModel @Inject constructor(
 
 	var showedHelpImprove: Boolean = false
 
-	val homeData = repository.getHomeData()
+	private val _homeData: MutableStateFlow<Resource<HomeData>> = MutableStateFlow(Resource.loading(null))
+	val homeData = _homeData.asSharedFlow()
 	private val _favorites: MutableSharedFlow<List<SeriesWithInfo>> = repository.getSeriesFavorites().toMutableSharedFlow(viewModelScope)
 	val favorites = _favorites.asSharedFlow()
 
 	val allSeriesCount: StateFlow<Long> = repository.getAllSeriesCount().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
 	private val _allSeriesPagination: MutableStateFlow<Long> = MutableStateFlow(0)
 	private val _allSeriesPaginated: MutableSharedFlow<Resource<List<GenreWithItems>>> = MutableSharedFlow()
-	private val _allSeriesPaginatedFlat: MutableSharedFlow<Pair<Boolean, List<GenreModel>>> = _allSeriesPaginated.mapNotNull { it.data?.flatMap { item -> item.toGenreModel() }?.let { list -> true to list } }.toMutableSharedFlow(viewModelScope)
+	private val _allSeriesPaginatedFlat: MutableSharedFlow<Pair<Boolean, List<GenreModel>>> = _allSeriesPaginated.mapNotNull {
+		if (searchAllSeriesJob?.isActive == true) {
+			null
+		} else {
+			it.data?.flatMap { item -> item.toGenreModel() }?.let { list -> true to list }
+		}
+	}.toMutableSharedFlow(viewModelScope)
 	val allSeriesPagination = _allSeriesPagination.asSharedFlow()
 	val allSeriesPaginatedFlat = _allSeriesPaginatedFlat.asSharedFlow()
 
@@ -54,7 +63,7 @@ class BurningSeriesViewModel @Inject constructor(
 			val series = currentSeriesData
 			return if (series == null) {
 				emptyList()
-			} else if (!series.languages.isNullOrEmpty()) {
+			} else if (series.languages.isNotEmpty()) {
 				series.languages
 			} else {
 				series.series.languages
@@ -65,7 +74,7 @@ class BurningSeriesViewModel @Inject constructor(
 			val series = currentSeriesData
 			return if (series == null) {
 				emptyList()
-			} else if (!series.seasons.isNullOrEmpty()) {
+			} else if (series.seasons.isNotEmpty()) {
 				series.seasons
 			} else {
 				series.series.seasons
@@ -76,10 +85,21 @@ class BurningSeriesViewModel @Inject constructor(
 			val series = currentSeriesData
 			return if (series == null) {
 				emptyList()
-			} else if (!series.episodes.isNullOrEmpty()) {
+			} else if (series.episodes.isNotEmpty()) {
 				series.episodes
 			} else {
 				series.series.episodes.map { EpisodeWithHoster(it, it.hoster) }
+			}
+		}
+	val currentSeriesLinkedSeries: List<LinkedSeriesData>
+		get() {
+			val series = currentSeriesData
+			return if (series == null) {
+				emptyList()
+			} else if (series.linkedSeries.isNotEmpty()) {
+				series.linkedSeries
+			} else {
+				series.series.linkedSeries
 			}
 		}
 	val seriesBSImage: Flow<Cover> = seriesData.mapNotNull { it?.cover ?: it?.series?.cover }.distinctUntilChanged()
@@ -87,9 +107,7 @@ class BurningSeriesViewModel @Inject constructor(
 	val seriesFavorite: StateFlow<Boolean> = seriesData.map { (it?.series?.favoriteSince ?: 0) > 0 }.distinctUntilChanged().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 	val seriesLanguages: Flow<List<LanguageData>> = seriesData.map {
 		it?.let { seriesWithInfo ->
-			return@let if (!seriesWithInfo.languages.isNullOrEmpty()) {
-				seriesWithInfo.languages
-			} else {
+			return@let seriesWithInfo.languages.ifEmpty {
 				seriesWithInfo.series.languages
 			}
 		} ?: emptyList()
@@ -99,9 +117,7 @@ class BurningSeriesViewModel @Inject constructor(
 	}.distinctUntilChanged()
 	val seriesSeasons: Flow<List<SeasonData>> = seriesData.map {
 		it?.let { seriesWithInfo ->
-			return@let if (!seriesWithInfo.seasons.isNullOrEmpty()) {
-				seriesWithInfo.seasons
-			} else {
+			return@let seriesWithInfo.seasons.ifEmpty {
 				seriesWithInfo.series.seasons
 			}
 		} ?: emptyList()
@@ -112,9 +128,7 @@ class BurningSeriesViewModel @Inject constructor(
 	val seriesDescription: Flow<String> = seriesData.map { it?.series?.description ?: String() }.distinctUntilChanged()
 	val seriesEpisodes: Flow<List<EpisodeWithHoster>> = seriesData.map {
 		it?.let { seriesWithInfo ->
-			return@let if (!seriesWithInfo.episodes.isNullOrEmpty()) {
-				seriesWithInfo.episodes
-			} else {
+			return@let seriesWithInfo.episodes.ifEmpty {
 				seriesWithInfo.series.episodes.map { episodeInfo ->
 					EpisodeWithHoster(episodeInfo, episodeInfo.hoster)
 				}
@@ -123,9 +137,7 @@ class BurningSeriesViewModel @Inject constructor(
 	}.distinctUntilChanged()
 	val seriesInfo: Flow<List<InfoData>> = seriesData.map {
 		it?.let { seriesWithInfo ->
-			return@let if (!seriesWithInfo.infos.isNullOrEmpty()) {
-				seriesWithInfo.infos
-			} else {
+			return@let seriesWithInfo.infos.ifEmpty {
 				seriesWithInfo.series.infos
 			}
 		} ?: emptyList()
@@ -147,7 +159,20 @@ class BurningSeriesViewModel @Inject constructor(
 	val genres: List<GenreModel.GenreData>
 		get() = _genres.value
 
+	val linkedSeries: Flow<List<LinkedSeriesData>> = seriesData.map {
+		it?.let { seriesWithInfo ->
+			return@let seriesWithInfo.linkedSeries.ifEmpty {
+				seriesWithInfo.series.linkedSeries
+			}
+		} ?: emptyList()
+	}
+
 	private var fetchSeriesJob: Job? = null
+	private var searchAllSeriesJob: Job? = null
+
+	fun getHomeData() = viewModelScope.launch(Dispatchers.IO) {
+		_homeData.emitAll(repository.getHomeData())
+	}
 
 	fun getAllGenres() = viewModelScope.launch(Dispatchers.IO) {
 		_genres.emitAll(repository.getAllGenres())
@@ -188,9 +213,17 @@ class BurningSeriesViewModel @Inject constructor(
 		_allSeriesPaginated.emitAll(repository.getAllSeries(_allSeriesPagination.value))
 	}
 
-	fun searchAllSeries(title: String) = viewModelScope.launch(Dispatchers.IO) {
-		repository.searchAllSeries(title).collect {
-			_allSeriesPaginatedFlat.emit(false to it)
+	fun cancelSearch() {
+		searchAllSeriesJob?.cancel()
+		searchAllSeriesJob = null
+	}
+
+	fun searchAllSeries(title: String) {
+		cancelSearch()
+		searchAllSeriesJob = viewModelScope.launch(Dispatchers.IO) {
+			repository.searchAllSeries(title).collect {
+				_allSeriesPaginatedFlat.emit(false to it)
+			}
 		}
 	}
 
@@ -251,6 +284,21 @@ class BurningSeriesViewModel @Inject constructor(
 		fetchSeriesJob?.cancel()
 		fetchSeriesJob = viewModelScope.launch(Dispatchers.IO) {
 			repository.getSeriesData(href, hrefTitle, forceLoad).collect {
+				val safe = it.data
+				if (safe != null) {
+					setSeriesData(safe)
+				} else {
+					_seriesData.emit(it.data)
+				}
+				_seriesStatus.emit(it.status)
+			}
+		}
+	}
+
+	fun getSeriesData(linkedSeries: LinkedSeriesData) {
+		fetchSeriesJob?.cancel()
+		fetchSeriesJob = viewModelScope.launch(Dispatchers.IO) {
+			repository.getSeriesData(linkedSeries).collect {
 				val safe = it.data
 				if (safe != null) {
 					setSeriesData(safe)

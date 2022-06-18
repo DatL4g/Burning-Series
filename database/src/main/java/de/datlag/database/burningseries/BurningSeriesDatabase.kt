@@ -32,6 +32,7 @@ import io.michaelrocks.paranoid.Obfuscate
 		LanguageData::class,
 		EpisodeInfo::class,
 		HosterData::class,
+		LinkedSeriesData::class,
 
 		GenreModel.GenreData::class,
 		GenreModel.GenreItem::class,

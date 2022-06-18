@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_margin="16dp"
-                android:fitsSystemWindows="true"
+                android:fitsSystemWindows="false"
                 app:layout_constraintTop_toTopOf="parent"
                 android:gravity="start">
 
