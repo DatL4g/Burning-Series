@@ -31,13 +31,7 @@ class AllSeriesRecyclerAdapter(
         }
 
         override fun areContentsTheSame(oldItem: GenreModel, newItem: GenreModel): Boolean {
-            return if (oldItem is GenreData && newItem is GenreData) {
-                oldItem.hashCode() == newItem.hashCode()
-            } else if (oldItem is GenreItem && newItem is GenreItem) {
-                oldItem.hashCode() == newItem.hashCode()
-            } else {
-                oldItem.hashCode() == newItem.hashCode()
-            }
+            return oldItem.hashCode() == newItem.hashCode()
         }
     }
 
