@@ -23,12 +23,10 @@ class AllSeriesRecyclerAdapter(
 
     override val diffCallback = object : DiffUtil.ItemCallback<GenreModel>() {
         override fun areItemsTheSame(oldItem: GenreModel, newItem: GenreModel): Boolean {
-            return if (oldItem is GenreData && newItem is GenreData) {
-                oldItem.genreId == newItem.genreId
-            } else if (oldItem is GenreItem && newItem is GenreItem) {
-                oldItem.genreItemId == newItem.genreItemId || oldItem.href == newItem.href
-            } else {
-                false
+            return when {
+                oldItem is GenreData && newItem is GenreData -> oldItem.genreId == newItem.genreId
+                oldItem is GenreItem && newItem is GenreItem -> oldItem.genreItemId == newItem.genreItemId || oldItem.href == newItem.href
+                else -> false
             }
         }
 

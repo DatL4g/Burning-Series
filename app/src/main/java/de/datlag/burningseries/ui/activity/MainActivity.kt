@@ -68,25 +68,19 @@ class MainActivity : AdvancedActivity(), FABExtended, FABNavigation, ToolbarInfo
 		setSupportActionBar(binding.toolbar)
 		binding.searchView.setOnSearchViewListener(object : SimpleSearchView.SearchViewListener{
 			override fun onSearchViewClosed() {
-				binding.appBarLayout.setExpandable(true)
-				binding.collapsingToolbar.isTitleEnabled = true
+				onSearchClosed()
 			}
 
 			override fun onSearchViewClosedAnimation() {
-				binding.appBarLayout.setExpandable(true)
-				binding.collapsingToolbar.isTitleEnabled = true
+				onSearchClosed()
 			}
 
 			override fun onSearchViewShown() {
-				binding.appBarLayout.setExpanded(false, false)
-				binding.appBarLayout.setExpandable(false)
-				binding.collapsingToolbar.isTitleEnabled = false
+				onSearchOpened()
 			}
 
 			override fun onSearchViewShownAnimation() {
-				binding.appBarLayout.setExpanded(false, false)
-				binding.appBarLayout.setExpandable(false)
-				binding.collapsingToolbar.isTitleEnabled = false
+				onSearchOpened()
 			}
 		})
 		ContextCompat.getDrawable(this, R.drawable.ic_baseline_close_24)?.apply {
@@ -97,6 +91,17 @@ class MainActivity : AdvancedActivity(), FABExtended, FABNavigation, ToolbarInfo
 		}?.let {
 			binding.searchView.setClearIconDrawable(it)
 		}
+	}
+
+	private fun onSearchClosed() {
+		binding.appBarLayout.setExpandable(true)
+		binding.collapsingToolbar.isTitleEnabled = true
+	}
+
+	private fun onSearchOpened() {
+		binding.appBarLayout.setExpanded(false, false)
+		binding.appBarLayout.setExpandable(false)
+		binding.collapsingToolbar.isTitleEnabled = false
 	}
 
 	override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
