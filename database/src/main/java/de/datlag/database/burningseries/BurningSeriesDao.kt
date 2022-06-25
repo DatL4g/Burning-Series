@@ -1,9 +1,9 @@
 package de.datlag.database.burningseries
 
-import android.util.Log
 import androidx.room.*
 import de.datlag.model.burningseries.Cover
-import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.allseries.GenreData
+import de.datlag.model.burningseries.allseries.GenreItem
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
 import de.datlag.model.burningseries.allseries.search.GenreItemWithMatchInfo
 import de.datlag.model.burningseries.home.LatestEpisode
@@ -13,8 +13,10 @@ import de.datlag.model.burningseries.home.relation.*
 import de.datlag.model.burningseries.series.*
 import de.datlag.model.burningseries.series.relation.*
 import io.michaelrocks.paranoid.Obfuscate
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 
 @Dao
 @Obfuscate
@@ -386,25 +388,25 @@ interface BurningSeriesDao {
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertGenre(genreData: GenreModel.GenreData): Long
+    suspend fun insertGenre(genreData: GenreData): Long
 
     @Transaction
     @Delete
-    suspend fun deleteGenre(genreData: GenreModel.GenreData)
+    suspend fun deleteGenre(genreData: GenreData)
 
     @Transaction
     @Query("SELECT * FROM GenreTable ORDER BY GenreTable.genre")
-    fun getAllGenres(): Flow<List<GenreModel.GenreData>>
+    fun getAllGenres(): Flow<List<GenreData>>
 
 
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertGenreItem(genreItem: GenreModel.GenreItem): Long
+    suspend fun insertGenreItem(genreItem: GenreItem): Long
 
     @Transaction
     @Delete
-    suspend fun deleteGenreItem(genreItem: GenreModel.GenreItem)
+    suspend fun deleteGenreItem(genreItem: GenreItem)
 
 
 

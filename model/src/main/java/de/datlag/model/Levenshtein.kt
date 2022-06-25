@@ -1,7 +1,9 @@
 package de.datlag.model
 
+import io.michaelrocks.paranoid.Obfuscate
 import kotlin.math.max
 
+@Obfuscate
 object Levenshtein {
 
     fun distance(

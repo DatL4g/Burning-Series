@@ -96,7 +96,7 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("com.github.devendroid:ReadMoreOption:1.0.3")
-    implementation("com.mikepenz:aboutlibraries:10.3.0")
+    implementation("com.mikepenz:aboutlibraries:10.3.1")
 
     implementation("com.google.android.exoplayer:exoplayer:2.18.0")
     implementation("com.github.DATL4G.PreviewSeekBar:previewseekbar-exoplayer:3.0.1")
@@ -123,8 +123,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
     implementation("androidx.lifecycle:lifecycle-common-java8:2.4.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3")
 
     implementation("androidx.navigation:navigation-runtime-ktx:2.4.2")
     implementation("androidx.navigation:navigation-fragment-ktx:2.4.2")
@@ -160,6 +160,6 @@ dependencies {
 
 protobuf.protobuf.run {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.21.1"
+        artifact = "com.google.protobuf:protoc:3.21.2"
     }
 }

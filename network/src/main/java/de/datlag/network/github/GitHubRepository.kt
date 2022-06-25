@@ -1,6 +1,5 @@
 package de.datlag.network.github
 
-import android.util.Log
 import com.apollographql.apollo3.ApolloClient
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkResource

@@ -23,7 +23,7 @@ buildscript {
         classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.18")
         classpath("io.michaelrocks:paranoid-gradle-plugin:0.3.7")
         classpath("com.klaxit.hiddensecrets:HiddenSecretsPlugin:0.2.0")
-        classpath("com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:10.3.0")
+        classpath("com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:10.3.1")
 
         // wait for https://github.com/Faire/gradle-kotlin-buildozer/pull/13
     }

@@ -4,18 +4,14 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
 import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.ferfalk.simplesearchview.SimpleSearchView
@@ -24,17 +20,14 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.mikepenz.aboutlibraries.LibsBuilder
 import com.mikepenz.aboutlibraries.LibsConfiguration
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
-import de.datlag.burningseries.common.safeActivity
 import de.datlag.burningseries.databinding.ActivityMainBinding
 import de.datlag.burningseries.extend.AdvancedActivity
 import de.datlag.burningseries.ui.connector.*
 import io.github.florent37.shapeofview.shapes.ArcView
 import io.michaelrocks.paranoid.Obfuscate
-import timber.log.Timber
 
 
 @AndroidEntryPoint

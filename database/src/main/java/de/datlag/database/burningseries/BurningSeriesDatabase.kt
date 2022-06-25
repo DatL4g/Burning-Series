@@ -2,10 +2,10 @@ package de.datlag.database.burningseries
 
 import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
-import androidx.sqlite.db.SupportSQLiteDatabase
 import de.datlag.database.Converters
 import de.datlag.model.burningseries.Cover
-import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.allseries.GenreData
+import de.datlag.model.burningseries.allseries.GenreItem
 import de.datlag.model.burningseries.allseries.search.GenreItemFTS
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.home.LatestEpisodeInfoFlags
@@ -34,8 +34,8 @@ import io.michaelrocks.paranoid.Obfuscate
 		HosterData::class,
 		LinkedSeriesData::class,
 
-		GenreModel.GenreData::class,
-		GenreModel.GenreItem::class,
+		GenreData::class,
+		GenreItem::class,
 
 		SeriesLanguagesCrossRef::class,
 		LatestEpisodeInfoFlagsCrossRef::class,

@@ -3,9 +3,10 @@ package de.datlag.burningseries.helper
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.datetime.Clock
-import timber.log.Timber
 
+@Obfuscate
 data class AppUsageTracker(
     val previousTime: Long,
     val saveListener: (Long) -> Unit

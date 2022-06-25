@@ -2,7 +2,9 @@ package de.datlag.burningseries.helper
 
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.BlendModeCompat
+import io.michaelrocks.paranoid.Obfuscate
 
+@Obfuscate
 data class AlertDialogButtonIcon(
     var icon: Drawable?,
     var size: Int? = null,

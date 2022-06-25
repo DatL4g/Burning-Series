@@ -5,7 +5,9 @@ import androidx.room.Junction
 import androidx.room.Relation
 import de.datlag.model.burningseries.Cover
 import de.datlag.model.burningseries.home.LatestSeries
+import io.michaelrocks.paranoid.Obfuscate
 
+@Obfuscate
 data class LatestSeriesWithCover(
     @Embedded val latestSeries: LatestSeries,
     @Relation(

@@ -12,7 +12,6 @@ import de.datlag.burningseries.common.anyHeight
 import de.datlag.burningseries.common.anyWidth
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerFavoriteBinding
-import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
 import de.datlag.coilifier.BlurHash
 import de.datlag.coilifier.commons.load

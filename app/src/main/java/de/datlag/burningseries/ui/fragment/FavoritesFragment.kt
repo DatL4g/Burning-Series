@@ -1,7 +1,6 @@
 package de.datlag.burningseries.ui.fragment
 
 import android.content.res.Configuration
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -11,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.ferfalk.simplesearchview.SimpleSearchView
-import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
 import de.datlag.burningseries.adapter.FavoriteRecyclerAdapter
@@ -19,9 +17,7 @@ import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.FragmentFavoritesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
-import de.datlag.coilifier.commons.load
 import io.michaelrocks.paranoid.Obfuscate
-import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate

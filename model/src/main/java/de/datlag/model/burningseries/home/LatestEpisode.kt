@@ -5,7 +5,6 @@ import androidx.room.*
 import de.datlag.model.burningseries.Cover
 import de.datlag.model.burningseries.HrefTitleBuilder
 import de.datlag.model.burningseries.common.encodeToHref
-import de.datlag.model.burningseries.series.LanguageData
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.datetime.Clock
 import kotlinx.parcelize.IgnoredOnParcel

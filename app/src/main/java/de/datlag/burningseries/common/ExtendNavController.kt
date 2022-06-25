@@ -1,10 +1,12 @@
+@file:Obfuscate
+
 package de.datlag.burningseries.common
 
 import androidx.annotation.MainThread
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavGraph
-import timber.log.Timber
+import io.michaelrocks.paranoid.Obfuscate
 
 @MainThread
 fun NavController.safeNavigate(directions: NavDirections) {

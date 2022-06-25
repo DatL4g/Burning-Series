@@ -48,5 +48,5 @@ dependencies {
     api("androidx.room:room-runtime:2.4.2")
     kapt("androidx.room:room-compiler:2.4.2")
     
-    api("org.jetbrains.kotlinx:kotlinx-datetime:0.3.3")
+    api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 }

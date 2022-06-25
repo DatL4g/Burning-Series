@@ -1,5 +1,8 @@
 package de.datlag.model.burningseries
 
+import io.michaelrocks.paranoid.Obfuscate
+
+@Obfuscate
 abstract class HrefTitleBuilder {
     abstract val href: String
 

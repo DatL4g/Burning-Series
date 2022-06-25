@@ -59,8 +59,8 @@ dependencies {
     implementation("javax.inject:javax.inject:1")
     implementation("org.jsoup:jsoup:1.15.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3")
     api("com.kttdevelopment:mal4j:2.8.1")
     api("com.apollographql.apollo3:apollo-runtime:3.3.2")
 }

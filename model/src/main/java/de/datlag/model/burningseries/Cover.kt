@@ -1,13 +1,10 @@
 package de.datlag.model.burningseries
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Parcelable
 import android.util.Base64
-import android.util.Log
 import androidx.room.*
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.parcelize.IgnoredOnParcel

@@ -31,7 +31,6 @@ import kotlinx.coroutines.launch
 import net.openid.appauth.*
 import net.openid.appauth.browser.BrowserDenyList
 import net.openid.appauth.browser.BrowserMatcher
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 

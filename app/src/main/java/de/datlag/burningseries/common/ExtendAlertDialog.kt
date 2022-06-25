@@ -1,3 +1,5 @@
+@file:Obfuscate
+
 package de.datlag.burningseries.common
 
 import android.content.Context
@@ -13,7 +15,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.datlag.burningseries.R
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.helper.AlertDialogButtonIcon
-import timber.log.Timber
+import io.michaelrocks.paranoid.Obfuscate
 
 fun MaterialAlertDialogBuilder.setButtonIcons(
     positive: AlertDialogButtonIcon?,

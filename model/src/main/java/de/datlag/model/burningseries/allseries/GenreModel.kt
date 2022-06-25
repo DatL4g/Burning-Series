@@ -13,68 +13,71 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Obfuscate
-sealed class GenreModel : HrefTitleBuilder() {
-    @Parcelize
-    @Serializable
-    @Entity(
-        tableName = "GenreTable",
-        indices = [
-            Index("genreId"),
-            Index("genre", unique = true)
-        ]
-    )
-    data class GenreData(
-        @SerialName("genre") @ColumnInfo(name = "genre") val genre: String = String(),
-        @ColumnInfo(name = "updatedAt") var updatedAt: Long = Clock.System.now().epochSeconds,
-        @Ignore @SerialName("items") val items: List<GenreItem>
-    ) : Parcelable, GenreModel() {
-        @PrimaryKey(autoGenerate = true)
-        @ColumnInfo(name = "genreId")
-        @IgnoredOnParcel
-        var genreId: Long = 0L
+@Serializable
+sealed class GenreModel : HrefTitleBuilder()
 
-        constructor(
-            genre: String = String(),
-            updatedAt: Long = Clock.System.now().epochSeconds
-        ) : this(genre, updatedAt, listOf())
+@Parcelize
+@Serializable
+@Entity(
+    tableName = "GenreTable",
+    indices = [
+        Index("genreId"),
+        Index("genre", unique = true)
+    ]
+)
+@Obfuscate
+data class GenreData(
+    @SerialName("genre") @ColumnInfo(name = "genre") val genre: String = String(),
+    @ColumnInfo(name = "updatedAt") var updatedAt: Long = Clock.System.now().epochSeconds,
+    @Ignore @SerialName("items") val items: List<GenreItem>
+) : Parcelable, GenreModel() {
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "genreId")
+    @IgnoredOnParcel
+    var genreId: Long = 0L
 
-        @Ignore
-        @Transient
-        @IgnoredOnParcel
-        override val href: String = String()
-    }
+    constructor(
+        genre: String = String(),
+        updatedAt: Long = Clock.System.now().epochSeconds
+    ) : this(genre, updatedAt, listOf())
 
-    @Parcelize
-    @Serializable
-    @Entity(
-        tableName = "GenreItemTable",
-        indices = [
-            Index("genreItemId"),
-            Index("genreId"),
-            Index("href", unique = true)
-        ],
-        foreignKeys = [
-            ForeignKey(
-                entity = GenreData::class,
-                parentColumns = ["genreId"],
-                childColumns = ["genreId"],
-                onDelete = ForeignKey.CASCADE,
-                onUpdate = ForeignKey.CASCADE
-            )
-        ]
-    )
-    data class GenreItem(
-        @SerialName("title") @ColumnInfo(name = "title") val title: String = String(),
-        @SerialName("href") @ColumnInfo(name = "href") override val href: String = String(),
-        @ColumnInfo(name = "genreId") var genreId: Long = 0L
-    ) : Parcelable, GenreModel() {
-        @PrimaryKey(autoGenerate = true)
-        @ColumnInfo(name = "genreItemId")
-        @IgnoredOnParcel
-        var genreItemId: Long = 0L
+    @Ignore
+    @Transient
+    @IgnoredOnParcel
+    override val href: String = String()
+}
 
-        override fun hrefTitleFallback(): String {
-            return title.encodeToHref()
-        }
+@Parcelize
+@Serializable
+@Entity(
+    tableName = "GenreItemTable",
+    indices = [
+        Index("genreItemId"),
+        Index("genreId"),
+        Index("href", unique = true)
+    ],
+    foreignKeys = [
+        ForeignKey(
+            entity = GenreData::class,
+            parentColumns = ["genreId"],
+            childColumns = ["genreId"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
+        )
+    ]
+)
+@Obfuscate
+data class GenreItem(
+    @SerialName("title") @ColumnInfo(name = "title") val title: String = String(),
+    @SerialName("href") @ColumnInfo(name = "href") override val href: String = String(),
+    @ColumnInfo(name = "genreId") var genreId: Long = 0L
+) : Parcelable, GenreModel() {
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "genreItemId")
+    @IgnoredOnParcel
+    var genreItemId: Long = 0L
+
+    override fun hrefTitleFallback(): String {
+        return title.encodeToHref()
     }
 }

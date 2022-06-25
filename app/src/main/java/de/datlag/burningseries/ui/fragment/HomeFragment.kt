@@ -1,17 +1,16 @@
 package de.datlag.burningseries.ui.fragment
 
 import android.os.Bundle
-import android.view.*
-import androidx.core.graphics.BlendModeColorFilterCompat
-import androidx.core.graphics.BlendModeCompat
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.snackbar.Snackbar
 import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +29,6 @@ import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate

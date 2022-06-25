@@ -18,9 +18,8 @@ import de.datlag.burningseries.databinding.FragmentAllSeriesBinding
 import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.model.Constants
-import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.allseries.GenreItem
 import io.michaelrocks.paranoid.Obfuscate
-import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
@@ -40,7 +39,7 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         initRecycler()
         initSearchView()
 
-        (navArgs.defaultGenre as? GenreModel.GenreData?)?.let { default ->
+        navArgs.defaultGenre?.let { default ->
             val currentGenres = burningSeriesViewModel.genres
             val genresIndex = currentGenres.indexOfFirst { it == default || it.genre.equals(default.genre, true) }
             if (genresIndex >= 0) {
@@ -95,12 +94,12 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         allSeriesRecycler.adapter = allSeriesRecyclerAdapter
 
         allSeriesRecyclerAdapter.setOnClickListener { item ->
-            if (item is GenreModel.GenreItem) {
+            if (item is GenreItem) {
                 findNavController().safeNavigate(AllSeriesFragmentDirections.actionAllSeriesFragmentToSeriesFragment(genreItem = item))
             }
         }
         allSeriesRecyclerAdapter.setOnLongClickListener { item ->
-            if (item is GenreModel.GenreItem) {
+            if (item is GenreItem) {
                 materialDialogBuilder {
                     setPositiveButtonIcon(R.drawable.ic_baseline_arrow_outward_24)
                     setNegativeButtonIcon(R.drawable.ic_baseline_close_24)

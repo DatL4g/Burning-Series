@@ -1,11 +1,8 @@
 package de.datlag.burningseries.adapter
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +17,6 @@ import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerLatestEpisodeBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
 import de.datlag.coilifier.BlurHash
-import de.datlag.coilifier.Scale
 import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.home.LatestEpisode

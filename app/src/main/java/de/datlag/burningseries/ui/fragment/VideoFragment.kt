@@ -8,7 +8,8 @@ import android.view.KeyEvent
 import android.view.TextureView
 import android.view.View
 import androidx.core.net.toUri
-import androidx.core.view.*
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -50,7 +51,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import wseemann.media.FFmpegMediaMetadataRetriever
 import javax.inject.Inject
 

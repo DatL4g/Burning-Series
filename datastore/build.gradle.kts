@@ -45,12 +45,12 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 
     api("androidx.datastore:datastore-core:1.0.0")
-    api("com.google.protobuf:protobuf-javalite:3.21.1")
+    api("com.google.protobuf:protobuf-javalite:3.21.2")
 }
 
 protobuf.protobuf.run {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.21.1"
+        artifact = "com.google.protobuf:protoc:3.21.2"
     }
 
     generateProtoTasks {

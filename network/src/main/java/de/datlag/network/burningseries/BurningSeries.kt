@@ -2,7 +2,7 @@ package de.datlag.network.burningseries
 
 import com.hadiyarajesh.flower.ApiResponse
 import de.datlag.model.Constants
-import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.allseries.GenreData
 import de.datlag.model.burningseries.home.HomeData
 import de.datlag.model.burningseries.series.SeriesData
 import de.datlag.model.burningseries.stream.Stream
@@ -10,7 +10,6 @@ import de.datlag.model.video.InsertStream
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.flow.Flow
 import okhttp3.RequestBody
-import retrofit2.Call
 import retrofit2.http.*
 
 @Obfuscate
@@ -43,7 +42,7 @@ interface BurningSeries {
 
 	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
 	@GET("/bs/all")
-	fun getAllSeries(): Flow<ApiResponse<List<GenreModel.GenreData>>>
+	fun getAllSeries(): Flow<ApiResponse<List<GenreData>>>
 
 	@GET("/bs/video/count")
 	fun getSeriesCount(): Flow<ApiResponse<String>>

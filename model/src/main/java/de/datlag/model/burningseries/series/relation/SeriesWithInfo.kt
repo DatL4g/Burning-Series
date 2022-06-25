@@ -5,7 +5,6 @@ import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
 import de.datlag.model.burningseries.Cover
-import de.datlag.model.burningseries.home.relation.LatestEpisodeCoverCrossRef
 import de.datlag.model.burningseries.series.*
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.parcelize.Parcelize

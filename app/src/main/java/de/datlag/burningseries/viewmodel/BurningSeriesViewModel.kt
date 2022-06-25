@@ -7,6 +7,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import de.datlag.burningseries.common.indexOfLastWithItem
 import de.datlag.burningseries.common.toMutableSharedFlow
 import de.datlag.model.burningseries.Cover
+import de.datlag.model.burningseries.allseries.GenreData
+import de.datlag.model.burningseries.allseries.GenreItem
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
 import de.datlag.model.burningseries.home.HomeData
@@ -21,7 +23,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -155,8 +156,8 @@ class BurningSeriesViewModel @Inject constructor(
 			} ?: lastWatched.second ?: episodeList.firstOrNull()
 		}
 
-	private val _genres: MutableStateFlow<List<GenreModel.GenreData>> = MutableStateFlow(listOf())
-	val genres: List<GenreModel.GenreData>
+	private val _genres: MutableStateFlow<List<GenreData>> = MutableStateFlow(listOf())
+	val genres: List<GenreData>
 		get() = _genres.value
 
 	val linkedSeries: Flow<List<LinkedSeriesData>> = seriesData.map {
@@ -265,7 +266,7 @@ class BurningSeriesViewModel @Inject constructor(
 		}
 	}
 
-	fun getSeriesData(genreItem: GenreModel.GenreItem) {
+	fun getSeriesData(genreItem: GenreItem) {
 		fetchSeriesJob?.cancel()
 		fetchSeriesJob = viewModelScope.launch(Dispatchers.IO) {
 			repository.getSeriesData(genreItem).collect {

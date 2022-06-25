@@ -56,7 +56,7 @@
             app:destination="@id/favoritesFragment" />
         <argument
             android:name="genreItem"
-            app:argType="de.datlag.model.burningseries.allseries.GenreModel$GenreItem"
+            app:argType="de.datlag.model.burningseries.allseries.GenreItem"
             app:nullable="true"
             android:defaultValue="@null" />
         <action
@@ -118,7 +118,7 @@
             app:destination="@id/favoritesFragment" />
         <argument
             android:name="defaultGenre"
-            app:argType="de.datlag.model.burningseries.allseries.GenreModel$GenreData"
+            app:argType="de.datlag.model.burningseries.allseries.GenreData"
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>

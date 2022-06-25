@@ -1,12 +1,13 @@
 package de.datlag.network.burningseries
 
-import android.util.Log
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkBoundResource
 import com.hadiyarajesh.flower.networkResource
 import de.datlag.database.burningseries.BurningSeriesDao
 import de.datlag.model.Constants
 import de.datlag.model.burningseries.Cover
+import de.datlag.model.burningseries.allseries.GenreData
+import de.datlag.model.burningseries.allseries.GenreItem
 import de.datlag.model.burningseries.allseries.GenreModel
 import de.datlag.model.burningseries.allseries.relation.GenreWithItems
 import de.datlag.model.burningseries.allseries.search.GenreItemWithMatchInfo
@@ -220,7 +221,7 @@ class BurningSeriesRepository @Inject constructor(
 
 	fun getSeriesData(latestEpisode: LatestEpisode) = getSeriesData(latestEpisode.getHrefWithoutEpisode(), latestEpisode.getHrefTitle())
 
-	fun getSeriesData(genreItem: GenreModel.GenreItem) = getSeriesData(genreItem.href, genreItem.getHrefTitle())
+	fun getSeriesData(genreItem: GenreItem) = getSeriesData(genreItem.href, genreItem.getHrefTitle())
 
 	fun getSeriesData(linkedSeries: LinkedSeriesData) = getSeriesData(linkedSeries.href, linkedSeries.getHrefTitle())
 
@@ -384,7 +385,7 @@ class BurningSeriesRepository @Inject constructor(
 		return "\"$queryWithEscapedQuotes\""
 	}
 
-	private suspend fun saveGenreData(genreList: List<GenreModel.GenreData>) {
+	private suspend fun saveGenreData(genreList: List<GenreData>) {
 		genreList.sortedBy { it.genre }.forEach { genreData ->
 			val genreId: Long = burningSeriesDao.insertGenre(genreData)
 			genreData.items.forEach { item ->

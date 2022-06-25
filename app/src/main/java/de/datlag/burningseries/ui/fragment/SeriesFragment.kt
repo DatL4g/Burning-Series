@@ -8,13 +8,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.net.toUri
-import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -42,7 +38,7 @@ import de.datlag.coilifier.commons.load
 import de.datlag.model.Constants
 import de.datlag.model.JaroWinkler
 import de.datlag.model.burningseries.Cover
-import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.allseries.GenreData
 import de.datlag.model.burningseries.home.LatestEpisode
 import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.InfoData
@@ -59,7 +55,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import timber.log.Timber
 
 @AndroidEntryPoint
 @Obfuscate
@@ -107,7 +102,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             burningSeriesViewModel.getSeriesData(series.series.href, series.series.hrefTitle)
             listenEpisodes()
         }
-        (navArgs.genreItem as? GenreModel.GenreItem?)?.let { item ->
+        navArgs.genreItem?.let { item ->
             burningSeriesViewModel.getSeriesData(item)
             listenEpisodes()
         }
@@ -420,7 +415,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         })
     }
 
-    private fun bestGenre(genre: String): GenreModel.GenreData? {
+    private fun bestGenre(genre: String): GenreData? {
         return burningSeriesViewModel.genres.firstOrNull {
             it.genre.trim().equals(genre.trim(), true)
         } ?: burningSeriesViewModel.genres.associateBy {

@@ -2,12 +2,12 @@ package de.datlag.model.burningseries.allseries.search
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
-import de.datlag.model.burningseries.allseries.GenreModel
+import de.datlag.model.burningseries.allseries.GenreItem
 import io.michaelrocks.paranoid.Obfuscate
 
 @Obfuscate
 data class GenreItemWithMatchInfo(
-    @Embedded val genreItem: GenreModel.GenreItem,
+    @Embedded val genreItem: GenreItem,
     @ColumnInfo(name = "matchInfo") val matchInfo: ByteArray?
 ) {
     override fun equals(other: Any?): Boolean {

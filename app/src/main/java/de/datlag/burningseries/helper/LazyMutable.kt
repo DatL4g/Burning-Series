@@ -1,8 +1,10 @@
 package de.datlag.burningseries.helper
 
+import io.michaelrocks.paranoid.Obfuscate
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
+@Obfuscate
 class LazyMutable<T>(
     val initializer: () -> T
 ): ReadWriteProperty<Any?, T> {

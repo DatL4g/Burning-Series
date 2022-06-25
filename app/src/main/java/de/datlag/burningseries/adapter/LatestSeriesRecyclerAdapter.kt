@@ -7,12 +7,9 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.bumptech.glide.load.resource.bitmap.FitCenter
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.anyHeight
 import de.datlag.burningseries.common.anyWidth
-import de.datlag.burningseries.common.dpToPx
 import de.datlag.burningseries.common.inflateView
 import de.datlag.burningseries.databinding.RecyclerLatestSeriesBinding
 import de.datlag.burningseries.extend.ClickRecyclerAdapter
