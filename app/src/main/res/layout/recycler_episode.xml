@@ -48,6 +48,7 @@
             android:visibility="gone"
             tools:visibility="visible"
             android:scaleType="centerInside"
+            app:tint="@color/backgroundTextColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
