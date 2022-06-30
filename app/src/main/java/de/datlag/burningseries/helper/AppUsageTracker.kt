@@ -9,7 +9,7 @@ import kotlinx.datetime.Clock
 @Obfuscate
 data class AppUsageTracker(
     val previousTime: Long,
-    val saveListener: (Long) -> Unit
+    val saveListener: (time: Long) -> Unit
 ) : Application.ActivityLifecycleCallbacks {
     private var startingTime: Long = 0
 

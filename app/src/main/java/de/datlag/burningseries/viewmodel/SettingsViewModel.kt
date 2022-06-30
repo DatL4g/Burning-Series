@@ -88,4 +88,10 @@ class SettingsViewModel @Inject constructor(
             it.toBuilder().setUser(it.user.toBuilder().setGithubAuth(newValue).build()).build()
         }
     }
+
+    fun increaseUsageSaveAmount() = viewModelScope.launch(Dispatchers.IO) {
+        dataStore.updateData {
+            it.toBuilder().setUsage(it.usage.toBuilder().setSaveAmount(it.usage.saveAmount + 1).build()).build()
+        }
+    }
 }

@@ -25,6 +25,7 @@ message SettingsPreferences {
   User user = 3;
   message Usage {
     int64 spentTime = 1;
+    int32 saveAmount = 2;
   }
   Usage usage = 4;
 }

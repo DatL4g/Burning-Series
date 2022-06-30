@@ -17,6 +17,7 @@ import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.ui.webview.AdBlockWebViewClient
 import de.datlag.burningseries.viewmodel.AdBlockViewModel
 import de.datlag.burningseries.viewmodel.ScrapeHosterViewModel
+import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.model.Constants
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +34,7 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
     private val binding: FragmentScrapeHosterBinding by viewBinding()
     private val viewModel: ScrapeHosterViewModel by activityViewModels()
     private val adBlockViewModel: AdBlockViewModel by activityViewModels()
+    private val settingsViewModel: SettingsViewModel by activityViewModels()
 
     private val loadingStartedListener = {
         showLoadingDialog()
@@ -118,6 +120,10 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
     }
 
     private fun saveScrapedData(data: String) = viewModel.saveIfNotPresent(data).launchAndCollect {
+        if (it) {
+            settingsViewModel.increaseUsageSaveAmount()
+        }
+
         materialDialogBuilder {
             setPositiveButtonIcon(R.drawable.ic_baseline_edit_24)
             setNegativeButtonIcon(R.drawable.ic_baseline_close_24)
@@ -143,5 +149,8 @@ class ScrapeHosterFragment : AdvancedFragment(R.layout.fragment_scrape_hoster) {
         extendedFab?.gone()
         hideNavigationFabs()
         setToolbarTitle(R.string.activate_stream)
+        showToolbarBackButton()
+        appBarLayout?.setExpanded(false, false)
+        appBarLayout?.setExpandable(false)
     }
 }
