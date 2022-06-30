@@ -36,6 +36,51 @@ class VideoScraper {
         matches.forEach {
             srcList.add(it.value)
         }
+
+        unpackJavascript(doc).forEach {
+            val unpackedMatches = regex.findAll(it)
+            unpackedMatches.forEach { result ->
+                srcList.add(result.value)
+            }
+        }
+
         return srcList.toList()
+    }
+
+    private fun unpackJavascript(doc: Document): Set<String> {
+        val packedRegex = Regex("eval[(]function[(]p,a,c,k,e,[r|d]?", setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
+        val packedExtractRegex = Regex("[}][(]'(.*)', *(\\d+), *(\\d+), *'(.*?)'[.]split[(]'[|]'[)]", setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
+        val unpackReplaceRegex = Regex("\\b\\w+\\b", setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
+        val packedScripts = doc.select("script").mapNotNull {
+            val data = it.data().trim()
+            if (data.contains(packedRegex)) {
+                data
+            } else {
+                null
+            }
+        }
+
+        return packedScripts.flatMap {
+            packedExtractRegex.findAll(it).mapNotNull { result ->
+
+                val payload = result.groups[1]?.value
+                val symtab = result.groups[4]?.value?.split('|')
+                val radix = result.groups[2]?.value?.toIntOrNull() ?: 10
+                val count = result.groups[3]?.value?.toIntOrNull()
+                val unbaser = Unbaser(radix)
+
+                if (symtab == null || count == null || symtab.size != count) {
+                    null
+                } else {
+                    payload?.replace(unpackReplaceRegex) { match ->
+                        val word = match.value
+                        val unbased = symtab[unbaser.unbase(word)]
+                        unbased.ifEmpty {
+                            word
+                        }
+                    }
+                }
+            }
+        }.toSet()
     }
 }
