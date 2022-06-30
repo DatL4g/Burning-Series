@@ -136,7 +136,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 							burningSeriesViewModel.getHomeData()
 						}
 					}
-				}.show()
+				}.setAnchorView(extendedFab).show()
 			}
 		}
 	}

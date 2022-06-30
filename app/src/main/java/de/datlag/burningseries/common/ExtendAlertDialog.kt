@@ -3,6 +3,7 @@
 package de.datlag.burningseries.common
 
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.drawable.Drawable
 import android.view.Gravity
 import android.widget.Button
@@ -20,7 +21,8 @@ import io.michaelrocks.paranoid.Obfuscate
 fun MaterialAlertDialogBuilder.setButtonIcons(
     positive: AlertDialogButtonIcon?,
     negative: AlertDialogButtonIcon?,
-    neutral: AlertDialogButtonIcon?
+    neutral: AlertDialogButtonIcon?,
+    onShowListener: ((DialogInterface) -> Unit)?
 ): AlertDialog {
     fun resizeIcon(button: Button, iconInfo: AlertDialogButtonIcon?): Drawable? {
         return iconInfo?.icon?.apply {
@@ -74,6 +76,8 @@ fun MaterialAlertDialogBuilder.setButtonIcons(
 
         val neutralButton = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL)
         setButtonIcon(neutralButton, neutral)
+
+        onShowListener?.invoke(it)
     }
     return alertDialog
 }
@@ -81,8 +85,9 @@ fun MaterialAlertDialogBuilder.setButtonIcons(
 fun MaterialAlertDialogBuilder.setButtonIcons(
     positive: Drawable?,
     negative: Drawable?,
-    neutral: Drawable?
-) = this.setButtonIcons(AlertDialogButtonIcon(positive), AlertDialogButtonIcon(negative), AlertDialogButtonIcon(neutral))
+    neutral: Drawable?,
+    onShowListener: ((DialogInterface) -> Unit)?
+) = this.setButtonIcons(AlertDialogButtonIcon(positive), AlertDialogButtonIcon(negative), AlertDialogButtonIcon(neutral), onShowListener)
 
 class MaterialDialogBuilder(
     private val context: Context,
@@ -92,6 +97,7 @@ class MaterialDialogBuilder(
     private var positiveButtonIcon: AlertDialogButtonIcon? = null
     private var negativeButtonIcon: AlertDialogButtonIcon? = null
     private var neutralButtonIcon: AlertDialogButtonIcon? = null
+    private var onShowListener: ((DialogInterface) -> Unit)? = null
 
     fun setPositiveButtonIcon(icon: AlertDialogButtonIcon) = apply {
         positiveButtonIcon = icon
@@ -219,12 +225,16 @@ class MaterialDialogBuilder(
         } ?: run { neutralButtonIcon = AlertDialogButtonIcon(icon = null, blendMode = mode) }
     }
 
+    fun setOnShowListener(listener: (DialogInterface) -> Unit) {
+        onShowListener = listener
+    }
+
 
     fun builder(dialogBuilder: MaterialAlertDialogBuilder.() -> Unit) = apply {
         materialDialogBuilder = MaterialAlertDialogBuilder(context, overrideThemeResId).apply(dialogBuilder)
     }
 
-    fun build() = (materialDialogBuilder ?: MaterialAlertDialogBuilder(context, overrideThemeResId)).setButtonIcons(positiveButtonIcon, negativeButtonIcon, neutralButtonIcon)
+    fun build() = (materialDialogBuilder ?: MaterialAlertDialogBuilder(context, overrideThemeResId)).setButtonIcons(positiveButtonIcon, negativeButtonIcon, neutralButtonIcon, onShowListener)
 }
 
 fun Context.materialDialogBuilder(builder: MaterialDialogBuilder.() -> Unit) = MaterialDialogBuilder(this).apply(builder).build()

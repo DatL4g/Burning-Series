@@ -262,7 +262,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
     private fun listenSeriesStatus() = burningSeriesViewModel.seriesStatus.distinctUntilChanged().launchAndCollect {
         when (it) {
             Resource.Status.LOADING -> {
-                safeContext.warningSnackbar(binding.root, R.string.loading_series, Snackbar.LENGTH_SHORT).show()
+                safeContext.warningSnackbar(binding.root, R.string.loading_series, Snackbar.LENGTH_SHORT).setAnchorView(extendedFab).show()
             }
             is Resource.Status.ERROR -> {
                 val (stringId, displayRetry) = it.mapToMessageAndDisplayAction()
@@ -278,7 +278,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                             }
                         }
                     }
-                }.show()
+                }.setAnchorView(extendedFab).show()
             }
             else -> { }
         }
@@ -493,7 +493,7 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
             val current = burningSeriesViewModel.currentSeriesData
             if (view != null && current != null) {
                 if (it.isEmpty()) {
-                    safeContext.errorSnackbar(binding.root, R.string.no_stream, Snackbar.LENGTH_LONG).show()
+                    safeContext.errorSnackbar(binding.root, R.string.no_stream, Snackbar.LENGTH_LONG).setAnchorView(extendedFab).show()
                     noStreamSourceDialog(episode.href, current)
                 } else {
                     if (it.size == 1) {
@@ -546,19 +546,19 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
         if (view != null && current != null) {
             when (it.status) {
                 Resource.Status.LOADING -> {
-                    safeContext.warningSnackbar(binding.root, R.string.check_stream, Snackbar.LENGTH_SHORT).show()
+                    safeContext.warningSnackbar(binding.root, R.string.check_stream, Snackbar.LENGTH_SHORT).setAnchorView(extendedFab).show()
                 }
                 is Resource.Status.ERROR -> {
-                    safeContext.errorSnackbar(binding.root, R.string.no_stream, Snackbar.LENGTH_LONG).show()
+                    safeContext.errorSnackbar(binding.root, R.string.no_stream, Snackbar.LENGTH_LONG).setAnchorView(extendedFab).show()
                     noStreamSourceDialog(item.episode.href)
                 }
                 Resource.Status.SUCCESS -> {
                     val list = it.data ?: listOf()
                     if (list.isEmpty()) {
-                        safeContext.errorSnackbar(binding.root, R.string.no_stream, Snackbar.LENGTH_LONG).show()
+                        safeContext.errorSnackbar(binding.root, R.string.no_stream, Snackbar.LENGTH_LONG).setAnchorView(extendedFab).show()
                         noStreamSourceDialog(item.episode.href)
                     } else {
-                        safeContext.warningSnackbar(binding.root, R.string.loading_stream, Snackbar.LENGTH_SHORT).show()
+                        safeContext.warningSnackbar(binding.root, R.string.loading_stream, Snackbar.LENGTH_SHORT).setAnchorView(extendedFab).show()
                         getVideoSources(item.episode, list)
                     }
                 }
