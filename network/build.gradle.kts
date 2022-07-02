@@ -63,6 +63,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3")
     api("com.kttdevelopment:mal4j:2.8.1")
     api("com.apollographql.apollo3:apollo-runtime:3.3.2")
+
+    implementation("dev.datlag.jsunpacker:jsunpacker:1.0.1")
 }
 
 apollo {

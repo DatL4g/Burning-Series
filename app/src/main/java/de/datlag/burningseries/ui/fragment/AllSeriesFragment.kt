@@ -171,7 +171,6 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         showNavigationFabs()
         setHasOptionsMenu(true)
         showToolbarBackButton()
-        hideSeriesArc()
         setToolbarTitle(R.string.all_series)
         appBarLayout?.setExpanded(false, false)
         appBarLayout?.setExpandable(false)
