@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Execute Build
+        run: ./gradlew build && ./gradlew bundleRelease
+
+      - name: Move APK file(s)
+        run: mv ./app/build/outputs/apk/release/*.apk ./app/release/
+
+      - name: Move AAB file(s)
+        run: mv ./app/build/outputs/bundle/release/*.aab ./app/release/
+
+      - name: Remove "-unsigned" from filename(s)
+        run : for filename in ./app/release/*-unsigned*; do mv "./$filename" "./$(echo "$filename" | sed -e 's/-unsigned//g')";  done
+
+      - name: List all release files
+        run: ls ./app/release/
+
+      - uses: ilharp/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDir: app/release
+          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
+          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          buildToolsVersion: 30.0.2
+
+      - name: List signed files
+        run: echo "Signed ${{ steps.sign_app.outputs.signedFilesCount }} files called ${{ steps.sign_app.outputs.signedFiles }}"
+
+      - name: Split signed files
+        uses: xom9ikk/split@v1
+        id: split
+        with:
+          string: ${{ steps.sign_app.outputs.signedFiles }}
+          separator: ':'
+          limit: 2
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ steps.split.outputs._0 }}
+            ${{ steps.split.outputs._1 }}
