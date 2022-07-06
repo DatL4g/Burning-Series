@@ -10,6 +10,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Obfuscate
 data class StreamClip(
-    @SerialName("start") val start: Long? = null,
-    @SerialName("end") val end: Long? = null
+    @SerialName("start") var start: Long? = null,
+    @SerialName("end") var end: Long? = null
 ) : Parcelable

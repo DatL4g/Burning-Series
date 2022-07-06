@@ -109,4 +109,26 @@
     <string name="no_stream">Kein Stream verfügbar</string>
 
     <string name="loading_series">Lade Serien Information…</string>
+
+    <string name="skip">Überspringen</string>
+    <string name="skip_throwback">Rückblick überspringen</string>
+    <string name="skip_intro">Intro überspringen</string>
+    <string name="skip_outro">Outro überspringen</string>
+
+    <string name="throwback">Rückblick</string>
+    <string name="intro">Intro</string>
+    <string name="outro">Outro</string>
+
+    <string name="done">Fertig</string>
+
+    <string name="start_timestamp">Start-Zeitpunkt</string>
+    <string name="end_timestamp">End-Zeitpunkt</string>
+
+    <string name="hour">Stunde</string>
+    <string name="minute">Minute</string>
+    <string name="second">Sekunde</string>
+
+    <string name="edit_timestamps">Zeitpunkte bearbeiten</string>
+    <string name="too_low">Zu niedrig</string>
+    <string name="max_number">Max. Zahl: %d</string>
 </resources>

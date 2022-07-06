@@ -7,22 +7,35 @@
         <item name="android:windowTranslucentStatus">true</item>
 
         <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorOnPrimary">@color/primaryTextColor</item>
-        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
-        <item name="colorAccent">@color/primaryLightColor</item>
-        <item name="colorPrimaryContainer">@color/primaryColor</item>
-        <item name="colorOnPrimaryContainer">@color/primaryTextColor</item>
+        <item name="colorOnPrimary">@color/onPrimaryColor</item>
+        <item name="colorPrimaryContainer">@color/primaryContainerColor</item>
+        <item name="colorOnPrimaryContainer">@color/onPrimaryContainerColor</item>
 
-        <item name="colorSecondary">@color/primaryDarkColor</item>
-        <item name="colorOnSecondary">@color/primaryTextColor</item>
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorOnSecondary">@color/onSecondaryColor</item>
+        <item name="colorSecondaryContainer">@color/secondaryContainerColor</item>
+        <item name="colorOnSecondaryContainer">@color/onSecondaryContainerColor</item>
+
+        <item name="android:colorBackground">@color/backgroundColor</item>
+        <item name="colorOnBackground">@color/onBackgroundColor</item>
+
+        <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="android:textColor">@color/onBackgroundColor</item>
+
+        <item name="colorSurface">@color/surfaceColor</item>
+        <item name="colorOnSurface">@color/onSurfaceColor</item>
+        <item name="colorSurfaceVariant">@color/surfaceVariantColor</item>
+        <item name="colorOnSurfaceVariant">@color/onSurfaceVariantColor</item>
+        <item name="colorOutline">@color/outlineColor</item>
+        <item name="colorSurfaceInverse">@color/inverseSurfaceColor</item>
+        <item name="colorOnSurfaceInverse">@color/inverseOnSurfaceColor</item>
+        <item name="elevationOverlayColor">@color/surfaceTintColor</item>
+        <item name="colorPrimaryInverse">@color/inversePrimaryColor</item>
 
         <item name="colorError">@color/errorColor</item>
         <item name="colorOnError">@color/errorTextColor</item>
 
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialAlertDialog</item>
-
-        <item name="android:windowBackground">@color/backgroundColor</item>
-        <item name="android:textColor">@color/backgroundTextColor</item>
 
         <item name="actionOverflowButtonStyle">@style/ActionButtonOverflow</item>
         <item name="android:actionOverflowButtonStyle">@style/ActionButtonOverflow</item>
@@ -37,7 +50,7 @@
 
     <style name="Widget.App.CollapsingToolbar" parent="Widget.Material3.CollapsingToolbar.Medium">
         <item name="collapsedTitleTextColor">@color/coloredBackgroundTextColor</item>
-        <item name="expandedTitleTextColor">@color/backgroundTextColor</item>
+        <item name="expandedTitleTextColor">@color/onBackgroundColor</item>
         <item name="android:background">@color/backgroundColor</item>
     </style>
 
@@ -47,14 +60,6 @@
     </style>
 
     <style name="ThemeOverlay.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered">
-        <item name="colorSecondary">@color/primaryTextColor</item>
-        <item name="colorControlNormal">@color/primaryColor</item>
-        <item name="buttonBarPositiveButtonStyle">@style/MaterialAlertDialog.Button</item>
-        <item name="buttonBarNeutralButtonStyle">@style/MaterialAlertDialog.Button</item>
         <item name="buttonBarNegativeButtonStyle">@style/MaterialAlertDialog.NegativeButton</item>
-    </style>
-
-    <style name="MaterialAlertDialog.Button" parent="Widget.Material3.Button.TextButton.Dialog.Icon">
-        <item name="android:textColor">@color/primaryTextColor</item>
     </style>
 </resources>

@@ -119,4 +119,26 @@
     <string name="no_stream">No Stream available</string>
 
     <string name="loading_series">Loading series information…</string>
+    
+    <string name="skip">Skip</string>
+    <string name="skip_throwback">Skip Throwback</string>
+    <string name="skip_intro">Skip Intro</string>
+    <string name="skip_outro">Skip Outro</string>
+
+    <string name="throwback">Throwback</string>
+    <string name="intro">Intro</string>
+    <string name="outro">Outro</string>
+
+    <string name="done">Done</string>
+
+    <string name="start_timestamp">Start Timestamp</string>
+    <string name="end_timestamp">End Timestamp</string>
+
+    <string name="hour">Hour</string>
+    <string name="minute">Minute</string>
+    <string name="second">Second</string>
+
+    <string name="edit_timestamps">Edit Timestamps</string>
+    <string name="too_low">Too low</string>
+    <string name="max_number">Max. Number: %d</string>
 </resources>

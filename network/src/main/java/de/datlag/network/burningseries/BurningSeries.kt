@@ -53,4 +53,7 @@ interface BurningSeries {
 	@Headers("Accept: ${Constants.MEDIATYPE_JSON}")
 	@POST("/bs/video/streams")
 	fun getStreams(@Body body: RequestBody): Flow<ApiResponse<List<Stream>>>
+
+	@PATCH("/bs/video")
+	fun patchStream(@Body body: RequestBody): Flow<ApiResponse<InsertStream>>
 }

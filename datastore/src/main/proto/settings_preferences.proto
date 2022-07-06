@@ -26,6 +26,7 @@ message SettingsPreferences {
   message Usage {
     int64 spentTime = 1;
     int32 saveAmount = 2;
+    float timeEditAmount = 3;
   }
   Usage usage = 4;
 }

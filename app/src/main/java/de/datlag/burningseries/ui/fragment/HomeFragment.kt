@@ -218,7 +218,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 
 	private fun listenAppUsage() = settingsViewModel.data.map { it.usage }.launchAndCollect {
 		if (it.spentTime >= Constants.WEEK_IN_SECONDS && !usageViewModel.showedDonate) {
-			if (it.saveAmount > 500 || Math.random() < 0.5) {
+			if (it.saveAmount > 500 || it.timeEditAmount > 500F || Math.random() < 0.5) {
 				usageViewModel.showedDonate = true
 			} else {
 				listenIsSponsoring()
@@ -248,7 +248,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 				setNegativeButtonIcon(R.drawable.ic_baseline_close_24)
 				builder {
 					setTitle(it.title)
-					setMessage(safeContext.getString(R.string.new_release_text, "[0-9.]+".toRegex().find(it.tagName)?.value, BuildConfig.VERSION_NAME))
+					setMessage(safeContext.getString(R.string.new_release_text, "[0-9.]+".toRegex().find(it.tagName)?.value ?: it.tagName, BuildConfig.VERSION_NAME))
 					setPositiveButton(R.string.view) { dialog, _ ->
 						dialog.dismiss()
 						if (installedFromFDroid) {

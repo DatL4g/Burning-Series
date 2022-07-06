@@ -23,7 +23,8 @@ class SettingsSerializer(isTelevision: Boolean, defaultDarkMode: Boolean) : Seri
             .setGithubAuth(String()))
         .setUsage(SettingsPreferences.Usage.newBuilder()
             .setSpentTime(0L)
-            .setSaveAmount(0))
+            .setSaveAmount(0)
+            .setTimeEditAmount(0F))
         .build()
 
     override suspend fun readFrom(input: InputStream): SettingsPreferences {

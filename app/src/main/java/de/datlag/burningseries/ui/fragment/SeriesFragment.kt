@@ -47,6 +47,7 @@ import de.datlag.model.burningseries.series.SeasonData
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
 import de.datlag.model.burningseries.stream.Stream
+import de.datlag.model.common.getBestConfig
 import de.datlag.network.anilist.MediaQuery
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
@@ -497,10 +498,13 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                     noStreamSourceDialog(episode.href, current)
                 } else {
                     if (it.size == 1) {
+                        val selected = it.first()
                         findNavController().safeNavigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(
-                            it.first(),
+                            selected,
                             current,
-                            episode
+                            episode,
+                            it.getBestConfig(selected),
+                            episode.getStreamHref(selected, list)
                         ))
                     } else {
                         var selection = 0
@@ -517,10 +521,13 @@ class SeriesFragment : AdvancedFragment(R.layout.fragment_series) {
                                 }
                                 setPositiveButton(R.string.watch) { dialog, _ ->
                                     dialog.dismiss()
+                                    val selected = it[selection]
                                     findNavController().safeNavigate(SeriesFragmentDirections.actionSeriesFragmentToVideoFragment(
-                                        it[selection],
+                                        selected,
                                         current,
-                                        episode
+                                        episode,
+                                        it.getBestConfig(selected),
+                                        episode.getStreamHref(selected, list)
                                     ))
                                 }
                                 setNegativeButton(R.string.cancel) { dialog, _ ->

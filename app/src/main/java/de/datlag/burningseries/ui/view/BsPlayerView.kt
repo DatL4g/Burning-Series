@@ -16,12 +16,16 @@ import com.google.android.exoplayer2.ui.StyledPlayerView
 import de.datlag.burningseries.R
 import de.datlag.burningseries.common.*
 import de.datlag.burningseries.databinding.ExoplayerControlsBinding
+import de.datlag.burningseries.ui.dialog.TimeEditDialog
 import de.datlag.coilifier.ImageLoader
 import de.datlag.coilifier.commons.load
+import de.datlag.model.burningseries.stream.StreamConfig
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 @Obfuscate
@@ -53,6 +57,32 @@ class BsPlayerView :
     private val lifecycleOwner: LifecycleOwner?
         get() = findViewTreeLifecycleOwner() ?: context.getLifecycleOwner()
 
+    lateinit var config: StreamConfig
+    var newConfig: StreamConfig? = null
+    private var saveConfigListener: (suspend (StreamConfig, Boolean) -> Boolean)? = null
+
+    private var resumeAfterTimeEditClose: Boolean = true
+    private val timeEditDialog = TimeEditDialog({ newConfig ->
+        this.newConfig = newConfig
+        if (newConfig.hashCode() != config.hashCode() && newConfig.isValidChanged()) {
+            this.newConfig?.combineToValid(config)?.let {
+                if(it.hashCode() != config.hashCode()) {
+                    getSafeScope().launch(Dispatchers.IO) {
+                        if (saveConfigListener?.invoke(it, it.isNewEntry(config)) == true) {
+                            config = it.newInstance()
+                        }
+                    }
+                }
+            }
+        }
+
+        if (resumeAfterTimeEditClose) {
+            player?.play()
+        }
+    }) {
+        player?.currentPosition
+    }
+
     init {
         initViews()
         setControllerVisibilityListener(this)
@@ -65,9 +95,11 @@ class BsPlayerView :
         if (context.packageManager.isTelevision()) {
             lockButton.gone()
             exoFullscreen.invisible()
+            timeButton.gone()
         } else {
             lockButton.visible()
             exoFullscreen.visible()
+            timeButton.visible()
         }
 
         backButton.setOnClickListener {
@@ -78,6 +110,14 @@ class BsPlayerView :
         }
         exoFullscreen.setOnClickListener {
             toggleFullscreenState()
+        }
+        timeButton.setOnClickListener {
+            if (timeEditDialog.creationRequired()) {
+                timeEditDialog.create(context, newConfig ?: config)
+            }
+            resumeAfterTimeEditClose = player?.isPlaying ?: true
+            player?.pause()
+            timeEditDialog.show(player?.duration ?: Long.MAX_VALUE)
         }
     }
 
@@ -128,6 +168,10 @@ class BsPlayerView :
 
     fun toggleLockState() {
         setLockState(!_isLocked.value)
+    }
+
+    fun setConfigSaveListener(listener: suspend (StreamConfig, Boolean) -> Boolean) {
+        saveConfigListener = listener
     }
 
     private fun listenLockState() = lifecycleOwner?.let {
@@ -183,11 +227,13 @@ class BsPlayerView :
             exoPlayPause.gone()
             exoFfwd.gone()
             exoRew.gone()
+            timeButton.gone()
             exoPlayPause.post { exoPlayPause.gone() }
             exoFullscreen.post { exoFullscreen.invisible() }
             backButton.post { backButton.gone() }
             exoFfwd.post { exoFfwd.gone() }
             exoRew.post { exoRew.gone() }
+            timeButton.post { timeButton.gone() }
         } else {
             lockButton.load<Drawable>(R.drawable.ic_baseline_lock_open_24) {
                 centerInside()
@@ -195,9 +241,13 @@ class BsPlayerView :
             if (!context.packageManager.isTelevision()) {
                 exoFullscreen.visible()
                 exoFullscreen.post { exoFullscreen.visible() }
+                timeButton.visible()
+                timeButton.post { timeButton.visible() }
             } else {
                 exoFullscreen.invisible()
                 exoFullscreen.post { exoFullscreen.invisible() }
+                timeButton.gone()
+                timeButton.post { timeButton.gone() }
             }
             backButton.visible()
             backButton.post { backButton.visible() }
@@ -218,6 +268,8 @@ class BsPlayerView :
         exoRew.isClickable = !toLocked
         exoProgress.isEnabled = !toLocked
         exoProgress.isClickable = !toLocked
+        timeButton.isEnabled = !toLocked
+        timeButton.isClickable = !toLocked
 
         exoFullscreen.post { exoFullscreen.isEnabled = !toLocked }
         backButton.post { backButton.isEnabled = !toLocked }
@@ -236,6 +288,10 @@ class BsPlayerView :
         exoProgress.post {
             exoProgress.isEnabled = !toLocked
             exoProgress.isClickable = !toLocked
+        }
+        timeButton.post {
+            timeButton.isEnabled = !toLocked
+            timeButton.isClickable = !toLocked
         }
     }
 
@@ -262,7 +318,9 @@ class BsPlayerView :
             SaveState(
                 state,
                 _isLocked.value,
-                isFullscreen.value
+                isFullscreen.value,
+                config,
+                newConfig
             )
         } catch (ignored: Exception) { state }
 
@@ -277,6 +335,8 @@ class BsPlayerView :
             _isLocked.forceEmit(save.isLocked, getSafeScope())
             isFullscreen.forceEmit(save.isFullscreen, getSafeScope())
             fullscreenRestored = true
+            config = save.streamConfig
+            newConfig = save.newStreamConfig
         }
     }
 
@@ -285,5 +345,7 @@ class BsPlayerView :
         val superSaveState: Parcelable?,
         val isLocked: Boolean,
         val isFullscreen: Boolean,
+        val streamConfig: StreamConfig,
+        val newStreamConfig: StreamConfig?
     ) : View.BaseSavedState(superSaveState), Parcelable
 }

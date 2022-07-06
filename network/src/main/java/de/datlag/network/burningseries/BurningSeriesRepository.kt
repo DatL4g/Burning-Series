@@ -438,4 +438,25 @@ class BurningSeriesRepository @Inject constructor(
 			service.getStreams(entries)
 		}))
 	}.flowOn(Dispatchers.IO)
+
+	fun patchStream(stream: ScrapeHoster): Flow<Boolean> = flow<Boolean> {
+		val entry = jsonBuilder.encodeToString(
+			stream
+		).toRequestBody(Constants.MEDIATYPE_JSON.toMediaType())
+		networkResource(fetchFromRemote = {
+			service.patchStream(entry)
+		}).collect {
+			when (it.status) {
+				Resource.Status.SUCCESS -> {
+					if ((it.data?.failed ?: 0) <= 0) {
+						emit(true)
+					} else {
+						false
+					}
+				}
+				is Resource.Status.ERROR -> emit(false)
+				else -> { }
+			}
+		}
+	}.flowOn(Dispatchers.IO)
 }

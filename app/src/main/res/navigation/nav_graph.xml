@@ -146,6 +146,12 @@
             app:destination="@id/videoFragment"
             app:popUpTo="@id/seriesFragment"
             app:popUpToInclusive="false" />
+        <argument
+            android:name="streamConfig"
+            app:argType="de.datlag.model.burningseries.stream.StreamConfig" />
+        <argument
+            android:name="href"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"

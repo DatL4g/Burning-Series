@@ -275,7 +275,7 @@ class SettingsFragment : AdvancedFragment(R.layout.fragment_settings) {
             binding.latestReleaseCard.visible()
             binding.date.text = release.publishedAtIsoDate()
             binding.text.text = safeContext.getString(
-                R.string.new_release_text, release.tagName,
+                R.string.new_release_text, "[0-9.]+".toRegex().find(release.tagName)?.value ?: release.tagName,
                 BuildConfig.VERSION_NAME
             )
             binding.viewButton.setOnClickListener {

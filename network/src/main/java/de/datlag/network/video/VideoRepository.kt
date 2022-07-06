@@ -43,7 +43,8 @@ class VideoRepository @Inject constructor(
                             it.url,
                             completeList.toList().map { Uri.parse(it).buildUpon().clearQuery().toString() }.sortedWith(compareByDescending {
                                 it.endsWith(if (preferMp4) ".mp4" else ".m3u8", true).toInt()
-                            })
+                            }),
+                            it.config
                         )
                     }
                 }

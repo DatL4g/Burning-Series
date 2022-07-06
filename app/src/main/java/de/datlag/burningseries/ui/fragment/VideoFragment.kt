@@ -41,6 +41,9 @@ import de.datlag.executor.Executor
 import de.datlag.executor.Schema
 import de.datlag.model.burningseries.series.EpisodeInfo
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
+import de.datlag.model.burningseries.stream.Stream
+import de.datlag.model.common.getBestConfig
+import de.datlag.model.video.ScrapeHoster
 import de.datlag.model.video.VideoStream
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
@@ -73,6 +76,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     private var episodeInfo: EpisodeInfo by lazyMutable { navArgs.episodeInfo }
 
     private var nextEpisodeInfo: EpisodeWithHoster? = null
+    private var nextEpisodePlainStreams: MutableSet<Stream> = mutableSetOf()
     private var nextEpisodeStreams: MutableSet<VideoStream> = mutableSetOf()
 
 
@@ -86,6 +90,8 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     lateinit var burningSeriesDao: BurningSeriesDao
 
     private var framePosStep: Long = 0L
+
+    private var showingSkipType: Int = -1
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -138,11 +144,137 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         player.setOnBackPressed {
             onBackPressed()
         }
+        player.setConfigSaveListener { saveConfig, isNewEntry ->
+            val saveStream = ScrapeHoster(navArgs.href, navArgs.videoStream.defaultUrl, saveConfig)
+            val success = burningSeriesViewModel.patchStream(saveStream).first()
+            if (success) {
+                settingsViewModel.increaseUsageTimeEditAmount(isNewEntry)
+            }
+            success
+        }
+
+        createStreamConfigListener()
 
         listenSettingsState()
         listenVideoSourceState()
         listenPositionState()
         listenPlayingState()
+    }
+
+    private fun createStreamConfigListener() = with(binding) {
+        player.config = navArgs.streamConfig
+        val throwBackStart = navArgs.streamConfig.throwback.start
+        val throwBackEnd = navArgs.streamConfig.throwback.end
+        val introStart = navArgs.streamConfig.intro.start
+        val introEnd = navArgs.streamConfig.intro.end
+        val outroStart = navArgs.streamConfig.outro.start
+        val outroEnd = navArgs.streamConfig.outro.end
+
+        if (throwBackStart != null && throwBackEnd != null) {
+            val throwBackStartMessage = exoPlayer.createMessage { _, _ ->
+                showSkip(0, throwBackEnd)
+            }
+            val throwBackEndMessage = exoPlayer.createMessage { _, _ ->
+                hideSkip(0)
+            }
+
+            throwBackStartMessage.setPosition(throwBackStart)
+                .setDeleteAfterDelivery(false)
+                .send()
+            throwBackEndMessage.setPosition(throwBackEnd)
+                .setDeleteAfterDelivery(false)
+                .send()
+        }
+
+        if (introStart != null && introEnd != null) {
+            val introStartMessage = exoPlayer.createMessage { _, _ ->
+                showSkip(1, introEnd)
+            }
+            val introEndMessage = exoPlayer.createMessage { _, _ ->
+                hideSkip(1)
+            }
+
+            introStartMessage.setPosition(introStart)
+                .setDeleteAfterDelivery(false)
+                .send()
+            introEndMessage.setPosition(introEnd)
+                .setDeleteAfterDelivery(false)
+                .send()
+        }
+
+        if (outroStart != null && outroEnd != null) {
+            val outroStartMessage = exoPlayer.createMessage { _, _ ->
+                showSkip(2, outroEnd)
+            }
+            val outroEndMessage = exoPlayer.createMessage { _, _ ->
+                hideSkip(2)
+            }
+
+            outroStartMessage.setPosition(outroStart)
+                .setDeleteAfterDelivery(false)
+                .send()
+            outroEndMessage.setPosition(outroEnd)
+                .setDeleteAfterDelivery(false)
+                .send()
+        }
+    }
+
+    private fun showSkip(type: Int, toPos: Long) = lifecycleScope.launch(Dispatchers.Main) {
+        with(binding) {
+            if (exoPlayer.currentPosition + 2000 < toPos) {
+                showingSkipType = type
+                skip.text = when (type) {
+                    0 -> safeContext.getString(R.string.skip_throwback)
+                    1 -> safeContext.getString(R.string.skip_intro)
+                    2 -> safeContext.getString(R.string.skip_outro)
+                    else -> safeContext.getString(R.string.skip)
+                }
+                skip.setOnClickListener {
+                    exoPlayer.seekTo(toPos)
+                }
+                skip.isEnabled = true
+                skip.isClickable = true
+                skip.visible()
+                skip.requestFocus()
+            }
+        }
+    }
+
+    private fun hideSkip(type: Int) = lifecycleScope.launch(Dispatchers.Main) {
+        if (showingSkipType == type) {
+            with(binding) {
+                skip.gone()
+                skip.setOnClickListener(null)
+                skip.isEnabled = false
+                skip.isClickable = false
+                player.requestFocus()
+            }
+        }
+    }
+
+    private fun checkPosition() {
+        val throwBackStart = navArgs.streamConfig.throwback.start
+        val throwBackEnd = navArgs.streamConfig.throwback.end
+        val introStart = navArgs.streamConfig.intro.start
+        val introEnd = navArgs.streamConfig.intro.end
+        val outroStart = navArgs.streamConfig.outro.start
+        val outroEnd = navArgs.streamConfig.outro.end
+
+        if (throwBackStart != null && throwBackEnd != null) {
+            if (exoPlayer.currentPosition in throwBackStart..throwBackEnd) {
+                showSkip(0, throwBackEnd)
+            }
+        }
+        if (introStart != null && introEnd != null) {
+            if (exoPlayer.currentPosition in introStart..introEnd) {
+                showSkip(1, introEnd)
+            }
+        }
+        if (outroStart != null && outroEnd != null) {
+            if (exoPlayer.currentPosition in outroStart..outroEnd) {
+                showSkip(2, outroEnd)
+            }
+        }
     }
 
     private fun listenSettingsState() = settingsViewModel.data.launchAndCollect {
@@ -170,6 +302,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         if (episodeInfo.currentWatchPos >= 3000L) {
             exoPlayer.seekTo(episodeInfo.currentWatchPos)
         }
+        checkPosition()
         episodeInfo.totalWatchPos = exoPlayer.duration
         withContext(Dispatchers.IO) {
             burningSeriesViewModel.updateEpisodeInfo(episodeInfo)
@@ -225,6 +358,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
 
     private fun listenPositionState() = positionState.launchAndCollect {
         exoPlayer.seekTo(it)
+        checkPosition()
     }
 
     private fun listenPlayingState() = playingState.launchAndCollect {
@@ -234,6 +368,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         } else {
             exoPlayer.pause()
         }
+        checkPosition()
     }
 
     private fun saveWatchedPosition() = lifecycleScope.launch(Dispatchers.IO) {
@@ -273,6 +408,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
                         burningSeriesViewModel.getStream(
                             nextEpisodeInfo?.hoster ?: nextEpisodeInfo?.episode?.hoster ?: listOf()
                         ).mapNotNull { it.data }.launchAndCollect { streams ->
+                            nextEpisodePlainStreams.addAll(streams)
                             nextEpisodeStreams.addAll(videoViewModel.getVideoSources(streams).first())
                         }
                     }
@@ -291,7 +427,13 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         super.onPlaybackStateChanged(playbackState)
         if (playbackState == Player.STATE_ENDED && nextEpisodeInfo != null && nextEpisodeStreams.isNotEmpty()) {
             val sameHosterOrFirst = nextEpisodeStreams.firstOrNull { it.hoster.equals(navArgs.videoStream.hoster, true) } ?: nextEpisodeStreams.first()
-            findNavController().safeNavigate(VideoFragmentDirections.actionVideoFragmentSelf(sameHosterOrFirst, navArgs.seriesWithInfo, nextEpisodeInfo!!.episode))
+            findNavController().safeNavigate(VideoFragmentDirections.actionVideoFragmentSelf(
+                sameHosterOrFirst,
+                navArgs.seriesWithInfo,
+                nextEpisodeInfo!!.episode,
+                nextEpisodeStreams.getBestConfig(sameHosterOrFirst),
+                nextEpisodeInfo!!.episode.getStreamHref(sameHosterOrFirst, nextEpisodePlainStreams)
+            ))
         }
     }
 

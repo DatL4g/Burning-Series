@@ -17,6 +17,7 @@ import de.datlag.model.burningseries.home.LatestSeries
 import de.datlag.model.burningseries.series.*
 import de.datlag.model.burningseries.series.relation.EpisodeWithHoster
 import de.datlag.model.burningseries.series.relation.SeriesWithInfo
+import de.datlag.model.video.ScrapeHoster
 import de.datlag.network.burningseries.BurningSeriesRepository
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.coroutines.Dispatchers
@@ -326,4 +327,6 @@ class BurningSeriesViewModel @Inject constructor(
 	fun getAllSeriesCountJoined() = repository.getAllSeriesCountJoined()
 
 	fun getSeriesCount() = repository.getSeriesCount()
+
+	fun patchStream(stream: ScrapeHoster) = repository.patchStream(stream)
 }

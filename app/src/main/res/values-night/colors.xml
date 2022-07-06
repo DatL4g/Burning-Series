@@ -1,10 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="coloredBackground">#191f28</color>
-    <color name="coloredBackgroundTextColor">@color/primaryTextColor</color>
+    <color name="primaryColor">#A0C9FF</color>
+    <color name="onPrimaryColor">#00325A</color>
+    <color name="primaryContainerColor">#00497F</color>
+    <color name="onPrimaryContainerColor">#D2E4FF</color>
+
+    <color name="secondaryColor">#BBC7DB</color>
+    <color name="onSecondaryColor">#253141</color>
+    <color name="secondaryContainerColor">#3C4858</color>
+    <color name="onSecondaryContainerColor">#D7E3F8</color>
 
     <color name="backgroundColor">#121212</color>
-    <color name="backgroundTextColor">#fafafa</color>
+    <color name="onBackgroundColor">#fafafa</color>
+
+    <color name="surfaceColor">#1A1C1E</color>
+    <color name="onSurfaceColor">#E3E2E6</color>
+    <color name="surfaceVariantColor">#43474E</color>
+    <color name="onSurfaceVariantColor">#C3C6CF</color>
+
+    <color name="outlineColor">#73777F</color>
+    <color name="inverseOnSurfaceColor">#F1F0F4</color>
+    <color name="inverseSurfaceColor">#2F3033</color>
+    <color name="inversePrimaryColor">#A0C9FF</color>
+    <color name="shadowColor">#000000</color>
+    <color name="surfaceTintColor">#0B61A4</color>
+
+
+    <color name="coloredBackground">#191f28</color>
+    <color name="coloredBackgroundTextColor">#fafafa</color>
 
     <color name="shimmerBaseColor">@color/coloredBackground</color>
     <color name="shimmerHighlightColor">#0f1318</color>

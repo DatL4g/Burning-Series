@@ -94,4 +94,10 @@ class SettingsViewModel @Inject constructor(
             it.toBuilder().setUsage(it.usage.toBuilder().setSaveAmount(it.usage.saveAmount + 1).build()).build()
         }
     }
+
+    fun increaseUsageTimeEditAmount(newEntry: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        dataStore.updateData {
+            it.toBuilder().setUsage(it.usage.toBuilder().setTimeEditAmount(it.usage.timeEditAmount + (if (newEntry) 1F else 0.5F)).build()).build()
+        }
+    }
 }

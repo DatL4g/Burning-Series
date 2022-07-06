@@ -26,7 +26,7 @@
             android:layout_margin="8dp"
             android:indeterminate="true"
             android:indeterminateOnly="true"
-            android:indeterminateTint="@color/backgroundTextColor" />
+            android:indeterminateTint="@color/onBackgroundColor" />
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"

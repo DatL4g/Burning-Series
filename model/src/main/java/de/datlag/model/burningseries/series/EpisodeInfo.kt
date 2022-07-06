@@ -3,6 +3,8 @@ package de.datlag.model.burningseries.series
 import android.os.Parcelable
 import androidx.room.*
 import de.datlag.model.burningseries.common.getDigitsOrNull
+import de.datlag.model.burningseries.stream.Stream
+import de.datlag.model.video.VideoStream
 import io.michaelrocks.paranoid.Obfuscate
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -75,4 +77,13 @@ data class EpisodeInfo(
 
     val episodeNumberOrListNumber: Int?
         get() = episodeNumber ?: number.toIntOrNull() ?: number.getDigitsOrNull()?.toIntOrNull()
+
+    fun getStreamHref(stream: VideoStream, list: Collection<Stream>): String {
+        return list.firstOrNull { it.hoster.equals(stream.hoster, true) }?.href
+            ?: list.firstOrNull { it.href.endsWith(stream.hoster, true) }?.href
+            ?: list.firstOrNull { it.href.endsWith("${stream.hoster}/", true) }?.href
+            ?: hoster.firstOrNull { it.href.endsWith(stream.hoster, true) }?.href
+            ?: hoster.firstOrNull { it.href.endsWith("${stream.hoster}/", true) }?.href
+            ?: if (href.endsWith('/')) "${href}${stream.hoster}" else "${href}/${stream.hoster}"
+    }
 }
