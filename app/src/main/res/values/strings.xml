@@ -106,7 +106,7 @@
     <string name="about">About</string>
     <string name="donate">Donate</string>
     <string name="sponsor_header">Sponsor the Project</string>
-    <string name="sponsor_text">Hey it looks like you like the app.\nYou can support me to keep the app running as the service is not free.\nEither you help with the programming or sponsor me for 1€ a month.</string>
+    <string name="sponsor_text">Hey it looks like you like the app.\nYou can support me to keep the app running as the service is not free.\nEither you help with the programming or sponsor me for 1€ a month.\nAnother thing you can do to get rid of this message is activating videos and adding their timestamps.</string>
     <string name="error_internet_connecton">Please check your internet connection.</string>
     <string name="error_bad_request">Server received malformed data.</string>
     <string name="error_server_error">Server could not process data.</string>

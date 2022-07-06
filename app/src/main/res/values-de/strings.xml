@@ -96,7 +96,7 @@
     <string name="about">Über</string>
     <string name="donate">Spenden</string>
     <string name="sponsor_header">Sponsor das Projekt</string>
-    <string name="sponsor_text">Hey es sieht so aus als würdest du die App mögen.\nDu kannst mich unterstützen um die App am laufen zu halten, da der Service nicht kostenlos ist.\nEntweder du hilfst mit beim Programmieren oder sponsorst mich für 1€ im Monat.</string>
+    <string name="sponsor_text">Hey es sieht so aus als würdest du die App mögen.\nDu kannst mich unterstützen um die App am laufen zu halten, da der Service nicht kostenlos ist.\nEntweder du hilfst mit beim Programmieren oder sponsorst mich für 1€ im Monat.\nAnsonsten kannst du diese Meldung auch loswerden indem du Videos aktivierst und deren Zeitstempel hinzufügst.</string>
     <string name="error_internet_connecton">Bitte überprüfe deine Internetverbindung.</string>
     <string name="error_bad_request">Server hat fehlerhafte Daten empfangen.</string>
     <string name="error_server_error">Server konnte Daten nicht verarbeiten.</string>

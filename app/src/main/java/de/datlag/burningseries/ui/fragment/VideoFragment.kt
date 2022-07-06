@@ -236,6 +236,9 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
                 skip.isClickable = true
                 skip.visible()
                 skip.requestFocus()
+                skip.post {
+                    skip.requestFocus()
+                }
             }
         }
     }
@@ -263,16 +266,22 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
         if (throwBackStart != null && throwBackEnd != null) {
             if (exoPlayer.currentPosition in throwBackStart..throwBackEnd) {
                 showSkip(0, throwBackEnd)
+            } else {
+                hideSkip(0)
             }
         }
         if (introStart != null && introEnd != null) {
             if (exoPlayer.currentPosition in introStart..introEnd) {
                 showSkip(1, introEnd)
+            } else {
+                hideSkip(1)
             }
         }
         if (outroStart != null && outroEnd != null) {
             if (exoPlayer.currentPosition in outroStart..outroEnd) {
                 showSkip(2, outroEnd)
+            } else {
+                hideSkip(2)
             }
         }
     }
@@ -442,7 +451,11 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             if (event.keyCode == KeyEvent.KEYCODE_BACK) {
                 null
             } else {
-                binding.player.dispatchKeyEvent(event)
+                if (binding.skip.hasFocus() && event.keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                    null
+                } else {
+                    binding.player.dispatchKeyEvent(event)
+                }
             }
         } else {
             null

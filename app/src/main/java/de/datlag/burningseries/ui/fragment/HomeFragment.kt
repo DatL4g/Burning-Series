@@ -218,7 +218,7 @@ class HomeFragment : AdvancedFragment(R.layout.fragment_home) {
 
 	private fun listenAppUsage() = settingsViewModel.data.map { it.usage }.launchAndCollect {
 		if (it.spentTime >= Constants.WEEK_IN_SECONDS && !usageViewModel.showedDonate) {
-			if (it.saveAmount > 500 || it.timeEditAmount > 500F || Math.random() < 0.5) {
+			if (it.saveAmount + it.timeEditAmount >= 500F || Math.random() < 0.5) {
 				usageViewModel.showedDonate = true
 			} else {
 				listenIsSponsoring()
