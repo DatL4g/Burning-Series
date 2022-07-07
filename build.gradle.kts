@@ -20,7 +20,7 @@ buildscript {
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.5.0")
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.42")
         classpath("org.jetbrains.kotlin:kotlin-serialization:1.6.21")
-        classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.18")
+        classpath("com.google.protobuf:protobuf-gradle-plugin:0.8.19")
         classpath("io.michaelrocks:paranoid-gradle-plugin:0.3.7")
         classpath("com.klaxit.hiddensecrets:HiddenSecretsPlugin:0.2.0")
         classpath("com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:10.3.1")

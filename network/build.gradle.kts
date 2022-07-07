@@ -57,7 +57,7 @@ dependencies {
         strictly("4.10.0")
     }
     implementation("javax.inject:javax.inject:1")
-    implementation("org.jsoup:jsoup:1.15.1")
+    implementation("org.jsoup:jsoup:1.15.2")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3")
