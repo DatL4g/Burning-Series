@@ -19,7 +19,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Execute Build
-        run: ./gradlew build && ./gradlew bundleRelease
+        run: ./gradlew assembleRelease && ./gradlew bundleRelease
 
       - name: Move APK file(s)
         run: mv ./app/build/outputs/apk/release/*.apk ./app/release/
