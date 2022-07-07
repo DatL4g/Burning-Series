@@ -156,6 +156,7 @@ dependencies {
     implementation("net.openid:appauth:0.11.1")
     implementation("io.github.florent37:shapeofview:1.4.7")
     implementation("com.github.skydoves:androidveil:1.1.2")
+    implementation("com.diogobernardino:williamchart:3.10.1")
 }
 
 protobuf.protobuf.run {

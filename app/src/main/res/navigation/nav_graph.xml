@@ -30,6 +30,10 @@
         <action
             android:id="@+id/action_homeFragment_to_about_libraries"
             app:destination="@id/about_libraries" />
+        <action
+            android:id="@+id/action_homeFragment_to_statisticsFragment"
+            app:destination="@id/statisticsFragment"
+            app:popUpTo="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/seriesFragment"
@@ -170,4 +174,9 @@
             android:name="seriesWithInfo"
             app:argType="de.datlag.model.burningseries.series.relation.SeriesWithInfo" />
     </fragment>
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="de.datlag.burningseries.ui.fragment.StatisticsFragment"
+        android:label="StatisticsFragment"
+        tools:layout="@layout/fragment_statistics"/>
 </navigation>

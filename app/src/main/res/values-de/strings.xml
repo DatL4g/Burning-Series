@@ -111,11 +111,11 @@
     <string name="loading_series">Lade Serien Information…</string>
 
     <string name="skip">Überspringen</string>
-    <string name="skip_throwback">Rückblick überspringen</string>
+    <string name="skip_recap">Rückblick überspringen</string>
     <string name="skip_intro">Intro überspringen</string>
     <string name="skip_outro">Outro überspringen</string>
 
-    <string name="throwback">Rückblick</string>
+    <string name="recap">Rückblick</string>
     <string name="intro">Intro</string>
     <string name="outro">Outro</string>
 
@@ -131,4 +131,9 @@
     <string name="edit_timestamps">Zeitpunkte bearbeiten</string>
     <string name="too_low">Zu niedrig</string>
     <string name="max_number">Max. Zahl: %d</string>
+
+    <string name="statistics">Statistiken</string>
+    <string name="points_progress">Punktefortschritt</string>
+    <string name="points_description">Nach einer Weile wirst du gefragt, ob du als Unterstützung spenden möchten.\nUm diese Nachricht nicht mehr zu erhalten, musst du entweder spenden, an dem Projekt mitarbeiten oder eine bestimmte Anzahl von Punkten sammeln.\n\nInsgesamt benötigst du 500.\n\nDu sammelst Punkte, indem du Videos aktivierst oder Zeitpunkte hinzufügst (Rückblick, Intro oder Outro).</string>
+    <string name="points_hint">Du kannst trotzdem weiterhin deine Serien schauen, auch wenn du die Punktzahl nicht erreicht hast.</string>
 </resources>

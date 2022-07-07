@@ -224,7 +224,7 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
             if (exoPlayer.currentPosition + 2000 < toPos) {
                 showingSkipType = type
                 skip.text = when (type) {
-                    0 -> safeContext.getString(R.string.skip_throwback)
+                    0 -> safeContext.getString(R.string.skip_recap)
                     1 -> safeContext.getString(R.string.skip_intro)
                     2 -> safeContext.getString(R.string.skip_outro)
                     else -> safeContext.getString(R.string.skip)

@@ -15,6 +15,7 @@
 
     <color name="backgroundColor">#fafafa</color>
     <color name="onBackgroundColor">#121212</color>
+    <color name="onBackgroundTransparentColor">#78121212</color>
 
     <color name="surfaceColor">#FDFCFF</color>
     <color name="onSurfaceColor">#1A1C1E</color>

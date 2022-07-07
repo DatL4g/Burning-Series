@@ -121,11 +121,11 @@
     <string name="loading_series">Loading series information…</string>
     
     <string name="skip">Skip</string>
-    <string name="skip_throwback">Skip Throwback</string>
+    <string name="skip_recap">Skip Recap</string>
     <string name="skip_intro">Skip Intro</string>
     <string name="skip_outro">Skip Outro</string>
 
-    <string name="throwback">Throwback</string>
+    <string name="recap">Recap</string>
     <string name="intro">Intro</string>
     <string name="outro">Outro</string>
 
@@ -141,4 +141,10 @@
     <string name="edit_timestamps">Edit Timestamps</string>
     <string name="too_low">Too low</string>
     <string name="max_number">Max. Number: %d</string>
+
+    <string name="statistics">Statistics</string>
+    <string name="points_progress">Points Progress</string>
+    <string name="points_description">After a while you will be asked if you would like to donate as support.\nTo stop getting this message, you either have to donate, work on the project, or collect a certain number of points.\n\nYou need a total of 500.\n\nYou collect points by activating videos or adding timestamps (recap, intro or outro).</string>
+    <string name="points_hint">You can still watch your series even if you don\'t reach the points</string>
+    <string name="points_out_of_500" translatable="false">%.1f/500</string>
 </resources>

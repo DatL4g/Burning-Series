@@ -9,6 +9,10 @@
         android:icon="@drawable/ic_baseline_settings_24"
         android:title="@string/settings"
         app:showAsAction="never" />
+    <item android:id="@+id/home_stats"
+        android:icon="@drawable/ic_baseline_pie_chart_24"
+        android:title="@string/statistics"
+        app:showAsAction="never" />
     <item android:id="@+id/home_about"
         android:icon="@drawable/ic_outline_info_24"
         android:title="@string/about"

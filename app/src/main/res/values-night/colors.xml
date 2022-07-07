@@ -12,6 +12,7 @@
 
     <color name="backgroundColor">#121212</color>
     <color name="onBackgroundColor">#fafafa</color>
+    <color name="onBackgroundTransparentColor">#78fafafa</color>
 
     <color name="surfaceColor">#1A1C1E</color>
     <color name="onSurfaceColor">#E3E2E6</color>
