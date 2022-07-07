@@ -19,7 +19,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Execute Build
-        run: ./gradlew build && ./gradlew bundleRelease
+        run: ./gradlew assembleRelease && ./gradlew bundleRelease
 
       - name: Move APK file(s)
         run: mv ./app/build/outputs/apk/release/*.apk ./app/release/
@@ -40,6 +40,7 @@ jobs:
           signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
           keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
           buildToolsVersion: 30.0.2
 
       - name: List signed files
