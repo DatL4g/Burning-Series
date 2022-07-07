@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Size
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.LinearLayout
@@ -256,4 +257,7 @@ abstract class AdvancedFragment : Fragment {
 
 	val materialToolbar: MaterialToolbar?
 		get() = toolbarInfo?.toolbar
+
+	val fabWrapper: ViewGroup?
+		get() = (safeActivity as? FABNavigation?)?.fabWrapper
 }

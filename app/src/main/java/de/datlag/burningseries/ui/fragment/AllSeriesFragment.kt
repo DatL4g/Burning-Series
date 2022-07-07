@@ -62,6 +62,7 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
     private fun collectPagination() = burningSeriesViewModel.allSeriesPagination.launchAndCollect {
         binding.allSeriesRecycler.gone()
         binding.loadingView.visible()
+        binding.scrollWrapper.setLayoutGravityCenter()
         burningSeriesViewModel.getNewPaginationData()
     }
 
@@ -69,14 +70,17 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         if (it.second.isEmpty() && burningSeriesViewModel.allSeriesCount.value == 0L) {
             binding.allSeriesRecycler.gone()
             binding.loadingView.visible()
+            binding.scrollWrapper.setLayoutGravityCenter()
         } else {
             if (it.first) {
                 binding.allSeriesRecycler.gone()
                 binding.loadingView.visible()
+                binding.scrollWrapper.setLayoutGravityCenter()
             }
             allSeriesRecyclerAdapter.submitList(it.second) {
                 binding.allSeriesRecycler.visible()
                 binding.loadingView.gone()
+                binding.scrollWrapper.setLayoutGravityNone()
                 binding.allSeriesRecycler.smoothScrollToPosition(0)
             }
         }
@@ -86,6 +90,7 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         if (it == 0L) {
             binding.allSeriesRecycler.gone()
             binding.loadingView.visible()
+            binding.scrollWrapper.setLayoutGravityCenter()
         }
     }
 
@@ -174,5 +179,6 @@ class AllSeriesFragment : AdvancedFragment(R.layout.fragment_all_series) {
         setToolbarTitle(R.string.all_series)
         appBarLayout?.setExpanded(false, false)
         appBarLayout?.setExpandable(false)
+        fabWrapper?.translationY = 0F
     }
 }

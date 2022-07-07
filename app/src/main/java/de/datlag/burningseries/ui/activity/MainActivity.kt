@@ -5,6 +5,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
@@ -154,5 +155,8 @@ class MainActivity : AdvancedActivity(), FABExtended, FABNavigation, ToolbarInfo
 
 	override val sizeHolder: View
 		get() = binding.collapsingSizeHolder
+
+	override val fabWrapper: ConstraintLayout
+		get() = binding.fabWrapper
 
 }
