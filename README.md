@@ -6,7 +6,9 @@
 [![Contributors](https://img.shields.io/github/contributors/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/graphs/contributors)
 [![License](https://img.shields.io/github/license/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/blob/master/LICENSE)
 [![Github all releases](https://img.shields.io/github/downloads/DATL4G/BurningSeries-Android/total.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/releases)
+
 [![CodeFactor](https://www.codefactor.io/repository/github/datl4g/burningseries-android/badge)](https://sonarcloud.io/project/overview?id=DATL4G_BurningSeries-Android)
+[![Release Status](https://github.com/DatL4g/BurningSeries-Android/actions/workflows/release.yml/badge.svg)](https://github.com/DATL4G/BurningSeries-Android/actions/workflows/release.yml)
 
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/kotlin-%230095D5.svg?style=for-the-badge&logo=kotlin&logoColor=white)
