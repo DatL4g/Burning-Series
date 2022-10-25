@@ -22,7 +22,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
+import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import dagger.hilt.android.AndroidEntryPoint
 import de.datlag.burningseries.R
@@ -32,6 +32,7 @@ import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.helper.lazyMutable
 import de.datlag.burningseries.ui.connector.BackPressedDispatcher
 import de.datlag.burningseries.ui.connector.KeyEventDispatcher
+import de.datlag.burningseries.ui.view.CustomControl
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.VideoViewModel
@@ -110,13 +111,16 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
     private fun initPlayer(): Unit = with(binding) {
         retriever = FFmpegMediaMetadataRetriever()
 
-        val extractorFactory = DefaultExtractorsFactory().setTsExtractorFlags(FLAG_DETECT_ACCESS_UNITS)
+        val extractorFactory = DefaultExtractorsFactory().setTsExtractorFlags(
+            FLAG_ALLOW_NON_IDR_KEYFRAMES and FLAG_DETECT_ACCESS_UNITS and FLAG_ENABLE_HDMV_DTS_AUDIO_STREAMS
+        )
         if (!::exoPlayer.isInitialized) {
             exoPlayer = ExoPlayer.Builder(safeContext).apply {
                 setSeekBackIncrementMs(10000)
                 setSeekForwardIncrementMs(10000)
                 setPauseAtEndOfMediaItems(true)
                 setMediaSourceFactory(DefaultMediaSourceFactory(safeContext, extractorFactory))
+                setLoadControl(CustomControl())
             }.build().apply {
                 addListener(this@VideoFragment)
                 playWhenReady = true
