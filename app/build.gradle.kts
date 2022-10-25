@@ -1,5 +1,3 @@
-import com.google.protobuf.gradle.protoc
-
 plugins {
     id("idea")
     id("com.android.application")
@@ -130,8 +128,8 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
 
-    implementation("com.google.dagger:hilt-android:2.42")
-    kapt("com.google.dagger:hilt-android-compiler:2.42")
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
     implementation("io.github.inflationx:viewpump:2.0.3")
@@ -140,10 +138,10 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
 
     implementation("com.github.bumptech.glide", "glide").version {
-        strictly("4.13.2")
+        strictly("4.14.2")
     }
     kapt("com.github.bumptech.glide", "compiler").version {
-        strictly("4.13.2")
+        strictly("4.14.2")
     }
     implementation("com.github.DatL4g:Coilifier-Android:1.2.2") {
         exclude("com.github.bumptech.glide", "glide")
@@ -159,8 +157,8 @@ dependencies {
     implementation("com.diogobernardino:williamchart:3.11.0")
 }
 
-protobuf.protobuf.run {
+protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.21.2"
+        artifact = "com.google.protobuf:protoc:3.21.8"
     }
 }
