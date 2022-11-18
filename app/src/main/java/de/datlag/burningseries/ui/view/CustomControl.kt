@@ -188,7 +188,7 @@ class CustomControl(
         const val DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS = 5000
 
         /** A default size in bytes for a video buffer.  */
-        const val DEFAULT_VIDEO_BUFFER_SIZE = 8000 * C.DEFAULT_BUFFER_SEGMENT_SIZE
+        const val DEFAULT_VIDEO_BUFFER_SIZE = 4096 * C.DEFAULT_BUFFER_SEGMENT_SIZE
 
         /** A default size in bytes for an audio buffer.  */
         const val DEFAULT_AUDIO_BUFFER_SIZE = 200 * C.DEFAULT_BUFFER_SEGMENT_SIZE

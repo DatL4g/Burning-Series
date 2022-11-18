@@ -53,6 +53,7 @@ class VideoScraper {
 
         JsUnpacker.unpack(doc.select("script").map { it.data().trim() }).forEach {
             srcList.addAll(regex.findAll(it).map { result -> result.value })
+            srcList.addAll(regexWithQueryParams.findAll(it).map { result -> result.value })
             if (it.contains("video", true)) {
                 val dllRegex = Regex(
                     "http(s?)://\\S+\\.(dll)",

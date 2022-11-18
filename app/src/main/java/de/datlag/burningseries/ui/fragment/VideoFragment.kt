@@ -32,7 +32,6 @@ import de.datlag.burningseries.extend.AdvancedFragment
 import de.datlag.burningseries.helper.lazyMutable
 import de.datlag.burningseries.ui.connector.BackPressedDispatcher
 import de.datlag.burningseries.ui.connector.KeyEventDispatcher
-import de.datlag.burningseries.ui.view.CustomControl
 import de.datlag.burningseries.viewmodel.BurningSeriesViewModel
 import de.datlag.burningseries.viewmodel.SettingsViewModel
 import de.datlag.burningseries.viewmodel.VideoViewModel
@@ -120,7 +119,6 @@ class VideoFragment : AdvancedFragment(R.layout.fragment_video), PreviewLoader, 
                 setSeekForwardIncrementMs(10000)
                 setPauseAtEndOfMediaItems(true)
                 setMediaSourceFactory(DefaultMediaSourceFactory(safeContext, extractorFactory))
-                setLoadControl(CustomControl())
             }.build().apply {
                 addListener(this@VideoFragment)
                 playWhenReady = true
