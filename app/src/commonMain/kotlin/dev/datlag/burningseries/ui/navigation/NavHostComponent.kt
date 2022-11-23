@@ -31,6 +31,7 @@ class NavHostComponent(
     ): Component {
         return when (screenConfig) {
             is ScreenConfig.Login -> LoginScreenComponent(componentContext, ::onLoginClicked)
+            else -> throw IllegalStateException("Wrong screen config")
         }
     }
 
@@ -51,10 +52,6 @@ class NavHostComponent(
         ) {
             it.instance.render()
         }
-    }
-
-    private sealed class ScreenConfig : Parcelable {
-        object Login : ScreenConfig()
     }
 
 }

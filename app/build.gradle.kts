@@ -2,7 +2,6 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("org.jetbrains.compose")
-
     id("com.android.application")
 }
 
@@ -32,6 +31,7 @@ kotlin {
         }
 
         val androidMain by getting {
+            apply(plugin = "kotlin-parcelize")
             dependencies {
                 implementation("androidx.appcompat:appcompat:1.5.1")
                 implementation("androidx.core:core-ktx:1.9.0")
