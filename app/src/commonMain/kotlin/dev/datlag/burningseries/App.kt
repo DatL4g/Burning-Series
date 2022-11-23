@@ -42,5 +42,3 @@ fun App(
 fun getSystemDarkMode(): Boolean {
     return true
 }
-
-expect inline fun <T: Any> runOnMainThreadBlocking(crossinline block: () -> T): T

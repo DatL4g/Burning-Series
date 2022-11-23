@@ -3,6 +3,7 @@ plugins {
     kotlin("plugin.serialization")
     id("org.jetbrains.compose")
     id("com.android.application")
+    id("kotlin-parcelize") apply false
 }
 
 val decompose = "1.0.0-beta-01"
