@@ -71,6 +71,7 @@ kotlin {
                 implementation("io.github.pdvrieze.xmlutil:serialization-jvm:0.84.3")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines")
                 implementation("com.sealwu:kscript-tools:1.0.21")
+                implementation("net.harawata:appdirs:1.2.1")
             }
         }
     }

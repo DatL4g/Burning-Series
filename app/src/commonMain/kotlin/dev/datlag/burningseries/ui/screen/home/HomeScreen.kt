@@ -70,7 +70,7 @@ fun HomeScreen(component: HomeComponent) {
                                 description = strings.githubRepository,
                                 scale = ContentScale.Inside,
                                 tint = MaterialTheme.colorScheme.onTertiary,
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(32.dp)
                             )
                         }
                         OverflowMenu {

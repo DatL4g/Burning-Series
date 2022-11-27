@@ -1,6 +1,8 @@
 package dev.datlag.burningseries.module
 
+import dev.datlag.burningseries.common.createWithParents
 import dev.datlag.burningseries.datastore.CryptoManager
+import net.harawata.appdirs.AppDirsFactory
 import org.kodein.di.*
 import java.io.File
 
@@ -14,13 +16,9 @@ actual object PlatformModule {
         }
 
         bindProvider("UserSettingsFile") {
-            val returnFile = File("/home/jeff/.config/BurningSeries/UserSettings.pb")
-            if (!returnFile.exists()) {
-                try {
-                    returnFile.parentFile.mkdirs()
-                } catch (ignored: Throwable) {}
-                returnFile.createNewFile()
-            }
+            val dirs = AppDirsFactory.getInstance()
+            val returnFile = File(dirs.getUserDataDir("BurningSeries", null, null), "UserSettings.pb")
+            returnFile.createWithParents()
             returnFile
         }
     }
