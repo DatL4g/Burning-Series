@@ -6,4 +6,6 @@ import com.arkivanov.essenty.parcelable.Parcelize
 @Parcelize
 sealed class ScreenConfig() : Parcelable {
     object Login : ScreenConfig()
+
+    object Home : ScreenConfig()
 }

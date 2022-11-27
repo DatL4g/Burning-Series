@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
@@ -6,7 +8,11 @@ plugins {
     id("kotlin-parcelize") apply false
 }
 
+val accompanist = "0.25.2"
+val coroutines = "1.6.4"
 val decompose = "1.0.0-beta-01"
+val kodein = "7.16.0"
+val ktor = "2.1.3"
 
 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
 kotlin {
@@ -28,6 +34,17 @@ kotlin {
 
                 api("com.arkivanov.decompose:decompose:$decompose")
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decompose")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines")
+                api("org.kodein.di:kodein-di:$kodein")
+                implementation("org.kodein.di:kodein-di-framework-compose:$kodein")
+                api("io.ktor:ktor-client-okhttp:$ktor")
+                api("io.ktor:ktor-client-content-negotiation:$ktor")
+                api("io.ktor:ktor-serialization-kotlinx-json:$ktor")
+                api("ca.gosyer:accompanist-pager:$accompanist")
+                api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0")
+
+                implementation(project(":network"))
+                implementation(project(":datastore"))
             }
         }
 
@@ -38,14 +55,22 @@ kotlin {
                 implementation("androidx.core:core-ktx:1.9.0")
                 implementation("androidx.activity:activity-ktx:1.6.1")
                 implementation("androidx.activity:activity-compose:1.6.1")
+                runtimeOnly("androidx.compose.material3:material3:1.0.1")
                 implementation("androidx.multidex:multidex:2.0.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines")
+                implementation("io.coil-kt:coil-compose:2.2.2")
+                implementation("io.coil-kt:coil-svg:2.2.2")
             }
         }
 
         val desktopMain by getting {
+            resources.srcDirs("src/desktopMain/resources", "src/commonMain/resources", "src/commonMain/assets")
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation("io.github.pdvrieze.xmlutil:core-jvm:0.84.3")
+                implementation("io.github.pdvrieze.xmlutil:serialization-jvm:0.84.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines")
+                implementation("com.sealwu:kscript-tools:1.0.21")
             }
         }
     }
@@ -54,6 +79,7 @@ kotlin {
 android {
     sourceSets["main"].setRoot("src/androidMain/")
     sourceSets["main"].res.srcDirs("src/androidMain/res", "src/commonMain/resources")
+    sourceSets["main"].assets.srcDirs("src/androidMain/assets", "src/commonMain/assets")
 
     compileSdk = Configuration.compileSdk
     buildToolsVersion = Configuration.buildTools
@@ -79,4 +105,8 @@ compose.desktop {
     application {
         mainClass = "dev.datlag.burningseries.MainKt"
     }
+}
+
+tasks.withType<Copy>().all {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

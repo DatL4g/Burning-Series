@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "dev.datlag.burningseries.datastore.preferences";
+option java_multiple_files = true;
+
+message UserSettings {
+  message BurningSeries {
+    string username = 1;
+    string password = 2;
+    int64 expiration = 3;
+    bool showedLogin = 4;
+  }
+  BurningSeries burningSeries = 1;
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login">Einloggen</string>
+    <string name="episodes">Episoden</string>
+    <string name="series_singular">Serie</string>
+    <string name="series_plural">Serien</string>
+    <string name="more">Mehr</string>
+    <string name="settings">Einstellungen</string>
+    <string name="show_password">Passwort anzeigen</string>
+    <string name="hide_password">Passwort verstecken</string>
+</resources>

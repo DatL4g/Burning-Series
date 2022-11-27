@@ -8,11 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
+import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.ui.theme.Colors
 import dev.datlag.burningseries.ui.theme.toLegacyColors
 import dev.datlag.burningseries.ui.theme.toLegacyShapes
+import dev.datlag.burningseries.other.StringRes
+import dev.datlag.burningseries.other.Resources
+import org.kodein.di.DI
 
 val LocalDarkMode = compositionLocalOf<Boolean> { error("No dark mode state provided") }
+val LocalResources = compositionLocalOf<Resources> { error("No resources state provided") }
+val LocalStringRes = compositionLocalOf<StringRes> { error("No StringRes state provided") }
 
 @Composable
 fun App(
@@ -39,6 +45,5 @@ fun App(
     }
 }
 
-fun getSystemDarkMode(): Boolean {
-    return true
-}
+@Composable
+expect fun getSystemDarkMode(): Boolean

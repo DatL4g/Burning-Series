@@ -23,7 +23,7 @@
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security"
         android:name=".App"
-        android:theme="@style/Theme.AppCompat"
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         android:banner="@mipmap/tv_banner"
 
         android:appCategory="video">

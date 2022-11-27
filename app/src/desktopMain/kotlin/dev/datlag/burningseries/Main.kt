@@ -1,28 +1,44 @@
 package dev.datlag.burningseries
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import dev.datlag.burningseries.module.DataStoreModule
+import dev.datlag.burningseries.module.NetworkModule
+import dev.datlag.burningseries.module.PlatformModule
+import dev.datlag.burningseries.other.Resources
+import dev.datlag.burningseries.other.StringRes
 import dev.datlag.burningseries.ui.navigation.NavHostComponent
+import org.kodein.di.DI
+import org.kodein.di.bind
+import org.kodein.di.singleton
 import javax.swing.SwingUtilities
 
 fun main() {
     val windowState = WindowState()
     val lifecycle = LifecycleRegistry()
-    val root = runOnMainThreadBlocking {
-        NavHostComponent(DefaultComponentContext(lifecycle))
+    val di = DI {
+        import(NetworkModule.di)
+        import(DataStoreModule.di)
     }
+
+    val root = NavHostComponent.create(DefaultComponentContext(lifecycle), di)
+    val resources = Resources()
+    val stringRes = StringRes.create(resources)
 
     singleWindowApplication(
         state = windowState,
-        title = "Burning-Series"
+        title = stringRes.appName
     ) {
         LifecycleController(lifecycle, windowState)
 
-        App {
-            root.render()
+        CompositionLocalProvider(LocalResources provides resources, LocalStringRes provides stringRes) {
+            App {
+                root.render()
+            }
         }
     }
 }
