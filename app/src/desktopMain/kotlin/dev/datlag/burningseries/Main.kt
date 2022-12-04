@@ -9,6 +9,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import dev.datlag.burningseries.module.DataStoreModule
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.module.PlatformModule
+import dev.datlag.burningseries.other.Orientation
 import dev.datlag.burningseries.other.Resources
 import dev.datlag.burningseries.other.StringRes
 import dev.datlag.burningseries.ui.navigation.NavHostComponent
@@ -35,7 +36,11 @@ fun main() {
     ) {
         LifecycleController(lifecycle, windowState)
 
-        CompositionLocalProvider(LocalResources provides resources, LocalStringRes provides stringRes) {
+        CompositionLocalProvider(
+            LocalResources provides resources,
+            LocalStringRes provides stringRes,
+            LocalOrientation provides Orientation.LANDSCAPE
+        ) {
             App {
                 root.render()
             }

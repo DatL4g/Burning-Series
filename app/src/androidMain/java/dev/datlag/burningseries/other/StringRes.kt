@@ -11,6 +11,9 @@ actual class StringRes(private val context: Context) {
     actual val appName: String
         get() = context.getString(R.string.app_name)
 
+    actual val allSeriesHeader: String
+        get() = context.getString(R.string.all_series_header)
+
     actual val login: String
         get() = context.getString(R.string.login)
 
@@ -37,6 +40,27 @@ actual class StringRes(private val context: Context) {
 
     actual val hidePassword: String
         get() = context.getString(R.string.hide_password)
+
+    actual val back: String
+        get() = context.getString(R.string.back)
+
+    actual val close: String
+        get() = context.getString(R.string.close)
+
+    actual val clear: String
+        get() = context.getString(R.string.clear)
+
+    actual val search: String
+        get() = context.getString(R.string.search)
+
+    actual val searchForSeries: String
+        get() = context.getString(R.string.search_for_series)
+
+    actual val nextGenre: String
+        get() = context.getString(R.string.next_genre)
+
+    actual val previousGenre: String
+        get() = context.getString(R.string.previous_genre)
 
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())

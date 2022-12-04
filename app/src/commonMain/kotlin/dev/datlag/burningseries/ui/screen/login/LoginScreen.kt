@@ -24,16 +24,23 @@ import kotlinx.coroutines.launch
 fun LoginScreen(component: LoginComponent) {
     val username by component.username.collectAsState(String())
     val password by component.password.collectAsState(String())
+    val isErroneous by component.isErroneous.collectAsState(false)
     var displayPassword by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
         textColor = MaterialTheme.colorScheme.primaryContainer,
+        cursorColor = MaterialTheme.colorScheme.primaryContainer,
         focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
         unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
         focusedTrailingIconColor = MaterialTheme.colorScheme.primaryContainer,
         unfocusedTrailingIconColor = MaterialTheme.colorScheme.primaryContainer,
         focusedLabelColor = MaterialTheme.colorScheme.primaryContainer,
-        unfocusedLabelColor = MaterialTheme.colorScheme.primaryContainer
+        unfocusedLabelColor = MaterialTheme.colorScheme.primaryContainer,
+        errorBorderColor = MaterialTheme.colorScheme.error,
+        errorCursorColor = MaterialTheme.colorScheme.error,
+        errorLabelColor = MaterialTheme.colorScheme.error,
+        errorLeadingIconColor = MaterialTheme.colorScheme.error,
+        errorTrailingIconColor = MaterialTheme.colorScheme.error
     )
 
     Surface(
@@ -57,7 +64,8 @@ fun LoginScreen(component: LoginComponent) {
                         component.username.emit(it)
                     }
                 },
-                colors = textFieldColors
+                colors = textFieldColors,
+                isError = isErroneous
             )
             Spacer(modifier = Modifier.padding(4.dp))
             OutlinedTextField(
@@ -82,7 +90,8 @@ fun LoginScreen(component: LoginComponent) {
                     }
                 },
                 visualTransformation = if (displayPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                colors = textFieldColors
+                colors = textFieldColors,
+                isError = isErroneous
             )
             Spacer(modifier = Modifier.padding(4.dp))
             Button(onClick = {

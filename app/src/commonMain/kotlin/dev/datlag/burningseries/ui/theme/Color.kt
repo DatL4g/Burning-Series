@@ -15,10 +15,14 @@ object Colors {
     private const val THEME_SECONDARY_CONTAINER = 0xFFB8EAFF
     private const val THEME_ON_SECONDARY_CONTAINER = 0xFF001F28
 
-    private const val THEME_TERTIARY = 0xFF2B5EA7
-    private const val THEME_ON_TERTIARY = 0xFFfafafa
-    private const val THEME_TERTIARY_CONTAINER = 0xFFD7E3FF
-    private const val THEME_ON_TERTIARY_CONTAINER = 0xFF001B3E
+    private const val THEME_LIGHT_TERTIARY = 0xFF2B5EA7
+    private const val THEME_DARK_TERTIARY = 0xFF2c2c2c
+    private const val THEME_LIGHT_ON_TERTIARY = 0xFFfafafa
+    private const val THEME_DARK_ON_TERTIARY = 0xFFfafafa
+    private const val THEME_LIGHT_TERTIARY_CONTAINER = 0xFFD7E3FF
+    private const val THEME_DARK_TERTIARY_CONTAINER = 0xFF555555
+    private const val THEME_LIGHT_ON_TERTIARY_CONTAINER = 0xFF001B3E
+    private const val THEME_DARK_ON_TERTIARY_CONTAINER = 0xFFfafafa
 
     private const val THEME_ERROR = 0xFFdb3236
     private const val THEME_ON_ERROR = 0xFFfafafa
@@ -58,10 +62,10 @@ object Colors {
         secondaryContainer = Color(THEME_SECONDARY_CONTAINER),
         onSecondaryContainer = Color(THEME_ON_SECONDARY_CONTAINER),
 
-        tertiary = Color(THEME_TERTIARY),
-        onTertiary = Color(THEME_ON_TERTIARY),
-        tertiaryContainer = Color(THEME_TERTIARY_CONTAINER),
-        onTertiaryContainer = Color(THEME_ON_TERTIARY_CONTAINER),
+        tertiary = Color(THEME_DARK_TERTIARY),
+        onTertiary = Color(THEME_DARK_ON_TERTIARY),
+        tertiaryContainer = Color(THEME_DARK_TERTIARY_CONTAINER),
+        onTertiaryContainer = Color(THEME_DARK_ON_TERTIARY_CONTAINER),
 
         error = Color(THEME_ERROR),
         errorContainer = Color(THEME_ERROR_CONTAINER),
@@ -93,10 +97,10 @@ object Colors {
         secondaryContainer = Color(THEME_SECONDARY_CONTAINER),
         onSecondaryContainer = Color(THEME_ON_SECONDARY_CONTAINER),
 
-        tertiary = Color(THEME_TERTIARY),
-        onTertiary = Color(THEME_ON_TERTIARY),
-        tertiaryContainer = Color(THEME_TERTIARY_CONTAINER),
-        onTertiaryContainer = Color(THEME_ON_TERTIARY_CONTAINER),
+        tertiary = Color(THEME_LIGHT_TERTIARY),
+        onTertiary = Color(THEME_LIGHT_ON_TERTIARY),
+        tertiaryContainer = Color(THEME_LIGHT_TERTIARY_CONTAINER),
+        onTertiaryContainer = Color(THEME_LIGHT_ON_TERTIARY_CONTAINER),
 
         error = Color(THEME_ERROR),
         errorContainer = Color(THEME_ERROR_CONTAINER),

@@ -2,6 +2,7 @@ package dev.datlag.burningseries.datastore
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.util.Log
 import java.io.InputStream
 import java.io.OutputStream
 import java.security.KeyStore
@@ -18,6 +19,7 @@ actual class CryptoManager {
 
     private val encryptCipher: Cipher
         get() = Cipher.getInstance(TRANSFORMATION).apply {
+            Log.e("IV", (iv == null).toString())
             init(Cipher.DECRYPT_MODE, getKey(), IvParameterSpec(iv))
         }
 
@@ -28,7 +30,7 @@ actual class CryptoManager {
     }
 
     private fun getKey(): SecretKey {
-        val existingKey = keyStore.getEntry("secret", null) as? KeyStore.SecretKeyEntry?
+        val existingKey = keyStore.getEntry("BurningSeriesSecret", null) as? KeyStore.SecretKeyEntry?
         return existingKey?.secretKey ?: createKey()
     }
 
@@ -49,6 +51,10 @@ actual class CryptoManager {
     }
 
     actual fun encrypt(bytes: ByteArray, outputStream: OutputStream): ByteArray {
+        outputStream.write(bytes)
+        return bytes
+
+        // crypto not working
         val encryptedBytes = encryptCipher.doFinal(bytes)
         outputStream.use {
             it.write(encryptCipher.iv.size)
@@ -60,6 +66,9 @@ actual class CryptoManager {
     }
 
     actual fun decrypt(inputStream: InputStream): ByteArray {
+        return inputStream.readBytes()
+
+        //crypto not working
         return inputStream.use {
             val ivSize = it.read()
             val iv = ByteArray(ivSize)

@@ -10,4 +10,12 @@
     <string name="settings">Settings</string>
     <string name="show_password">Show Password</string>
     <string name="hide_password">Hide Password</string>
+    <string name="back">Back</string>
+    <string name="close">Close</string>
+    <string name="clear">Clear</string>
+    <string name="search">Search</string>
+    <string name="search_for_series">Search for series</string>
+    <string name="all_series_header">All Series</string>
+    <string name="next_genre">Next Genre</string>
+    <string name="previous_genre">Previous Genre</string>
 </resources>

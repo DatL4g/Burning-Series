@@ -14,7 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.datlag.burningseries.network.model.Home
+import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.ui.custom.CoverImage
 
 @OptIn(ExperimentalMaterial3Api::class)

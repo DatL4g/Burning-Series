@@ -7,8 +7,11 @@ message UserSettings {
   message BurningSeries {
     string username = 1;
     string password = 2;
-    int64 expiration = 3;
-    bool showedLogin = 4;
+    string cookieName = 3;
+    string cookieValue = 4;
+    int64 cookieExpiration = 5;
+    int64 cookieMaxAge = 6;
+    bool showedLogin = 7;
   }
   BurningSeries burningSeries = 1;
 }

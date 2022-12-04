@@ -11,7 +11,8 @@ val ktorfit = "1.0.0-beta16"
 
 dependencies {
     implementation("io.github.hadiyarajesh.flower-core:flower:$flower")
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation(project(":datastore"))
+    implementation(project(":model"))
 
     api("de.jensklingenberg.ktorfit:ktorfit-lib:$ktorfit")
     ksp("de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfit")

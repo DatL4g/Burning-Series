@@ -8,4 +8,12 @@
     <string name="settings">Einstellungen</string>
     <string name="show_password">Passwort anzeigen</string>
     <string name="hide_password">Passwort verstecken</string>
+    <string name="back">Zurück</string>
+    <string name="close">Schließen</string>
+    <string name="clear">Leeren</string>
+    <string name="search">Suchen</string>
+    <string name="search_for_series">Suche nach Serien</string>
+    <string name="all_series_header">Alle Serien</string>
+    <string name="next_genre">Nächstes Genre</string>
+    <string name="previous_genre">Vorheriges Genre</string>
 </resources>

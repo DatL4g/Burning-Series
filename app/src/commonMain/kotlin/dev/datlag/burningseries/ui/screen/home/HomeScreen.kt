@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.ui.screen.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
@@ -8,16 +9,15 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.datastore.core.DataStore
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.fade
@@ -25,7 +25,6 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stac
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalResources
 import dev.datlag.burningseries.LocalStringRes
-import dev.datlag.burningseries.datastore.preferences.UserSettings
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.Resources
 import dev.datlag.burningseries.ui.custom.OverflowMenu
@@ -33,8 +32,6 @@ import dev.datlag.burningseries.ui.custom.DropdownMenuItem
 import dev.datlag.burningseries.ui.dialog.example.ExampleDialog
 import dev.datlag.burningseries.ui.custom.RoundTabs
 import dev.datlag.burningseries.ui.custom.SVGImage
-import org.kodein.di.compose.withDI
-import org.kodein.di.instance
 import java.io.InputStream
 
 @OptIn(ExperimentalDecomposeApi::class)
@@ -73,7 +70,7 @@ fun HomeScreen(component: HomeComponent) {
                                 modifier = Modifier.size(32.dp)
                             )
                         }
-                        OverflowMenu {
+                        OverflowMenu(MaterialTheme.colorScheme.onTertiary) {
                             DropdownMenuItem(onClick = {
 
                             }, enabled = false, text = {
@@ -90,8 +87,19 @@ fun HomeScreen(component: HomeComponent) {
                     },
                     backgroundColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = MaterialTheme.colorScheme.onTertiary,
+                    elevation = 0.dp
                 )
                 RoundTabs(listOf(strings.episodes, strings.seriesPlural), component.childIndex)
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                component.onSearchClicked()
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null
+                )
             }
         },
         scaffoldState = scaffoldState

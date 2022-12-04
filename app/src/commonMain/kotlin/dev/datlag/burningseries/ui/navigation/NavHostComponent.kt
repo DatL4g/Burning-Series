@@ -13,18 +13,15 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
-import dev.datlag.burningseries.common.expiration
 import dev.datlag.burningseries.common.getValueBlocking
-import dev.datlag.burningseries.common.showedLogin
+import dev.datlag.burningseries.datastore.common.showedLogin
 import dev.datlag.burningseries.datastore.preferences.UserSettings
-import dev.datlag.burningseries.module.DataStoreModule
-import dev.datlag.burningseries.module.PlatformModule
-import dev.datlag.burningseries.module.NetworkModule
+import dev.datlag.burningseries.model.Cover
+import dev.datlag.burningseries.model.SeriesInitialInfo
+import dev.datlag.burningseries.ui.screen.genre.GenreScreenComponent
 import dev.datlag.burningseries.ui.screen.home.HomeScreenComponent
 import dev.datlag.burningseries.ui.screen.login.LoginScreenComponent
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.runBlocking
+import dev.datlag.burningseries.ui.screen.series.SeriesScreenComponent
 import org.kodein.di.*
 
 class NavHostComponent private constructor(
@@ -52,10 +49,31 @@ class NavHostComponent private constructor(
         screenConfig: ScreenConfig,
         componentContext: ComponentContext
     ): Component {
+        val homeConfig by lazy(LazyThreadSafetyMode.NONE) {
+            HomeScreenComponent(
+                componentContext,
+                ::onSearchClicked,
+                ::onSeriesClicked,
+                di
+            )
+        }
         return when (screenConfig) {
             is ScreenConfig.Login -> LoginScreenComponent(componentContext, ::onLoginClicked, di)
-            is ScreenConfig.Home -> HomeScreenComponent(componentContext, di)
-            else -> HomeScreenComponent(componentContext, di)
+            is ScreenConfig.Home -> homeConfig
+            is ScreenConfig.Genre -> GenreScreenComponent(
+                componentContext,
+                ::onGoBackClicked,
+                ::onSeriesClicked,
+                di
+            )
+            is ScreenConfig.Series -> SeriesScreenComponent(
+                componentContext,
+                screenConfig.href,
+                screenConfig.initialInfo,
+                ::onGoBackClicked,
+                di
+            )
+            else -> homeConfig
         }
     }
 
@@ -67,12 +85,23 @@ class NavHostComponent private constructor(
         navigation.push(ScreenConfig.Home)
     }
 
+    private fun onSearchClicked() {
+        navigation.push(ScreenConfig.Genre)
+    }
+
+    private fun onSeriesClicked(
+        href: String,
+        initialInfo: SeriesInitialInfo
+    ) {
+        navigation.push(ScreenConfig.Series(href, initialInfo))
+    }
+
     @OptIn(ExperimentalDecomposeApi::class)
     @Composable
     override fun render() {
         Children(
             stack = stack,
-            animation = stackAnimation(fade() + scale())
+            animation = stackAnimation(fade())
         ) {
             it.instance.render()
         }

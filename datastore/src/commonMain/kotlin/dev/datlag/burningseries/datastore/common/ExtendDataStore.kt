@@ -1,4 +1,4 @@
-package dev.datlag.burningseries.common
+package dev.datlag.burningseries.datastore.common
 
 import androidx.datastore.core.DataStore
 import dev.datlag.burningseries.datastore.preferences.UserSettings
@@ -11,8 +11,8 @@ val DataStore<UserSettings>.username: Flow<String>
 val DataStore<UserSettings>.password: Flow<String>
     get() = this.data.map { it.burningSeries.password }
 
-val DataStore<UserSettings>.expiration: Flow<Long>
-    get() = this.data.map { it.burningSeries.expiration }
+val DataStore<UserSettings>.cookieExpiration: Flow<Long>
+    get() = this.data.map { it.burningSeries.cookieExpiration }
 
 val DataStore<UserSettings>.showedLogin: Flow<Boolean>
     get() = this.data.map { it.burningSeries.showedLogin }
@@ -20,7 +20,10 @@ val DataStore<UserSettings>.showedLogin: Flow<Boolean>
 suspend fun DataStore<UserSettings>.updateBSAccount(
     username: String? = null,
     password: String? = null,
-    expiration: Long? = null,
+    cookieName: String? = null,
+    cookieValue: String? = null,
+    cookieMaxAge: Long? = null,
+    cookieExpiration: Long? = null,
     showedLogin: Boolean? = null
 ): UserSettings {
     return this.updateData {
@@ -29,8 +32,14 @@ suspend fun DataStore<UserSettings>.updateBSAccount(
                 username ?: it.burningSeries.username
             ).setPassword(
                 password ?: it.burningSeries.password
-            ).setExpiration(
-                expiration ?: it.burningSeries.expiration
+            ).setCookieName(
+                cookieName ?: it.burningSeries.cookieName
+            ).setCookieValue(
+                cookieValue ?: it.burningSeries.cookieValue
+            ).setCookieMaxAge(
+                cookieMaxAge ?: it.burningSeries.cookieMaxAge
+            ).setCookieExpiration(
+                cookieExpiration ?: it.burningSeries.cookieExpiration
             ).setShowedLogin(
                 showedLogin ?: it.burningSeries.showedLogin
             ).build()

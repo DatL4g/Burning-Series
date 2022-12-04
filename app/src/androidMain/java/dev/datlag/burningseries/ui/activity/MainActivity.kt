@@ -1,16 +1,20 @@
 package dev.datlag.burningseries.ui.activity
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalConfiguration
 import com.arkivanov.decompose.defaultComponentContext
 import dev.datlag.burningseries.App
+import dev.datlag.burningseries.LocalOrientation
 import dev.datlag.burningseries.LocalResources
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.module.DataStoreModule
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.module.PlatformModule
+import dev.datlag.burningseries.other.Orientation
 import dev.datlag.burningseries.other.Resources
 import dev.datlag.burningseries.other.StringRes
 import dev.datlag.burningseries.ui.navigation.NavHostComponent
@@ -36,7 +40,17 @@ class MainActivity : AppCompatActivity() {
         val stringRes = StringRes(this)
 
         setContent {
-            CompositionLocalProvider(LocalResources provides resources, LocalStringRes provides stringRes) {
+            val configuration = LocalConfiguration.current
+            val orientation = when (configuration.orientation) {
+                Configuration.ORIENTATION_LANDSCAPE -> Orientation.LANDSCAPE
+                else -> Orientation.PORTRAIT
+            }
+
+            CompositionLocalProvider(
+                LocalResources provides resources,
+                LocalStringRes provides stringRes,
+                LocalOrientation provides orientation
+            ) {
                 App {
                     root.render()
                 }

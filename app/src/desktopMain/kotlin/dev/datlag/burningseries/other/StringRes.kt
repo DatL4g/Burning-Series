@@ -15,6 +15,9 @@ actual class StringRes private constructor(
     actual val appName: String
         get() = getLocaleOrDefaultFor("app_name")
 
+    actual val allSeriesHeader: String
+        get() = getLocaleOrDefaultFor("all_series_header")
+
     actual val login: String
         get() = getLocaleOrDefaultFor("login")
 
@@ -41,6 +44,27 @@ actual class StringRes private constructor(
 
     actual val hidePassword: String
         get() = getLocaleOrDefaultFor("hide_password")
+
+    actual val back: String
+        get() = getLocaleOrDefaultFor("back")
+
+    actual val close: String
+        get() = getLocaleOrDefaultFor("close")
+
+    actual val clear: String
+        get() = getLocaleOrDefaultFor("clear")
+
+    actual val search: String
+        get() = getLocaleOrDefaultFor("search")
+
+    actual val searchForSeries: String
+        get() = getLocaleOrDefaultFor("search_for_series")
+
+    actual val nextGenre: String
+        get() = getLocaleOrDefaultFor("next_genre")
+
+    actual val previousGenre: String
+        get() = getLocaleOrDefaultFor("previous_genre")
 
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }

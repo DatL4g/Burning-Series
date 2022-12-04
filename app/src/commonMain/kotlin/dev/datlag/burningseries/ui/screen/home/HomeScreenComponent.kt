@@ -11,6 +11,7 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import dev.datlag.burningseries.common.coroutineScope
 import dev.datlag.burningseries.common.CommonDispatcher
+import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.ui.dialog.DialogComponent
 import dev.datlag.burningseries.ui.dialog.example.ExampleDialogComponent
 import dev.datlag.burningseries.ui.navigation.Component
@@ -22,6 +23,8 @@ import org.kodein.di.DIAware
 
 class HomeScreenComponent(
     componentContext: ComponentContext,
+    private val onSearch: () -> Unit,
+    override val onSeriesClicked: (String, SeriesInitialInfo) -> Unit,
     override val di: DI
 ) : HomeComponent, ComponentContext by componentContext {
 
@@ -61,7 +64,11 @@ class HomeScreenComponent(
     private fun createChild(view: View, componentContext: ComponentContext): Component {
         return when (view) {
             is View.Episode -> EpisodesViewComponent(componentContext, di)
-            is View.Series -> SeriesViewComponent(componentContext, di)
+            is View.Series -> SeriesViewComponent(
+                componentContext,
+                onSeriesClicked,
+                di
+            )
         }
     }
 
@@ -72,6 +79,10 @@ class HomeScreenComponent(
 
     override fun showDialog(message: String) {
         dialogNavigation.activate(DialogConfig(message = message))
+    }
+
+    override fun onSearchClicked() {
+        onSearch()
     }
 
     @Parcelize

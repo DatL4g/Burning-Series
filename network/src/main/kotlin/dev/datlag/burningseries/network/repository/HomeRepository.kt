@@ -2,19 +2,18 @@ package dev.datlag.burningseries.network.repository
 
 import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.networkResource
+import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.network.BurningSeries
-import dev.datlag.burningseries.network.model.Home
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.*
 
 class HomeRepository(
     private val api: BurningSeries
 ) {
     private val home: Flow<Resource<Home>> = networkResource(
         makeNetworkRequest = { api.home() }
-    ).flowOn(Dispatchers.IO)
+    ).flowOn(Dispatchers.IO).stateIn(GlobalScope, SharingStarted.Lazily, Resource.loading())
 
     private val _status = home.transform {
         return@transform emit(it.status)

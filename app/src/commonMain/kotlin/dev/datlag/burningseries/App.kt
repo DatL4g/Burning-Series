@@ -9,6 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import dev.datlag.burningseries.module.NetworkModule
+import dev.datlag.burningseries.other.Orientation
 import dev.datlag.burningseries.ui.theme.Colors
 import dev.datlag.burningseries.ui.theme.toLegacyColors
 import dev.datlag.burningseries.ui.theme.toLegacyShapes
@@ -19,6 +20,7 @@ import org.kodein.di.DI
 val LocalDarkMode = compositionLocalOf<Boolean> { error("No dark mode state provided") }
 val LocalResources = compositionLocalOf<Resources> { error("No resources state provided") }
 val LocalStringRes = compositionLocalOf<StringRes> { error("No StringRes state provided") }
+val LocalOrientation = compositionLocalOf<Orientation> { error("No Orientation state provided") }
 
 @Composable
 fun App(
