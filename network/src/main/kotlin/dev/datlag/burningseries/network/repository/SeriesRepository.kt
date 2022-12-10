@@ -13,7 +13,7 @@ class SeriesRepository(
     private val api: BurningSeries
 ) {
     private val seriesHref: MutableStateFlow<String?> = MutableStateFlow(null)
-    private val _series: Flow<Resource<Series>> = seriesHref.transformLatest {
+    private val _series: Flow<Resource<Series>> = seriesHref.debounce(500).transformLatest {
         if (it != null) {
             return@transformLatest emitAll(networkResource(
                 makeNetworkRequest = {
@@ -54,7 +54,6 @@ class SeriesRepository(
     }.flowOn(Dispatchers.IO)
 
     suspend fun loadFromHref(href: String) {
-        println("Emit")
         seriesHref.emit(href)
     }
 

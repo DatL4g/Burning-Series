@@ -9,17 +9,14 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.observe
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import dev.datlag.burningseries.common.coroutineScope
-import dev.datlag.burningseries.common.CommonDispatcher
 import dev.datlag.burningseries.model.SeriesInitialInfo
-import dev.datlag.burningseries.ui.dialog.DialogComponent
-import dev.datlag.burningseries.ui.dialog.example.ExampleDialogComponent
 import dev.datlag.burningseries.ui.navigation.Component
 import dev.datlag.burningseries.ui.screen.home.episode.EpisodesViewComponent
 import dev.datlag.burningseries.ui.screen.home.series.SeriesViewComponent
 import kotlinx.coroutines.SupervisorJob
 import org.kodein.di.DI
 import org.kodein.di.DIAware
+import java.io.InputStream
 
 class HomeScreenComponent(
     componentContext: ComponentContext,
@@ -29,27 +26,25 @@ class HomeScreenComponent(
 ) : HomeComponent, ComponentContext by componentContext {
 
     private val dialogNavigation = OverlayNavigation<DialogConfig>()
-    private val _dialog = childOverlay(
-        source = dialogNavigation,
-        handleBackButton = true
-    ) { config, componentContext ->
-        ExampleDialogComponent(
-            componentContext = componentContext,
-            message = config.message,
-            onDismissed = dialogNavigation::dismiss
-        )
-    }
-    override val dialog: Value<ChildOverlay<*, DialogComponent>> = _dialog
 
     private val navigation = StackNavigation<View>()
-    private val _childStack = childStack(
-        source = navigation,
-        initialConfiguration = View.Episode,
-        handleBackButton = true,
-        childFactory = ::createChild
-    )
-    override val childStack: Value<ChildStack<*, Component>> = _childStack
+    private val _childStack = lazy {
+        childStack(
+            source = navigation,
+            initialConfiguration = View.Episode,
+            handleBackButton = true,
+            childFactory = ::createChild
+        )
+    }
+    override val childStack: Lazy<Value<ChildStack<View, Component>>> = _childStack
     override val childIndex: MutableValue<Int> = MutableValue(0)
+
+    override val pagerList = lazy(LazyThreadSafetyMode.NONE) {
+        listOf<Component>(
+            EpisodesViewComponent(componentContext, di),
+            SeriesViewComponent(componentContext, onSeriesClicked, di)
+        )
+    }
 
     init {
         childIndex.observe(lifecycle) {
@@ -77,10 +72,6 @@ class HomeScreenComponent(
         HomeScreen(this)
     }
 
-    override fun showDialog(message: String) {
-        dialogNavigation.activate(DialogConfig(message = message))
-    }
-
     override fun onSearchClicked() {
         onSearch()
     }
@@ -91,7 +82,7 @@ class HomeScreenComponent(
     ): Parcelable
 
     @Parcelize
-    private sealed class View : Parcelable {
+    sealed class View : Parcelable {
         object Episode : View()
         object Series : View()
     }

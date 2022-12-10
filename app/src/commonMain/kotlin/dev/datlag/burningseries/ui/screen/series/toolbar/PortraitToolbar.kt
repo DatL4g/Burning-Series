@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.ui.screen.series.toolbar
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -11,35 +12,36 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.SemiBlack
+import dev.datlag.burningseries.model.Cover
+import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.other.DefaultValue
 import dev.datlag.burningseries.ui.custom.ArcShape
 import dev.datlag.burningseries.ui.custom.CoverImage
 import dev.datlag.burningseries.ui.custom.collapsingtoolbar.DefaultCollapsingToolbar
 import dev.datlag.burningseries.ui.custom.collapsingtoolbar.rememberCollapsingToolbarScaffoldState
 import dev.datlag.burningseries.ui.screen.series.SeriesComponent
+import dev.datlag.burningseries.ui.screen.series.SeriesLanguageSeasonButtons
 import kotlin.math.abs
+import dev.datlag.burningseries.ui.Shape
 
 @Composable
 fun PortraitToolbar(
     component: SeriesComponent,
+    title: String,
+    cover: Cover?,
+    languages: List<Series.Language>?,
+    seasons: List<Series.Season>?,
+    selectedLanguage: String?,
+    seasonText: String?,
     content: LazyListScope.() -> Unit
 ) {
-    val _title by component.title.collectAsState(component.initialInfo.title)
-    val title = _title ?: component.initialInfo.title
-    val _cover by component.cover.collectAsState(component.initialInfo.cover)
-    val cover = _cover ?: component.initialInfo.cover
-
-    val selectedLanguage by component.selectedLanguage.collectAsState(null)
-    val languages by component.languages.collectAsState(emptyList())
-    val season = when (val value = component.season.collectAsState(DefaultValue.INITIAL_LOADING("Loading Season")).value) {
-        is DefaultValue.INITIAL_LOADING -> value.data
-        is DefaultValue.VALUE -> value.data
-    }
 
     val state = rememberCollapsingToolbarScaffoldState()
     val reversedProgress by remember {
@@ -109,7 +111,10 @@ fun PortraitToolbar(
         navigationIcon = {
             IconButton(onClick = {
                 component.onGoBack()
-            }) {
+            }, modifier = Modifier.background(
+                color = if (state.toolbarState.progress == 1F) Color.SemiBlack else Color.Black.copy(alpha = state.toolbarState.progress / 10F),
+                shape = Shape.FullRoundedShape
+            )) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = LocalStringRes.current.back
@@ -119,7 +124,10 @@ fun PortraitToolbar(
         actions = {
             IconButton(onClick = {
 
-            }) {
+            }, modifier = Modifier.background(
+                    color = if (state.toolbarState.progress == 1F) Color.SemiBlack else Color.Black.copy(alpha = state.toolbarState.progress / 10F),
+                shape = Shape.FullRoundedShape
+            )) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
                     contentDescription = null
@@ -127,7 +135,10 @@ fun PortraitToolbar(
             }
             IconButton(onClick = {
 
-            }) {
+            }, modifier = Modifier.background(
+                color = if (state.toolbarState.progress == 1F) Color.SemiBlack else Color.Black.copy(alpha = state.toolbarState.progress / 10F),
+                shape = Shape.FullRoundedShape
+            )) {
                 Icon(
                     imageVector = Icons.Default.Link,
                     contentDescription = null
@@ -142,22 +153,13 @@ fun PortraitToolbar(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Button(onClick = {
-
-                    }, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                        Text(
-                            text = languages.find { it.value.equals(selectedLanguage, true) }?.text ?: "Select Language",
-                            maxLines = 1
-                        )
-                    }
-                    Button(onClick = {
-
-                    }, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                        Text(
-                            text = season ?: "Select Season",
-                            maxLines = 1
-                        )
-                    }
+                    SeriesLanguageSeasonButtons(
+                        component,
+                        languages,
+                        seasons,
+                        selectedLanguage,
+                        seasonText
+                    )
                 }
             }
 

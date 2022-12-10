@@ -16,10 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalOrientation
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.other.Orientation
@@ -27,27 +26,67 @@ import dev.datlag.burningseries.ui.custom.readmoretext.ReadMoreText
 import dev.datlag.burningseries.ui.screen.series.toolbar.LandscapeToolbar
 import dev.datlag.burningseries.ui.screen.series.toolbar.PortraitToolbar
 import dev.datlag.burningseries.common.onClick
+import dev.datlag.burningseries.ui.dialog.language.LanguageComponent
+import dev.datlag.burningseries.ui.dialog.language.LanguageDialog
+import dev.datlag.burningseries.other.Logger
 
 
 @Composable
 fun SeriesScreen(component: SeriesComponent) {
+    val dialogState = component.dialog.subscribeAsState()
     val description by component.description.collectAsState(String())
     val episodes by component.episodes.collectAsState(emptyList())
 
+    val _title by component.title.collectAsState(component.initialInfo.title)
+    val title = _title ?: component.initialInfo.title
+    val _cover by component.cover.collectAsState(component.initialInfo.cover)
+    val cover = _cover ?: component.initialInfo.cover
+
+    val selectedLanguage by component.selectedLanguage.collectAsState(null)
+    val languages by component.languages.collectAsState(null)
+    val seasons by component.seasons.collectAsState(null)
+    val seasonText by component.seasonText.collectAsState(null)
+
     when (LocalOrientation.current) {
-        is Orientation.PORTRAIT -> PortraitToolbar(component) {
+        is Orientation.PORTRAIT -> PortraitToolbar(
+            component,
+            title,
+            cover,
+            languages,
+            seasons,
+            selectedLanguage,
+            seasonText
+        ) {
             SeriesScreenContent(
                 component,
                 description,
                 episodes
             )
         }
-        is Orientation.LANDSCAPE -> LandscapeToolbar(component) {
+        is Orientation.LANDSCAPE -> LandscapeToolbar(
+            component,
+            title,
+            cover,
+            languages,
+            seasons,
+            selectedLanguage,
+            seasonText
+        ) {
             SeriesScreenContent(
                 component,
                 description,
                 episodes
             )
+        }
+    }
+
+    dialogState.value.overlay?.also { (config, instance) ->
+        Logger.error("Display dialog")
+        when (config) {
+            is DialogConfig.Language -> {
+                Logger.error("Display language dialog")
+                LanguageDialog(instance as LanguageComponent)
+            }
         }
     }
 }

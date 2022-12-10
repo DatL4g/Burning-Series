@@ -59,6 +59,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines")
                 implementation("io.coil-kt:coil-compose:2.2.2")
                 implementation("io.coil-kt:coil-svg:2.2.2")
+                implementation("com.google.accompanist:accompanist-pager:0.25.1")
             }
         }
 

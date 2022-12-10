@@ -10,17 +10,16 @@ import dev.datlag.burningseries.network.repository.HomeRepository
 import dev.datlag.burningseries.ui.dialog.DialogComponent
 import dev.datlag.burningseries.ui.navigation.Component
 import kotlinx.coroutines.flow.Flow
+import java.io.InputStream
 
 interface HomeComponent : Component {
 
     val onSeriesClicked: (String, SeriesInitialInfo) -> Unit
 
-    val dialog: Value<ChildOverlay<*, DialogComponent>>
-
-    val childStack: Value<ChildStack<*, Component>>
+    val childStack: Lazy<Value<ChildStack<*, Component>>>
     val childIndex: MutableValue<Int>
+    val pagerList: Lazy<List<Component>>
 
-    fun showDialog(message: String)
     fun onSearchClicked()
 
 }

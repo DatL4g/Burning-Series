@@ -6,9 +6,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import coil.EventListener
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
+import coil.request.ErrorResult
+import coil.request.ImageRequest
+import dev.datlag.burningseries.other.Logger
 import java.io.InputStream
 
 @Composable

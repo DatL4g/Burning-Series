@@ -29,7 +29,6 @@ import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.Resources
 import dev.datlag.burningseries.ui.custom.OverflowMenu
 import dev.datlag.burningseries.ui.custom.DropdownMenuItem
-import dev.datlag.burningseries.ui.dialog.example.ExampleDialog
 import dev.datlag.burningseries.ui.custom.RoundTabs
 import dev.datlag.burningseries.ui.custom.SVGImage
 import java.io.InputStream
@@ -37,15 +36,16 @@ import java.io.InputStream
 @OptIn(ExperimentalDecomposeApi::class)
 @Composable
 fun HomeScreen(component: HomeComponent) {
-    val dialogState = component.dialog.subscribeAsState()
     val scaffoldState = rememberScaffoldState()
     val resources = LocalResources.current
     val strings = LocalStringRes.current
-    val githubIconInput = remember { resources.getResourcesAsInputStream(Resources.GITHUB_ICON) ?: InputStream.nullInputStream() }
 
-    dialogState.value.overlay?.instance?.also {
-        ExampleDialog(it)
+    fun loadGitHubIcon(): InputStream {
+        return resources.getResourcesAsInputStream(Resources.GITHUB_ICON) ?: InputStream.nullInputStream()
     }
+
+    val _githubIconInput = remember { loadGitHubIcon() }
+    val githubIconInput = if (_githubIconInput.available() > 0) _githubIconInput else loadGitHubIcon()
 
     Scaffold(
         topBar = {
@@ -73,7 +73,7 @@ fun HomeScreen(component: HomeComponent) {
                         OverflowMenu(MaterialTheme.colorScheme.onTertiary) {
                             DropdownMenuItem(onClick = {
 
-                            }, enabled = false, text = {
+                            }, enabled = true, text = {
                                 Text(
                                     text = strings.settings
                                 )
@@ -104,11 +104,6 @@ fun HomeScreen(component: HomeComponent) {
         },
         scaffoldState = scaffoldState
     ) {
-        Children(
-            stack = component.childStack,
-            animation = stackAnimation(fade())
-        ) { child ->
-            child.instance.render()
-        }
+        HomeViewPager(component)
     }
 }

@@ -2,6 +2,7 @@ package dev.datlag.burningseries.model
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import dev.datlag.burningseries.model.common.getDigitsOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -20,6 +21,19 @@ data class Series(
     @SerialName("episodes") val episodes: List<Episode>,
     @SerialName("linkedSeries") val linkedSeries: List<Linked>
 ) : Parcelable {
+
+    fun currentSeason(seasons: List<Season> = this.seasons): Season? {
+        return seasons.find {
+            it.title.equals(season, true)
+                    || it.title.trim().equals(season.trim(), true)
+                    || it.title.equals(season.toIntOrNull()?.toString(), true)
+                    || it.title.toIntOrNull()?.toString()?.equals(season, true) == true
+                    || it.title.toIntOrNull()?.toString()?.equals(season.toIntOrNull()?.toString(), true) == true
+                    || it.title.equals(season.getDigitsOrNull(), true)
+                    || it.title.getDigitsOrNull()?.equals(season, true) == true
+                    || it.title.getDigitsOrNull()?.equals(season.getDigitsOrNull(), true) == true
+        }
+    }
 
     @Parcelize
     @Serializable

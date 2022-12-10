@@ -5,7 +5,7 @@ import com.arkivanov.essenty.parcelable.Parcelize
 import dev.datlag.burningseries.model.SeriesInitialInfo
 
 @Parcelize
-sealed class ScreenConfig() : Parcelable {
+sealed class ScreenConfig : Parcelable {
     object Login : ScreenConfig()
 
     object Home : ScreenConfig()
