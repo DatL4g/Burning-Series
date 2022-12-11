@@ -23,7 +23,7 @@ fun ColumnScope.SeriesLanguageSeasonButtons(
     if (selectedLang != null) {
         Button(
             onClick = {
-                component.showDialog()
+                component.showDialog(DialogConfig.Language)
             },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             enabled = languages.size > 1
@@ -38,7 +38,7 @@ fun ColumnScope.SeriesLanguageSeasonButtons(
     if (seasonText != null && seasons != null) {
         Button(
             onClick = {
-
+                component.showDialog(DialogConfig.Season)
             },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             enabled = seasons.size > 1

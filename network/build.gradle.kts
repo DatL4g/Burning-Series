@@ -8,9 +8,13 @@ group = "dev.datlag.burningseries.network"
 
 val flower = "3.0.0"
 val ktorfit = "1.0.0-beta16"
+val jsunpacker = "1.0.1"
+val jsoup = "1.15.3"
 
 dependencies {
     implementation("io.github.hadiyarajesh.flower-core:flower:$flower")
+    implementation("dev.datlag.jsunpacker:jsunpacker:$jsunpacker")
+    implementation("org.jsoup:jsoup:$jsoup")
     implementation(project(":datastore"))
     implementation(project(":model"))
 

@@ -5,6 +5,7 @@ import com.hadiyarajesh.flower_core.networkResource
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.network.BurningSeries
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.JsonElement
 import java.net.URLEncoder
@@ -51,7 +52,7 @@ class SeriesRepository(
                 it.data
             }
         })
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO).stateIn(GlobalScope, SharingStarted.WhileSubscribed(), null)
 
     suspend fun loadFromHref(href: String) {
         seriesHref.emit(href)

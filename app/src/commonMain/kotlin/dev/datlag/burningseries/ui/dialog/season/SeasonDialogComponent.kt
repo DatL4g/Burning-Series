@@ -1,4 +1,4 @@
-package dev.datlag.burningseries.ui.dialog.language
+package dev.datlag.burningseries.ui.dialog.season
 
 import com.arkivanov.decompose.ComponentContext
 import dev.datlag.burningseries.model.Series
@@ -7,22 +7,22 @@ import kotlinx.coroutines.flow.map
 import org.kodein.di.DI
 import org.kodein.di.instance
 
-class LanguageDialogComponent(
+class SeasonDialogComponent(
     componentContext: ComponentContext,
     private val onDismissed: () -> Unit,
-    private val onSelected: (Series.Language) -> Unit,
+    private val onSelected: (Series.Season) -> Unit,
     override val di: DI
-) : LanguageComponent, ComponentContext by componentContext {
+) : SeasonComponent, ComponentContext by componentContext {
 
     private val seriesRepo: SeriesRepository by di.instance()
-    override val languages = seriesRepo.series.map { it?.languages }
-    override val selectedLanguage = seriesRepo.series.map { it?.selectedLanguage }
+    override val seasons = seriesRepo.series.map { it?.seasons }
+    override val selectedSeason = seriesRepo.series.map { it?.currentSeason() }
 
     override fun onDismissClicked() {
         onDismissed()
     }
 
-    override fun onConfirmNewLanguage(language: Series.Language) {
-        onSelected(language)
+    override fun onConfirmNewSeason(season: Series.Season) {
+        onSelected(season)
     }
 }

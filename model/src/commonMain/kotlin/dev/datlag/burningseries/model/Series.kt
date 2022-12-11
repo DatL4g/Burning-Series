@@ -19,7 +19,8 @@ data class Series(
     @SerialName("languages") val languages: List<Language>,
     @SerialName("seasons") val seasons: List<Season>,
     @SerialName("episodes") val episodes: List<Episode>,
-    @SerialName("linkedSeries") val linkedSeries: List<Linked>
+    @SerialName("linkedSeries") val linkedSeries: List<Linked>,
+    @SerialName("href") val href: String
 ) : Parcelable {
 
     fun currentSeason(seasons: List<Season> = this.seasons): Season? {
@@ -35,12 +36,45 @@ data class Series(
         }
     }
 
+    fun hrefBuilder(season: Int?, language: String = selectedLanguage): String {
+        var verifiedHref = href
+        if (verifiedHref.startsWith('/')) {
+            verifiedHref = verifiedHref.substring(1)
+        }
+        if (verifiedHref.endsWith('/')) {
+            verifiedHref = verifiedHref.substring(0..(verifiedHref.length - 2))
+        }
+        val splitHref = verifiedHref.split('/')
+        var joinedHref = splitHref.joinToString(separator = "/", limit = 2, truncated = String())
+        if (!joinedHref.endsWith('/')) {
+            joinedHref += '/'
+        }
+        joinedHref += season?.toString() ?: String()
+        if (!joinedHref.endsWith('/')) {
+            joinedHref += '/'
+        }
+        joinedHref += language
+        return joinedHref
+    }
+
     @Parcelize
     @Serializable
     data class Info(
         @SerialName("header") val header: String,
         @SerialName("data") val data: String
-    ): Parcelable
+    ): Parcelable {
+        fun isGenre(): Boolean {
+            return this.header.trim().equals("Genre", true) || this.header.trim().equals("Genres", true)
+        }
+
+        fun trimmedData(): String {
+            var newData = data.trim()
+            if (newData.contains(',')) {
+                newData = newData.split(',').joinToString { it.trim() }
+            }
+            return newData
+        }
+    }
 
     @Parcelize
     @Serializable

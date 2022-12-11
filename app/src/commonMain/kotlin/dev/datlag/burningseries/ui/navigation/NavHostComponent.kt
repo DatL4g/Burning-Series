@@ -17,11 +17,14 @@ import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.datastore.common.showedLogin
 import dev.datlag.burningseries.datastore.preferences.UserSettings
 import dev.datlag.burningseries.model.Cover
+import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesInitialInfo
+import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.ui.screen.genre.GenreScreenComponent
 import dev.datlag.burningseries.ui.screen.home.HomeScreenComponent
 import dev.datlag.burningseries.ui.screen.login.LoginScreenComponent
 import dev.datlag.burningseries.ui.screen.series.SeriesScreenComponent
+import dev.datlag.burningseries.ui.screen.video.VideoScreenComponent
 import org.kodein.di.*
 
 class NavHostComponent private constructor(
@@ -71,6 +74,15 @@ class NavHostComponent private constructor(
                 screenConfig.href,
                 screenConfig.initialInfo,
                 ::onGoBackClicked,
+                ::onEpisodeClicked,
+                di
+            )
+            is ScreenConfig.Video -> VideoScreenComponent(
+                componentContext,
+                screenConfig.series,
+                screenConfig.episode,
+                screenConfig.streams,
+                ::onGoBackClicked,
                 di
             )
             else -> homeConfig
@@ -94,6 +106,10 @@ class NavHostComponent private constructor(
         initialInfo: SeriesInitialInfo
     ) {
         navigation.push(ScreenConfig.Series(href, initialInfo))
+    }
+
+    private fun onEpisodeClicked(series: Series, episode: Series.Episode, streams: List<VideoStream>) {
+        navigation.push(ScreenConfig.Video(series, episode, streams))
     }
 
     @OptIn(ExperimentalDecomposeApi::class)

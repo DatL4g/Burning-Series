@@ -1,6 +1,13 @@
 package dev.datlag.burningseries
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.awt.ComposeWindow
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 import com.arkivanov.decompose.DefaultComponentContext
@@ -18,6 +25,10 @@ import org.kodein.di.bind
 import org.kodein.di.singleton
 import javax.swing.SwingUtilities
 
+val LocalWindow = compositionLocalOf<ComposeWindow> { error("No window state provided") }
+var keyEventListener: ((KeyEvent) -> Boolean)? = null
+
+@OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     val windowState = WindowState()
     val lifecycle = LifecycleRegistry()
@@ -32,15 +43,33 @@ fun main() {
 
     singleWindowApplication(
         state = windowState,
-        title = stringRes.appName
+        title = stringRes.appName,
+        onKeyEvent = {
+            keyEventListener?.invoke(it) ?: false
+        }
     ) {
         LifecycleController(lifecycle, windowState)
 
         CompositionLocalProvider(
+            LocalWindow provides this.window,
             LocalResources provides resources,
             LocalStringRes provides stringRes,
             LocalOrientation provides Orientation.LANDSCAPE
         ) {
+            keyEventListener = {
+                when (it.key) {
+                    Key.Escape -> {
+                        window.placement = WindowPlacement.Floating
+                        true
+                    }
+                    Key.F11 -> {
+                        window.placement = WindowPlacement.Fullscreen
+                        true
+                    }
+                    else -> false
+                }
+            }
+
             App {
                 root.render()
             }

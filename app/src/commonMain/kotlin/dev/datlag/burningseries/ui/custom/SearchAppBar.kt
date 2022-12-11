@@ -29,7 +29,7 @@ fun SearchAppBar(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth().height(56.dp),
-        shadowElevation = AppBarDefaults.TopAppBarElevation,
+        shadowElevation = 0.dp,
         color = MaterialTheme.colorScheme.tertiary,
         contentColor = MaterialTheme.colorScheme.onTertiary
     ) {

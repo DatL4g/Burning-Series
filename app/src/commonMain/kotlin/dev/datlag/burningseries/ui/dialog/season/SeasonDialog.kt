@@ -1,9 +1,10 @@
-package dev.datlag.burningseries.ui.dialog.language
+package dev.datlag.burningseries.ui.dialog.season
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
@@ -16,13 +17,12 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun LanguageDialog(component: LanguageComponent) {
-    val languages by component.languages.collectAsState(null)
-    val selectedLanguage by component.selectedLanguage.collectAsState(null)
+fun SeasonDialog(component: SeasonComponent) {
+    val seasons by component.seasons.collectAsState(null)
+    val selectedSeason by component.selectedSeason.collectAsState(null)
 
-    if (!languages.isNullOrEmpty() && !selectedLanguage.isNullOrEmpty()) {
-        val currentSelectedLanguage = remember { languages!!.find { it.value.equals(selectedLanguage, true) } }
-        var selectedItem by remember { mutableStateOf(currentSelectedLanguage) }
+    if (!seasons.isNullOrEmpty()) {
+        var selectedItem by remember { mutableStateOf(selectedSeason) }
 
         AlertDialog(
             onDismissRequest = {
@@ -30,7 +30,7 @@ fun LanguageDialog(component: LanguageComponent) {
             },
             title = {
                 Text(
-                    text = "Select language",
+                    text = "Select season",
                     style = MaterialTheme.typography.headlineMedium,
                     maxLines = 1
                 )
@@ -41,7 +41,7 @@ fun LanguageDialog(component: LanguageComponent) {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    languages!!.forEach {
+                    seasons!!.forEach {
                         val selected = selectedItem == it
                         Row(
                             modifier = Modifier.selectable(
@@ -57,20 +57,23 @@ fun LanguageDialog(component: LanguageComponent) {
                                 onClick = null
                             )
                             Text(
-                                text = it.text
+                                text = it.title
                             )
                         }
                     }
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    if (selectedItem != null && selectedItem != currentSelectedLanguage) {
-                        component.onConfirmNewLanguage(selectedItem!!)
-                    } else {
-                        component.onDismissClicked()
-                    }
-                }, modifier = Modifier.padding(bottom = 8.dp)) {
+                TextButton(
+                    onClick = {
+                        if (selectedItem != null && selectedSeason != selectedItem) {
+                            component.onConfirmNewSeason(selectedItem!!)
+                        } else {
+                            component.onDismissClicked()
+                        }
+                    },
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = null

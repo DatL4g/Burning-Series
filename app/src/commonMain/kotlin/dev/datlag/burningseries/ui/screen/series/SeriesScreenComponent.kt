@@ -9,16 +9,19 @@ import dev.datlag.burningseries.common.coroutineScope
 import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesInitialInfo
+import dev.datlag.burningseries.model.VideoStream
+import dev.datlag.burningseries.network.repository.EpisodeRepository
 import dev.datlag.burningseries.network.repository.SeriesRepository
 import dev.datlag.burningseries.other.DefaultValue
 import dev.datlag.burningseries.ui.dialog.DialogComponent
 import dev.datlag.burningseries.ui.dialog.language.LanguageDialogComponent
+import dev.datlag.burningseries.ui.dialog.nostream.NoStreamDialogComponent
+import dev.datlag.burningseries.ui.dialog.season.SeasonDialogComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.kodein.di.DI
 import org.kodein.di.instance
 
@@ -27,6 +30,7 @@ class SeriesScreenComponent(
     private val href: String,
     override val initialInfo: SeriesInitialInfo,
     override val onGoBack: () -> Unit,
+    override val onEpisodeClicked: (Series, Series.Episode, List<VideoStream>) -> Unit,
     override val di: DI
 ) : SeriesComponent, ComponentContext by componentContext {
 
@@ -39,6 +43,20 @@ class SeriesScreenComponent(
             is DialogConfig.Language -> LanguageDialogComponent(
                 componentContext,
                 onDismissed = dialogNavigation::dismiss,
+                onSelected = ::onLanguageSelected,
+                di = di
+            ) as DialogComponent
+            is DialogConfig.Season -> SeasonDialogComponent(
+                componentContext,
+                onDismissed = dialogNavigation::dismiss,
+                onSelected = ::onSeasonSelected,
+                di = di
+            ) as DialogComponent
+            is DialogConfig.NoStream -> NoStreamDialogComponent(
+                componentContext,
+                config.episode,
+                onDismissed = dialogNavigation::dismiss,
+                onActivate = ::onActivate,
                 di = di
             )
         }
@@ -56,7 +74,16 @@ class SeriesScreenComponent(
     override val seasons: Flow<List<Series.Season>?> = seriesRepo.series.map { it?.seasons }
     override val description: Flow<String?> = seriesRepo.series.map { it?.description }
 
+    private val seriesInfo = seriesRepo.series.map { it?.infos }
+    override val genreInfo: Flow<Series.Info?> = seriesInfo.map { it?.firstOrNull { info ->
+        info.isGenre()
+    } }
+    override val additionalInfo: Flow<List<Series.Info>?> = seriesInfo.map { it?.filterNot { info ->
+        info.isGenre()
+    } }
     override val episodes: Flow<List<Series.Episode>> = seriesRepo.series.map { it?.episodes ?: emptyList() }
+
+    private val episodeRepo: EpisodeRepository by di.instance()
 
     init {
         scope.launch(Dispatchers.IO) {
@@ -64,8 +91,46 @@ class SeriesScreenComponent(
         }
     }
 
-    override fun showDialog() {
-        dialogNavigation.activate(DialogConfig.Language)
+    fun onLanguageSelected(language: Series.Language) {
+        dialogNavigation.dismiss()
+        scope.launch(Dispatchers.IO) {
+            seriesRepo.series.value?.let { series ->
+                seriesRepo.loadFromHref(series.hrefBuilder(series.currentSeason()?.value, language.value))
+            }
+        }
+    }
+
+    fun onSeasonSelected(season: Series.Season) {
+        dialogNavigation.dismiss()
+        scope.launch(Dispatchers.IO) {
+            seriesRepo.series.value?.let { series ->
+                seriesRepo.loadFromHref(series.hrefBuilder(season.value))
+            }
+        }
+    }
+
+    fun onActivate(episode: Series.Episode) {
+
+    }
+
+    override fun showDialog(config: DialogConfig) {
+        dialogNavigation.activate(config)
+    }
+
+    override fun loadEpisode(episode: Series.Episode) {
+        scope.launch(Dispatchers.IO) {
+            episodeRepo.loadHosterStreams(episode)
+            val episodeData = episodeRepo.streams.first()
+            if (episodeData.isEmpty()) {
+                withContext(CommonDispatcher.Main) {
+                    showDialog(DialogConfig.NoStream(episode))
+                }
+            } else {
+                withContext(CommonDispatcher.Main) {
+                    onEpisodeClicked(seriesRepo.series.value!!, episode, episodeData.reversed()) // ToDo("sort by settings")
+                }
+            }
+        }
     }
 
     @Composable

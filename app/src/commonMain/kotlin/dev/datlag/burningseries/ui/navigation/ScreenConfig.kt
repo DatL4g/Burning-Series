@@ -2,7 +2,9 @@ package dev.datlag.burningseries.ui.navigation
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesInitialInfo
+import dev.datlag.burningseries.model.VideoStream
 
 @Parcelize
 sealed class ScreenConfig : Parcelable {
@@ -15,5 +17,11 @@ sealed class ScreenConfig : Parcelable {
     data class Series(
         val href: String,
         val initialInfo: SeriesInitialInfo
+    ) : ScreenConfig()
+
+    data class Video(
+        val series: dev.datlag.burningseries.model.Series,
+        val episode: dev.datlag.burningseries.model.Series.Episode,
+        val streams: List<VideoStream>
     ) : ScreenConfig()
 }

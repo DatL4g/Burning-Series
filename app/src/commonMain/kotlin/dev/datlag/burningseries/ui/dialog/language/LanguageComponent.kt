@@ -8,4 +8,6 @@ interface LanguageComponent : DialogComponent {
 
     val languages: Flow<List<Series.Language>?>
     val selectedLanguage: Flow<String?>
+
+    fun onConfirmNewLanguage(language: Series.Language)
 }

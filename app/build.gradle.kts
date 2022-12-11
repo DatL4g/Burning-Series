@@ -72,6 +72,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines")
                 implementation("com.sealwu:kscript-tools:1.0.21")
                 implementation("net.harawata:appdirs:1.2.1")
+                implementation("uk.co.caprica:vlcj:4.8.2")
             }
         }
     }
@@ -105,6 +106,8 @@ android {
 compose.desktop {
     application {
         mainClass = "dev.datlag.burningseries.MainKt"
+        
+        // require vlc installation
     }
 }
 

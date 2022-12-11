@@ -5,6 +5,7 @@ import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesInitialInfo
+import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.other.DefaultValue
 import dev.datlag.burningseries.ui.dialog.DialogComponent
 import dev.datlag.burningseries.ui.navigation.Component
@@ -16,6 +17,7 @@ interface SeriesComponent : Component {
 
     val initialInfo: SeriesInitialInfo
     val onGoBack: () -> Unit
+    val onEpisodeClicked: (Series, Series.Episode, List<VideoStream>) -> Unit
 
     val title: Flow<String?>
     val cover: Flow<Cover?>
@@ -25,8 +27,10 @@ interface SeriesComponent : Component {
     val seasonText: Flow<String?>
     val seasons: Flow<List<Series.Season>?>
     val description: Flow<String?>
-
+    val genreInfo: Flow<Series.Info?>
+    val additionalInfo: Flow<List<Series.Info>?>
     val episodes: Flow<List<Series.Episode>>
 
-    fun showDialog()
+    fun showDialog(config: DialogConfig)
+    fun loadEpisode(episode: Series.Episode)
 }

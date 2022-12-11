@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalOrientation
@@ -26,9 +27,14 @@ import dev.datlag.burningseries.ui.custom.readmoretext.ReadMoreText
 import dev.datlag.burningseries.ui.screen.series.toolbar.LandscapeToolbar
 import dev.datlag.burningseries.ui.screen.series.toolbar.PortraitToolbar
 import dev.datlag.burningseries.common.onClick
+import dev.datlag.burningseries.model.common.maxSize
 import dev.datlag.burningseries.ui.dialog.language.LanguageComponent
 import dev.datlag.burningseries.ui.dialog.language.LanguageDialog
 import dev.datlag.burningseries.other.Logger
+import dev.datlag.burningseries.ui.dialog.nostream.NoStreamComponent
+import dev.datlag.burningseries.ui.dialog.nostream.NoStreamDialog
+import dev.datlag.burningseries.ui.dialog.season.SeasonComponent
+import dev.datlag.burningseries.ui.dialog.season.SeasonDialog
 
 
 @Composable
@@ -47,6 +53,12 @@ fun SeriesScreen(component: SeriesComponent) {
     val seasons by component.seasons.collectAsState(null)
     val seasonText by component.seasonText.collectAsState(null)
 
+    val genreInfo by component.genreInfo.collectAsState(null)
+    val genres = genreInfo?.data?.trim()?.split("\\s".toRegex())?.maxSize(5) ?: emptyList()
+
+    val _additionalInfo by component.additionalInfo.collectAsState(null)
+    val additionalInfo = _additionalInfo ?: emptyList()
+
     when (LocalOrientation.current) {
         is Orientation.PORTRAIT -> PortraitToolbar(
             component,
@@ -60,7 +72,9 @@ fun SeriesScreen(component: SeriesComponent) {
             SeriesScreenContent(
                 component,
                 description,
-                episodes
+                genres,
+                additionalInfo,
+                episodes,
             )
         }
         is Orientation.LANDSCAPE -> LandscapeToolbar(
@@ -75,17 +89,23 @@ fun SeriesScreen(component: SeriesComponent) {
             SeriesScreenContent(
                 component,
                 description,
+                genres,
+                additionalInfo,
                 episodes
             )
         }
     }
 
     dialogState.value.overlay?.also { (config, instance) ->
-        Logger.error("Display dialog")
         when (config) {
             is DialogConfig.Language -> {
-                Logger.error("Display language dialog")
                 LanguageDialog(instance as LanguageComponent)
+            }
+            is DialogConfig.Season -> {
+                SeasonDialog(instance as SeasonComponent)
+            }
+            is DialogConfig.NoStream -> {
+                NoStreamDialog(instance as NoStreamComponent)
             }
         }
     }
@@ -95,6 +115,8 @@ fun SeriesScreen(component: SeriesComponent) {
 private fun LazyListScope.SeriesScreenContent(
     component: SeriesComponent,
     description: String?,
+    genres: List<String>,
+    additionalInfo: List<Series.Info>,
     episodes: List<Series.Episode>
 ) {
     item {
@@ -112,31 +134,39 @@ private fun LazyListScope.SeriesScreenContent(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Chip(onClick = {
+            genres.forEach {
+                Chip(onClick = {
 
-            }) {
-                Text(text = "Chip 1")
+                }) {
+                    Text(text = it)
+                }
             }
+        }
+    }
 
-            Chip(onClick = {
-
-            }) {
-                Text(text = "Chip 2")
-            }
-
-            Chip(onClick = {
-
-            }) {
-                Text(text = "Chip 3")
-            }
+    items(additionalInfo) { info ->
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.weight(1F),
+                text = info.header.trim(),
+                fontWeight = FontWeight.Bold,
+                maxLines = 1
+            )
+            Text(
+                modifier = Modifier.weight(2F),
+                text = info.trimmedData(),
+                maxLines = 1
+            )
         }
     }
 
     items(episodes) { episode ->
         Row(
             modifier = Modifier.fillMaxWidth().onClick {
-                // load episode here
-                println("Clicked: ${episode.title}")
+                component.loadEpisode(episode)
             }.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically

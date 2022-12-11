@@ -3,12 +3,9 @@ package dev.datlag.burningseries.module
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.ktorfit
 import dev.datlag.burningseries.network.converter.FlowerResponseConverter
-import dev.datlag.burningseries.network.repository.HomeRepository
 import org.kodein.di.*
 import dev.datlag.burningseries.network.createBurningSeries
-import dev.datlag.burningseries.network.repository.GenreRepository
-import dev.datlag.burningseries.network.repository.SeriesRepository
-import dev.datlag.burningseries.network.repository.UserRepository
+import dev.datlag.burningseries.network.repository.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
@@ -18,6 +15,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.dnsoverhttps.DnsOverHttps
 import java.net.InetAddress
+import java.util.concurrent.TimeUnit
 
 object NetworkModule {
 
@@ -42,10 +40,16 @@ object NetworkModule {
                     engine {
                         config {
                             dns(instance())
+                            connectTimeout(3, TimeUnit.MINUTES)
+                            readTimeout(3, TimeUnit.MINUTES)
+                            writeTimeout(3, TimeUnit.MINUTES)
                         }
                     }
                     install(ContentNegotiation) {
-                        json()
+                        json(Json {
+                            ignoreUnknownKeys = true
+                            isLenient = false
+                        })
                     }
                 }
             }
@@ -69,8 +73,11 @@ object NetworkModule {
         bindSingleton {
             UserRepository(instance(), instance())
         }
-        bindSingleton {
+        bindProvider {
             SeriesRepository(instance())
+        }
+        bindProvider {
+            EpisodeRepository(instance())
         }
     }
 }
