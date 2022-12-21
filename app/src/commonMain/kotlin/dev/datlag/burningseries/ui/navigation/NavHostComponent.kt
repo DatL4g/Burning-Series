@@ -20,6 +20,7 @@ import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.model.VideoStream
+import dev.datlag.burningseries.ui.screen.activate.ActivateScreenComponent
 import dev.datlag.burningseries.ui.screen.genre.GenreScreenComponent
 import dev.datlag.burningseries.ui.screen.home.HomeScreenComponent
 import dev.datlag.burningseries.ui.screen.login.LoginScreenComponent
@@ -75,6 +76,7 @@ class NavHostComponent private constructor(
                 screenConfig.initialInfo,
                 ::onGoBackClicked,
                 ::onEpisodeClicked,
+                ::onActivateClicked,
                 di
             )
             is ScreenConfig.Video -> VideoScreenComponent(
@@ -82,6 +84,13 @@ class NavHostComponent private constructor(
                 screenConfig.series,
                 screenConfig.episode,
                 screenConfig.streams,
+                ::onGoBackClicked,
+                di
+            )
+            is ScreenConfig.Activate -> ActivateScreenComponent(
+                componentContext,
+                screenConfig.series,
+                screenConfig.episode,
                 ::onGoBackClicked,
                 di
             )
@@ -110,6 +119,10 @@ class NavHostComponent private constructor(
 
     private fun onEpisodeClicked(series: Series, episode: Series.Episode, streams: List<VideoStream>) {
         navigation.push(ScreenConfig.Video(series, episode, streams))
+    }
+
+    private fun onActivateClicked(series: Series, episode: Series.Episode) {
+        navigation.push(ScreenConfig.Activate(series, episode))
     }
 
     @OptIn(ExperimentalDecomposeApi::class)

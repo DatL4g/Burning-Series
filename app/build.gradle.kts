@@ -1,4 +1,5 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import de.undercouch.gradle.tasks.download.Download
 
 plugins {
     kotlin("multiplatform")
@@ -12,6 +13,7 @@ val coroutines = "1.6.4"
 val decompose = "1.0.0-beta-01"
 val kodein = "7.16.0"
 val ktor = "2.1.3"
+val exoplayer = "1.0.0-beta03"
 
 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
 kotlin {
@@ -60,6 +62,14 @@ kotlin {
                 implementation("io.coil-kt:coil-compose:2.2.2")
                 implementation("io.coil-kt:coil-svg:2.2.2")
                 implementation("com.google.accompanist:accompanist-pager:0.25.1")
+
+                implementation("androidx.media3:media3-exoplayer:$exoplayer")
+                implementation("androidx.media3:media3-exoplayer-dash:$exoplayer")
+                implementation("androidx.media3:media3-exoplayer-hls:$exoplayer")
+                implementation("androidx.media3:media3-exoplayer-rtsp:$exoplayer")
+                implementation("androidx.media3:media3-exoplayer-rtsp:$exoplayer")
+                implementation("androidx.media3:media3-exoplayer-smoothstreaming:$exoplayer")
+                implementation("androidx.media3:media3-ui:$exoplayer")
             }
         }
 

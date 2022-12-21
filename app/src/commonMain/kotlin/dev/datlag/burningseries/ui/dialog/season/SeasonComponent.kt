@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface SeasonComponent : DialogComponent {
 
-    val seasons: Flow<List<Series.Season>?>
-    val selectedSeason : Flow<Series.Season?>
+    val seasons: List<Series.Season>
+    val selectedSeason: Series.Season?
 
     fun onConfirmNewSeason(season: Series.Season)
 }

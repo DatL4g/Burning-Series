@@ -9,14 +9,12 @@ import org.kodein.di.instance
 
 class LanguageDialogComponent(
     componentContext: ComponentContext,
+    override val languages: List<Series.Language>,
+    override val selectedLanguage: String,
     private val onDismissed: () -> Unit,
     private val onSelected: (Series.Language) -> Unit,
     override val di: DI
 ) : LanguageComponent, ComponentContext by componentContext {
-
-    private val seriesRepo: SeriesRepository by di.instance()
-    override val languages = seriesRepo.series.map { it?.languages }
-    override val selectedLanguage = seriesRepo.series.map { it?.selectedLanguage }
 
     override fun onDismissClicked() {
         onDismissed()

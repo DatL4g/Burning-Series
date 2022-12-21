@@ -24,4 +24,9 @@ sealed class ScreenConfig : Parcelable {
         val episode: dev.datlag.burningseries.model.Series.Episode,
         val streams: List<VideoStream>
     ) : ScreenConfig()
+
+    data class Activate(
+        val series: dev.datlag.burningseries.model.Series,
+        val episode: dev.datlag.burningseries.model.Series.Episode
+    ) : ScreenConfig()
 }

@@ -21,11 +21,14 @@ interface SeriesComponent : Component {
 
     val title: Flow<String?>
     val cover: Flow<Cover?>
+
     val selectedLanguage: Flow<String?>
     val languages: Flow<List<Series.Language>?>
+
     val selectedSeason: Flow<Series.Season?>
     val seasonText: Flow<String?>
     val seasons: Flow<List<Series.Season>?>
+
     val description: Flow<String?>
     val genreInfo: Flow<Series.Info?>
     val additionalInfo: Flow<List<Series.Info>?>

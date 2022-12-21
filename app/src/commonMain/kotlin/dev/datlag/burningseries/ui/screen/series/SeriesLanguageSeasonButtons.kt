@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.model.Series
@@ -16,6 +18,7 @@ fun ColumnScope.SeriesLanguageSeasonButtons(
     languages: List<Series.Language>?,
     seasons: List<Series.Season>?,
     selectedLanguage: String?,
+    selectedSeason: Series.Season?,
     seasonText: String?
 ) = with(this) {
     val selectedLang = languages?.find { it.value.equals(selectedLanguage, true) }
@@ -23,7 +26,10 @@ fun ColumnScope.SeriesLanguageSeasonButtons(
     if (selectedLang != null) {
         Button(
             onClick = {
-                component.showDialog(DialogConfig.Language)
+                component.showDialog(DialogConfig.Language(
+                    languages,
+                    selectedLang.value
+                ))
             },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             enabled = languages.size > 1
@@ -38,7 +44,10 @@ fun ColumnScope.SeriesLanguageSeasonButtons(
     if (seasonText != null && seasons != null) {
         Button(
             onClick = {
-                component.showDialog(DialogConfig.Season)
+                component.showDialog(DialogConfig.Season(
+                    seasons,
+                    selectedSeason
+                ))
             },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             enabled = seasons.size > 1

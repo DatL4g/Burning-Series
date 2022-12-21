@@ -6,6 +6,7 @@ import dev.datlag.burningseries.model.HosterStream
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.network.BurningSeries
+import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.network.VideoScraper
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -30,12 +31,7 @@ class EpisodeRepository(
     }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
     val status = _status.transformLatest {
-        return@transformLatest emit(when (it) {
-            is Resource.Status.Loading -> Status.LOADING
-            is Resource.Status.Error -> Status.ERROR
-            is Resource.Status.EmptySuccess -> Status.ERROR
-            is Resource.Status.Success -> Status.SUCCESS
-        })
+        return@transformLatest emit(Status.create(it, true))
     }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
     val hosterStreams = _status.transformLatest {
@@ -69,11 +65,5 @@ class EpisodeRepository(
 
     suspend fun loadHosterStreams(episode: Series.Episode) {
         this.episode.emit(episode)
-    }
-
-    sealed class Status {
-        object LOADING : Status()
-        object ERROR : Status()
-        object SUCCESS : Status()
     }
 }

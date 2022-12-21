@@ -18,13 +18,11 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun SeasonDialog(component: SeasonComponent) {
-    val seasons by component.seasons.collectAsState(null)
-    val selectedSeason by component.selectedSeason.collectAsState(null)
-
-    if (!seasons.isNullOrEmpty()) {
-        var selectedItem by remember { mutableStateOf(selectedSeason) }
+    if (component.seasons.isNotEmpty()) {
+        var selectedItem by remember { mutableStateOf(component.selectedSeason) }
 
         AlertDialog(
+            modifier = Modifier.defaultMinSize(minWidth = 500.dp),
             onDismissRequest = {
                 component.onDismissClicked()
             },
@@ -41,7 +39,7 @@ fun SeasonDialog(component: SeasonComponent) {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    seasons!!.forEach {
+                    component.seasons.forEach {
                         val selected = selectedItem == it
                         Row(
                             modifier = Modifier.selectable(
@@ -66,7 +64,7 @@ fun SeasonDialog(component: SeasonComponent) {
             confirmButton = {
                 TextButton(
                     onClick = {
-                        if (selectedItem != null && selectedSeason != selectedItem) {
+                        if (selectedItem != null && component.selectedSeason != selectedItem) {
                             component.onConfirmNewSeason(selectedItem!!)
                         } else {
                             component.onDismissClicked()

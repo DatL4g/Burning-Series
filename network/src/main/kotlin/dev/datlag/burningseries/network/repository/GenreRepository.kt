@@ -6,6 +6,7 @@ import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.algorithm.Levenshtein
+import dev.datlag.burningseries.network.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
@@ -24,12 +25,7 @@ class GenreRepository(
     }.flowOn(Dispatchers.IO)
 
     val status = _status.transform {
-        return@transform emit(when (it) {
-            is Resource.Status.Loading -> Status.LOADING
-            is Resource.Status.Error -> Status.ERROR
-            is Resource.Status.EmptySuccess -> Status.SUCCESS
-            is Resource.Status.Success -> Status.SUCCESS
-        })
+        return@transform emit(Status.create(it))
     }
 
     private val allGenres = _status.transform {
@@ -94,11 +90,5 @@ class GenreRepository(
                 }
             }.filter { it.second > 0.85 }.sortedByDescending { it.second }.map { it.first })
         }
-    }
-
-    sealed class Status {
-        object LOADING : Status()
-        object ERROR : Status()
-        object SUCCESS : Status()
     }
 }

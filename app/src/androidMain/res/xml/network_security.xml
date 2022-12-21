@@ -33,6 +33,17 @@
         <domain includeSubdomains="true">http://upstream.to</domain>
         <domain includeSubdomains="true">upstream.to</domain>
 
+        <domain includeSubdomains="true">https://vidoza.net</domain>
+        <domain includeSubdomains="true">http://vidoza.net</domain>
+        <domain includeSubdomains="true">vidoza.net</domain>
+
+
+
+
+
+
+
+
         <domain includeSubdomains="true">https://myanimelist.net</domain>
         <domain includeSubdomains="true">http://myanimelist.net</domain>
         <domain includeSubdomains="true">myanimelist.net</domain>

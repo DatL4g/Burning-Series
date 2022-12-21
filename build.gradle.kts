@@ -8,6 +8,7 @@ plugins {
     id("org.jetbrains.compose") version "1.2.1" apply false
     id("com.google.devtools.ksp") version "1.7.10-1.0.6" apply false
     id("com.google.protobuf") version "0.9.1" apply false
+    id("de.undercouch.download") version "5.3.0" apply false
     id("com.github.ben-manes.versions") version "0.44.0"
 }
 
@@ -19,6 +20,7 @@ buildscript {
         gradlePluginPortal()
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://plugins.gradle.org/m2/") }
+        maven { url = uri("https://packages.jetbrains.team/maven/p/ui/dev") }
     }
     dependencies {
         classpath("com.android.tools.build:gradle:7.3.1")
@@ -41,6 +43,7 @@ allprojects {
         gradlePluginPortal()
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://plugins.gradle.org/m2/") }
+        maven { url = uri("https://packages.jetbrains.team/maven/p/ui/dev") }
     }
 }
 

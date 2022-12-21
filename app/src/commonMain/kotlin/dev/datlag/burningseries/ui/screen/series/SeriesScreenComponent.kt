@@ -31,6 +31,7 @@ class SeriesScreenComponent(
     override val initialInfo: SeriesInitialInfo,
     override val onGoBack: () -> Unit,
     override val onEpisodeClicked: (Series, Series.Episode, List<VideoStream>) -> Unit,
+    private val onActivateClicked: (Series, Series.Episode) -> Unit,
     override val di: DI
 ) : SeriesComponent, ComponentContext by componentContext {
 
@@ -42,12 +43,16 @@ class SeriesScreenComponent(
         when (config) {
             is DialogConfig.Language -> LanguageDialogComponent(
                 componentContext,
+                config.languages,
+                config.selectedLanguage,
                 onDismissed = dialogNavigation::dismiss,
                 onSelected = ::onLanguageSelected,
                 di = di
             ) as DialogComponent
             is DialogConfig.Season -> SeasonDialogComponent(
                 componentContext,
+                config.seasons,
+                config.selectedSeason,
                 onDismissed = dialogNavigation::dismiss,
                 onSelected = ::onSeasonSelected,
                 di = di
@@ -110,7 +115,7 @@ class SeriesScreenComponent(
     }
 
     fun onActivate(episode: Series.Episode) {
-
+        onActivateClicked(seriesRepo.series.value!!, episode)
     }
 
     override fun showDialog(config: DialogConfig) {
@@ -127,7 +132,8 @@ class SeriesScreenComponent(
                 }
             } else {
                 withContext(CommonDispatcher.Main) {
-                    onEpisodeClicked(seriesRepo.series.value!!, episode, episodeData.reversed()) // ToDo("sort by settings")
+                    val sortedList = episodeData.sortedByDescending { if(it.hoster.hoster.contains("VOE", true)) 1 else 0 }
+                    onEpisodeClicked(seriesRepo.series.value!!, episode, sortedList) // ToDo("sort by settings")
                 }
             }
         }

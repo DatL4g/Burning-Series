@@ -9,14 +9,12 @@ import org.kodein.di.instance
 
 class SeasonDialogComponent(
     componentContext: ComponentContext,
+    override val seasons: List<Series.Season>,
+    override val selectedSeason: Series.Season?,
     private val onDismissed: () -> Unit,
     private val onSelected: (Series.Season) -> Unit,
     override val di: DI
 ) : SeasonComponent, ComponentContext by componentContext {
-
-    private val seriesRepo: SeriesRepository by di.instance()
-    override val seasons = seriesRepo.series.map { it?.seasons }
-    override val selectedSeason = seriesRepo.series.map { it?.currentSeason() }
 
     override fun onDismissClicked() {
         onDismissed()

@@ -6,8 +6,15 @@ import dev.datlag.burningseries.model.Series
 
 @Parcelize
 sealed class DialogConfig : Parcelable {
-    object Language : DialogConfig()
-    object Season : DialogConfig()
+    data class Language(
+        val languages: List<Series.Language>,
+        val selectedLanguage: String
+    ) : DialogConfig()
+
+    data class Season(
+        val seasons: List<Series.Season>,
+        val selectedSeason: Series.Season?
+    ) : DialogConfig()
 
     data class NoStream(val episode: Series.Episode) : DialogConfig()
 }

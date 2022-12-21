@@ -4,6 +4,7 @@ import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.networkResource
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.network.BurningSeries
+import dev.datlag.burningseries.network.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
@@ -29,12 +30,7 @@ class SeriesRepository(
     }.flowOn(Dispatchers.IO)
 
     val status = _status.transform {
-        return@transform emit(when (it) {
-            is Resource.Status.Loading -> Status.LOADING
-            is Resource.Status.Error -> Status.ERROR
-            is Resource.Status.EmptySuccess -> Status.SUCCESS
-            is Resource.Status.Success -> Status.SUCCESS
-        })
+        return@transform emit(Status.create(it))
     }.flowOn(Dispatchers.IO)
 
     val series = _status.transform {
@@ -58,9 +54,5 @@ class SeriesRepository(
         seriesHref.emit(href)
     }
 
-    sealed class Status {
-        object LOADING : Status()
-        object ERROR : Status()
-        object SUCCESS : Status()
-    }
+
 }

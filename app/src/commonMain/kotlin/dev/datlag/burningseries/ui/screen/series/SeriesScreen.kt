@@ -52,6 +52,7 @@ fun SeriesScreen(component: SeriesComponent) {
     val languages by component.languages.collectAsState(null)
     val seasons by component.seasons.collectAsState(null)
     val seasonText by component.seasonText.collectAsState(null)
+    val selectedSeason by component.selectedSeason.collectAsState(null)
 
     val genreInfo by component.genreInfo.collectAsState(null)
     val genres = genreInfo?.data?.trim()?.split("\\s".toRegex())?.maxSize(5) ?: emptyList()
@@ -67,6 +68,7 @@ fun SeriesScreen(component: SeriesComponent) {
             languages,
             seasons,
             selectedLanguage,
+            selectedSeason,
             seasonText
         ) {
             SeriesScreenContent(
@@ -84,6 +86,7 @@ fun SeriesScreen(component: SeriesComponent) {
             languages,
             seasons,
             selectedLanguage,
+            selectedSeason,
             seasonText
         ) {
             SeriesScreenContent(

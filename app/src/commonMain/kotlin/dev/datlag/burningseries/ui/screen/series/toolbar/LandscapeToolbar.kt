@@ -41,6 +41,7 @@ fun LandscapeToolbar(
     languages: List<Series.Language>?,
     seasons: List<Series.Season>?,
     selectedLanguage: String?,
+    selectedSeason: Series.Season?,
     seasonText: String?,
     content: LazyListScope.() -> Unit,
 ) {
@@ -83,6 +84,7 @@ fun LandscapeToolbar(
                             languages,
                             seasons,
                             selectedLanguage,
+                            selectedSeason,
                             seasonText
                         )
                     }

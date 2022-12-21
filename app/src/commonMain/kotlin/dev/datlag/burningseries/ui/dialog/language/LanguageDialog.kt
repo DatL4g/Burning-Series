@@ -17,11 +17,9 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun LanguageDialog(component: LanguageComponent) {
-    val languages by component.languages.collectAsState(null)
-    val selectedLanguage by component.selectedLanguage.collectAsState(null)
 
-    if (!languages.isNullOrEmpty() && !selectedLanguage.isNullOrEmpty()) {
-        val currentSelectedLanguage = remember { languages!!.find { it.value.equals(selectedLanguage, true) } }
+    if (component.languages.isNotEmpty() && !component.selectedLanguage.isNullOrEmpty()) {
+        val currentSelectedLanguage = remember { component.languages.find { it.value.equals(component.selectedLanguage, true) } }
         var selectedItem by remember { mutableStateOf(currentSelectedLanguage) }
 
         AlertDialog(
@@ -41,7 +39,7 @@ fun LanguageDialog(component: LanguageComponent) {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    languages!!.forEach {
+                    component.languages.forEach {
                         val selected = selectedItem == it
                         Row(
                             modifier = Modifier.selectable(
