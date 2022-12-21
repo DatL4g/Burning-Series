@@ -21,6 +21,8 @@ val LocalDarkMode = compositionLocalOf<Boolean> { error("No dark mode state prov
 val LocalResources = compositionLocalOf<Resources> { error("No resources state provided") }
 val LocalStringRes = compositionLocalOf<StringRes> { error("No StringRes state provided") }
 val LocalOrientation = compositionLocalOf<Orientation> { error("No Orientation state provided") }
+var BackPressedListener: (() -> Unit)? = null
+var NavigationListener: ((finish: Boolean) -> Unit)? = null
 
 @Composable
 fun App(

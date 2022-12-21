@@ -14,6 +14,7 @@ val decompose = "1.0.0-beta-01"
 val kodein = "7.16.0"
 val ktor = "2.1.3"
 val exoplayer = "1.0.0-beta03"
+val accompanist = "0.25.1"
 
 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
 kotlin {
@@ -61,7 +62,8 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines")
                 implementation("io.coil-kt:coil-compose:2.2.2")
                 implementation("io.coil-kt:coil-svg:2.2.2")
-                implementation("com.google.accompanist:accompanist-pager:0.25.1")
+                implementation("com.google.accompanist:accompanist-pager:$accompanist")
+                implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanist")
 
                 implementation("androidx.media3:media3-exoplayer:$exoplayer")
                 implementation("androidx.media3:media3-exoplayer-dash:$exoplayer")

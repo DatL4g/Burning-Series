@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.ui.screen.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -107,3 +108,6 @@ fun HomeScreen(component: HomeComponent) {
         HomeViewPager(component)
     }
 }
+
+@Composable
+expect fun gridCellSize(): GridCells

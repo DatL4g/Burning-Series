@@ -10,15 +10,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.common.header
-import dev.datlag.burningseries.model.Cover
-import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.ui.screen.home.gridCellSize
 
 @Composable
 fun EpisodesView(component: EpisodesComponent) {
     val episodes by component.episodes.collectAsState(component.episodes.getValueBlocking(emptyList()))
 
     LazyVerticalGrid(
-        columns = GridCellSize,
+        columns = gridCellSize(),
         contentPadding = PaddingValues(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -33,5 +32,3 @@ fun EpisodesView(component: EpisodesComponent) {
         }
     }
 }
-
-expect val GridCellSize: GridCells

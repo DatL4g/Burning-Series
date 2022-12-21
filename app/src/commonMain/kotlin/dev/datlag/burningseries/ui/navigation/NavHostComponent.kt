@@ -13,6 +13,8 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
+import dev.datlag.burningseries.BackPressedListener
+import dev.datlag.burningseries.NavigationListener
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.datastore.common.showedLogin
 import dev.datlag.burningseries.datastore.preferences.UserSettings
@@ -123,6 +125,14 @@ class NavHostComponent private constructor(
 
     private fun onActivateClicked(series: Series, episode: Series.Episode) {
         navigation.push(ScreenConfig.Activate(series, episode))
+    }
+
+    init {
+        BackPressedListener = {
+            navigation.pop(onComplete = { isSuccess ->
+                NavigationListener?.invoke(!isSuccess)
+            })
+        }
     }
 
     @OptIn(ExperimentalDecomposeApi::class)

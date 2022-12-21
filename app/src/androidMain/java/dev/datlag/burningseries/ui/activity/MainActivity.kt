@@ -2,15 +2,17 @@ package dev.datlag.burningseries.ui.activity
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
+import androidx.core.os.BuildCompat
 import com.arkivanov.decompose.defaultComponentContext
-import dev.datlag.burningseries.App
-import dev.datlag.burningseries.LocalOrientation
-import dev.datlag.burningseries.LocalResources
-import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.*
 import dev.datlag.burningseries.module.DataStoreModule
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.module.PlatformModule
@@ -55,6 +57,16 @@ class MainActivity : AppCompatActivity() {
                     root.render()
                 }
             }
+        }
+
+        NavigationListener = { finish ->
+            if (finish) {
+                finish()
+            }
+        }
+
+        onBackPressedDispatcher.addCallback(this) {
+            BackPressedListener?.invoke()
         }
     }
 }

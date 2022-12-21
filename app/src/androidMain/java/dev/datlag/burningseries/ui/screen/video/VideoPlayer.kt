@@ -1,12 +1,15 @@
 package dev.datlag.burningseries.ui.screen.video
 
+import android.content.pm.ActivityInfo
 import android.widget.FrameLayout
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.media3.common.*
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
@@ -16,7 +19,12 @@ import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.*
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dev.datlag.burningseries.common.enterFullScreen
+import dev.datlag.burningseries.common.exitFullScreen
+import dev.datlag.burningseries.common.findWindow
 import dev.datlag.burningseries.other.Logger
+import dev.datlag.burningseries.ui.custom.RequireScreenOrientation
 import kotlinx.coroutines.*
 
 @Composable
@@ -37,6 +45,19 @@ fun VideoPlayer(component: VideoComponent) {
     var streamListPos by remember { mutableStateOf(0) }
     var srcListPos by remember { mutableStateOf(0) }
     val stream = component.videoStreams[streamListPos].srcList[srcListPos]
+    val systemUiController = rememberSystemUiController()
+    val window = LocalView.current.context.findWindow()
+
+    RequireScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+    DisposableEffect(Unit) {
+        systemUiController.isSystemBarsVisible = false
+        systemUiController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        window.enterFullScreen()
+        onDispose {
+            window.exitFullScreen()
+            systemUiController.isSystemBarsVisible = true
+        }
+    }
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context)

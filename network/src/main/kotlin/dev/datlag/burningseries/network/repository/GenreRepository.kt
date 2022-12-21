@@ -79,14 +79,7 @@ class GenreRepository(
                 when {
                     it.title.equals(value, true) -> it to 1.0
                     it.title.startsWith(value, true) -> it to 0.95
-                    else -> {
-                        val jaroWinkler = JaroWinkler.distance(it.title, value)
-                        it to if (jaroWinkler < 0.85) {
-                            Levenshtein.normalizedSimilarity(it.title, value).toDouble()
-                        } else {
-                            jaroWinkler
-                        }
-                    }
+                    else -> it to JaroWinkler.distance(it.title, value)
                 }
             }.filter { it.second > 0.85 }.sortedByDescending { it.second }.map { it.first })
         }
