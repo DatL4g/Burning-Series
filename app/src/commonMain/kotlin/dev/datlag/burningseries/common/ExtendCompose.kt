@@ -14,3 +14,6 @@ fun LazyGridScope.header(
 
 val Color.Companion.SemiBlack: Color
     get() = Color.Black.copy(alpha = 0.5F)
+
+val Color.Companion.Success: Color
+    get() = Color(58, 206, 162)

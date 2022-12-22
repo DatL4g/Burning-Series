@@ -22,6 +22,9 @@ actual class Resources(private val assetManager: AssetManager) {
             get() = "values/strings.xml"
         actual val GITHUB_ICON: String
             get() = "svgs/GitHub.svg"
+
+        actual val JAVASCRIPT_SCRAPE_HOSTER: String
+            get() = "raw/scrape_hoster.js"
     }
 
 }

@@ -13,6 +13,7 @@ import io.ktor.utils.io.core.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttpClient
 import okhttp3.dnsoverhttps.DnsOverHttps
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
@@ -20,15 +21,25 @@ import java.util.concurrent.TimeUnit
 object NetworkModule {
 
     private const val TAG_KTORFIT_BURNINGSERIES = "BurningSeriesKtorfit"
+    const val TAG_OKHTTP_BOOTSTRAP_CLIENT = "OkHttpBootstrapClient"
     const val NAME = "NetworkModule"
 
     val di = DI.Module(NAME) {
-        bindSingleton {
+        bindSingleton(TAG_OKHTTP_BOOTSTRAP_CLIENT) {
             // ToDo("add cache file")
-            val bootstrapClient = okhttp3.OkHttpClient.Builder().build()
-            DnsOverHttps.Builder().client(bootstrapClient)
+            okhttp3.OkHttpClient.Builder().build()
+        }
+
+        bindSingleton {
+            DnsOverHttps.Builder().client(instance(TAG_OKHTTP_BOOTSTRAP_CLIENT))
                 .url("https://dns.google/dns-query".toHttpUrl())
                 .bootstrapDnsHosts(InetAddress.getByName("8.8.4.4"), InetAddress.getByName("8.8.8.8"))
+                .build()
+        }
+
+        bindSingleton {
+            instance<OkHttpClient>(TAG_OKHTTP_BOOTSTRAP_CLIENT).newBuilder()
+                .dns(instance())
                 .build()
         }
 
@@ -78,6 +89,9 @@ object NetworkModule {
         }
         bindProvider {
             EpisodeRepository(instance())
+        }
+        bindProvider {
+            SaveRepository(instance())
         }
     }
 }

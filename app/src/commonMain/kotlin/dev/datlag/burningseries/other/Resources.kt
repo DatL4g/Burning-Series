@@ -9,6 +9,7 @@ expect class Resources {
     companion object {
         val DEFAULT_STRINGS: String
         val GITHUB_ICON: String
+        val JAVASCRIPT_SCRAPE_HOSTER: String
     }
 
 }

@@ -27,6 +27,7 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalResources
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.other.Constants
+import dev.datlag.burningseries.other.EmptyInputStream
 import dev.datlag.burningseries.other.Resources
 import dev.datlag.burningseries.ui.custom.OverflowMenu
 import dev.datlag.burningseries.ui.custom.DropdownMenuItem
@@ -42,7 +43,7 @@ fun HomeScreen(component: HomeComponent) {
     val strings = LocalStringRes.current
 
     fun loadGitHubIcon(): InputStream {
-        return resources.getResourcesAsInputStream(Resources.GITHUB_ICON) ?: InputStream.nullInputStream()
+        return resources.getResourcesAsInputStream(Resources.GITHUB_ICON) ?: EmptyInputStream
     }
 
     val _githubIconInput = remember { loadGitHubIcon() }
