@@ -28,7 +28,7 @@ fun EpisodesView(component: EpisodesComponent) {
             )
         }
         items(episodes) {
-            EpisodeItem(it)
+            EpisodeItem(it, component)
         }
     }
 }

@@ -59,6 +59,7 @@ class NavHostComponent private constructor(
             HomeScreenComponent(
                 componentContext,
                 ::onSearchClicked,
+                ::onEpisodeClicked,
                 ::onSeriesClicked,
                 di
             )
@@ -76,6 +77,7 @@ class NavHostComponent private constructor(
                 componentContext,
                 screenConfig.href,
                 screenConfig.initialInfo,
+                screenConfig.isEpisode,
                 ::onGoBackClicked,
                 ::onEpisodeClicked,
                 ::onActivateClicked,
@@ -112,11 +114,18 @@ class NavHostComponent private constructor(
         navigation.push(ScreenConfig.Genre)
     }
 
+    private fun onEpisodeClicked(
+        href: String,
+        initialInfo: SeriesInitialInfo
+    ) {
+        navigation.push(ScreenConfig.Series(href, initialInfo, true))
+    }
+
     private fun onSeriesClicked(
         href: String,
         initialInfo: SeriesInitialInfo
     ) {
-        navigation.push(ScreenConfig.Series(href, initialInfo))
+        navigation.push(ScreenConfig.Series(href, initialInfo, false))
     }
 
     private fun onEpisodeClicked(series: Series, episode: Series.Episode, streams: List<VideoStream>) {

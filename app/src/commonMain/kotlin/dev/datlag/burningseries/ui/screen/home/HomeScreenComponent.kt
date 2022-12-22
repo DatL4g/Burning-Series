@@ -21,6 +21,7 @@ import java.io.InputStream
 class HomeScreenComponent(
     componentContext: ComponentContext,
     private val onSearch: () -> Unit,
+    override val onEpisodeClicked: (String, SeriesInitialInfo) -> Unit,
     override val onSeriesClicked: (String, SeriesInitialInfo) -> Unit,
     override val di: DI
 ) : HomeComponent, ComponentContext by componentContext {
@@ -41,7 +42,7 @@ class HomeScreenComponent(
 
     override val pagerList = lazy(LazyThreadSafetyMode.NONE) {
         listOf<Component>(
-            EpisodesViewComponent(componentContext, di),
+            EpisodesViewComponent(componentContext, onEpisodeClicked, di),
             SeriesViewComponent(componentContext, onSeriesClicked, di)
         )
     }
@@ -58,7 +59,11 @@ class HomeScreenComponent(
 
     private fun createChild(view: View, componentContext: ComponentContext): Component {
         return when (view) {
-            is View.Episode -> EpisodesViewComponent(componentContext, di)
+            is View.Episode -> EpisodesViewComponent(
+                componentContext,
+                onEpisodeClicked,
+                di
+            )
             is View.Series -> SeriesViewComponent(
                 componentContext,
                 onSeriesClicked,

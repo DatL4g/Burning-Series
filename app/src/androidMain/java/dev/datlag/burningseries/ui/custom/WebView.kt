@@ -8,14 +8,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import dev.datlag.burningseries.LocalResources
-import dev.datlag.burningseries.other.EmptyInputStream
-import dev.datlag.burningseries.other.Logger
-import dev.datlag.burningseries.other.Resources
-import dev.datlag.burningseries.other.WebViewClient
 import dev.datlag.burningseries.ui.screen.activate.ActivateComponent
 import kotlinx.coroutines.*
 import java.io.InputStream
 import dev.datlag.burningseries.R
+import dev.datlag.burningseries.other.*
 
 @Composable
 actual fun WebView(component: ActivateComponent) {
@@ -34,7 +31,7 @@ actual fun WebView(component: ActivateComponent) {
 
     AndroidView(factory = { context ->
         WebView(context).apply {
-            webViewClient = WebViewClient(setOf("bs.to"), component.client)
+            webViewClient = WebViewClient(setOf(Constants.HOST_BS_TO), component.client)
             clearHistory()
             clearCache(true)
             clearMatches()
@@ -52,7 +49,7 @@ actual fun WebView(component: ActivateComponent) {
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
 
-            loadUrl("https://bs.to/${component.episode.href}")
+            loadUrl(Constants.getBurningSeriesUrl(component.episode.href))
         }
     }) { webView ->
         scope.launch(Dispatchers.IO) {

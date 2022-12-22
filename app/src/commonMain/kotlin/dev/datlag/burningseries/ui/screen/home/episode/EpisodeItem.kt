@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.screen.home.episode
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import dev.datlag.burningseries.common.onClick
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,14 +16,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.ui.custom.CoverImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EpisodeItem(content: Home.Episode) {
+fun EpisodeItem(content: Home.Episode, component: EpisodesComponent) {
     val (series, episode) = remember { content.getSeriesAndEpisode() }
 
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = Modifier.fillMaxWidth().onClick {
+        component.onEpisodeClicked(content.href, SeriesInitialInfo(series, content.cover))
+    }) {
         CoverImage(
             cover = content.cover,
             description = content.title,

@@ -14,6 +14,7 @@ import java.io.InputStream
 
 interface HomeComponent : Component {
 
+    val onEpisodeClicked: (String, SeriesInitialInfo) -> Unit
     val onSeriesClicked: (String, SeriesInitialInfo) -> Unit
 
     val childStack: Lazy<Value<ChildStack<*, Component>>>

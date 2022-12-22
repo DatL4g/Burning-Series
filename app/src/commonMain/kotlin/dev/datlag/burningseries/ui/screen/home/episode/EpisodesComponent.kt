@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.ui.screen.home.episode
 
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.network.repository.HomeRepository
 import dev.datlag.burningseries.ui.navigation.Component
@@ -11,4 +12,5 @@ interface EpisodesComponent : Component {
     val status: Flow<Status>
     val episodes: Flow<List<Home.Episode>>
 
+    fun onEpisodeClicked(href: String, initialInfo: SeriesInitialInfo)
 }

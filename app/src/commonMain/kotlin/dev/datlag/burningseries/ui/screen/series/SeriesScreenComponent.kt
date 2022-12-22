@@ -29,6 +29,7 @@ class SeriesScreenComponent(
     componentContext: ComponentContext,
     private val href: String,
     override val initialInfo: SeriesInitialInfo,
+    private val isEpisode: Boolean,
     override val onGoBack: () -> Unit,
     override val onEpisodeClicked: (Series, Series.Episode, List<VideoStream>) -> Unit,
     private val onActivateClicked: (Series, Series.Episode) -> Unit,
@@ -89,10 +90,24 @@ class SeriesScreenComponent(
     override val episodes: Flow<List<Series.Episode>> = seriesRepo.series.map { it?.episodes ?: emptyList() }
 
     private val episodeRepo: EpisodeRepository by di.instance()
+    private var loadedWantedEpisode = false
 
     init {
         scope.launch(Dispatchers.IO) {
             seriesRepo.loadFromHref(href)
+        }
+        if (isEpisode) {
+            scope.launch(Dispatchers.IO) {
+                episodes.collect { list ->
+                    if (!loadedWantedEpisode) {
+                        val wantedEpisode = list.find { it.href.equals(href, true) }
+                        wantedEpisode?.let {
+                            loadedWantedEpisode = true
+                            loadEpisode(it)
+                        }
+                    }
+                }
+            }
         }
     }
 
