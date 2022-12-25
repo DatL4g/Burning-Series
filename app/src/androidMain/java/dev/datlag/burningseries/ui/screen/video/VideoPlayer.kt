@@ -96,6 +96,7 @@ fun VideoPlayer(component: VideoComponent) {
                     override fun onRenderedFirstFrame() {
                         super.onRenderedFirstFrame()
 
+                        component.seekTo(component.initialPosition)
                         component.length.value = (this@apply as ExoPlayer).duration
                         scope.launch(Dispatchers.IO) {
                             while(this.isActive) {

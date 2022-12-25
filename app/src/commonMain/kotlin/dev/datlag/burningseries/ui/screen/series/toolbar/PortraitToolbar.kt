@@ -83,7 +83,7 @@ fun PortraitToolbar(
                     .padding(16.dp).onSizeChanged {
                         titleHeight = it.height
                     },
-                color = MaterialTheme.colorScheme.onTertiary.copy(alpha = run {
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = run {
                     val alpha = state.toolbarState.progress
                     if (alpha < 0.7F) {
                         if (alpha < 0.3F) {
@@ -122,7 +122,8 @@ fun PortraitToolbar(
             )) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = LocalStringRes.current.back
+                    contentDescription = LocalStringRes.current.back,
+                    tint = MaterialTheme.colorScheme.onTertiary
                 )
             }
         },
@@ -135,18 +136,11 @@ fun PortraitToolbar(
             )) {
                 val isFavorite by component.isFavorite.collectAsState(false)
 
-                if (isFavorite) {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = null
-                    )
-                }
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = null,
+                    tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onTertiary
+                )
             }
             if (linkedSeries.isNotEmpty()) {
                 IconButton(onClick = {
@@ -157,7 +151,8 @@ fun PortraitToolbar(
                 )) {
                     Icon(
                         imageVector = Icons.Default.Link,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onTertiary
                     )
                 }
             }

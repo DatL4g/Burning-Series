@@ -91,6 +91,13 @@ fun VideoPlayer(
                         component.length.value = newLength
                     }
                 }
+
+                override fun opening(mediaPlayer: MediaPlayer?) {
+                    super.opening(mediaPlayer)
+                    scope.launch(Dispatchers.Main) {
+                        component.seekTo(component.initialPosition)
+                    }
+                }
             })
 
             component.playPauseListener = {

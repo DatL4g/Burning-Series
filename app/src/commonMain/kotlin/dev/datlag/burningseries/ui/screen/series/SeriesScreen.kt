@@ -9,8 +9,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Chip
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -182,6 +185,13 @@ private fun LazyListScope.SeriesScreenContent(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val watchState = episode.getWatchState()
+            val (watchIcon, watchTint) = when (watchState) {
+                is Series.Episode.WatchState.NONE -> Icons.Default.Clear to Color.Transparent
+                is Series.Episode.WatchState.STARTED -> Icons.Default.PlayArrow to MaterialTheme.colorScheme.onBackground
+                is Series.Episode.WatchState.FINISHED -> Icons.Default.Check to MaterialTheme.colorScheme.onBackground
+            }
+
             Text(
                 text = episode.number,
                 fontWeight = FontWeight.Bold
@@ -192,9 +202,9 @@ private fun LazyListScope.SeriesScreenContent(
                 maxLines = 1
             )
             Icon(
-                imageVector = Icons.Default.Clear,
+                imageVector = watchIcon,
                 contentDescription = null,
-                tint = Color.Transparent
+                tint = watchTint
             )
         }
     }

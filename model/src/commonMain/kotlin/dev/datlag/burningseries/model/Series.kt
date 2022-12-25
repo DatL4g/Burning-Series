@@ -5,6 +5,7 @@ import com.arkivanov.essenty.parcelable.Parcelize
 import dev.datlag.burningseries.model.common.getDigitsOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Parcelize
 @Serializable
@@ -98,6 +99,41 @@ data class Series(
         @SerialName("href") val href: String,
         @SerialName("hoster") val hoster: List<Hoster>
     ) : Parcelable {
+
+        @Transient
+        var length: Long = 0L
+
+        @Transient
+        var watchPosition: Long = 0L
+
+        val isFinished: Boolean
+            get() = watchPercentage() > 85F
+
+        fun watchPercentage(): Float {
+            if (watchPosition == 0L || length == 0L) {
+                return 0F
+            } else if (length in 1 until watchPosition) {
+                return 100F
+            }
+            return ((watchPosition.toDouble() * 100) / length.toDouble()).toFloat()
+        }
+
+        fun getWatchState(): WatchState = WatchState.getByPercentage(watchPercentage())
+
+        @Parcelize
+        sealed interface WatchState {
+            object NONE : WatchState
+            object STARTED : WatchState
+            object FINISHED : WatchState
+
+            companion object {
+                fun getByPercentage(percentage: Float): WatchState = when {
+                    percentage > 85F -> WatchState.FINISHED
+                    percentage > 0F -> WatchState.STARTED
+                    else -> WatchState.NONE
+                }
+            }
+        }
 
         @Parcelize
         @Serializable

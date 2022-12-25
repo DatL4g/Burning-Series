@@ -35,7 +35,7 @@ actual object PlatformModule {
 
         bindSingleton("ImageDir") {
             val dirs: AppDirs = instance()
-            val returnFile = File(dirs.getUserDataDir("BurningSeries", null, null), "images")
+            val returnFile = File(dirs.getSiteDataDir("BurningSeries", null, null), "images")
             if (!returnFile.exists()) {
                 try {
                     returnFile.mkdirs()

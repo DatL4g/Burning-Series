@@ -26,7 +26,7 @@ class SeriesViewComponent(
     private val db: BurningSeriesDB by di.instance()
     override val imageDir: File by di.instance("ImageDir")
 
-    override val latestFavorites = db.burningSeriesQueries.selectLatestAmount(5).asFlow().mapToList(Dispatchers.IO)
+    override val latestFavorites = db.burningSeriesQueries.selectLatestSeriesAmount(5).asFlow().mapToList(Dispatchers.IO)
 
     override fun onSeriesClicked(href: String, info: SeriesInitialInfo) {
         onSeries(href, info)

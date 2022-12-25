@@ -24,6 +24,8 @@ interface VideoComponent : Component {
     val position: MutableValue<Long>
     val length: MutableValue<Long>
 
+    val initialPosition: Long
+
     fun triggerPlayPause()
     fun forward()
     fun rewind()

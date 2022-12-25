@@ -61,6 +61,7 @@ fun GenreScreen(component: GenreComponent) {
                         imageVector = Icons.Default.Search,
                         contentDescription = strings.search
                     )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         text = strings.search
                     )

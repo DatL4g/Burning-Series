@@ -8,6 +8,7 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.arkivanov.essenty.statekeeper.consume
 import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import dev.datlag.burningseries.common.*
@@ -95,7 +96,8 @@ class SeriesScreenComponent(
     override val additionalInfo: Flow<List<Series.Info>?> = seriesInfo.map { it?.filterNot { info ->
         info.isGenre()
     } }
-    override val episodes: Flow<List<Series.Episode>> = seriesRepo.series.map { it?.episodes ?: emptyList() }
+
+    private val seriesEpisodes = seriesRepo.series.map { it?.episodes ?: emptyList() }
 
     private val episodeRepo: EpisodeRepository by di.instance()
 
@@ -114,10 +116,28 @@ class SeriesScreenComponent(
     private val dbSeries = seriesRepo.series.map {
         (it?.href ?: href).buildTitleHref()
     }.transform {
-        return@transform emitAll(db.burningSeriesQueries.selectByHref(it).asFlow().mapToOneOrNull(Dispatchers.IO))
+        return@transform emitAll(db.burningSeriesQueries.selectSeriesByHref(it).asFlow().mapToOneOrNull(Dispatchers.IO))
     }.flowOn(Dispatchers.IO)
 
     override val isFavorite = dbSeries.map { (it?.favoriteSince ?: 0) > 0 }
+    private val dbEpisodes = dbSeries.map { it?.href ?: href.buildTitleHref() }.transform {
+        return@transform emitAll(db.burningSeriesQueries.selectEpisodesBySeriesHref(it).asFlow().mapToList(Dispatchers.IO))
+    }.flowOn(Dispatchers.IO)
+
+    override val episodes: Flow<List<Series.Episode>> = combine(seriesEpisodes, dbEpisodes) { t1, t2 ->
+        t1.mapAsync {
+            val matchingDbEpisode = t2.find { db -> it.href.trimHref().equals(db.href.trimHref(), true) }
+            matchingDbEpisode?.let { db ->
+                it.length = db.length
+                it.watchPosition = db.watchProgress
+
+                if (it.isFinished) {
+                    // ToDo("mark as watched on bs.to")
+                }
+            }
+            it
+        }
+    }.flowOn(Dispatchers.IO)
 
     init {
         scope.launch(Dispatchers.IO) {
@@ -190,7 +210,7 @@ class SeriesScreenComponent(
             val coverFile = File(imageDir, "$normalizedHref.bs")
 
             if (isFavorite.first()) {
-                db.burningSeriesQueries.delete(href)
+                db.burningSeriesQueries.deleteSeries(href)
                 try {
                     coverFile.delete()
                 } catch (ignored: Throwable) { }
@@ -200,7 +220,7 @@ class SeriesScreenComponent(
                         coverFile.writeText(coverBase64)
                     } catch (ignored: Throwable) { }
                 }
-                db.burningSeriesQueries.insert(
+                db.burningSeriesQueries.insertSeries(
                     href,
                     seriesRepo.series.value?.title ?: initialInfo.title,
                     (seriesRepo.series.value?.cover?.href ?: String()).ifEmpty {

@@ -1,13 +1,20 @@
 package dev.datlag.burningseries.ui.screen.home.series
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.common.header
@@ -27,16 +34,35 @@ fun SeriesView(component: SeriesComponent) {
         if (favorites.isNotEmpty()) {
             header {
                 Text(
-                    text = "Favorites"
+                    text = "Favorites",
+                    fontWeight = FontWeight.Bold
                 )
             }
             items(favorites) {
                 SeriesItem(it, component)
             }
+            item {
+                Box(modifier = Modifier.fillMaxSize().defaultMinSize(minHeight = 320.dp), contentAlignment = Alignment.Center) {
+                    Button(onClick = {
+
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(
+                            text = "Favorites",
+                            maxLines = 1
+                        )
+                    }
+                }
+            }
         }
         header {
             Text(
-                text = "Latest Series"
+                text = "Latest Series",
+                fontWeight = FontWeight.Bold
             )
         }
         items(series) {
