@@ -10,6 +10,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -43,6 +44,8 @@ fun LandscapeToolbar(
     selectedLanguage: String?,
     selectedSeason: Series.Season?,
     seasonText: String?,
+    linkedSeries: List<Series.Linked>,
+    isFavorite: Boolean,
     content: LazyListScope.() -> Unit,
 ) {
     val state = rememberLazyListState()
@@ -64,6 +67,7 @@ fun LandscapeToolbar(
                             cover = cover,
                             description = title,
                             scale = ContentScale.FillWidth,
+                            fallbackIconTint = MaterialTheme.colorScheme.onBackground,
                             shape = RoundedCornerShape(16.dp)
                         )
                     }
@@ -107,7 +111,8 @@ fun LandscapeToolbar(
                 )) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
-                        contentDescription = LocalStringRes.current.back
+                        contentDescription = LocalStringRes.current.back,
+                        tint = MaterialTheme.colorScheme.onTertiary
                     )
                 }
             },
@@ -122,26 +127,30 @@ fun LandscapeToolbar(
             },
             actions = {
                 IconButton(onClick = {
-
+                    component.toggleFavorite()
                 }, modifier = Modifier.background(
                     color = if (state.firstVisibleItemIndex >= 1) Color.Transparent else Color.SemiBlack,
                     shape = Shape.FullRoundedShape
                 )) {
                     Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = null
+                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = null,
+                        tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onTertiary
                     )
                 }
-                IconButton(onClick = {
+                if (linkedSeries.isNotEmpty()) {
+                    IconButton(onClick = {
 
-                }, modifier = Modifier.background(
-                    color = if (state.firstVisibleItemIndex >= 1) Color.Transparent else Color.SemiBlack,
-                    shape = Shape.FullRoundedShape
-                )) {
-                    Icon(
-                        imageVector = Icons.Default.Link,
-                        contentDescription = null
-                    )
+                    }, modifier = Modifier.background(
+                        color = if (state.firstVisibleItemIndex >= 1) Color.Transparent else Color.SemiBlack,
+                        shape = Shape.FullRoundedShape
+                    )) {
+                        Icon(
+                            imageVector = Icons.Default.Link,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onTertiary
+                        )
+                    }
                 }
             }
         )

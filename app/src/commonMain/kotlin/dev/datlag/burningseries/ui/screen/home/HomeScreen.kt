@@ -10,6 +10,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.rememberScaffoldState
@@ -83,6 +84,18 @@ fun HomeScreen(component: HomeComponent) {
                                 Icon(
                                     imageVector = Icons.Default.Settings,
                                     contentDescription = strings.settings
+                                )
+                            })
+                            DropdownMenuItem(onClick = {
+                                component.onAboutClicked()
+                            }, enabled = true, text = {
+                                Text(
+                                    text = "About"
+                                )
+                            }, icon = {
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = null
                                 )
                             })
                         }

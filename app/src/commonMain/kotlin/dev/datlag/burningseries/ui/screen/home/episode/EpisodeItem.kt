@@ -2,11 +2,8 @@ package dev.datlag.burningseries.ui.screen.home.episode
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import dev.datlag.burningseries.common.onClick
-import androidx.compose.material3.Card
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -31,6 +28,7 @@ fun EpisodeItem(content: Home.Episode, component: EpisodesComponent) {
             cover = content.cover,
             description = content.title,
             scale = ContentScale.FillBounds,
+            fallbackIconTint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth().height(300.dp)
         )
         Text(

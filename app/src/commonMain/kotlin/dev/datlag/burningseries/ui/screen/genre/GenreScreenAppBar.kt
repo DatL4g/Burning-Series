@@ -31,7 +31,8 @@ fun GenreScreenAppBar(component: GenreComponent) {
                     }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = strings.back
+                            contentDescription = strings.back,
+                            tint = MaterialTheme.colorScheme.onTertiary
                         )
                     }
                 },

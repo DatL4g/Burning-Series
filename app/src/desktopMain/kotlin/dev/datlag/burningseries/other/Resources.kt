@@ -21,10 +21,13 @@ actual class Resources {
         actual val DEFAULT_STRINGS: String
             get() = "values/strings.xml"
         actual val GITHUB_ICON: String
-            get() = "svgs/GitHub.svg"
+            get() = "svg/GitHub.svg"
 
         actual val JAVASCRIPT_SCRAPE_HOSTER: String
             get() = "raw/scrape_hoster.js"
+
+        actual val ABOUT_LIBRARIES: String
+            get() = "aboutlibraries.json"
     }
 
 }

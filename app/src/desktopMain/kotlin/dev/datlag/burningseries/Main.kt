@@ -2,6 +2,7 @@ package dev.datlag.burningseries
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.input.key.Key
@@ -16,6 +17,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import dev.datlag.burningseries.module.DataStoreModule
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.module.PlatformModule
+import dev.datlag.burningseries.other.AppIO
 import dev.datlag.burningseries.other.Orientation
 import dev.datlag.burningseries.other.Resources
 import dev.datlag.burningseries.other.StringRes
@@ -48,7 +50,14 @@ fun main() {
             keyEventListener?.invoke(it) ?: false
         }
     ) {
+        val scope = rememberCoroutineScope()
         LifecycleController(lifecycle, windowState)
+
+        AppIO.loadAppIcon(
+            this.window,
+            resources,
+            scope
+        )
 
         CompositionLocalProvider(
             LocalWindow provides this.window,

@@ -34,6 +34,12 @@ interface SeriesComponent : Component {
     val additionalInfo: Flow<List<Series.Info>?>
     val episodes: Flow<List<Series.Episode>>
 
+    val linkedSeries: Flow<List<Series.Linked>>
+
+    val isFavorite: Flow<Boolean>
+
     fun showDialog(config: DialogConfig)
     fun loadEpisode(episode: Series.Episode)
+
+    fun toggleFavorite()
 }

@@ -22,6 +22,7 @@ import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.model.VideoStream
+import dev.datlag.burningseries.ui.screen.about.AboutScreenComponent
 import dev.datlag.burningseries.ui.screen.activate.ActivateScreenComponent
 import dev.datlag.burningseries.ui.screen.genre.GenreScreenComponent
 import dev.datlag.burningseries.ui.screen.home.HomeScreenComponent
@@ -61,6 +62,7 @@ class NavHostComponent private constructor(
                 ::onSearchClicked,
                 ::onEpisodeClicked,
                 ::onSeriesClicked,
+                ::onAboutClicked,
                 di
             )
         }
@@ -95,6 +97,11 @@ class NavHostComponent private constructor(
                 componentContext,
                 screenConfig.series,
                 screenConfig.episode,
+                ::onGoBackClicked,
+                di
+            )
+            is ScreenConfig.About -> AboutScreenComponent(
+                componentContext,
                 ::onGoBackClicked,
                 di
             )
@@ -134,6 +141,10 @@ class NavHostComponent private constructor(
 
     private fun onActivateClicked(series: Series, episode: Series.Episode) {
         navigation.push(ScreenConfig.Activate(series, episode))
+    }
+
+    private fun onAboutClicked() {
+        navigation.push(ScreenConfig.About)
     }
 
     init {

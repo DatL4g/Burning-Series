@@ -30,4 +30,6 @@ sealed class ScreenConfig : Parcelable {
         val series: dev.datlag.burningseries.model.Series,
         val episode: dev.datlag.burningseries.model.Series.Episode
     ) : ScreenConfig()
+
+    object About : ScreenConfig()
 }

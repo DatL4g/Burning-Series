@@ -23,6 +23,7 @@ class HomeScreenComponent(
     private val onSearch: () -> Unit,
     override val onEpisodeClicked: (String, SeriesInitialInfo) -> Unit,
     override val onSeriesClicked: (String, SeriesInitialInfo) -> Unit,
+    override val onAboutClicked: () -> Unit,
     override val di: DI
 ) : HomeComponent, ComponentContext by componentContext {
 

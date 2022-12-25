@@ -2,8 +2,10 @@ package dev.datlag.burningseries.module
 
 import android.content.Context
 import androidx.datastore.dataStoreFile
+import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.datastore.CryptoManager
 import org.kodein.di.*
+import java.io.File
 
 actual object PlatformModule {
 
@@ -14,9 +16,30 @@ actual object PlatformModule {
             CryptoManager()
         }
 
-        bindProvider("UserSettingsFile") {
+        bindSingleton("UserSettingsFile") {
             val app: Context = instance()
             app.dataStoreFile("UserSettings.pb")
+        }
+
+        bindSingleton {
+            DriverFactory(instance()).createDriver()
+        }
+
+        bindSingleton("ImageDir") {
+            val app: Context = instance()
+            var returnFile = File(app.filesDir, "images")
+            if (!returnFile.exists()) {
+                try {
+                    returnFile.mkdirs()
+                } catch (ignored: Throwable) {
+                    try {
+                        returnFile.mkdir()
+                    } catch (ignored: Throwable) {
+                        returnFile = app.getDir("images", Context.MODE_PRIVATE) ?: returnFile
+                    }
+                }
+            }
+            returnFile
         }
     }
 

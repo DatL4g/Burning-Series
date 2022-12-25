@@ -12,22 +12,31 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.serialization.json.Json
+import okhttp3.Cache
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.dnsoverhttps.DnsOverHttps
 import java.net.InetAddress
+import java.nio.file.attribute.FileAttribute
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.createTempDirectory
 
 object NetworkModule {
 
     private const val TAG_KTORFIT_BURNINGSERIES = "BurningSeriesKtorfit"
+    const val TAG_OKHTTP_CACHE_FOLDER = "OkHttpCacheFolder"
     const val TAG_OKHTTP_BOOTSTRAP_CLIENT = "OkHttpBootstrapClient"
     const val NAME = "NetworkModule"
 
     val di = DI.Module(NAME) {
+        bindSingleton(TAG_OKHTTP_CACHE_FOLDER) {
+            createTempDirectory(
+                prefix = "httpDnsCache"
+            ).toFile()
+        }
+
         bindSingleton(TAG_OKHTTP_BOOTSTRAP_CLIENT) {
-            // ToDo("add cache file")
-            okhttp3.OkHttpClient.Builder().build()
+            okhttp3.OkHttpClient.Builder().cache(Cache(instance(TAG_OKHTTP_CACHE_FOLDER), 4096)).build()
         }
 
         bindSingleton {

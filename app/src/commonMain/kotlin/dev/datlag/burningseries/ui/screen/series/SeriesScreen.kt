@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalOrientation
+import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.other.Orientation
 import dev.datlag.burningseries.ui.custom.readmoretext.ReadMoreText
@@ -60,6 +61,9 @@ fun SeriesScreen(component: SeriesComponent) {
     val _additionalInfo by component.additionalInfo.collectAsState(null)
     val additionalInfo = _additionalInfo ?: emptyList()
 
+    val linkedSeries by component.linkedSeries.collectAsState(emptyList())
+    val isFavorite by component.isFavorite.collectAsState(false)
+
     when (LocalOrientation.current) {
         is Orientation.PORTRAIT -> PortraitToolbar(
             component,
@@ -69,7 +73,9 @@ fun SeriesScreen(component: SeriesComponent) {
             seasons,
             selectedLanguage,
             selectedSeason,
-            seasonText
+            seasonText,
+            linkedSeries,
+            isFavorite
         ) {
             SeriesScreenContent(
                 component,
@@ -87,7 +93,9 @@ fun SeriesScreen(component: SeriesComponent) {
             seasons,
             selectedLanguage,
             selectedSeason,
-            seasonText
+            seasonText,
+            linkedSeries,
+            isFavorite
         ) {
             SeriesScreenContent(
                 component,

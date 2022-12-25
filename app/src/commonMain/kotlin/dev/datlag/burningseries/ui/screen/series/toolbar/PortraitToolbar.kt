@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,6 +42,8 @@ fun PortraitToolbar(
     selectedLanguage: String?,
     selectedSeason: Series.Season?,
     seasonText: String?,
+    linkedSeries: List<Series.Linked>,
+    isFavorite: Boolean,
     content: LazyListScope.() -> Unit
 ) {
 
@@ -66,6 +69,7 @@ fun PortraitToolbar(
                     cover = cover,
                     description = title,
                     scale = ContentScale.FillWidth,
+                    fallbackIconTint = MaterialTheme.colorScheme.onBackground,
                     shape = ArcShape(with(LocalDensity.current) {
                         20.dp.toPx()
                     })
@@ -124,26 +128,38 @@ fun PortraitToolbar(
         },
         actions = {
             IconButton(onClick = {
-
+                component.toggleFavorite()
             }, modifier = Modifier.background(
                     color = if (state.toolbarState.progress == 1F) Color.SemiBlack else Color.Black.copy(alpha = state.toolbarState.progress / 10F),
                 shape = Shape.FullRoundedShape
             )) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = null
-                )
-            }
-            IconButton(onClick = {
+                val isFavorite by component.isFavorite.collectAsState(false)
 
-            }, modifier = Modifier.background(
-                color = if (state.toolbarState.progress == 1F) Color.SemiBlack else Color.Black.copy(alpha = state.toolbarState.progress / 10F),
-                shape = Shape.FullRoundedShape
-            )) {
-                Icon(
-                    imageVector = Icons.Default.Link,
-                    contentDescription = null
-                )
+                if (isFavorite) {
+                    Icon(
+                        imageVector = Icons.Default.Favorite,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.FavoriteBorder,
+                        contentDescription = null
+                    )
+                }
+            }
+            if (linkedSeries.isNotEmpty()) {
+                IconButton(onClick = {
+
+                }, modifier = Modifier.background(
+                    color = if (state.toolbarState.progress == 1F) Color.SemiBlack else Color.Black.copy(alpha = state.toolbarState.progress / 10F),
+                    shape = Shape.FullRoundedShape
+                )) {
+                    Icon(
+                        imageVector = Icons.Default.Link,
+                        contentDescription = null
+                    )
+                }
             }
         }
     ) {

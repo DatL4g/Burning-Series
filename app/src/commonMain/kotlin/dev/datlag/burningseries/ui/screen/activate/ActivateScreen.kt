@@ -41,12 +41,17 @@ fun ActivateScreen(component: ActivateComponent) {
                     }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onTertiary
                         )
                     }
                 },
                 title = {
-                    Text(text = component.series.title)
+                    Text(
+                        text = component.series.title,
+                        maxLines = 1,
+                        color = MaterialTheme.colorScheme.onTertiary
+                    )
                 },
                 backgroundColor = MaterialTheme.colorScheme.tertiary,
                 contentColor = MaterialTheme.colorScheme.onTertiary,

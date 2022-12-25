@@ -2,13 +2,15 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
-    kotlin("multiplatform") version "1.7.10" apply false
-    kotlin("plugin.serialization") version "1.7.10" apply false
-    kotlin("android") version "1.7.10" apply false
-    id("org.jetbrains.compose") version "1.2.1" apply false
-    id("com.google.devtools.ksp") version "1.7.10-1.0.6" apply false
+    kotlin("multiplatform") version "1.7.22" apply false
+    kotlin("plugin.serialization") version "1.7.22" apply false
+    kotlin("android") version "1.7.22" apply false
+    id("org.jetbrains.compose") version "1.2.2" apply false
+    id("com.google.devtools.ksp") version "1.7.22-1.0.8" apply false
     id("com.google.protobuf") version "0.9.1" apply false
     id("de.undercouch.download") version "5.3.0" apply false
+    id("com.squareup.sqldelight") version "1.5.4" apply false
+    id("com.mikepenz.aboutlibraries.plugin") version "10.5.2" apply false
     id("com.github.ben-manes.versions") version "0.44.0"
 }
 
@@ -24,12 +26,6 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:7.3.1")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
-
-        classpath("com.google.protobuf:protobuf-gradle-plugin:0.9.1")
-        classpath("io.michaelrocks:paranoid-gradle-plugin:0.3.7")
-        classpath("com.klaxit.hiddensecrets:HiddenSecretsPlugin:0.2.1")
-        classpath("com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:10.5.1")
 
         // wait for https://github.com/Faire/gradle-kotlin-buildozer/pull/13
     }

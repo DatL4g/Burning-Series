@@ -10,6 +10,7 @@ expect class Resources {
         val DEFAULT_STRINGS: String
         val GITHUB_ICON: String
         val JAVASCRIPT_SCRAPE_HOSTER: String
+        val ABOUT_LIBRARIES: String
     }
 
 }

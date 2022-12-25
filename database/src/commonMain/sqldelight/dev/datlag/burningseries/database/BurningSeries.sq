@@ -1,0 +1,22 @@
+CREATE TABLE DBSeries(
+    href TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    coverHref TEXT,
+    favoriteSince INTEGER NOT NULL
+);
+
+selectAll:
+SELECT * FROM DBSeries;
+
+selectByHref:
+SELECT * FROM DBSeries WHERE href = :href OR href LIKE :href;
+
+selectLatestAmount:
+SELECT * FROM DBSeries WHERE favoriteSince > 0 ORDER BY favoriteSince DESC LIMIT :amount;
+
+insert:
+INSERT OR REPLACE INTO DBSeries(href, title, coverHref, favoriteSince)
+VALUES (?, ?, ?, ?);
+
+delete:
+DELETE FROM DBSeries WHERE href = :href;

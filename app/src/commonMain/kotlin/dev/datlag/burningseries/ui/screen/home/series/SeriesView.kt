@@ -16,6 +16,7 @@ import dev.datlag.burningseries.ui.screen.home.gridCellSize
 @Composable
 fun SeriesView(component: SeriesComponent) {
     val series by component.series.collectAsState(component.series.getValueBlocking(emptyList()))
+    val favorites by component.latestFavorites.collectAsState(component.latestFavorites.getValueBlocking(emptyList()))
 
     LazyVerticalGrid(
         columns = gridCellSize(),
@@ -23,6 +24,16 @@ fun SeriesView(component: SeriesComponent) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        if (favorites.isNotEmpty()) {
+            header {
+                Text(
+                    text = "Favorites"
+                )
+            }
+            items(favorites) {
+                SeriesItem(it, component)
+            }
+        }
         header {
             Text(
                 text = "Latest Series"
@@ -30,11 +41,6 @@ fun SeriesView(component: SeriesComponent) {
         }
         items(series) {
             SeriesItem(it, component)
-        }
-        header {
-            Text(
-                text = "More Series"
-            )
         }
     }
 }

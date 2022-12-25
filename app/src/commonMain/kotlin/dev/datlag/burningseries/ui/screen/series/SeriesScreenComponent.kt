@@ -4,8 +4,14 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.*
 import com.arkivanov.decompose.value.Value
-import dev.datlag.burningseries.common.CommonDispatcher
-import dev.datlag.burningseries.common.coroutineScope
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
+import com.arkivanov.essenty.statekeeper.consume
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToOne
+import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
+import dev.datlag.burningseries.common.*
+import dev.datlag.burningseries.database.BurningSeriesDB
 import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesInitialInfo
@@ -22,8 +28,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 import org.kodein.di.DI
 import org.kodein.di.instance
+import java.io.File
 
 class SeriesScreenComponent(
     componentContext: ComponentContext,
@@ -90,7 +98,26 @@ class SeriesScreenComponent(
     override val episodes: Flow<List<Series.Episode>> = seriesRepo.series.map { it?.episodes ?: emptyList() }
 
     private val episodeRepo: EpisodeRepository by di.instance()
-    private var loadedWantedEpisode = false
+
+    private var state: State = stateKeeper.consume(key = STATE_KEY) ?: State()
+    private var loadedWantedEpisode: Boolean
+        get() = state.loadedEpisode
+        set(value) {
+            state = state.copy(loadedEpisode = value)
+        }
+
+    override val linkedSeries: Flow<List<Series.Linked>> = seriesRepo.series.map { it?.linkedSeries ?: emptyList() }
+
+    private val db: BurningSeriesDB by di.instance()
+    private val imageDir: File by di.instance("ImageDir")
+
+    private val dbSeries = seriesRepo.series.map {
+        (it?.href ?: href).buildTitleHref()
+    }.transform {
+        return@transform emitAll(db.burningSeriesQueries.selectByHref(it).asFlow().mapToOneOrNull(Dispatchers.IO))
+    }.flowOn(Dispatchers.IO)
+
+    override val isFavorite = dbSeries.map { (it?.favoriteSince ?: 0) > 0 }
 
     init {
         scope.launch(Dispatchers.IO) {
@@ -109,6 +136,7 @@ class SeriesScreenComponent(
                 }
             }
         }
+        stateKeeper.register(key = STATE_KEY) { state }
     }
 
     fun onLanguageSelected(language: Series.Language) {
@@ -154,8 +182,45 @@ class SeriesScreenComponent(
         }
     }
 
+    override fun toggleFavorite() {
+        scope.launch(Dispatchers.IO) {
+            val href = (seriesRepo.series.value?.href ?: this@SeriesScreenComponent.href).buildTitleHref()
+            val coverBase64 = (seriesRepo.series.value?.cover?.base64 ?: initialInfo.cover?.base64)?.ifEmpty { null }
+            val normalizedHref = href.fileName()
+            val coverFile = File(imageDir, "$normalizedHref.bs")
+
+            if (isFavorite.first()) {
+                db.burningSeriesQueries.delete(href)
+                try {
+                    coverFile.delete()
+                } catch (ignored: Throwable) { }
+            } else {
+                if (!coverBase64.isNullOrEmpty()) {
+                    try {
+                        coverFile.writeText(coverBase64)
+                    } catch (ignored: Throwable) { }
+                }
+                db.burningSeriesQueries.insert(
+                    href,
+                    seriesRepo.series.value?.title ?: initialInfo.title,
+                    (seriesRepo.series.value?.cover?.href ?: String()).ifEmpty {
+                        initialInfo.cover?.href
+                    },
+                    Clock.System.now().epochSeconds
+                )
+            }
+        }
+    }
+
     @Composable
     override fun render() {
         SeriesScreen(this)
+    }
+
+    @Parcelize
+    private data class State(val loadedEpisode: Boolean = false) : Parcelable
+
+    companion object {
+        private const val STATE_KEY = "STATE_KEY"
     }
 }
