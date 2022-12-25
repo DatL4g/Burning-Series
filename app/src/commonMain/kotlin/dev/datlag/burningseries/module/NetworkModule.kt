@@ -30,9 +30,15 @@ object NetworkModule {
 
     val di = DI.Module(NAME) {
         bindSingleton(TAG_OKHTTP_CACHE_FOLDER) {
-            createTempDirectory(
+            val tempDir = createTempDirectory(
                 prefix = "httpDnsCache"
             ).toFile()
+
+            try {
+                tempDir.deleteOnExit()
+            } catch (ignored: Throwable) { }
+
+            tempDir
         }
 
         bindSingleton(TAG_OKHTTP_BOOTSTRAP_CLIENT) {

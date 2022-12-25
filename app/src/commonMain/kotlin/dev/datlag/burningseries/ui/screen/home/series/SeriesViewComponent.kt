@@ -9,6 +9,8 @@ import dev.datlag.burningseries.database.BurningSeriesDB
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.network.repository.HomeRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import org.kodein.di.DI
 import org.kodein.di.instance
 import java.io.File
@@ -26,7 +28,21 @@ class SeriesViewComponent(
     private val db: BurningSeriesDB by di.instance()
     override val imageDir: File by di.instance("ImageDir")
 
-    override val latestFavorites = db.burningSeriesQueries.selectLatestSeriesAmount(5).asFlow().mapToList(Dispatchers.IO)
+    private val lastWatchedSeries = db.burningSeriesQueries.selectLatestSeriesAmount(5).asFlow().mapToList(Dispatchers.IO)
+    private val lastFavoriteSeries = db.burningSeriesQueries.selectLatestFavoritesAmount(5).asFlow().mapToList(Dispatchers.IO)
+
+    override val latestFavorites = combine(lastWatchedSeries, lastFavoriteSeries) { t1, t2 ->
+        return@combine if (t2.isEmpty()) {
+            t1
+        } else if (t1.isEmpty()) {
+            t2
+        } else {
+            buildSet {
+                addAll(t1)
+                addAll(t2)
+            }.toList()
+        }
+    }.flowOn(Dispatchers.IO)
 
     override fun onSeriesClicked(href: String, info: SeriesInitialInfo) {
         onSeries(href, info)

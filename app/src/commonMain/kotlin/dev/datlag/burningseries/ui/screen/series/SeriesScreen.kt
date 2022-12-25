@@ -62,13 +62,7 @@ fun SeriesScreen(component: SeriesComponent) {
     val linkedSeries by component.linkedSeries.collectAsState(emptyList())
     val isFavorite by component.isFavorite.collectAsState(false)
 
-    var continueEpisode = episodes.findLast { it.watchPosition > 0L } ?: episodes.firstOrNull()
-    if (continueEpisode?.isFinished == true) {
-        val finishedIndex = episodes.indexOf(continueEpisode)
-        if (episodes.size > finishedIndex) {
-            continueEpisode = episodes[finishedIndex + 1]
-        }
-    }
+    val continueEpisode by component.continueEpisode.collectAsState(null)
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (LocalOrientation.current) {
@@ -117,7 +111,7 @@ fun SeriesScreen(component: SeriesComponent) {
 
         if (continueEpisode != null) {
             ExtendedFloatingActionButton(onClick = {
-                component.loadEpisode(continueEpisode)
+                component.loadEpisode(continueEpisode!!)
             }, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp)) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
@@ -125,10 +119,10 @@ fun SeriesScreen(component: SeriesComponent) {
                 )
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                 Text(
-                    text = if (continueEpisode.watchPosition > 0L) {
-                        "Continue [Ep. ${continueEpisode.episodeNumberOrListNumber?.toString() ?: String()}]"
+                    text = if (continueEpisode!!.watchPosition > 0L) {
+                        "Continue [Ep. ${continueEpisode!!.episodeNumberOrListNumber?.toString() ?: String()}]"
                     } else {
-                        "Start [Ep. ${continueEpisode.episodeNumberOrListNumber?.toString() ?: String()}]"
+                        "Start [Ep. ${continueEpisode!!.episodeNumberOrListNumber?.toString() ?: String()}]"
                     },
                     maxLines = 1
                 )

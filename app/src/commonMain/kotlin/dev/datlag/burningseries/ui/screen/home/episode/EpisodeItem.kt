@@ -12,21 +12,70 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.common.coverFileName
+import dev.datlag.burningseries.database.DBSeries
+import dev.datlag.burningseries.database.SelectLatestEpisodesAmount
+import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.ui.custom.CoverImage
+import java.io.File
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EpisodeItem(content: Home.Episode, component: EpisodesComponent) {
     val (series, episode) = remember { content.getSeriesAndEpisode() }
 
+    EpisodeItem(
+        content.title,
+        content.cover,
+        content.href,
+        series,
+        episode,
+        false,
+        component
+    )
+}
+
+@Composable
+fun EpisodeItem(content: SelectLatestEpisodesAmount, component: EpisodesComponent) {
+    val base64 = remember { File(component.imageDir, DBSeries(
+        content.href,
+        content.title,
+        content.coverHref,
+        content.favoriteSince
+    ).coverFileName()).readText() }
+
+    EpisodeItem(
+        content.episodeTitle,
+        Cover(
+            href = content.coverHref ?: String(),
+            base64 = base64
+        ),
+        content.episodeHref,
+        content.title,
+        content.episodeTitle,
+        true,
+        component
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EpisodeItem(
+    title: String,
+    cover: Cover,
+    href: String,
+    series: String,
+    episode: String,
+    continueWatching: Boolean,
+    component: EpisodesComponent
+) {
     Card(modifier = Modifier.fillMaxWidth().onClick {
-        component.onEpisodeClicked(content.href, SeriesInitialInfo(series, content.cover))
+        component.onEpisodeClicked(href, SeriesInitialInfo(series, cover), continueWatching)
     }) {
         CoverImage(
-            cover = content.cover,
-            description = content.title,
+            cover = cover,
+            description = title,
             scale = ContentScale.FillBounds,
             fallbackIconTint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth().height(300.dp)

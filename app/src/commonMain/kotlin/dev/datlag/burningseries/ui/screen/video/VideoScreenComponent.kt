@@ -6,16 +6,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
-import dev.datlag.burningseries.common.coroutineScope
+import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.VideoStream
-import dev.datlag.burningseries.common.CommonDispatcher
-import dev.datlag.burningseries.common.buildTitleHref
-import dev.datlag.burningseries.common.trimHref
 import dev.datlag.burningseries.database.BurningSeriesDB
 import kotlinx.coroutines.*
+import kotlinx.datetime.Clock
 import org.kodein.di.DI
 import org.kodein.di.instance
+import java.io.File
 
 class VideoScreenComponent(
     componentContext: ComponentContext,
@@ -33,6 +32,8 @@ class VideoScreenComponent(
     override var seekListener: ((Long) -> Unit)? = null
 
     private val db: BurningSeriesDB by di.instance()
+    private val imageDir: File by di.instance("ImageDir")
+
     private val dbEpisode = db.burningSeriesQueries.selectEpisodeByHref(
         episode.href.trimHref()
     ).executeAsOneOrNull()
@@ -64,13 +65,31 @@ class VideoScreenComponent(
             val episodeHref = episode.href.trimHref()
             val seriesHref = series.href.buildTitleHref()
             var addedLength = false
+            val coverFile = File(imageDir, "${seriesHref.fileName()}.bs")
+
+            if (!coverFile.exists()) {
+                val coverBase64 = series.cover.base64
+
+                if (coverBase64.isNotEmpty()) {
+                    try {
+                        coverFile.writeText(coverBase64)
+                    } catch (ignored: Throwable) { }
+                }
+            }
+
+            db.burningSeriesQueries.insertSeries(
+                seriesHref,
+                series.title,
+                series.cover.href,
+                0L
+            )
 
             db.burningSeriesQueries.insertEpisode(
                 episodeHref,
                 episode.title,
-                episode.number,
                 initialLength,
                 initialPosition,
+                Clock.System.now().epochSeconds,
                 seriesHref
             )
 
@@ -95,6 +114,10 @@ class VideoScreenComponent(
                     )
                     addedLength = true
                 }
+                db.burningSeriesQueries.updateEpisodeLastWatched(
+                    Clock.System.now().epochSeconds,
+                    episodeHref
+                )
                 delay(3000)
             }
         }

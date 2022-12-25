@@ -17,7 +17,8 @@ sealed class ScreenConfig : Parcelable {
     data class Series(
         val href: String,
         val initialInfo: SeriesInitialInfo,
-        val isEpisode: Boolean
+        val isEpisode: Boolean,
+        val continueWatching: Boolean
     ) : ScreenConfig()
 
     data class Video(

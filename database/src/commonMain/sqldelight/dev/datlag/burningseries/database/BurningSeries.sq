@@ -8,9 +8,9 @@ CREATE TABLE DBSeries(
 CREATE TABLE DBEpisode(
     href TEXT NOT NULL PRIMARY KEY,
     title TEXT NOT NULL,
-    number TEXT NOT NULL,
     length INTEGER NOT NULL,
     watchProgress INTEGER NOT NULL,
+    lastWatched INTEGER NOT NULL,
     seriesHref TEXT NOT NULL,
     FOREIGN KEY (seriesHref) REFERENCES DBSeries(href) ON DELETE NO ACTION
 );
@@ -22,6 +22,13 @@ selectSeriesByHref:
 SELECT * FROM DBSeries WHERE href = :href OR href LIKE :href;
 
 selectLatestSeriesAmount:
+SELECT DBSeries.*
+FROM DBSeries
+INNER JOIN (SELECT * FROM DBEpisode WHERE lastWatched = (SELECT MAX(lastWatched) FROM DBEpisode)) AS episode
+ON DBSeries.href = episode.seriesHref OR DBSeries.href LIKE episode.seriesHref
+WHERE episode.lastWatched > 0 ORDER BY episode.lastWatched DESC LIMIT :amount;
+
+selectLatestFavoritesAmount:
 SELECT * FROM DBSeries WHERE favoriteSince > 0 ORDER BY favoriteSince DESC LIMIT :amount;
 
 insertSeries:
@@ -37,8 +44,15 @@ SELECT * FROM DBEpisode WHERE href = :href OR href LIKE :href;
 selectEpisodesBySeriesHref:
 SELECT * FROM DBEpisode WHERE seriesHref = :href OR seriesHref LIKE :href;
 
+selectLatestEpisodesAmount:
+SELECT DBSeries.*, episode.title AS "episodeTitle", episode.href AS "episodeHref"
+FROM DBSeries
+INNER JOIN (SELECT * FROM DBEpisode WHERE lastWatched = (SELECT MAX(lastWatched) FROM DBEpisode)) AS episode
+ON DBSeries.href = episode.seriesHref OR DBSeries.href LIKE episode.seriesHref
+WHERE episode.lastWatched > 0 ORDER BY episode.lastWatched DESC LIMIT :amount;
+
 insertEpisode:
-INSERT OR IGNORE INTO DBEpisode(href, title, number, length, watchProgress, seriesHref)
+INSERT OR IGNORE INTO DBEpisode(href, title, length, watchProgress, lastWatched, seriesHref)
 VALUES (?, ?, ?, ?, ?, ?);
 
 updateEpisodeWatchProgress:
@@ -46,3 +60,6 @@ UPDATE DBEpisode SET watchProgress = :position WHERE href = :href OR href LIKE :
 
 updateEpisodeLength:
 UPDATE DBEpisode SET length = :length WHERE href = :href OR href LIKE :href;
+
+updateEpisodeLastWatched:
+UPDATE DBEpisode SET lastWatched = :time WHERE href = :href OR href LIKE :href;

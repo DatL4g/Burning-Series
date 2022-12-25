@@ -14,7 +14,7 @@ import java.io.InputStream
 
 interface HomeComponent : Component {
 
-    val onEpisodeClicked: (String, SeriesInitialInfo) -> Unit
+    val onEpisodeClicked: (String, SeriesInitialInfo, Boolean) -> Unit
     val onSeriesClicked: (String, SeriesInitialInfo) -> Unit
     val onAboutClicked: () -> Unit
 

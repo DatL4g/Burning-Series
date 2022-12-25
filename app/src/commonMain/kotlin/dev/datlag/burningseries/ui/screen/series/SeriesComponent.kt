@@ -33,6 +33,7 @@ interface SeriesComponent : Component {
     val genreInfo: Flow<Series.Info?>
     val additionalInfo: Flow<List<Series.Info>?>
     val episodes: Flow<List<Series.Episode>>
+    val continueEpisode: Flow<Series.Episode?>
 
     val linkedSeries: Flow<List<Series.Linked>>
 

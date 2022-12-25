@@ -80,6 +80,7 @@ class NavHostComponent private constructor(
                 screenConfig.href,
                 screenConfig.initialInfo,
                 screenConfig.isEpisode,
+                screenConfig.continueWatching,
                 ::onGoBackClicked,
                 ::onEpisodeClicked,
                 ::onActivateClicked,
@@ -123,16 +124,17 @@ class NavHostComponent private constructor(
 
     private fun onEpisodeClicked(
         href: String,
-        initialInfo: SeriesInitialInfo
+        initialInfo: SeriesInitialInfo,
+        continueWatching: Boolean
     ) {
-        navigation.push(ScreenConfig.Series(href, initialInfo, true))
+        navigation.push(ScreenConfig.Series(href, initialInfo, true, continueWatching))
     }
 
     private fun onSeriesClicked(
         href: String,
         initialInfo: SeriesInitialInfo
     ) {
-        navigation.push(ScreenConfig.Series(href, initialInfo, false))
+        navigation.push(ScreenConfig.Series(href, initialInfo, isEpisode = false, continueWatching = false))
     }
 
     private fun onEpisodeClicked(series: Series, episode: Series.Episode, streams: List<VideoStream>) {

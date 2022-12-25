@@ -21,7 +21,7 @@ import java.io.InputStream
 class HomeScreenComponent(
     componentContext: ComponentContext,
     private val onSearch: () -> Unit,
-    override val onEpisodeClicked: (String, SeriesInitialInfo) -> Unit,
+    override val onEpisodeClicked: (String, SeriesInitialInfo, Boolean) -> Unit,
     override val onSeriesClicked: (String, SeriesInitialInfo) -> Unit,
     override val onAboutClicked: () -> Unit,
     override val di: DI

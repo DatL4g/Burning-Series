@@ -39,6 +39,7 @@ class SeriesScreenComponent(
     private val href: String,
     override val initialInfo: SeriesInitialInfo,
     private val isEpisode: Boolean,
+    private val continueWatching: Boolean,
     override val onGoBack: () -> Unit,
     override val onEpisodeClicked: (Series, Series.Episode, List<VideoStream>) -> Unit,
     private val onActivateClicked: (Series, Series.Episode) -> Unit,
@@ -139,18 +140,40 @@ class SeriesScreenComponent(
         }
     }.flowOn(Dispatchers.IO)
 
+    override val continueEpisode: Flow<Series.Episode?> = episodes.map { list ->
+        var continueEpisode = list.findLast { it.watchPosition > 0L } ?: list.firstOrNull()
+        if (continueEpisode?.isFinished == true) {
+            val finishedIndex = list.indexOf(continueEpisode)
+            if (list.size > finishedIndex) {
+                continueEpisode = list[finishedIndex + 1]
+            }
+        }
+        continueEpisode
+    }.flowOn(Dispatchers.IO)
+
     init {
         scope.launch(Dispatchers.IO) {
             seriesRepo.loadFromHref(href)
         }
         if (isEpisode) {
-            scope.launch(Dispatchers.IO) {
-                episodes.collect { list ->
-                    if (!loadedWantedEpisode) {
-                        val wantedEpisode = list.find { it.href.equals(href, true) }
-                        wantedEpisode?.let {
+            if (continueWatching) {
+                scope.launch(Dispatchers.IO) {
+                    continueEpisode.collect { episode ->
+                        if (!loadedWantedEpisode && episode != null) {
                             loadedWantedEpisode = true
-                            loadEpisode(it)
+                            loadEpisode(episode)
+                        }
+                    }
+                }
+            } else {
+                scope.launch(Dispatchers.IO) {
+                    episodes.collect { list ->
+                        if (!loadedWantedEpisode) {
+                            val wantedEpisode = list.find { it.href.equals(href, true) }
+                            wantedEpisode?.let {
+                                loadedWantedEpisode = true
+                                loadEpisode(it)
+                            }
                         }
                     }
                 }
@@ -211,9 +234,6 @@ class SeriesScreenComponent(
 
             if (isFavorite.first()) {
                 db.burningSeriesQueries.deleteSeries(href)
-                try {
-                    coverFile.delete()
-                } catch (ignored: Throwable) { }
             } else {
                 if (!coverBase64.isNullOrEmpty()) {
                     try {
