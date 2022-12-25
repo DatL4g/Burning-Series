@@ -18,7 +18,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("com.arkivanov.essenty:parcelable:0.7.0")
+                api("com.arkivanov.essenty:parcelable:0.7.1")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
             }
         }

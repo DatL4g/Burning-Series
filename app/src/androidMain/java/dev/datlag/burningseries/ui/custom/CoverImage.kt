@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import dev.datlag.burningseries.common.painter
 import dev.datlag.burningseries.common.safeDecodeBase64
 import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.other.Constants
@@ -28,23 +29,11 @@ actual fun CoverImage(
     shape: Shape?
 ) {
     val base64Bytes = remember { cover.base64.safeDecodeBase64() }
-    val errorVector = Icons.Default.NoPhotography
     var imageScale: ContentScale = scale
     val base64Painter = base64Bytes?.let { rememberAsyncImagePainter(it) } ?: run {
         imageScale = ContentScale.Inside
 
-        rememberVectorPainter(
-            errorVector.defaultWidth,
-            errorVector.defaultHeight,
-            errorVector.viewportWidth,
-            errorVector.viewportHeight,
-            errorVector.name,
-            fallbackIconTint,
-            BlendMode.SrcIn,
-            errorVector.autoMirror
-        ) { _, _ ->
-            RenderVectorGroup(errorVector.root)
-        }
+        Icons.Default.NoPhotography.painter(fallbackIconTint, BlendMode.SrcIn)
     }
 
     AsyncImage(

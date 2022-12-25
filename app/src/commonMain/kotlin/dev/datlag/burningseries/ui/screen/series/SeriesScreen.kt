@@ -1,9 +1,6 @@
 package dev.datlag.burningseries.ui.screen.series
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Chip
@@ -12,9 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,46 +62,77 @@ fun SeriesScreen(component: SeriesComponent) {
     val linkedSeries by component.linkedSeries.collectAsState(emptyList())
     val isFavorite by component.isFavorite.collectAsState(false)
 
-    when (LocalOrientation.current) {
-        is Orientation.PORTRAIT -> PortraitToolbar(
-            component,
-            title,
-            cover,
-            languages,
-            seasons,
-            selectedLanguage,
-            selectedSeason,
-            seasonText,
-            linkedSeries,
-            isFavorite
-        ) {
-            SeriesScreenContent(
-                component,
-                description,
-                genres,
-                additionalInfo,
-                episodes,
-            )
+    var continueEpisode = episodes.findLast { it.watchPosition > 0L } ?: episodes.firstOrNull()
+    if (continueEpisode?.isFinished == true) {
+        val finishedIndex = episodes.indexOf(continueEpisode)
+        if (episodes.size > finishedIndex) {
+            continueEpisode = episodes[finishedIndex + 1]
         }
-        is Orientation.LANDSCAPE -> LandscapeToolbar(
-            component,
-            title,
-            cover,
-            languages,
-            seasons,
-            selectedLanguage,
-            selectedSeason,
-            seasonText,
-            linkedSeries,
-            isFavorite
-        ) {
-            SeriesScreenContent(
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (LocalOrientation.current) {
+            is Orientation.PORTRAIT -> PortraitToolbar(
                 component,
-                description,
-                genres,
-                additionalInfo,
-                episodes
-            )
+                title,
+                cover,
+                languages,
+                seasons,
+                selectedLanguage,
+                selectedSeason,
+                seasonText,
+                linkedSeries,
+                isFavorite
+            ) {
+                SeriesScreenContent(
+                    component,
+                    description,
+                    genres,
+                    additionalInfo,
+                    episodes,
+                )
+            }
+
+            is Orientation.LANDSCAPE -> LandscapeToolbar(
+                component,
+                title,
+                cover,
+                languages,
+                seasons,
+                selectedLanguage,
+                selectedSeason,
+                seasonText,
+                linkedSeries,
+                isFavorite
+            ) {
+                SeriesScreenContent(
+                    component,
+                    description,
+                    genres,
+                    additionalInfo,
+                    episodes
+                )
+            }
+        }
+
+        if (continueEpisode != null) {
+            ExtendedFloatingActionButton(onClick = {
+                component.loadEpisode(continueEpisode)
+            }, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp)) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                Text(
+                    text = if (continueEpisode.watchPosition > 0L) {
+                        "Continue [Ep. ${continueEpisode.episodeNumberOrListNumber?.toString() ?: String()}]"
+                    } else {
+                        "Start [Ep. ${continueEpisode.episodeNumberOrListNumber?.toString() ?: String()}]"
+                    },
+                    maxLines = 1
+                )
+            }
         }
     }
 

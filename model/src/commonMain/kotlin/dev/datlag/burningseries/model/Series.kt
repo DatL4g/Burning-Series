@@ -109,6 +109,18 @@ data class Series(
         val isFinished: Boolean
             get() = watchPercentage() > 85F
 
+        val episodeNumber: Int?
+            get() {
+                val matched = "[|({]\\s*Ep([.]|isode)?\\s*(\\d+)\\s*[|)}]".toRegex(RegexOption.IGNORE_CASE).find(title.trim())
+                return matched?.groupValues?.let {
+                    val numberMatch = it.lastOrNull()
+                    numberMatch?.toIntOrNull() ?: numberMatch?.getDigitsOrNull()?.toIntOrNull()
+                }
+            }
+
+        val episodeNumberOrListNumber: Int?
+            get() = episodeNumber ?: number.toIntOrNull() ?: number.getDigitsOrNull()?.toIntOrNull()
+
         fun watchPercentage(): Float {
             if (watchPosition == 0L || length == 0L) {
                 return 0F
@@ -121,7 +133,7 @@ data class Series(
         fun getWatchState(): WatchState = WatchState.getByPercentage(watchPercentage())
 
         @Parcelize
-        sealed interface WatchState {
+        sealed interface WatchState : Parcelable {
             object NONE : WatchState
             object STARTED : WatchState
             object FINISHED : WatchState
