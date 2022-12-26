@@ -10,5 +10,7 @@ interface LoginComponent : Component {
     val password: MutableStateFlow<String>
     val isErroneous: MutableStateFlow<Boolean>
 
+    val onSkip: () -> Unit
+
     fun onLoginClicked()
 }

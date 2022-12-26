@@ -30,6 +30,8 @@ import dev.datlag.burningseries.model.common.maxSize
 import dev.datlag.burningseries.ui.dialog.language.LanguageComponent
 import dev.datlag.burningseries.ui.dialog.language.LanguageDialog
 import dev.datlag.burningseries.other.Logger
+import dev.datlag.burningseries.ui.custom.InfoCard
+import dev.datlag.burningseries.ui.custom.collapsingtoolbar.CollapsingToolbarScaffoldScopeInstance.align
 import dev.datlag.burningseries.ui.dialog.nostream.NoStreamComponent
 import dev.datlag.burningseries.ui.dialog.nostream.NoStreamDialog
 import dev.datlag.burningseries.ui.dialog.season.SeasonComponent
@@ -64,6 +66,8 @@ fun SeriesScreen(component: SeriesComponent) {
 
     val continueEpisode by component.continueEpisode.collectAsState(null)
 
+    val hosterSorted by component.hosterSorted.collectAsState(false)
+
     Box(modifier = Modifier.fillMaxSize()) {
         when (LocalOrientation.current) {
             is Orientation.PORTRAIT -> PortraitToolbar(
@@ -83,6 +87,7 @@ fun SeriesScreen(component: SeriesComponent) {
                     description,
                     genres,
                     additionalInfo,
+                    hosterSorted,
                     episodes,
                 )
             }
@@ -104,6 +109,7 @@ fun SeriesScreen(component: SeriesComponent) {
                     description,
                     genres,
                     additionalInfo,
+                    hosterSorted,
                     episodes
                 )
             }
@@ -151,6 +157,7 @@ private fun LazyListScope.SeriesScreenContent(
     description: String?,
     genres: List<String>,
     additionalInfo: List<Series.Info>,
+    hosterSorted: Boolean,
     episodes: List<Series.Episode>
 ) {
     item {
@@ -194,6 +201,24 @@ private fun LazyListScope.SeriesScreenContent(
                 text = info.trimmedData(),
                 maxLines = 1
             )
+        }
+    }
+
+    if (!hosterSorted) {
+        item {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                InfoCard(
+                    text = "Please sort the hoster list in settings",
+                    backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.onClick {
+                        component.onSettingsClicked()
+                    }
+                )
+            }
         }
     }
 

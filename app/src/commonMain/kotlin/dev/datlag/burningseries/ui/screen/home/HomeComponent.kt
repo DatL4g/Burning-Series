@@ -16,6 +16,8 @@ interface HomeComponent : Component {
 
     val onEpisodeClicked: (String, SeriesInitialInfo, Boolean) -> Unit
     val onSeriesClicked: (String, SeriesInitialInfo) -> Unit
+
+    val onSettingsClicked: () -> Unit
     val onAboutClicked: () -> Unit
 
     val childStack: Lazy<Value<ChildStack<*, Component>>>

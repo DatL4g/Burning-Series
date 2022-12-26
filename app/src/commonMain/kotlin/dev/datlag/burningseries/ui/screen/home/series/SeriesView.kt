@@ -41,23 +41,6 @@ fun SeriesView(component: SeriesComponent) {
             items(favorites) {
                 SeriesItem(it, component)
             }
-            item {
-                Box(modifier = Modifier.fillMaxSize().defaultMinSize(minHeight = 320.dp), contentAlignment = Alignment.Center) {
-                    Button(onClick = {
-
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Favorite,
-                            contentDescription = null
-                        )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(
-                            text = "Favorites",
-                            maxLines = 1
-                        )
-                    }
-                }
-            }
         }
         header {
             Text(

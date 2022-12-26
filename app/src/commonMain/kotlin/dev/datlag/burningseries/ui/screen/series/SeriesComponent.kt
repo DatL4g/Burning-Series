@@ -18,6 +18,7 @@ interface SeriesComponent : Component {
     val initialInfo: SeriesInitialInfo
     val onGoBack: () -> Unit
     val onEpisodeClicked: (Series, Series.Episode, List<VideoStream>) -> Unit
+    val onSettingsClicked: () -> Unit
 
     val title: Flow<String?>
     val cover: Flow<Cover?>
@@ -36,8 +37,9 @@ interface SeriesComponent : Component {
     val continueEpisode: Flow<Series.Episode?>
 
     val linkedSeries: Flow<List<Series.Linked>>
-
     val isFavorite: Flow<Boolean>
+
+    val hosterSorted: Flow<Boolean>
 
     fun showDialog(config: DialogConfig)
     fun loadEpisode(episode: Series.Episode)

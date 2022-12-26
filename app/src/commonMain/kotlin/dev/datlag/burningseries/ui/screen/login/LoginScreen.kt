@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.ui.custom.InfoCard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -53,6 +54,14 @@ fun LoginScreen(component: LoginComponent) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            InfoCard(
+                title = "Under construction",
+                text = "This part is still in development.\nCome here again after full release!",
+                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.padding(16.dp)
+            )
+
             OutlinedTextField(
                 value = username,
                 maxLines = 1,
@@ -101,6 +110,17 @@ fun LoginScreen(component: LoginComponent) {
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             )) {
                 Text(text = LocalStringRes.current.login)
+            }
+            Spacer(modifier = Modifier.padding(16.dp))
+            TextButton(onClick = {
+                component.onSkip()
+            }, colors = ButtonDefaults.textButtonColors(
+                contentColor = MaterialTheme.colorScheme.primaryContainer
+            )) {
+                Text(
+                    text = "Skip",
+                    maxLines = 1,
+                )
             }
         }
     }

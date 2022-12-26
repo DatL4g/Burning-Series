@@ -28,6 +28,7 @@ import dev.datlag.burningseries.ui.screen.genre.GenreScreenComponent
 import dev.datlag.burningseries.ui.screen.home.HomeScreenComponent
 import dev.datlag.burningseries.ui.screen.login.LoginScreenComponent
 import dev.datlag.burningseries.ui.screen.series.SeriesScreenComponent
+import dev.datlag.burningseries.ui.screen.settings.SettingsScreenComponent
 import dev.datlag.burningseries.ui.screen.video.VideoScreenComponent
 import org.kodein.di.*
 
@@ -45,7 +46,7 @@ class NavHostComponent private constructor(
             val defaultScreen = if (showedLogin) {
                 ScreenConfig.Home
             } else {
-                ScreenConfig.Login
+                ScreenConfig.Home // ToDo("login")
             }
             listOf(defaultScreen)
         },
@@ -62,12 +63,18 @@ class NavHostComponent private constructor(
                 ::onSearchClicked,
                 ::onEpisodeClicked,
                 ::onSeriesClicked,
+                ::onSettingsClicked,
                 ::onAboutClicked,
                 di
             )
         }
         return when (screenConfig) {
-            is ScreenConfig.Login -> LoginScreenComponent(componentContext, ::onLoginClicked, di)
+            is ScreenConfig.Login -> LoginScreenComponent(
+                componentContext,
+                ::onLoginClicked,
+                ::onLoginSkipClicked,
+                di
+            )
             is ScreenConfig.Home -> homeConfig
             is ScreenConfig.Genre -> GenreScreenComponent(
                 componentContext,
@@ -84,6 +91,7 @@ class NavHostComponent private constructor(
                 ::onGoBackClicked,
                 ::onEpisodeClicked,
                 ::onActivateClicked,
+                ::onSettingsClicked,
                 di
             )
             is ScreenConfig.Video -> VideoScreenComponent(
@@ -106,6 +114,11 @@ class NavHostComponent private constructor(
                 ::onGoBackClicked,
                 di
             )
+            is ScreenConfig.Settings -> SettingsScreenComponent(
+                componentContext,
+                ::onGoBackClicked,
+                di
+            )
             else -> homeConfig
         }
     }
@@ -115,6 +128,10 @@ class NavHostComponent private constructor(
     }
 
     private fun onLoginClicked() {
+        navigation.push(ScreenConfig.Home)
+    }
+
+    private fun onLoginSkipClicked() {
         navigation.push(ScreenConfig.Home)
     }
 
@@ -143,6 +160,10 @@ class NavHostComponent private constructor(
 
     private fun onActivateClicked(series: Series, episode: Series.Episode) {
         navigation.push(ScreenConfig.Activate(series, episode))
+    }
+
+    private fun onSettingsClicked() {
+        navigation.push(ScreenConfig.Settings)
     }
 
     private fun onAboutClicked() {

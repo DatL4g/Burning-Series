@@ -10,13 +10,13 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,13 +27,12 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stac
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalResources
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.OnWarning
+import dev.datlag.burningseries.common.Warning
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.EmptyInputStream
 import dev.datlag.burningseries.other.Resources
-import dev.datlag.burningseries.ui.custom.OverflowMenu
-import dev.datlag.burningseries.ui.custom.DropdownMenuItem
-import dev.datlag.burningseries.ui.custom.RoundTabs
-import dev.datlag.burningseries.ui.custom.SVGImage
+import dev.datlag.burningseries.ui.custom.*
 import java.io.InputStream
 
 @OptIn(ExperimentalDecomposeApi::class)
@@ -75,7 +74,7 @@ fun HomeScreen(component: HomeComponent) {
                         }
                         OverflowMenu(MaterialTheme.colorScheme.onTertiary) {
                             DropdownMenuItem(onClick = {
-
+                                component.onSettingsClicked()
                             }, enabled = true, text = {
                                 Text(
                                     text = strings.settings
@@ -108,18 +107,42 @@ fun HomeScreen(component: HomeComponent) {
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                component.onSearchClicked()
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null
-                )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                FloatingActionButton(onClick = {
+
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Favorite,
+                        contentDescription = null
+                    )
+                }
+                FloatingActionButton(onClick = {
+                    component.onSearchClicked()
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null
+                    )
+                }
             }
         },
         scaffoldState = scaffoldState
     ) {
-        HomeViewPager(component)
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            InfoCard(
+                title = "Beta",
+                text = "This is a beta release, please report any issues or bugs on GitHub",
+                backgroundColor = Color.Warning,
+                contentColor = Color.OnWarning,
+                icon = Icons.Default.Warning,
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(8.dp)
+            )
+            HomeViewPager(component)
+        }
     }
 }
 

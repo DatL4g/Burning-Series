@@ -7,10 +7,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.arkivanov.essenty.statekeeper.consume
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
-import com.squareup.sqldelight.runtime.coroutines.mapToOne
-import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
+import com.squareup.sqldelight.runtime.coroutines.*
 import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.database.BurningSeriesDB
 import dev.datlag.burningseries.model.Cover
@@ -43,6 +40,7 @@ class SeriesScreenComponent(
     override val onGoBack: () -> Unit,
     override val onEpisodeClicked: (Series, Series.Episode, List<VideoStream>) -> Unit,
     private val onActivateClicked: (Series, Series.Episode) -> Unit,
+    override val onSettingsClicked: () -> Unit,
     override val di: DI
 ) : SeriesComponent, ComponentContext by componentContext {
 
@@ -151,6 +149,9 @@ class SeriesScreenComponent(
         continueEpisode
     }.flowOn(Dispatchers.IO)
 
+    override val hosterSorted: Flow<Boolean> = db.burningSeriesQueries.hostersSorted().asFlow().mapToOneOrDefault(false, Dispatchers.IO)
+    private val hosterList = db.burningSeriesQueries.selectAllHosters().asFlow().mapToList(Dispatchers.IO)
+
     init {
         scope.launch(Dispatchers.IO) {
             seriesRepo.loadFromHref(href)
@@ -176,6 +177,13 @@ class SeriesScreenComponent(
                             }
                         }
                     }
+                }
+            }
+        }
+        scope.launch(Dispatchers.IO) {
+            episodes.map { it.flatMap { ep -> ep.hoster } }.collect { hosterList ->
+                hosterList.forEach { hoster ->
+                    db.burningSeriesQueries.insertHoster(hoster.title)
                 }
             }
         }
@@ -212,14 +220,18 @@ class SeriesScreenComponent(
         scope.launch(Dispatchers.IO) {
             episodeRepo.loadHosterStreams(episode)
             val episodeData = episodeRepo.streams.first()
+            val hosterList = hosterList.first()
+
             if (episodeData.isEmpty()) {
                 withContext(CommonDispatcher.Main) {
                     showDialog(DialogConfig.NoStream(episode))
                 }
             } else {
                 withContext(CommonDispatcher.Main) {
-                    val sortedList = episodeData.sortedByDescending { if(it.hoster.hoster.contains("VOE", true)) 1 else 0 }
-                    onEpisodeClicked(seriesRepo.series.value!!, episode, sortedList) // ToDo("sort by settings")
+                    val sortedList = episodeData.sortedBy { stream ->
+                        hosterList.find { it.name.equals(stream.hoster.hoster, true) }?.position ?: Int.MAX_VALUE
+                    }
+                    onEpisodeClicked(seriesRepo.series.value!!, episode, sortedList)
                 }
             }
         }

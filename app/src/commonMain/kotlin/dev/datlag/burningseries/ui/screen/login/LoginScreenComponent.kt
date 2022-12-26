@@ -20,6 +20,7 @@ import org.kodein.di.instance
 class LoginScreenComponent(
     private val componentContext: ComponentContext,
     private val onLogin: () -> Unit,
+    override val onSkip: () -> Unit,
     override val di: DI
 ) : LoginComponent, ComponentContext by componentContext {
 
@@ -47,6 +48,11 @@ class LoginScreenComponent(
     }
 
     override fun onLoginClicked() {
+        if (username.value.isEmpty() || password.value.isEmpty()) {
+            onSkip()
+            return
+        }
+
         scope.launch(Dispatchers.IO) {
             userRepo.bsLogin(
                 username.value,

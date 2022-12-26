@@ -15,6 +15,11 @@ CREATE TABLE DBEpisode(
     FOREIGN KEY (seriesHref) REFERENCES DBSeries(href) ON DELETE NO ACTION
 );
 
+CREATE TABLE DBHoster(
+    name TEXT NOT NULL PRIMARY KEY,
+    position INTEGER AS Int DEFAULT NULL
+);
+
 selectAllSeries:
 SELECT * FROM DBSeries;
 
@@ -63,3 +68,16 @@ UPDATE DBEpisode SET length = :length WHERE href = :href OR href LIKE :href;
 
 updateEpisodeLastWatched:
 UPDATE DBEpisode SET lastWatched = :time WHERE href = :href OR href LIKE :href;
+
+selectAllHosters:
+SELECT * FROM DBHoster ORDER BY position ASC;
+
+insertHoster:
+INSERT OR IGNORE INTO DBHoster(name)
+VALUES (?);
+
+updateHosterPosition:
+UPDATE DBHoster SET position = :position WHERE name = :name OR name LIKE :name;
+
+hostersSorted:
+SELECT EXISTS (SELECT * FROM DBHoster WHERE position NOT NULL);
