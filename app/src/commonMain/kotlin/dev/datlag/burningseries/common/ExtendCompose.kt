@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
@@ -25,6 +26,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.zIndex
+import dev.datlag.burningseries.LocalOrientation
+import dev.datlag.burningseries.other.Orientation
 import dev.datlag.burningseries.ui.custom.dragdrop.DragDropState
 
 fun LazyGridScope.header(
@@ -117,5 +120,14 @@ fun LazyItemScope.DraggableItem(
     }
     Column(modifier = modifier.then(draggingModifier)) {
         content(dragging)
+    }
+}
+
+@Composable
+fun Modifier.fillWidthInPortraitMode(fraction: Float = 1f): Modifier {
+    return if (LocalOrientation.current is Orientation.PORTRAIT) {
+        this.fillMaxWidth(fraction)
+    } else {
+        this
     }
 }

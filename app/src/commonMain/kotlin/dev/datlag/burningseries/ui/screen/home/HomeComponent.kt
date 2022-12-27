@@ -24,6 +24,9 @@ interface HomeComponent : Component {
     val childIndex: MutableValue<Int>
     val pagerList: Lazy<List<Component>>
 
+    val favoritesExists: Flow<Boolean>
+
+    fun onFavoritesClicked()
     fun onSearchClicked()
 
 }

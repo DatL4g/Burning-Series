@@ -25,8 +25,6 @@ You can see the latest series and episodes, get an overview of all available ser
      height="60">](https://f-droid.org/packages/de.datlag.burningseries/)
 
 - [Important Notice](#important-notice)
-- [Motivation](#motivation)
-- [Used Technologies](#used-technologies)
 - [Supported devices and Installation](#supported-devices-and-installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
@@ -42,37 +40,6 @@ It's not guaranteed that this project will be maintained, especially not by any 
 If the app stops working don't report that in any form on [Burning Series](https://bs.to/), instead open an [Issue](https://github.com/DATL4G/BurningSeries-Android/issues/new/choose) or fix it yourself and create a pull request here.
 
 **This project is not related to any owner, developer or other staff from [Burning Series](https://bs.to/)**
-
-## Motivation
-
-Why did I create this app?
-Why not. Well as a developer you always search for new stuff to create and try to overcome problems you face while coding.
-
-It all started by how annoyed I was when I tried to navigate on the [Burning Series](https://bs.to/) website while using a phone.
-So I thought we need an app for this. I searched for an official API and any stuff related to this but I couldn't find something.
-
-*That's where it ended.* Well... until my developer mentality came out and I had to find a workaround.
-
-When you can't find an official API build it yourself. At least that's what I did here.
-I started getting the data I needed from the website step by step until I could use and show all the data in an app.
-
-## Used Technologies
-**If you aren't interested in development or how the app works under the hood you can skip this part :)**
-
-The app uses a self build API using site scraping. This is done on multiple ways.
-First it tries to do that on the device, however if the site can't be reached because it's blocked by the users DNS for example then it fetches the data using a fallback built with [WrapAPI](https://wrapapi.com/).
-This way the user doesn't need a custom DNS or a VPN or any other type of workaround if [Burning Series](https://bs.to/) is blocked by their internet provider. Learn more about usual problems here [Burning Series Domains](https://burningseries.domains/).
-(That's the good part of an unofficial API!)
-Scraping the data using [WrapAPI](https://wrapapi.com/) however is only done once a day to prevent exceeding the API rate limit.
-
-The data is then stored in a local database on the device using [Room](https://developer.android.com/jetpack/androidx/releases/room) so the app can be used in offline mode and doesn't need to get new data every time.
-Images are stored in separate files on the device for the same reason.
-
-The data is emitted to the view lifecycle using [Flow](https://kotlinlang.org/docs/flow.html), you might find some small places where [LiveData](https://developer.android.com/topic/libraries/architecture/livedata) is used however I won't use [LiveData](https://developer.android.com/topic/libraries/architecture/livedata) anymore and migrate existing usage to [Flow](https://kotlinlang.org/docs/flow.html) as it's easier to use and maintain.
-
-Settings are saved using [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) with [Protocol Buffers](https://developers.google.com/protocol-buffers).
-
-**Pull Requests relying on [LiveData](https://developer.android.com/topic/libraries/architecture/livedata) or [Shared Preferences](https://developer.android.com/reference/android/content/SharedPreferences) or [Data Store Preferences](https://developer.android.com/topic/libraries/architecture/datastore#datastore-preferences) won't be accepted!**
 
 ## Supported devices and Installation
 

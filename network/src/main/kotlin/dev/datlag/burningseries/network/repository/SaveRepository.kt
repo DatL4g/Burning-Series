@@ -21,25 +21,25 @@ class SaveRepository(
                 makeNetworkRequest = {
                     api.save(it)
                 }
-            ).distinctUntilChanged())
+            ))
         }
     }.flowOn(Dispatchers.IO)
 
-    private val _status = _saveScrapedHoster.transformLatest {
-        return@transformLatest emit(it.status)
+    private val _status = _saveScrapedHoster.transform {
+        return@transform emit(it.status)
     }.flowOn(Dispatchers.IO)
 
-    val status = _status.transformLatest {
-        return@transformLatest emit(Status.create(it, true))
+    val status = _status.transform {
+        return@transform emit(Status.create(it, true))
     }.flowOn(Dispatchers.IO)
 
-    val saveScrapedSuccess = _status.transformLatest {
+    val saveScrapedSuccess = _status.transform {
         when (it) {
-            is Resource.Status.Success -> return@transformLatest emit(it.data.failed <= 0)
-            is Resource.Status.Error -> return@transformLatest emit(false)
+            is Resource.Status.Success -> return@transform emit(it.data.failed <= 0)
+            is Resource.Status.Error -> return@transform emit(false)
             else -> { }
         }
-    }.distinctUntilChanged().flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO)
 
 
     suspend fun save(scrapedHoster: ScrapedHoster) = withContext(Dispatchers.IO) {

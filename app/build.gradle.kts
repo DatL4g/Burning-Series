@@ -50,7 +50,6 @@ kotlin {
                 api("io.ktor:ktor-client-content-negotiation:$ktor")
                 api("io.ktor:ktor-serialization-kotlinx-json:$ktor")
                 api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
                 implementation("com.mikepenz:aboutlibraries-compose:10.5.2")
                 implementation("com.mikepenz:aboutlibraries-core:10.5.2")

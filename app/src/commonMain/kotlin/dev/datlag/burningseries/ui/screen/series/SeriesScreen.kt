@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalOrientation
+import dev.datlag.burningseries.common.fillWidthInPortraitMode
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.other.Orientation
@@ -216,7 +217,7 @@ private fun LazyListScope.SeriesScreenContent(
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.onClick {
                         component.onSettingsClicked()
-                    }
+                    }.fillWidthInPortraitMode()
                 )
             }
         }

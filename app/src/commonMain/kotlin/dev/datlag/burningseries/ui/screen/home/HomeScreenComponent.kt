@@ -9,17 +9,23 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.observe
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToOneOrDefault
+import dev.datlag.burningseries.database.BurningSeriesDB
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.ui.navigation.Component
 import dev.datlag.burningseries.ui.screen.home.episode.EpisodesViewComponent
 import dev.datlag.burningseries.ui.screen.home.series.SeriesViewComponent
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
 import org.kodein.di.DI
 import org.kodein.di.DIAware
+import org.kodein.di.instance
 import java.io.InputStream
 
 class HomeScreenComponent(
     componentContext: ComponentContext,
+    private val onFavorites: () -> Unit,
     private val onSearch: () -> Unit,
     override val onEpisodeClicked: (String, SeriesInitialInfo, Boolean) -> Unit,
     override val onSeriesClicked: (String, SeriesInitialInfo) -> Unit,
@@ -49,6 +55,9 @@ class HomeScreenComponent(
         )
     }
 
+    private val db: BurningSeriesDB by di.instance()
+    override val favoritesExists: Flow<Boolean> = db.burningSeriesQueries.favoritesExists().asFlow().mapToOneOrDefault(false)
+
     init {
         childIndex.observe(lifecycle) {
             if (it == 0) {
@@ -77,6 +86,10 @@ class HomeScreenComponent(
     @Composable
     override fun render() {
         HomeScreen(this)
+    }
+
+    override fun onFavoritesClicked() {
+        onFavorites()
     }
 
     override fun onSearchClicked() {

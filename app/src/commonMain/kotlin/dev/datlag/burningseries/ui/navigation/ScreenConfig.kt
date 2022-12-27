@@ -35,4 +35,6 @@ sealed class ScreenConfig : Parcelable {
     object About : ScreenConfig()
 
     object Settings : ScreenConfig()
+
+    object Favorites : ScreenConfig()
 }

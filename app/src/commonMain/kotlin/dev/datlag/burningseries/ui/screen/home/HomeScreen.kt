@@ -13,6 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +31,7 @@ import dev.datlag.burningseries.LocalResources
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.OnWarning
 import dev.datlag.burningseries.common.Warning
+import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.EmptyInputStream
 import dev.datlag.burningseries.other.Resources
@@ -110,13 +113,17 @@ fun HomeScreen(component: HomeComponent) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                FloatingActionButton(onClick = {
+                val favoritesExists by component.favoritesExists.collectAsState(component.favoritesExists.getValueBlocking(false))
 
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = null
-                    )
+                if (favoritesExists) {
+                    FloatingActionButton(onClick = {
+                        component.onFavoritesClicked()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null
+                        )
+                    }
                 }
                 FloatingActionButton(onClick = {
                     component.onSearchClicked()

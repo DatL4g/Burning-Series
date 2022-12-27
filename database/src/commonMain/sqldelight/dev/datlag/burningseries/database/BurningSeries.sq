@@ -36,6 +36,12 @@ WHERE episode.lastWatched > 0 ORDER BY episode.lastWatched DESC LIMIT :amount;
 selectLatestFavoritesAmount:
 SELECT * FROM DBSeries WHERE favoriteSince > 0 ORDER BY favoriteSince DESC LIMIT :amount;
 
+selectFavorites:
+SELECT * FROM DBSeries WHERE favoriteSince > 0 ORDER BY favoriteSince DESC;
+
+favoritesExists:
+SELECT EXISTS (SELECT * FROM DBSeries WHERE favoriteSince > 0);
+
 insertSeries:
 INSERT OR REPLACE INTO DBSeries(href, title, coverHref, favoriteSince)
 VALUES (?, ?, ?, ?);
@@ -70,7 +76,7 @@ updateEpisodeLastWatched:
 UPDATE DBEpisode SET lastWatched = :time WHERE href = :href OR href LIKE :href;
 
 selectAllHosters:
-SELECT * FROM DBHoster ORDER BY position ASC;
+SELECT * FROM DBHoster;
 
 insertHoster:
 INSERT OR IGNORE INTO DBHoster(name)

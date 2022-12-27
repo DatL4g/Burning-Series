@@ -1,6 +1,5 @@
 package dev.datlag.burningseries.ui.screen.home.series
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,10 +21,11 @@ import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.ui.custom.CoverImage
+import dev.datlag.burningseries.ui.screen.SeriesItemComponent
 import java.io.File
 
 @Composable
-fun SeriesItem(content: Home.Series, component: SeriesComponent) {
+fun SeriesItem(content: Home.Series, component: SeriesItemComponent) {
     SeriesItem(
         content.href,
         content.title,
@@ -35,7 +35,7 @@ fun SeriesItem(content: Home.Series, component: SeriesComponent) {
 }
 
 @Composable
-fun SeriesItem(content: DBSeries, component: SeriesComponent) {
+fun SeriesItem(content: DBSeries, component: SeriesItemComponent) {
     val base64 = remember { File(component.imageDir, content.coverFileName()).readText() }
 
     SeriesItem(
@@ -55,7 +55,7 @@ fun SeriesItem(
     href: String,
     title: String,
     cover: Cover,
-    component: SeriesComponent
+    component: SeriesItemComponent
 ) {
     Card(modifier = Modifier.fillMaxWidth().onClick {
         component.onSeriesClicked(

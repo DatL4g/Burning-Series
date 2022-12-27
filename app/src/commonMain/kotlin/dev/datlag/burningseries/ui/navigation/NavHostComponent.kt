@@ -24,6 +24,7 @@ import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.ui.screen.about.AboutScreenComponent
 import dev.datlag.burningseries.ui.screen.activate.ActivateScreenComponent
+import dev.datlag.burningseries.ui.screen.favorite.FavoriteScreenComponent
 import dev.datlag.burningseries.ui.screen.genre.GenreScreenComponent
 import dev.datlag.burningseries.ui.screen.home.HomeScreenComponent
 import dev.datlag.burningseries.ui.screen.login.LoginScreenComponent
@@ -60,6 +61,7 @@ class NavHostComponent private constructor(
         val homeConfig by lazy(LazyThreadSafetyMode.NONE) {
             HomeScreenComponent(
                 componentContext,
+                ::onFavoritesClicked,
                 ::onSearchClicked,
                 ::onEpisodeClicked,
                 ::onSeriesClicked,
@@ -119,6 +121,12 @@ class NavHostComponent private constructor(
                 ::onGoBackClicked,
                 di
             )
+            is ScreenConfig.Favorites -> FavoriteScreenComponent(
+                componentContext,
+                ::onGoBackClicked,
+                ::onSeriesClicked,
+                di
+            )
             else -> homeConfig
         }
     }
@@ -133,6 +141,10 @@ class NavHostComponent private constructor(
 
     private fun onLoginSkipClicked() {
         navigation.push(ScreenConfig.Home)
+    }
+
+    private fun onFavoritesClicked() {
+        navigation.push(ScreenConfig.Favorites)
     }
 
     private fun onSearchClicked() {

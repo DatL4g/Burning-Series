@@ -1,24 +1,30 @@
 package dev.datlag.burningseries.ui.screen.settings
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.OnWarning
+import dev.datlag.burningseries.common.Warning
+import dev.datlag.burningseries.common.fillWidthInPortraitMode
 import dev.datlag.burningseries.common.getValueBlocking
+import dev.datlag.burningseries.ui.custom.InfoCard
 import dev.datlag.burningseries.ui.custom.dragdrop.DragDropColumn
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,12 +98,40 @@ fun SettingsScreen(component: SettingsComponent) {
             },
             itemsBefore = {
                 item {
-                    Text(text = "Hoster Order")
+                    var errorCardMinWidth by remember { mutableStateOf(0) }
+
+                    InfoCard(
+                        title = "Hoster Order",
+                        text = "Selecting a specific hoster to stream is deprecated. Hosters are preferred by the order of this list.",
+                        backgroundColor = Color.Warning,
+                        contentColor = Color.OnWarning,
+                        icon = Icons.Default.FormatListNumbered,
+                        modifier = Modifier.fillWidthInPortraitMode().onSizeChanged {
+                            errorCardMinWidth = it.width
+                        }
+                    )
+                    if (hosterList.isEmpty()) {
+                        InfoCard(
+                            title = "No hoster",
+                            text = "Currently no hoster saved, please load any series and check back",
+                            backgroundColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                            icon = Icons.Default.Report,
+                            modifier = Modifier
+                                .fillWidthInPortraitMode()
+                                .defaultMinSize(minWidth = Dp(errorCardMinWidth.toFloat()))
+                                .padding(vertical = 16.dp)
+                        )
+                    }
                 }
             },
             itemsAfter = {
                 item {
-                    Text(text = "After Text")
+                    Text(
+                        text = "Copyright © 2021-${Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year} Jeff Retz (DatLag)",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         )
