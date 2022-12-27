@@ -2,38 +2,66 @@ name: Release
 
 on:
   release:
-    types: [released]
+    types: [published]
+  workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  package:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Execute Build
+      - name: Export libraries
+        run: ./gradlew app:exportLibraryDefinitions -PaboutLibraries.exportPath=src/commonMain/assets/
+
+      - name: Create package on Ubuntu
+        if: matrix.os == 'ubuntu-latest'
+        run: ./gradlew packageDeb
+
+      - name: Create package on Windows
+        if: matrix.os == 'windows-latest'
+        run: gradlew.bat packageExe; gradlew.bat packageMsi
+        working-directory: ${{ github.workspace }}
+
+      - name: Create package on Mac
+        if: matrix.os == 'macos-latest'
+        run: ./gradlew packageDmg
+
+      - name: Create packages for Android
+        if: matrix.os == 'ubuntu-latest'
         run: ./gradlew assembleRelease && ./gradlew bundleRelease
 
       - name: Move APK file(s)
+        if: matrix.os == 'ubuntu-latest'
         run: mv ./app/build/outputs/apk/release/*.apk ./app/release/
 
       - name: Move AAB file(s)
+        if: matrix.os == 'ubuntu-latest'
         run: mv ./app/build/outputs/bundle/release/*.aab ./app/release/
 
       - name: Remove "-unsigned" from filename(s)
+        if: matrix.os == 'ubuntu-latest'
         run : for filename in ./app/release/*-unsigned*; do mv "./$filename" "./$(echo "$filename" | sed -e 's/-unsigned//g')";  done
 
       - name: List all release files
+        if: matrix.os == 'ubuntu-latest'
         run: ls ./app/release/
 
-      - uses: ilharp/sign-android-release@v1
+      - name: Sign Android apps
+        uses: ilharp/sign-android-release@v1
+        if: matrix.os == 'ubuntu-latest'
         id: sign_app
         with:
           releaseDir: app/release
@@ -44,9 +72,11 @@ jobs:
           buildToolsVersion: 30.0.2
 
       - name: List signed files
+        if: matrix.os == 'ubuntu-latest'
         run: echo "Signed ${{ steps.sign_app.outputs.signedFilesCount }} files called ${{ steps.sign_app.outputs.signedFiles }}"
 
       - name: Split signed files
+        if: matrix.os == 'ubuntu-latest'
         uses: xom9ikk/split@v1
         id: split
         with:
@@ -58,5 +88,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
+            ./build/release/main/deb/*.deb
+            ./build/release/main/exe/*.exe
+            ./build/release/main/msi/*.msi
+            ./build/release/main/dmg/*.dmg
             ${{ steps.split.outputs._0 }}
             ${{ steps.split.outputs._1 }}
