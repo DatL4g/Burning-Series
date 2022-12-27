@@ -92,12 +92,12 @@ fun HomeScreen(component: HomeComponent) {
                                 component.onAboutClicked()
                             }, enabled = true, text = {
                                 Text(
-                                    text = "About"
+                                    text = strings.about
                                 )
                             }, icon = {
                                 Icon(
                                     imageVector = Icons.Default.Info,
-                                    contentDescription = null
+                                    contentDescription = strings.about
                                 )
                             })
                         }
@@ -141,8 +141,8 @@ fun HomeScreen(component: HomeComponent) {
             modifier = Modifier.fillMaxWidth()
         ) {
             InfoCard(
-                title = "Beta",
-                text = "This is a beta release, please report any issues or bugs on GitHub",
+                title = strings.beta,
+                text = strings.betaText,
                 backgroundColor = Color.Warning,
                 contentColor = Color.OnWarning,
                 icon = Icons.Default.Warning,

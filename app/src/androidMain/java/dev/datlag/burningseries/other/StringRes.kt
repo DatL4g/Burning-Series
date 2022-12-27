@@ -53,6 +53,9 @@ actual class StringRes(private val context: Context) {
     actual val search: String
         get() = context.getString(R.string.search)
 
+    actual val confirm: String
+        get() = context.getString(R.string.confirm)
+
     actual val searchForSeries: String
         get() = context.getString(R.string.search_for_series)
 
@@ -61,6 +64,120 @@ actual class StringRes(private val context: Context) {
 
     actual val previousGenre: String
         get() = context.getString(R.string.previous_genre)
+
+    actual val rewind10: String
+        get() = context.getString(R.string.rewind)
+
+    actual val play: String
+        get() = context.getString(R.string.play)
+
+    actual val pause: String
+        get() = context.getString(R.string.pause)
+
+    actual val loading: String
+        get() = context.getString(R.string.loading)
+
+    actual val forward10: String
+        get() = context.getString(R.string.forward)
+
+    actual val fullscreen: String
+        get() = context.getString(R.string.fullscreen)
+
+    actual val selectLanguage: String
+        get() = context.getString(R.string.select_language)
+
+    actual val noStreamingSourceHeader: String
+        get() = context.getString(R.string.no_streaming_source)
+
+    actual val noStreamingSourceText: String
+        get() = context.getString(R.string.no_streaming_source_text)
+
+    actual val activate: String
+        get() = context.getString(R.string.activate)
+
+    actual val selectSeason: String
+        get() = context.getString(R.string.select_season)
+
+    actual val saveStreamSuccess: String
+        get() = context.getString(R.string.save_stream_success)
+
+    actual val saveStreamError: String
+        get() = context.getString(R.string.save_stream_error)
+
+    actual val favorites: String
+        get() = context.getString(R.string.favorites)
+
+    actual val lastWatched: String
+        get() = context.getString(R.string.last_watched)
+
+    actual val latestEpisodes: String
+        get() = context.getString(R.string.latest_episodes)
+
+    actual val latestSeries: String
+        get() = context.getString(R.string.latest_series)
+
+    actual val linkedSeries: String
+        get() = context.getString(R.string.linked_series)
+
+    actual val about: String
+        get() = context.getString(R.string.about)
+
+    actual val beta: String
+        get() = context.getString(R.string.beta)
+
+    actual val betaText: String
+        get() = context.getString(R.string.beta_text)
+
+    actual val underConstruction: String
+        get() = context.getString(R.string.under_construction)
+
+    actual val underConstructionText: String
+        get() = context.getString(R.string.under_construction_text)
+
+    actual val enterUserName: String
+        get() = context.getString(R.string.enter_username)
+
+    actual val enterPassword: String
+        get() = context.getString(R.string.enter_password)
+
+    actual val skip: String
+        get() = context.getString(R.string.skip)
+
+    actual val continueEpisode: String
+        get() = context.getString(R.string.continue_episode)
+
+    actual val startEpisode: String
+        get() = context.getString(R.string.start_episode)
+
+    actual val readMore: String
+        get() = context.getString(R.string.read_more)
+
+    actual val sortHosterHint: String
+        get() = context.getString(R.string.sort_hoster_hint)
+
+    actual val moveUp: String
+        get() = context.getString(R.string.move_up)
+
+    actual val moveDown: String
+        get() = context.getString(R.string.move_down)
+
+    actual val hosterOrder: String
+        get() = context.getString(R.string.hoster_order)
+
+    actual val hosterOrderText: String
+        get() = context.getString(R.string.hoster_order_text)
+
+    actual val noHoster: String
+        get() = context.getString(R.string.no_hoster)
+
+    actual val noHosterText: String
+        get() = context.getString(R.string.no_hoster_text)
+
+    actual val copyright: String
+        get() = context.getString(R.string.copyright)
+
+    actual val vlcMustBeInstalled: String
+        get() = context.getString(R.string.vlc_must_be_installed)
 
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())

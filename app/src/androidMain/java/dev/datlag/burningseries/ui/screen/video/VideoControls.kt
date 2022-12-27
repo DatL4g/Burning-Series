@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.SemiBlack
 import dev.datlag.burningseries.common.findWindow
 import dev.datlag.burningseries.common.onClick
@@ -65,7 +66,7 @@ fun VideoControls(component: VideoComponent) {
                     }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null
+                            contentDescription = LocalStringRes.current.back
                         )
                     }
                 },
@@ -93,7 +94,7 @@ fun VideoControls(component: VideoComponent) {
                 }) {
                     Icon(
                         imageVector = Icons.Default.Replay10,
-                        contentDescription = null,
+                        contentDescription = LocalStringRes.current.rewind10,
                         tint = Color.White
                     )
                 }
@@ -111,7 +112,7 @@ fun VideoControls(component: VideoComponent) {
                 }) {
                     Icon(
                         imageVector = Icons.Default.Forward10,
-                        contentDescription = null,
+                        contentDescription = LocalStringRes.current.forward10,
                         tint = Color.White
                     )
                 }

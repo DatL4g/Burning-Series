@@ -79,7 +79,7 @@ fun SettingsScreen(component: SettingsComponent) {
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.ArrowDropUp,
-                                    contentDescription = null
+                                    contentDescription = LocalStringRes.current.moveUp
                                 )
                             }
                         }
@@ -89,7 +89,7 @@ fun SettingsScreen(component: SettingsComponent) {
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = null
+                                    contentDescription = LocalStringRes.current.moveDown
                                 )
                             }
                         }
@@ -101,8 +101,8 @@ fun SettingsScreen(component: SettingsComponent) {
                     var errorCardMinWidth by remember { mutableStateOf(0) }
 
                     InfoCard(
-                        title = "Hoster Order",
-                        text = "Selecting a specific hoster to stream is deprecated. Hosters are preferred by the order of this list.",
+                        title = LocalStringRes.current.hosterOrder,
+                        text = LocalStringRes.current.hosterOrderText,
                         backgroundColor = Color.Warning,
                         contentColor = Color.OnWarning,
                         icon = Icons.Default.FormatListNumbered,
@@ -112,8 +112,8 @@ fun SettingsScreen(component: SettingsComponent) {
                     )
                     if (hosterList.isEmpty()) {
                         InfoCard(
-                            title = "No hoster",
-                            text = "Currently no hoster saved, please load any series and check back",
+                            title = LocalStringRes.current.noHoster,
+                            text = LocalStringRes.current.noHosterText,
                             backgroundColor = MaterialTheme.colorScheme.error,
                             contentColor = MaterialTheme.colorScheme.onError,
                             icon = Icons.Default.Report,
@@ -128,7 +128,7 @@ fun SettingsScreen(component: SettingsComponent) {
             itemsAfter = {
                 item {
                     Text(
-                        text = "Copyright © 2021-${Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year} Jeff Retz (DatLag)",
+                        text = LocalStringRes.current.copyright.format(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )

@@ -24,11 +24,63 @@ expect class StringRes {
     val close: String
     val clear: String
     val search: String
+    val confirm: String
 
     val searchForSeries: String
 
     val nextGenre: String
     val previousGenre: String
+
+    val rewind10: String
+    val play: String
+    val pause: String
+    val loading: String
+    val forward10: String
+    val fullscreen: String
+
+    val selectLanguage: String
+    val noStreamingSourceHeader: String
+    val noStreamingSourceText: String
+    val activate: String
+    val selectSeason: String
+
+    val saveStreamSuccess: String
+    val saveStreamError: String
+
+    val favorites: String
+    val lastWatched: String
+    val latestEpisodes: String
+    val latestSeries: String
+    val linkedSeries: String
+
+    val about: String
+
+    val beta: String
+    val betaText: String
+    val underConstruction: String
+    val underConstructionText: String
+
+    val enterUserName: String
+    val enterPassword: String
+    val skip: String
+
+    val continueEpisode: String
+    val startEpisode: String
+
+    val readMore: String
+    val sortHosterHint: String
+
+    val moveUp: String
+    val moveDown: String
+
+    val hosterOrder: String
+    val hosterOrderText: String
+    val noHoster: String
+    val noHosterText: String
+
+    val copyright: String
+
+    val vlcMustBeInstalled: String
 
     fun openInBrowser(url: String): Boolean
 }

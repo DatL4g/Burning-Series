@@ -3,6 +3,7 @@ package dev.datlag.burningseries.ui.screen.video
 import android.content.pm.ActivityInfo
 import android.widget.FrameLayout
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.*
@@ -20,6 +21,7 @@ import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.*
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.enterFullScreen
 import dev.datlag.burningseries.common.exitFullScreen
 import dev.datlag.burningseries.common.findWindow
@@ -47,6 +49,7 @@ fun VideoPlayer(component: VideoComponent) {
     val stream = component.videoStreams[streamListPos].srcList[srcListPos]
     val systemUiController = rememberSystemUiController()
     val window = LocalView.current.context.findWindow()
+    val strings = LocalStringRes.current
 
     RequireScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     DisposableEffect(Unit) {
@@ -90,6 +93,14 @@ fun VideoPlayer(component: VideoComponent) {
                             Icons.Default.Pause
                         } else {
                             Icons.Default.PlayArrow
+                        }
+                    }
+
+                    override fun onIsLoadingChanged(isLoading: Boolean) {
+                        super.onIsLoadingChanged(isLoading)
+
+                        if (isLoading) {
+                            component.playIcon.value = Icons.Default.MoreHoriz
                         }
                     }
 

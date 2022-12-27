@@ -134,7 +134,7 @@ fun LandscapeToolbar(
                 )) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = null,
+                        contentDescription = LocalStringRes.current.favorites,
                         tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onTertiary
                     )
                 }
@@ -147,7 +147,7 @@ fun LandscapeToolbar(
                     )) {
                         Icon(
                             imageVector = Icons.Default.Link,
-                            contentDescription = null,
+                            contentDescription = LocalStringRes.current.linkedSeries,
                             tint = MaterialTheme.colorScheme.onTertiary
                         )
                     }

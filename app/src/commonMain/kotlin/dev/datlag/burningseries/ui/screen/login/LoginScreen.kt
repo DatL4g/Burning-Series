@@ -55,8 +55,8 @@ fun LoginScreen(component: LoginComponent) {
             verticalArrangement = Arrangement.Center
         ) {
             InfoCard(
-                title = "Under construction",
-                text = "This part is still in development.\nCome here again after full release!",
+                title = LocalStringRes.current.underConstruction,
+                text = LocalStringRes.current.underConstructionText,
                 backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.padding(16.dp)
@@ -66,7 +66,7 @@ fun LoginScreen(component: LoginComponent) {
                 value = username,
                 maxLines = 1,
                 label = {
-                    Text(text = "Enter your username")
+                    Text(text = LocalStringRes.current.enterUserName)
                 },
                 onValueChange = {
                     scope.launch(Dispatchers.IO) {
@@ -81,7 +81,7 @@ fun LoginScreen(component: LoginComponent) {
                 value = password,
                 maxLines = 1,
                 label = {
-                    Text(text = "Enter your password")
+                    Text(text = LocalStringRes.current.enterPassword)
                 },
                 onValueChange = {
                     scope.launch(Dispatchers.IO) {
@@ -118,7 +118,7 @@ fun LoginScreen(component: LoginComponent) {
                 contentColor = MaterialTheme.colorScheme.primaryContainer
             )) {
                 Text(
-                    text = "Skip",
+                    text = LocalStringRes.current.skip,
                     maxLines = 1,
                 )
             }

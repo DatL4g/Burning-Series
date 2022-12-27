@@ -25,7 +25,7 @@ fun AboutScreen(component: AboutComponent) {
                 }) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
-                        contentDescription = null,
+                        contentDescription = LocalStringRes.current.back,
                         tint = MaterialTheme.colorScheme.onTertiary
                     )
                 }

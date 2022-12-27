@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.common.header
 import dev.datlag.burningseries.ui.screen.home.gridCellSize
@@ -27,7 +28,7 @@ fun EpisodesView(component: EpisodesComponent) {
         if (lastWatched.isNotEmpty()) {
             header {
                 Text(
-                    text = "Last Watched",
+                    text = LocalStringRes.current.lastWatched,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -37,7 +38,7 @@ fun EpisodesView(component: EpisodesComponent) {
         }
         header {
             Text(
-                text = "Latest Episodes",
+                text = LocalStringRes.current.latestEpisodes,
                 fontWeight = FontWeight.Bold
             )
         }

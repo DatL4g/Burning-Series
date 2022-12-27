@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.LocalStringRes
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -28,7 +29,7 @@ fun LanguageDialog(component: LanguageComponent) {
             },
             title = {
                 Text(
-                    text = "Select language",
+                    text = LocalStringRes.current.selectLanguage,
                     style = MaterialTheme.typography.headlineMedium,
                     maxLines = 1
                 )
@@ -73,7 +74,7 @@ fun LanguageDialog(component: LanguageComponent) {
                         imageVector = Icons.Default.Check,
                         contentDescription = null
                     )
-                    Text(text = "Confirm")
+                    Text(text = LocalStringRes.current.confirm)
                 }
             },
             dismissButton = {
@@ -88,7 +89,7 @@ fun LanguageDialog(component: LanguageComponent) {
                         imageVector = Icons.Default.Clear,
                         contentDescription = null
                     )
-                    Text(text = "Close")
+                    Text(text = LocalStringRes.current.close)
                 }
             }
         )

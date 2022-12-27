@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalOrientation
+import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.fillWidthInPortraitMode
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.model.Series
@@ -126,11 +127,11 @@ fun SeriesScreen(component: SeriesComponent) {
                 )
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                 Text(
-                    text = if (continueEpisode!!.watchPosition > 0L) {
-                        "Continue [Ep. ${continueEpisode!!.episodeNumberOrListNumber?.toString() ?: String()}]"
+                    text = (if (continueEpisode!!.watchPosition > 0L) {
+                        LocalStringRes.current.continueEpisode
                     } else {
-                        "Start [Ep. ${continueEpisode!!.episodeNumberOrListNumber?.toString() ?: String()}]"
-                    },
+                        LocalStringRes.current.startEpisode
+                    }).format(continueEpisode?.episodeNumberOrListNumber?.toString() ?: String()),
                     maxLines = 1
                 )
             }
@@ -166,7 +167,7 @@ private fun LazyListScope.SeriesScreenContent(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             text = description ?: String(),
             expanded = false,
-            readMoreText = "Read More"
+            readMoreText = LocalStringRes.current.readMore
         )
     }
 
@@ -212,7 +213,7 @@ private fun LazyListScope.SeriesScreenContent(
                 contentAlignment = Alignment.Center
             ) {
                 InfoCard(
-                    text = "Please sort the hoster list in settings",
+                    text = LocalStringRes.current.sortHosterHint,
                     backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.onClick {

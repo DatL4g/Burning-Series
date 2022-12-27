@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.Success
 import dev.datlag.burningseries.ui.custom.WebView
 import dev.datlag.burningseries.ui.Shape
@@ -31,6 +32,7 @@ fun ActivateScreen(component: ActivateComponent) {
             MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
         }
     }
+    val strings = LocalStringRes.current
 
     Scaffold(
         topBar = {
@@ -41,7 +43,7 @@ fun ActivateScreen(component: ActivateComponent) {
                     }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null,
+                            contentDescription = LocalStringRes.current.back,
                             tint = MaterialTheme.colorScheme.onTertiary
                         )
                     }
@@ -77,7 +79,7 @@ fun ActivateScreen(component: ActivateComponent) {
 
     if (success != null) {
         scope.launch {
-            snackbarHostState.showSnackbar(message = if (success!!) "Saved Stream" else "Error saving stream")
+            snackbarHostState.showSnackbar(message = if (success!!) strings.saveStreamSuccess else strings.saveStreamError)
         }
     }
 }

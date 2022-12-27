@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.common.header
 import dev.datlag.burningseries.ui.screen.home.gridCellSize
@@ -34,7 +35,7 @@ fun SeriesView(component: SeriesComponent) {
         if (favorites.isNotEmpty()) {
             header {
                 Text(
-                    text = "Favorites",
+                    text = LocalStringRes.current.favorites,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -44,7 +45,7 @@ fun SeriesView(component: SeriesComponent) {
         }
         header {
             Text(
-                text = "Latest Series",
+                text = LocalStringRes.current.latestSeries,
                 fontWeight = FontWeight.Bold
             )
         }

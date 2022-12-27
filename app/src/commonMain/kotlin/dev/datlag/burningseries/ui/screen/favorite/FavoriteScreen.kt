@@ -39,7 +39,7 @@ fun FavoriteScreen(component: FavoriteComponent) {
                 },
                 title = {
                     Text(
-                        text = "Favorites"
+                        text = LocalStringRes.current.favorites
                     )
                 }
             )

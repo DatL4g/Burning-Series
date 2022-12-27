@@ -134,11 +134,9 @@ fun PortraitToolbar(
                     color = if (state.toolbarState.progress == 1F) Color.SemiBlack else Color.Black.copy(alpha = state.toolbarState.progress / 10F),
                 shape = Shape.FullRoundedShape
             )) {
-                val isFavorite by component.isFavorite.collectAsState(false)
-
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = null,
+                    contentDescription = LocalStringRes.current.favorites,
                     tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onTertiary
                 )
             }
@@ -151,7 +149,7 @@ fun PortraitToolbar(
                 )) {
                     Icon(
                         imageVector = Icons.Default.Link,
-                        contentDescription = null,
+                        contentDescription = LocalStringRes.current.linkedSeries,
                         tint = MaterialTheme.colorScheme.onTertiary
                     )
                 }

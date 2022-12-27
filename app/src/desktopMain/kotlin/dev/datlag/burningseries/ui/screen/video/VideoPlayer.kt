@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import dev.datlag.burningseries.LocalStringRes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery
@@ -135,7 +136,7 @@ fun VideoPlayer(
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "VLC must be installed on your system",
+                text = LocalStringRes.current.vlcMustBeInstalled,
                 color = Color.White,
                 textAlign = TextAlign.Center
             )

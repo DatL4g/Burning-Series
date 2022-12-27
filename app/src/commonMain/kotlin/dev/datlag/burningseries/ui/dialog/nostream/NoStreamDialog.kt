@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.LocalStringRes
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -22,14 +23,14 @@ fun NoStreamDialog(component: NoStreamComponent) {
         },
         title = {
             Text(
-                text = "No streaming source",
+                text = LocalStringRes.current.noStreamingSourceHeader,
                 style = MaterialTheme.typography.headlineMedium,
                 maxLines = 1
             )
         },
         text = {
             Text(
-                text = "No streaming source found for this episode"
+                text = LocalStringRes.current.noStreamingSourceText
             )
         },
         confirmButton = {
@@ -41,7 +42,7 @@ fun NoStreamDialog(component: NoStreamComponent) {
                     contentDescription = null
                 )
                 Text(
-                    text = "Activate"
+                    text = LocalStringRes.current.activate
                 )
             }
         },
@@ -58,7 +59,7 @@ fun NoStreamDialog(component: NoStreamComponent) {
                     contentDescription = null
                 )
                 Text(
-                    text = "Close"
+                    text = LocalStringRes.current.close
                 )
             }
         }

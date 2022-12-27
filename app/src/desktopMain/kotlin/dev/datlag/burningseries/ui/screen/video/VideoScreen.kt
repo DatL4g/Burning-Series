@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import dev.datlag.burningseries.LocalStringRes
 
 @Composable
 actual fun VideoScreen(component: VideoComponent) {
@@ -26,7 +27,7 @@ actual fun VideoScreen(component: VideoComponent) {
                     }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null
+                            contentDescription = LocalStringRes.current.back
                         )
                     }
                 },

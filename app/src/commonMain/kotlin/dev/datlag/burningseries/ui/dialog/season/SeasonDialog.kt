@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.LocalStringRes
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -28,7 +29,7 @@ fun SeasonDialog(component: SeasonComponent) {
             },
             title = {
                 Text(
-                    text = "Select season",
+                    text = LocalStringRes.current.selectSeason,
                     style = MaterialTheme.typography.headlineMedium,
                     maxLines = 1
                 )
@@ -76,7 +77,7 @@ fun SeasonDialog(component: SeasonComponent) {
                         imageVector = Icons.Default.Check,
                         contentDescription = null
                     )
-                    Text(text = "Confirm")
+                    Text(text = LocalStringRes.current.confirm)
                 }
             },
             dismissButton = {
@@ -91,7 +92,7 @@ fun SeasonDialog(component: SeasonComponent) {
                         imageVector = Icons.Default.Clear,
                         contentDescription = null
                     )
-                    Text(text = "Close")
+                    Text(text = LocalStringRes.current.close)
                 }
             }
         )
