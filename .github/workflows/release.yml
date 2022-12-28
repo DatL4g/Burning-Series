@@ -23,8 +23,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Export libraries
+      - name: Export libraries on Ubuntu and Mac
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: ./gradlew app:exportLibraryDefinitions -PaboutLibraries.exportPath=src/commonMain/assets/
+
+      - name: Export libraries on Windows
+        if: matrix.os == 'windows-latest'
+        run: gradlew.bat app:exportLibraryDefinitions -PaboutLibraries.exportPath=src/commonMain/assets/ || gradlew.bat app:exportLibraryDefinitions -PaboutLibraries.exportPath=app/src/commonMain/assets/
 
       - name: Create package on Ubuntu
         if: matrix.os == 'ubuntu-latest'
