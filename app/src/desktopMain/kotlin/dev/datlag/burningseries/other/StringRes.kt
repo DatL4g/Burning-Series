@@ -183,6 +183,12 @@ actual class StringRes private constructor(
     actual val vlcMustBeInstalled: String
         get() = getLocaleOrDefaultFor("vlc_must_be_installed")
 
+    actual val mostPreferred: String
+        get() = getLocaleOrDefaultFor("most_preferred")
+
+    actual val leastPreferred: String
+        get() = getLocaleOrDefaultFor("least_preferred")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }

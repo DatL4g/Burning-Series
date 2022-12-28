@@ -58,4 +58,6 @@
     <string name="no_hoster">No Hoster</string>
     <string name="no_hoster_text">Currently no hoster saved. Please load any series first.</string>
     <string name="vlc_must_be_installed">VLC must be installed on your system.</string>
+    <string name="most_preferred">%s - Most preferred</string>
+    <string name="least_preferred">%s - Least preferred</string>
 </resources>

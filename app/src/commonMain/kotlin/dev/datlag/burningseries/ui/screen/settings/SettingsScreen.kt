@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import dev.datlag.burningseries.ui.custom.dragdrop.DragDropColumn
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +71,11 @@ fun SettingsScreen(component: SettingsComponent) {
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Text(
+                            text = (index + 1).toString(),
+                            modifier = Modifier.padding(start = 16.dp),
+                            fontWeight = FontWeight.Bold
+                        )
                         Text(
                             modifier = Modifier.weight(1F).padding(16.dp),
                             text = item.name
@@ -121,6 +128,17 @@ fun SettingsScreen(component: SettingsComponent) {
                                 .fillWidthInPortraitMode()
                                 .defaultMinSize(minWidth = Dp(errorCardMinWidth.toFloat()))
                                 .padding(vertical = 16.dp)
+                        )
+                    } else {
+                        Text(
+                            text = LocalStringRes.current.mostPreferred.format("1"),
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                        )
+                        Text(
+                            text = LocalStringRes.current.leastPreferred.format(max(hosterList.size, 2).toString()),
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
                 }

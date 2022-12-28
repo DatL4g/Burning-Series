@@ -82,5 +82,8 @@ expect class StringRes {
 
     val vlcMustBeInstalled: String
 
+    val mostPreferred: String
+    val leastPreferred: String
+
     fun openInBrowser(url: String): Boolean
 }

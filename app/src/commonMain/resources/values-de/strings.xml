@@ -55,4 +55,6 @@
     <string name="no_hoster">Keine Hoster</string>
     <string name="no_hoster_text">Momentan keine Hoster gespeichert. Bitte lade zuerst eine Serie.</string>
     <string name="vlc_must_be_installed">VLC muss auf deinem System installiert sein</string>
+    <string name="most_preferred">%s - am meisten bevorzugt</string>
+    <string name="least_preferred">%s - am wenigsten bevorzugt</string>
 </resources>

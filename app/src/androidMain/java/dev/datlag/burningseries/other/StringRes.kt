@@ -179,6 +179,12 @@ actual class StringRes(private val context: Context) {
     actual val vlcMustBeInstalled: String
         get() = context.getString(R.string.vlc_must_be_installed)
 
+    actual val mostPreferred: String
+        get() = context.getString(R.string.most_preferred)
+
+    actual val leastPreferred: String
+        get() = context.getString(R.string.least_preferred)
+
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
         if (runCatching {
