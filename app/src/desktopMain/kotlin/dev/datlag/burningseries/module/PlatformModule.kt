@@ -29,8 +29,15 @@ actual object PlatformModule {
             returnFile
         }
 
+        bindSingleton("DbFile") {
+            val dirs: AppDirs = instance()
+            val returnFile = File(dirs.getUserConfigDir("BurningSeries", null, null), "burning_series.db")
+            returnFile.createWithParents()
+            returnFile
+        }
+
         bindSingleton {
-            DriverFactory().createDriver()
+            DriverFactory(instance("DbFile")).createDriver()
         }
 
         bindSingleton("ImageDir") {
