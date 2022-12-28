@@ -13,6 +13,5 @@ import kotlinx.coroutines.*
 actual fun VideoScreen(component: VideoComponent) {
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         VideoPlayer(component)
-        VideoControls(component)
     }
 }

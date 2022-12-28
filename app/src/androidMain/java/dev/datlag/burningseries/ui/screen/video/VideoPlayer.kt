@@ -1,12 +1,20 @@
 package dev.datlag.burningseries.ui.screen.video
 
 import android.content.pm.ActivityInfo
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageButton
+import android.widget.TextView
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.viewinterop.AndroidView
@@ -19,12 +27,13 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.*
 import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.media3.ui.DefaultTimeBar
 import androidx.media3.ui.PlayerView
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.android.material.button.MaterialButton
 import dev.datlag.burningseries.LocalStringRes
-import dev.datlag.burningseries.common.enterFullScreen
-import dev.datlag.burningseries.common.exitFullScreen
-import dev.datlag.burningseries.common.findWindow
+import dev.datlag.burningseries.R
+import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.other.Logger
 import dev.datlag.burningseries.ui.custom.RequireScreenOrientation
 import kotlinx.coroutines.*
@@ -50,6 +59,10 @@ fun VideoPlayer(component: VideoComponent) {
     val systemUiController = rememberSystemUiController()
     val window = LocalView.current.context.findWindow()
     val strings = LocalStringRes.current
+    var appliedInitialPosition by remember { mutableStateOf(false) }
+    val buttonShape = MaterialTheme.shapes.medium.toLegacyShape()
+    val buttonColors = ButtonDefaults.legacyButtonTintList(MaterialTheme.colorScheme.primaryContainer)
+    val progressColor = MaterialTheme.colorScheme.primary.toArgb()
 
     RequireScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     DisposableEffect(Unit) {
@@ -107,7 +120,10 @@ fun VideoPlayer(component: VideoComponent) {
                     override fun onRenderedFirstFrame() {
                         super.onRenderedFirstFrame()
 
-                        component.seekTo(component.initialPosition)
+                        if (!appliedInitialPosition) {
+                            component.seekTo(component.initialPosition)
+                            appliedInitialPosition = true
+                        }
                         component.length.value = (this@apply as ExoPlayer).duration
                         scope.launch(Dispatchers.IO) {
                             while(this.isActive) {
@@ -147,12 +163,31 @@ fun VideoPlayer(component: VideoComponent) {
 
     DisposableEffect(
         AndroidView(factory = {
-            PlayerView(context).apply {
-                hideController()
-                useController = false
-                player = exoPlayer
+            val root = LayoutInflater.from(it).inflate(R.layout.video_player, null, false)
+            root.apply {
+                findViewById<PlayerView>(R.id.player).player = exoPlayer
+
                 layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
             }
+        }, update = {
+            it.apply {
+                layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
+            }
+
+            val controls = it.findViewById<PlayerView>(R.id.player).findViewById<View>(R.id.exoplayer_controls)
+            val backButton = controls.findViewById<ImageButton>(R.id.backButton)
+            val title = controls.findViewById<TextView>(R.id.title)
+            val skipButton = it.findViewById<MaterialButton>(R.id.skip)
+            val progress = controls.findViewById<DefaultTimeBar>(R.id.exo_progress)
+
+            backButton.setOnClickListener {
+                component.onGoBack()
+            }
+            title.text = component.episode.title
+            skipButton.shapeAppearanceModel = buttonShape
+            skipButton.backgroundTintList = buttonColors
+            progress.setPlayedColor(progressColor)
+            progress.setScrubberColor(progressColor)
         })
     ) {
         onDispose {
