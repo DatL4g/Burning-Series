@@ -79,6 +79,7 @@ class GenreRepository(
                 when {
                     it.title.equals(value, true) -> it to 1.0
                     it.title.startsWith(value, true) -> it to 0.95
+                    it.title.contains(value, true) -> it to 0.9
                     else -> it to JaroWinkler.distance(it.title, value)
                 }
             }.filter { it.second > 0.85 }.sortedByDescending { it.second }.map { it.first })

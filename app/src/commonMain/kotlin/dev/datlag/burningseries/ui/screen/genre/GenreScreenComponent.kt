@@ -58,7 +58,7 @@ class GenreScreenComponent(
 
     override fun updateSearchText(value: String) {
         searchJob?.cancel()
-        _searchText.value = value.trim()
+        _searchText.value = value
         searchJob = scope.launch(Dispatchers.IO) {
             genreRepo.searchSeries(value.trim())
         }
