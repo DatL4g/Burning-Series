@@ -99,6 +99,7 @@ class SeriesScreenComponent(
     private val seriesEpisodes = seriesRepo.series.map { it?.episodes ?: emptyList() }
 
     private val episodeRepo: EpisodeRepository by di.instance()
+    override val episodeStatus = episodeRepo.status
 
     private var state: State = stateKeeper.consume(key = STATE_KEY) ?: State()
     private var loadedWantedEpisode: Boolean

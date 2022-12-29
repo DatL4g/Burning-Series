@@ -2,20 +2,17 @@ package dev.datlag.burningseries.ui.screen.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.Icon
-import androidx.compose.material.TopAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material.Scaffold
+import androidx.compose.material.*
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,16 +29,24 @@ import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.OnWarning
 import dev.datlag.burningseries.common.Warning
 import dev.datlag.burningseries.common.getValueBlocking
+import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.EmptyInputStream
 import dev.datlag.burningseries.other.Resources
+import dev.datlag.burningseries.ui.Shape
 import dev.datlag.burningseries.ui.custom.*
+import dev.datlag.burningseries.ui.custom.SnackbarData
+import kotlinx.coroutines.launch
 import java.io.InputStream
 
 @OptIn(ExperimentalDecomposeApi::class)
 @Composable
 fun HomeScreen(component: HomeComponent) {
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scaffoldState = rememberScaffoldState(
+        snackbarHostState = snackbarHostState
+    )
+
     val resources = LocalResources.current
     val strings = LocalStringRes.current
 
@@ -51,6 +56,36 @@ fun HomeScreen(component: HomeComponent) {
 
     val _githubIconInput = remember { loadGitHubIcon() }
     val githubIconInput = if (_githubIconInput.available() > 0) _githubIconInput else loadGitHubIcon()
+    var (background, content) = SnackbarDefaults.backgroundColor to androidx.compose.material.MaterialTheme.colors.surface
+    val colorScheme = MaterialTheme.colorScheme
+
+    snackbarHandlerForStatus(
+        state = snackbarHostState,
+        status = component.status,
+        mapper = {
+            when (it) {
+                is Status.LOADING -> strings.loadingHome
+                is Status.ERROR.TOO_MANY_REQUESTS -> strings.tooManyRequests
+                is Status.ERROR -> strings.errorTryAgain
+                else -> null
+            }
+        }
+    ) { status ->
+        when (status) {
+            is Status.LOADING -> {
+                background = Color.Warning
+                content = Color.OnWarning
+            }
+            is Status.ERROR -> {
+                background = colorScheme.error
+                content = colorScheme.onError
+            }
+            else -> {
+                background = colorScheme.surface
+                content = colorScheme.onSurface
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -135,7 +170,19 @@ fun HomeScreen(component: HomeComponent) {
                 }
             }
         },
-        scaffoldState = scaffoldState
+        scaffoldState = scaffoldState,
+        snackbarHost = {
+            SnackbarHost(it) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    backgroundColor = background,
+                    contentColor = content,
+                    shape = Shape.FullRoundedShape,
+                    elevation = 0.dp,
+                    actionOnNewLine = false
+                )
+            }
+        }
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()

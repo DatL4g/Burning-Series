@@ -57,4 +57,7 @@
     <string name="vlc_must_be_installed">VLC muss auf deinem System installiert sein</string>
     <string name="most_preferred">%s - am meisten bevorzugt</string>
     <string name="least_preferred">%s - am wenigsten bevorzugt</string>
+    <string name="too_many_requests">Zu viele Anfragen bitte warte bevor du weiter machst</string>
+    <string name="error_try_again">Fehler, bitte versuche es später erneut</string>
+    <string name="loading_home">Lade neuste Serien und Episoden...</string>
 </resources>

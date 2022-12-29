@@ -185,6 +185,15 @@ actual class StringRes(private val context: Context) {
     actual val leastPreferred: String
         get() = context.getString(R.string.least_preferred)
 
+    actual val tooManyRequests: String
+        get() = context.getString(R.string.too_many_requests)
+
+    actual val errorTryAgain: String
+        get() = context.getString(R.string.error_try_again)
+
+    actual val loadingHome: String
+        get() = context.getString(R.string.loading_home)
+
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
         if (runCatching {

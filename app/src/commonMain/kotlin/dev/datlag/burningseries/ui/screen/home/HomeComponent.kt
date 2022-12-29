@@ -6,6 +6,7 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.SeriesInitialInfo
+import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.network.repository.HomeRepository
 import dev.datlag.burningseries.ui.dialog.DialogComponent
 import dev.datlag.burningseries.ui.navigation.Component
@@ -25,6 +26,8 @@ interface HomeComponent : Component {
     val pagerList: Lazy<List<Component>>
 
     val favoritesExists: Flow<Boolean>
+
+    val status: Flow<Status>
 
     fun onFavoritesClicked()
     fun onSearchClicked()

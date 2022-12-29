@@ -85,5 +85,10 @@ expect class StringRes {
     val mostPreferred: String
     val leastPreferred: String
 
+    val tooManyRequests: String
+    val errorTryAgain: String
+
+    val loadingHome: String
+
     fun openInBrowser(url: String): Boolean
 }

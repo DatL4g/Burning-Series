@@ -13,6 +13,7 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrDefault
 import dev.datlag.burningseries.database.BurningSeriesDB
 import dev.datlag.burningseries.model.SeriesInitialInfo
+import dev.datlag.burningseries.network.repository.HomeRepository
 import dev.datlag.burningseries.ui.navigation.Component
 import dev.datlag.burningseries.ui.screen.home.episode.EpisodesViewComponent
 import dev.datlag.burningseries.ui.screen.home.series.SeriesViewComponent
@@ -55,7 +56,10 @@ class HomeScreenComponent(
         )
     }
 
+    private val homeRepo: HomeRepository by di.instance()
     private val db: BurningSeriesDB by di.instance()
+
+    override val status = homeRepo.status
     override val favoritesExists: Flow<Boolean> = db.burningSeriesQueries.favoritesExists().asFlow().mapToOneOrDefault(false)
 
     init {

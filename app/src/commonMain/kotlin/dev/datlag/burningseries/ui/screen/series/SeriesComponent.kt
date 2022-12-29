@@ -6,6 +6,7 @@ import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.model.VideoStream
+import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.other.DefaultValue
 import dev.datlag.burningseries.ui.dialog.DialogComponent
 import dev.datlag.burningseries.ui.navigation.Component
@@ -40,6 +41,8 @@ interface SeriesComponent : Component {
     val isFavorite: Flow<Boolean>
 
     val hosterSorted: Flow<Boolean>
+
+    val episodeStatus: Flow<Status>
 
     fun showDialog(config: DialogConfig)
     fun loadEpisode(episode: Series.Episode)

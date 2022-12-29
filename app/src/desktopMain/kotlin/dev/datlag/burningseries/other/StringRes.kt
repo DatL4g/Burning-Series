@@ -189,6 +189,15 @@ actual class StringRes private constructor(
     actual val leastPreferred: String
         get() = getLocaleOrDefaultFor("least_preferred")
 
+    actual val tooManyRequests: String
+        get() = getLocaleOrDefaultFor("too_many_requests")
+
+    actual val errorTryAgain: String
+        get() = getLocaleOrDefaultFor("error_try_again")
+
+    actual val loadingHome: String
+        get() = getLocaleOrDefaultFor("loading_home")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }

@@ -3,25 +3,29 @@ package dev.datlag.burningseries.ui.screen.series
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Chip
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.*
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalOrientation
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.OnWarning
+import dev.datlag.burningseries.common.Warning
 import dev.datlag.burningseries.common.fillWidthInPortraitMode
-import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.other.Orientation
 import dev.datlag.burningseries.ui.custom.readmoretext.ReadMoreText
@@ -29,15 +33,17 @@ import dev.datlag.burningseries.ui.screen.series.toolbar.LandscapeToolbar
 import dev.datlag.burningseries.ui.screen.series.toolbar.PortraitToolbar
 import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.model.common.maxSize
+import dev.datlag.burningseries.network.Status
+import dev.datlag.burningseries.ui.Shape
 import dev.datlag.burningseries.ui.dialog.language.LanguageComponent
 import dev.datlag.burningseries.ui.dialog.language.LanguageDialog
-import dev.datlag.burningseries.other.Logger
 import dev.datlag.burningseries.ui.custom.InfoCard
-import dev.datlag.burningseries.ui.custom.collapsingtoolbar.CollapsingToolbarScaffoldScopeInstance.align
+import dev.datlag.burningseries.ui.custom.snackbarHandlerForStatus
 import dev.datlag.burningseries.ui.dialog.nostream.NoStreamComponent
 import dev.datlag.burningseries.ui.dialog.nostream.NoStreamDialog
 import dev.datlag.burningseries.ui.dialog.season.SeasonComponent
 import dev.datlag.burningseries.ui.dialog.season.SeasonDialog
+import kotlinx.coroutines.flow.consumeAsFlow
 
 
 @Composable
@@ -67,7 +73,6 @@ fun SeriesScreen(component: SeriesComponent) {
     val isFavorite by component.isFavorite.collectAsState(false)
 
     val continueEpisode by component.continueEpisode.collectAsState(null)
-
     val hosterSorted by component.hosterSorted.collectAsState(false)
 
     Box(modifier = Modifier.fillMaxSize()) {

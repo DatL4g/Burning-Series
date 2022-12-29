@@ -60,4 +60,7 @@
     <string name="vlc_must_be_installed">VLC must be installed on your system.</string>
     <string name="most_preferred">%s - Most preferred</string>
     <string name="least_preferred">%s - Least preferred</string>
+    <string name="too_many_requests">Too many requests please wait before continuing</string>
+    <string name="error_try_again">Error please try again later</string>
+    <string name="loading_home">Loading latest series and episodes...</string>
 </resources>
