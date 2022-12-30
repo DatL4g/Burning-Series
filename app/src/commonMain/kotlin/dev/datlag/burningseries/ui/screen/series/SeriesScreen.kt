@@ -35,6 +35,7 @@ import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.model.common.maxSize
 import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.ui.Shape
+import dev.datlag.burningseries.ui.custom.ChipGroup
 import dev.datlag.burningseries.ui.dialog.language.LanguageComponent
 import dev.datlag.burningseries.ui.dialog.language.LanguageDialog
 import dev.datlag.burningseries.ui.custom.InfoCard
@@ -177,9 +178,9 @@ private fun LazyListScope.SeriesScreenContent(
     }
 
     item {
-        Row(
+        ChipGroup(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalSpace = 8.dp,
             verticalAlignment = Alignment.CenterVertically
         ) {
             genres.forEach {

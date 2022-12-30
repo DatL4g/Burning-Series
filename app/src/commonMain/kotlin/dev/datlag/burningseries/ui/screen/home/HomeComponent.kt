@@ -29,7 +29,11 @@ interface HomeComponent : Component {
 
     val status: Flow<Status>
 
+    val dialog: Value<ChildOverlay<DialogConfig, DialogComponent>>
+
     fun onFavoritesClicked()
     fun onSearchClicked()
+
+    fun showDialog(config: DialogConfig)
 
 }

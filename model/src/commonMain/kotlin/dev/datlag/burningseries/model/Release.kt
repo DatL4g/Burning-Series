@@ -16,15 +16,13 @@ import kotlinx.serialization.Transient
 @Serializable
 data class Release(
     @SerialName("url") val url: String,
-    @SerialName("assets_url") val assetsUrl: String,
-    @SerialName("html_url") val htmlUrl: String,
-    @SerialName("id") val id: String,
-    @SerialName("tag_name") val tagName: String,
-    @SerialName("name") val title: String,
-    @SerialName("draft") val isDraft: Boolean,
-    @SerialName("prerelease") val isPreRelease: Boolean,
-    @SerialName("published_at") val publishedAt: String,
-    @SerialName("body") val body: String,
+    @SerialName("assets_url") val assetsUrl: String = String(),
+    @SerialName("html_url") val htmlUrl: String = String(),
+    @SerialName("tag_name") val tagName: String = String(),
+    @SerialName("name") val title: String = String(),
+    @SerialName("draft") val isDraft: Boolean = false,
+    @SerialName("prerelease") val isPreRelease: Boolean = false,
+    @SerialName("published_at") val publishedAt: String = String(),
     @Transient val publishedAtSeconds: Long = try { publishedAt.toInstant().epochSeconds } catch (ignored: Exception) { 0L }
 ) : Parcelable {
 
@@ -36,5 +34,4 @@ data class Release(
     } else {
         publishedAt
     }
-
 }

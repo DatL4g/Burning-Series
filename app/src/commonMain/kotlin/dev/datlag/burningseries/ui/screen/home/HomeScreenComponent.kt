@@ -11,18 +11,25 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrDefault
+import dev.datlag.burningseries.common.coroutineScope
 import dev.datlag.burningseries.database.BurningSeriesDB
 import dev.datlag.burningseries.model.SeriesInitialInfo
+import dev.datlag.burningseries.network.repository.GitHubRepository
 import dev.datlag.burningseries.network.repository.HomeRepository
+import dev.datlag.burningseries.ui.dialog.DialogComponent
+import dev.datlag.burningseries.ui.dialog.release.NewReleaseDialogComponent
 import dev.datlag.burningseries.ui.navigation.Component
 import dev.datlag.burningseries.ui.screen.home.episode.EpisodesViewComponent
 import dev.datlag.burningseries.ui.screen.home.series.SeriesViewComponent
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import org.kodein.di.DI
-import org.kodein.di.DIAware
+import dev.datlag.burningseries.common.CommonDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.kodein.di.instance
-import java.io.InputStream
 
 class HomeScreenComponent(
     componentContext: ComponentContext,
@@ -35,7 +42,22 @@ class HomeScreenComponent(
     override val di: DI
 ) : HomeComponent, ComponentContext by componentContext {
 
+    private val scope = coroutineScope(CommonDispatcher.Main + SupervisorJob())
     private val dialogNavigation = OverlayNavigation<DialogConfig>()
+    private val _dialog = childOverlay(
+        source = dialogNavigation,
+        handleBackButton = true
+    ) { config, componentContext ->
+        when (config) {
+            is DialogConfig.NewRelease -> NewReleaseDialogComponent(
+                componentContext,
+                config.release,
+                onDismissed = dialogNavigation::dismiss,
+                di = di
+            ) as DialogComponent
+        }
+    }
+    override val dialog: Value<ChildOverlay<DialogConfig, DialogComponent>> = _dialog
 
     private val navigation = StackNavigation<View>()
     private val _childStack = lazy {
@@ -58,6 +80,7 @@ class HomeScreenComponent(
 
     private val homeRepo: HomeRepository by di.instance()
     private val db: BurningSeriesDB by di.instance()
+    private val githubRepo: GitHubRepository by di.instance()
 
     override val status = homeRepo.status
     override val favoritesExists: Flow<Boolean> = db.burningSeriesQueries.favoritesExists().asFlow().mapToOneOrDefault(false)
@@ -68,6 +91,14 @@ class HomeScreenComponent(
                 navigation.replaceCurrent(View.Episode)
             } else {
                 navigation.replaceCurrent(View.Series)
+            }
+        }
+
+        scope.launch(Dispatchers.IO) {
+            githubRepo.newRelease.mapNotNull { it }.collect {
+                withContext(CommonDispatcher.Main) {
+                    showDialog(DialogConfig.NewRelease(it))
+                }
             }
         }
     }
@@ -100,10 +131,9 @@ class HomeScreenComponent(
         onSearch()
     }
 
-    @Parcelize
-    private data class DialogConfig(
-        val message: String
-    ): Parcelable
+    override fun showDialog(config: DialogConfig) {
+        dialogNavigation.activate(config)
+    }
 
     @Parcelize
     sealed class View : Parcelable {

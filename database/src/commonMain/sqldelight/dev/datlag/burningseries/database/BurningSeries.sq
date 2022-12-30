@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS DBEpisode(
     length INTEGER NOT NULL,
     watchProgress INTEGER NOT NULL,
     lastWatched INTEGER NOT NULL,
+    watchHref TEXT,
     seriesHref TEXT NOT NULL,
     FOREIGN KEY (seriesHref) REFERENCES DBSeries(href) ON DELETE NO ACTION
 );
@@ -63,8 +64,8 @@ ON DBSeries.href = episode.seriesHref OR DBSeries.href LIKE episode.seriesHref
 WHERE episode.lastWatched > 0 ORDER BY episode.lastWatched DESC LIMIT :amount;
 
 insertEpisode:
-INSERT OR IGNORE INTO DBEpisode(href, title, length, watchProgress, lastWatched, seriesHref)
-VALUES (?, ?, ?, ?, ?, ?);
+INSERT OR IGNORE INTO DBEpisode(href, title, length, watchProgress, lastWatched, watchHref, seriesHref)
+VALUES (?, ?, ?, ?, ?, ?, ?);
 
 updateEpisodeWatchProgress:
 UPDATE DBEpisode SET watchProgress = :position WHERE href = :href OR href LIKE :href;
@@ -74,6 +75,12 @@ UPDATE DBEpisode SET length = :length WHERE href = :href OR href LIKE :href;
 
 updateEpisodeLastWatched:
 UPDATE DBEpisode SET lastWatched = :time WHERE href = :href OR href LIKE :href;
+
+updateEpisodeLengthAndProgress:
+UPDATE DBEpisode SET watchProgress = :progress, length = :length WHERE href = :href OR href LIKE :href;
+
+updateEpisodeWatchHref:
+UPDATE DBEpisode SET watchHref = :watchHref WHERE href = :href OR href LIKE :href;
 
 selectAllHosters:
 SELECT * FROM DBHoster;
@@ -87,3 +94,6 @@ UPDATE DBHoster SET position = :position WHERE name = :name OR name LIKE :name;
 
 hostersSorted:
 SELECT EXISTS (SELECT * FROM DBHoster WHERE position NOT NULL);
+
+massUpdateEpisode:
+UPDATE DBEpisode SET watchProgress = :progress, length = :length WHERE href IN :list;

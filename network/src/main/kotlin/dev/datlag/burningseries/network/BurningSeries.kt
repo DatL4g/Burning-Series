@@ -4,6 +4,7 @@ import com.hadiyarajesh.flower_core.ApiResponse
 import de.jensklingenberg.ktorfit.http.*
 import dev.datlag.burningseries.model.*
 import dev.datlag.burningseries.network.model.LoginCookie
+import dev.datlag.burningseries.network.model.LoginInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.JsonElement
 
@@ -21,12 +22,12 @@ interface BurningSeries {
     @GET("login")
     suspend fun login(
         @Header("user") user: String
-    ): ApiResponse<LoginCookie>
+    ): ApiResponse<LoginInfo>
 
     @Headers("Accept: application/json")
     @GET("series/{href}")
     suspend fun series(
-        @Path("href") href: String
+        @Path("href") href: String,
     ): ApiResponse<Series>
 
     @Headers(

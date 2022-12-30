@@ -90,5 +90,8 @@ expect class StringRes {
 
     val loadingHome: String
 
+    val newRelease: String
+    val view: String
+
     fun openInBrowser(url: String): Boolean
 }

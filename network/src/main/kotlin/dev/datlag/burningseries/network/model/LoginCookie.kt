@@ -10,3 +10,10 @@ data class LoginCookie(
     @SerialName("maxAge") val maxAge: Long,
     @SerialName("expires") val expires: Long
 )
+
+
+@Serializable
+data class LoginInfo(
+    @SerialName("loginCookie") val loginCookie: LoginCookie,
+    @SerialName("uidCookie") val uidCookie: LoginCookie
+)

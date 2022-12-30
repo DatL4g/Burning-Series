@@ -36,7 +36,6 @@ fun main() {
     val lifecycle = LifecycleRegistry()
     val di = DI {
         import(NetworkModule.di)
-        import(DataStoreModule.di)
     }
 
     val root = NavHostComponent.create(DefaultComponentContext(lifecycle), di)

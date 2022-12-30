@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.other
 
 import android.content.res.AssetManager
+import dev.datlag.burningseries.BuildConfig
 import java.io.InputStream
 
 actual class Resources(private val assetManager: AssetManager) {
@@ -28,6 +29,9 @@ actual class Resources(private val assetManager: AssetManager) {
 
         actual val ABOUT_LIBRARIES: String
             get() = "raw/aboutlibraries.json"
+
+        actual val version: String?
+            get() = BuildConfig.VERSION_NAME
     }
 
 }

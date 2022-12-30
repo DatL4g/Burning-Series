@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+option java_package = "dev.datlag.burningseries.datastore.preferences";
+option java_multiple_files = true;
+
+message AppSettings {
+}

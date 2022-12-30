@@ -15,6 +15,7 @@ import kotlinx.datetime.Clock
 import org.kodein.di.DI
 import org.kodein.di.instance
 import java.io.File
+import kotlin.math.max
 
 class VideoScreenComponent(
     componentContext: ComponentContext,
@@ -87,9 +88,10 @@ class VideoScreenComponent(
             db.burningSeriesQueries.insertEpisode(
                 episodeHref,
                 episode.title,
-                initialLength,
-                initialPosition,
+                max(initialLength, if (episode.watched == true) Long.MAX_VALUE else 0L),
+                max(initialPosition, if (episode.watched == true) Long.MAX_VALUE else 0L),
                 Clock.System.now().epochSeconds,
+                episode.watchHref,
                 seriesHref
             )
 

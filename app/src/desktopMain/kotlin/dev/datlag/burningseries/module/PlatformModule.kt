@@ -29,6 +29,13 @@ actual object PlatformModule {
             returnFile
         }
 
+        bindSingleton("AppSettingsFile") {
+            val dirs: AppDirs = instance()
+            val returnFile = File(dirs.getUserDataDir("BurningSeries", null, null), "AppSettings.pb")
+            returnFile.createWithParents()
+            returnFile
+        }
+
         bindSingleton("DbFile") {
             val dirs: AppDirs = instance()
             val returnFile = File(dirs.getUserConfigDir("BurningSeries", null, null), "burning_series.db")

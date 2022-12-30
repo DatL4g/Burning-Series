@@ -36,12 +36,16 @@ import dev.datlag.burningseries.other.Resources
 import dev.datlag.burningseries.ui.Shape
 import dev.datlag.burningseries.ui.custom.*
 import dev.datlag.burningseries.ui.custom.SnackbarData
+import dev.datlag.burningseries.ui.dialog.release.NewReleaseComponent
+import dev.datlag.burningseries.ui.dialog.release.NewReleaseDialog
 import kotlinx.coroutines.launch
 import java.io.InputStream
+import androidx.compose.material.SnackbarDefaults
 
 @OptIn(ExperimentalDecomposeApi::class)
 @Composable
 fun HomeScreen(component: HomeComponent) {
+    val dialogState = component.dialog.subscribeAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scaffoldState = rememberScaffoldState(
         snackbarHostState = snackbarHostState
@@ -196,6 +200,14 @@ fun HomeScreen(component: HomeComponent) {
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(8.dp)
             )
             HomeViewPager(component)
+        }
+    }
+
+    dialogState.value.overlay?.also { (config, instance) ->
+        when (config) {
+            is DialogConfig.NewRelease -> {
+                NewReleaseDialog(instance as NewReleaseComponent)
+            }
         }
     }
 }

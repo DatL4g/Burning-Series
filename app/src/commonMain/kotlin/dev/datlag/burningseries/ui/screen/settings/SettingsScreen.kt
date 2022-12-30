@@ -17,10 +17,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
-import dev.datlag.burningseries.common.OnWarning
-import dev.datlag.burningseries.common.Warning
-import dev.datlag.burningseries.common.fillWidthInPortraitMode
-import dev.datlag.burningseries.common.getValueBlocking
+import dev.datlag.burningseries.common.*
+import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.ui.custom.InfoCard
 import dev.datlag.burningseries.ui.custom.dragdrop.DragDropColumn
 import kotlinx.datetime.Clock
@@ -32,6 +30,7 @@ import kotlin.math.max
 @Composable
 fun SettingsScreen(component: SettingsComponent) {
     val hosterList by component.hosterList.collectAsState(component.hosterList.getValueBlocking(emptyList()))
+    val newRelease by component.newRelease.collectAsState(null)
 
     Scaffold(
         topBar = {
@@ -99,13 +98,40 @@ fun SettingsScreen(component: SettingsComponent) {
                                     contentDescription = LocalStringRes.current.moveDown
                                 )
                             }
+                        } else {
+                            Spacer(modifier = Modifier.size(48.dp))
                         }
                     }
                 }
             },
             itemsBefore = {
                 item {
-                    var errorCardMinWidth by remember { mutableStateOf(0) }
+                    val strings = LocalStringRes.current
+                    var cardMinWidth by remember { mutableStateOf(0) }
+
+                    if (newRelease != null) {
+                        InfoCard(
+                            title = newRelease!!.title,
+                            text = strings.newRelease,
+                            backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            icon = Icons.Default.NewReleases,
+                            modifier = Modifier
+                                .fillWidthInPortraitMode()
+                                .defaultMinSize(minWidth = Dp(cardMinWidth.toFloat()))
+                                .padding(vertical = 16.dp)
+                                .onClick {
+                                strings.openInBrowser(newRelease!!.htmlUrl.ifEmpty {
+                                    Constants.GITHUB_REPOSITORY_URL
+                                })
+                            }.onSizeChanged {
+                                if (it.width > cardMinWidth) {
+                                    cardMinWidth = it.width
+                                }
+                            }
+                        )
+                    }
+
 
                     InfoCard(
                         title = LocalStringRes.current.hosterOrder,
@@ -113,8 +139,13 @@ fun SettingsScreen(component: SettingsComponent) {
                         backgroundColor = Color.Warning,
                         contentColor = Color.OnWarning,
                         icon = Icons.Default.FormatListNumbered,
-                        modifier = Modifier.fillWidthInPortraitMode().onSizeChanged {
-                            errorCardMinWidth = it.width
+                        modifier = Modifier
+                            .fillWidthInPortraitMode()
+                            .defaultMinSize(minWidth = Dp(cardMinWidth.toFloat()))
+                            .onSizeChanged {
+                            if (it.width > cardMinWidth) {
+                                cardMinWidth = it.width
+                            }
                         }
                     )
                     if (hosterList.isEmpty()) {
@@ -126,8 +157,13 @@ fun SettingsScreen(component: SettingsComponent) {
                             icon = Icons.Default.Report,
                             modifier = Modifier
                                 .fillWidthInPortraitMode()
-                                .defaultMinSize(minWidth = Dp(errorCardMinWidth.toFloat()))
+                                .defaultMinSize(minWidth = Dp(cardMinWidth.toFloat()))
                                 .padding(vertical = 16.dp)
+                                .onSizeChanged {
+                                    if (it.width > cardMinWidth) {
+                                        cardMinWidth = it.width
+                                    }
+                                }
                         )
                     } else {
                         Text(

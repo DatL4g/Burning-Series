@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface GitHub {
 
-    @Headers("Accept: application/json")
-    @GET("/repos/{owner}/{repo}/releases")
-    fun getReleases(
+    @Headers("Accept: application/vnd.github+json")
+    @GET("repos/{owner}/{repo}/releases")
+    suspend fun getReleases(
         @Path("owner") owner: String,
         @Path("repo") repo: String
-    ): Flow<ApiResponse<List<Release>>>
+    ): ApiResponse<List<Release>>
 }

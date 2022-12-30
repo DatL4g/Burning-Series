@@ -75,6 +75,7 @@ kotlin {
                 implementation("io.coil-kt:coil-svg:2.2.2")
                 implementation("com.google.accompanist:accompanist-pager:$accompanist")
                 implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanist")
+                implementation("com.google.accompanist:accompanist-flowlayout:$accompanist")
                 implementation("androidx.constraintlayout:constraintlayout:2.1.4")
                 implementation("com.google.android.material:material:1.7.0")
 

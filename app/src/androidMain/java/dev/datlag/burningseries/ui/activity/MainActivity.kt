@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             import(NetworkModule.di)
-            import(DataStoreModule.di)
         }
 
         val root = NavHostComponent.create(defaultComponentContext(), di)

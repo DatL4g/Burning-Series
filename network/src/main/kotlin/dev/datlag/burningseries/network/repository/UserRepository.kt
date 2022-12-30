@@ -15,20 +15,23 @@ class UserRepository(
     private val settings: DataStore<UserSettings>
 ) {
 
-    // bs.to sends the username and password plain anyway, so encryption doesn't matter
     fun bsLogin(username: String, password: String, header: String) = flow {
         val response = api.login(header)
         emit(when (response) {
             is ApiSuccessResponse -> {
-                val cookie = response.body
+                val info = response.body
 
                 settings.updateBSAccount(
                     username,
                     password,
-                    cookie?.name,
-                    cookie?.value,
-                    cookie?.maxAge,
-                    cookie?.expires
+                    info?.loginCookie?.name,
+                    info?.loginCookie?.value,
+                    info?.loginCookie?.maxAge,
+                    info?.loginCookie?.expires,
+                    info?.uidCookie?.name,
+                    info?.uidCookie?.value,
+                    info?.uidCookie?.maxAge,
+                    info?.uidCookie?.expires
                 ) to true
             }
             else -> settings.updateBSAccount(

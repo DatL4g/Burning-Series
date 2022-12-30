@@ -60,4 +60,6 @@
     <string name="too_many_requests">Zu viele Anfragen bitte warte bevor du weiter machst</string>
     <string name="error_try_again">Fehler, bitte versuche es später erneut</string>
     <string name="loading_home">Lade neuste Serien und Episoden...</string>
+    <string name="new_release">Hey eine neue Version ist verfügbar, das solltest du dir ansehen!</string>
+    <string name="view">Ansehen</string>
 </resources>

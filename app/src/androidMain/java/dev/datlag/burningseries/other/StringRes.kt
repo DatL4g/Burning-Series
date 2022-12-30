@@ -194,6 +194,12 @@ actual class StringRes(private val context: Context) {
     actual val loadingHome: String
         get() = context.getString(R.string.loading_home)
 
+    actual val newRelease: String
+        get() = context.getString(R.string.new_release)
+
+    actual val view: String
+        get() = context.getString(R.string.view)
+
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
         if (runCatching {

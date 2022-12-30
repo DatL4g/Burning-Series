@@ -11,8 +11,8 @@ val DataStore<UserSettings>.username: Flow<String>
 val DataStore<UserSettings>.password: Flow<String>
     get() = this.data.map { it.burningSeries.password }
 
-val DataStore<UserSettings>.cookieExpiration: Flow<Long>
-    get() = this.data.map { it.burningSeries.cookieExpiration }
+val DataStore<UserSettings>.loginCookieExpiration: Flow<Long>
+    get() = this.data.map { it.burningSeries.loginCookieExpiration }
 
 val DataStore<UserSettings>.showedLogin: Flow<Boolean>
     get() = this.data.map { it.burningSeries.showedLogin }
@@ -20,10 +20,14 @@ val DataStore<UserSettings>.showedLogin: Flow<Boolean>
 suspend fun DataStore<UserSettings>.updateBSAccount(
     username: String? = null,
     password: String? = null,
-    cookieName: String? = null,
-    cookieValue: String? = null,
-    cookieMaxAge: Long? = null,
-    cookieExpiration: Long? = null,
+    loginCookieName: String? = null,
+    loginCookieValue: String? = null,
+    loginCookieMaxAge: Long? = null,
+    loginCookieExpiration: Long? = null,
+    uidCookieName: String? = null,
+    uidCookieValue: String? = null,
+    uidCookieMaxAge: Long? = null,
+    uidCookieExpiration: Long? = null,
     showedLogin: Boolean? = null
 ): UserSettings {
     return this.updateData {
@@ -32,14 +36,22 @@ suspend fun DataStore<UserSettings>.updateBSAccount(
                 username ?: it.burningSeries.username
             ).setPassword(
                 password ?: it.burningSeries.password
-            ).setCookieName(
-                cookieName ?: it.burningSeries.cookieName
-            ).setCookieValue(
-                cookieValue ?: it.burningSeries.cookieValue
-            ).setCookieMaxAge(
-                cookieMaxAge ?: it.burningSeries.cookieMaxAge
-            ).setCookieExpiration(
-                cookieExpiration ?: it.burningSeries.cookieExpiration
+            ).setLoginCookieName(
+                loginCookieName ?: it.burningSeries.loginCookieName
+            ).setLoginCookieValue(
+                loginCookieValue ?: it.burningSeries.loginCookieValue
+            ).setLoginCookieMaxAge(
+                loginCookieMaxAge ?: it.burningSeries.loginCookieMaxAge
+            ).setLoginCookieExpiration(
+                loginCookieExpiration ?: it.burningSeries.loginCookieExpiration
+            ).setUidCookieName(
+                uidCookieName ?: it.burningSeries.uidCookieName
+            ).setUidCookieValue(
+                uidCookieValue ?: it.burningSeries.uidCookieValue
+            ).setUidCookieMaxAge(
+                uidCookieMaxAge ?: it.burningSeries.uidCookieMaxAge
+            ).setUidCookieExpiration(
+                uidCookieExpiration ?: it.burningSeries.uidCookieExpiration
             ).setShowedLogin(
                 showedLogin ?: it.burningSeries.showedLogin
             ).build()

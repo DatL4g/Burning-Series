@@ -198,6 +198,12 @@ actual class StringRes private constructor(
     actual val loadingHome: String
         get() = getLocaleOrDefaultFor("loading_home")
 
+    actual val newRelease: String
+        get() = getLocaleOrDefaultFor("new_release")
+
+    actual val view: String
+        get() = getLocaleOrDefaultFor("view")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }

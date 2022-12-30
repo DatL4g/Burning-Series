@@ -1,34 +1,41 @@
 package dev.datlag.burningseries.module
 
+import androidx.datastore.core.DataStore
 import de.jensklingenberg.ktorfit.Ktorfit
-import de.jensklingenberg.ktorfit.ktorfit
+import de.jensklingenberg.ktorfit.ktorfitBuilder
+import dev.datlag.burningseries.common.cookieMap
+import dev.datlag.burningseries.common.getValueBlocking
+import dev.datlag.burningseries.datastore.preferences.UserSettings
 import dev.datlag.burningseries.network.converter.FlowerResponseConverter
-import org.kodein.di.*
 import dev.datlag.burningseries.network.createBurningSeries
+import dev.datlag.burningseries.network.createGitHub
 import dev.datlag.burningseries.network.repository.*
 import io.ktor.client.engine.okhttp.*
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.cookies.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.utils.io.core.*
-import kotlinx.coroutines.GlobalScope
 import kotlinx.serialization.json.Json
-import okhttp3.Cache
+import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.OkHttpClient
 import okhttp3.dnsoverhttps.DnsOverHttps
+import org.kodein.di.*
 import java.net.InetAddress
-import java.nio.file.attribute.FileAttribute
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.createTempDirectory
 
 object NetworkModule {
 
     private const val TAG_KTORFIT_BURNINGSERIES = "BurningSeriesKtorfit"
+    private const val TAG_KTORFIT_GITHUB = "GitHubKtorfit"
     const val TAG_OKHTTP_CACHE_FOLDER = "OkHttpCacheFolder"
     const val TAG_OKHTTP_BOOTSTRAP_CLIENT = "OkHttpBootstrapClient"
     const val NAME = "NetworkModule"
 
     val di = DI.Module(NAME) {
+        import(DataStoreModule.di)
+
         bindSingleton(TAG_OKHTTP_CACHE_FOLDER) {
             val tempDir = createTempDirectory(
                 prefix = "httpDnsCache"
@@ -36,7 +43,8 @@ object NetworkModule {
 
             try {
                 tempDir.deleteOnExit()
-            } catch (ignored: Throwable) { }
+            } catch (ignored: Throwable) {
+            }
 
             tempDir
         }
@@ -58,13 +66,34 @@ object NetworkModule {
                 .build()
         }
 
-        bindSingleton(TAG_KTORFIT_BURNINGSERIES) {
-            ktorfit {
-                baseUrl("https://api.datlag.dev/bs/")
+        bindSingleton {
+            val userSettings: DataStore<UserSettings> = instance()
+            val userCookies = userSettings.cookieMap.getValueBlocking(emptyList())
+
+            object : CookieJar {
+                override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {}
+
+                override fun loadForRequest(url: HttpUrl): List<Cookie> {
+                    val list = userCookies.toMap().entries.map { (t, u) ->
+                        Cookie.Builder()
+                            .name(t)
+                            .value(u)
+                            .domain("api.datlag.dev")
+                            .build()
+                    }
+
+                    return list
+                }
+            }
+        }
+
+        bindSingleton {
+            ktorfitBuilder {
                 responseConverter(FlowerResponseConverter())
                 httpClient(OkHttp) {
                     engine {
                         config {
+                            cookieJar(instance())
                             dns(instance())
                             connectTimeout(3, TimeUnit.MINUTES)
                             readTimeout(3, TimeUnit.MINUTES)
@@ -80,6 +109,18 @@ object NetworkModule {
                 }
             }
         }
+        bindSingleton(TAG_KTORFIT_BURNINGSERIES) {
+            val builder: Ktorfit.Builder = instance()
+            builder.build {
+                baseUrl("https://api.datlag.dev/bs/")
+            }
+        }
+        bindSingleton(TAG_KTORFIT_GITHUB) {
+            val builder: Ktorfit.Builder = instance()
+            builder.build {
+                baseUrl("https://api.github.com/")
+            }
+        }
         bindSingleton {
             Json {
                 ignoreUnknownKeys = true
@@ -89,6 +130,10 @@ object NetworkModule {
         bindSingleton {
             val bsKtor: Ktorfit = instance(TAG_KTORFIT_BURNINGSERIES)
             bsKtor.createBurningSeries()
+        }
+        bindSingleton {
+            val githubKtor: Ktorfit = instance(TAG_KTORFIT_GITHUB)
+            githubKtor.createGitHub()
         }
         bindSingleton {
             HomeRepository(instance())
@@ -107,6 +152,9 @@ object NetworkModule {
         }
         bindProvider {
             SaveRepository(instance())
+        }
+        bindSingleton {
+            GitHubRepository(instance())
         }
     }
 }

@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.other
 
 import androidx.compose.ui.res.useResource
+import dev.datlag.burningseries.common.systemProperty
 import java.io.InputStream
 
 actual class Resources {
@@ -28,6 +29,9 @@ actual class Resources {
 
         actual val ABOUT_LIBRARIES: String
             get() = "aboutlibraries.json"
+
+        actual val version: String?
+            get() = systemProperty("jpackage.app-version")
     }
 
 }

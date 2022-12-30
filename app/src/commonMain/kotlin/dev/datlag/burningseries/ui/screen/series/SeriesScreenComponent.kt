@@ -125,17 +125,17 @@ class SeriesScreenComponent(
     }.flowOn(Dispatchers.IO)
 
     override val episodes: Flow<List<Series.Episode>> = combine(seriesEpisodes, dbEpisodes) { t1, t2 ->
-        t1.mapAsync {
-            val matchingDbEpisode = t2.find { db -> it.href.trimHref().equals(db.href.trimHref(), true) }
+        t1.mapAsync { episode ->
+            val matchingDbEpisode = t2.find { db -> episode.href.trimHref().equals(db.href.trimHref(), true) }
             matchingDbEpisode?.let { db ->
-                it.length = db.length
-                it.watchPosition = db.watchProgress
+                episode.length = db.length
+                episode.watchPosition = db.watchProgress
 
-                if (it.isFinished) {
+                if (episode.isFinished && episode.watched != true) {
                     // ToDo("mark as watched on bs.to")
                 }
             }
-            it
+            episode
         }
     }.flowOn(Dispatchers.IO)
 
@@ -183,8 +183,10 @@ class SeriesScreenComponent(
         }
         scope.launch(Dispatchers.IO) {
             episodes.map { it.flatMap { ep -> ep.hoster } }.collect { hosterList ->
-                hosterList.forEach { hoster ->
-                    db.burningSeriesQueries.insertHoster(hoster.title)
+                db.burningSeriesQueries.transaction {
+                    hosterList.forEach { hoster ->
+                        db.burningSeriesQueries.insertHoster(hoster.title)
+                    }
                 }
             }
         }

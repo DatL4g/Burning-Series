@@ -21,6 +21,11 @@ actual object PlatformModule {
             app.dataStoreFile("UserSettings.pb")
         }
 
+        bindSingleton("AppSettingsFile") {
+            val app: Context = instance()
+            app.dataStoreFile("AppSettings.pb")
+        }
+
         bindSingleton {
             DriverFactory(instance()).createDriver()
         }

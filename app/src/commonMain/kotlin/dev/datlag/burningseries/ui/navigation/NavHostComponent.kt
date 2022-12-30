@@ -15,6 +15,7 @@ import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import dev.datlag.burningseries.BackPressedListener
 import dev.datlag.burningseries.NavigationListener
+import dev.datlag.burningseries.common.coroutineScope
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.datastore.common.showedLogin
 import dev.datlag.burningseries.datastore.preferences.UserSettings
@@ -31,23 +32,35 @@ import dev.datlag.burningseries.ui.screen.login.LoginScreenComponent
 import dev.datlag.burningseries.ui.screen.series.SeriesScreenComponent
 import dev.datlag.burningseries.ui.screen.settings.SettingsScreenComponent
 import dev.datlag.burningseries.ui.screen.video.VideoScreenComponent
+import io.ktor.client.plugins.cookies.*
 import org.kodein.di.*
+import dev.datlag.burningseries.common.CommonDispatcher
+import dev.datlag.burningseries.network.Status
+import dev.datlag.burningseries.network.repository.GitHubRepository
+import dev.datlag.burningseries.other.Constants
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import dev.datlag.burningseries.other.Resources
 
 class NavHostComponent private constructor(
     componentContext: ComponentContext,
     override val di: DI
 ) : Component, ComponentContext by componentContext {
 
+    private val scope = coroutineScope(CommonDispatcher.Main + SupervisorJob())
     private val navigation = StackNavigation<ScreenConfig>()
+    private val userDataStore: DataStore<UserSettings> by di.instance()
+    private val githubRepo: GitHubRepository by di.instance()
+
     private val stack = childStack(
         source = navigation,
         initialStack = {
-            val userDataStore: DataStore<UserSettings> by di.instance()
             val showedLogin = userDataStore.showedLogin.getValueBlocking(false)
             val defaultScreen = if (showedLogin) {
                 ScreenConfig.Home
             } else {
-                ScreenConfig.Home // ToDo("login")
+                ScreenConfig.Home // Login, maybe find some workaround for session
             }
             listOf(defaultScreen)
         },
@@ -187,6 +200,26 @@ class NavHostComponent private constructor(
             navigation.pop(onComplete = { isSuccess ->
                 NavigationListener?.invoke(!isSuccess)
             })
+        }
+        scope.launch(Dispatchers.IO) {
+            var loadedNewRepo = false
+            val installed = Resources.version
+            githubRepo.loadReleases(
+                installed,
+                Constants.GITHUB_OWNER,
+                Constants.GITHUB_REPO_OLD
+            )
+
+            githubRepo.status.collect {
+                if (!loadedNewRepo && it is Status.ERROR) {
+                    githubRepo.loadReleases(
+                        installed,
+                        Constants.GITHUB_OWNER,
+                        Constants.GITHUB_REPO_NEW
+                    )
+                    loadedNewRepo = true
+                }
+            }
         }
     }
 

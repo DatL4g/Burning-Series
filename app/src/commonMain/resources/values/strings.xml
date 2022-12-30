@@ -63,4 +63,6 @@
     <string name="too_many_requests">Too many requests please wait before continuing</string>
     <string name="error_try_again">Error please try again later</string>
     <string name="loading_home">Loading latest series and episodes...</string>
+    <string name="new_release">Hey a new version is available you should check it out!</string>
+    <string name="view">View</string>
 </resources>
