@@ -35,6 +35,7 @@ class VideoScreenComponent(
 
     private val scope = coroutineScope(CommonDispatcher.Main + SupervisorJob())
     override var forwardListener: (() -> Unit)? = null
+    override var playListener: (() -> Unit)? = null
     override var playPauseListener: (() -> Unit)? = null
     override var rewindListener: (() -> Unit)? = null
     override var seekListener: ((Long) -> Unit)? = null
