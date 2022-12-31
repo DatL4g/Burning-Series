@@ -9,7 +9,7 @@ jobs:
   package:
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-latest, windows-latest, macos-latest, self-hosted ]
       fail-fast: false
     runs-on: ${{ matrix.os }}
 
@@ -23,8 +23,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Export libraries on Ubuntu and Mac
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      - name: Export libraries on Unix
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'self-hosted'
         run: ./gradlew app:exportLibraryDefinitions -PaboutLibraries.exportPath=src/commonMain/assets/
 
       - name: Export libraries on Windows
@@ -34,6 +34,10 @@ jobs:
       - name: Create package on Ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: ./gradlew packageDeb
+
+      - name: Create package on Fedora
+        if: matrix.os == 'self-hosted'
+        run: ./gradlew packageRpm
 
       - name: Create package on Windows
         if: matrix.os == 'windows-latest'
@@ -49,6 +53,7 @@ jobs:
         with:
           files: |
             ./build/release/main/deb/*.deb
+            ./build/release/main/rpm/*.rpm
             ./build/release/main/exe/*.exe
             ./build/release/main/msi/*.msi
             ./build/release/main/dmg/*.dmg
