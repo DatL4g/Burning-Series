@@ -14,6 +14,7 @@ import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.getValueBlocking
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery
@@ -40,20 +41,22 @@ fun VideoPlayer(
                 EmbeddedMediaPlayerComponent()
             }
         }
+        val videoStreams by component.videoStreams.collectAsState(component.videoStreams.value)
+        val initialPos by component.initialPosition.collectAsState(component.initialPosition.getValueBlocking(0))
         var streamListPos by remember { mutableStateOf(0) }
         var srcListPos by remember { mutableStateOf(0) }
 
         SideEffect {
-            mediaPlayerComponent.mediaPlayer()?.media()?.play(component.videoStreams[streamListPos].srcList[srcListPos])
+            mediaPlayerComponent.mediaPlayer()?.media()?.play(videoStreams[streamListPos].srcList[srcListPos])
             mediaPlayerComponent.mediaPlayer()?.events()?.addMediaPlayerEventListener(object : MediaPlayerEventAdapter() {
                 override fun error(mediaPlayer: MediaPlayer?) {
                     super.error(mediaPlayer)
                     var play = false
-                    if (component.videoStreams[streamListPos].srcList.size - 1 > srcListPos) {
+                    if (videoStreams[streamListPos].srcList.size - 1 > srcListPos) {
                         srcListPos++
                         play = true
                     } else {
-                        if (component.videoStreams.size - 1 > streamListPos) {
+                        if (videoStreams.size - 1 > streamListPos) {
                             streamListPos++
                             srcListPos = 0
                             play = true
@@ -61,7 +64,7 @@ fun VideoPlayer(
                     }
 
                     if (play) scope.launch(Dispatchers.Main) {
-                        mediaPlayer?.media()?.play(component.videoStreams[streamListPos].srcList[srcListPos])
+                        mediaPlayer?.media()?.play(videoStreams[streamListPos].srcList[srcListPos])
                     }
                 }
 
@@ -96,11 +99,19 @@ fun VideoPlayer(
                 override fun opening(mediaPlayer: MediaPlayer?) {
                     super.opening(mediaPlayer)
                     scope.launch(Dispatchers.Main) {
-                        component.seekTo(component.initialPosition)
+                        component.seekTo(initialPos)
                     }
+                }
+
+                override fun finished(mediaPlayer: MediaPlayer?) {
+                    super.finished(mediaPlayer)
+                    component.playNextEpisode()
                 }
             })
 
+            component.playListener = {
+                mediaPlayerComponent.mediaPlayer()?.controls()?.play()
+            }
             component.playPauseListener = {
                 if (mediaPlayerComponent.mediaPlayer()?.status()?.isPlaying == true) {
                     mediaPlayerComponent.mediaPlayer()?.controls()?.pause()

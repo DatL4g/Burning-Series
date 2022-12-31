@@ -1,8 +1,10 @@
 package dev.datlag.burningseries.ui.screen.video
 
+import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
@@ -14,7 +16,10 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.viewinterop.AndroidView
@@ -35,9 +40,11 @@ import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.R
 import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.other.Logger
+import dev.datlag.burningseries.ui.custom.RequireFullScreen
 import dev.datlag.burningseries.ui.custom.RequireScreenOrientation
 import kotlinx.coroutines.*
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 fun VideoPlayer(component: VideoComponent) {
@@ -53,27 +60,21 @@ fun VideoPlayer(component: VideoComponent) {
             .setAllowCrossProtocolRedirects(true)
             .setKeepPostFor302Redirects(true))
     }
+    val episode by component.episode.collectAsState(component.episode.value)
+    val videoStreams by component.videoStreams.collectAsState(component.videoStreams.value)
     var streamListPos by remember { mutableStateOf(0) }
     var srcListPos by remember { mutableStateOf(0) }
-    val stream = component.videoStreams[streamListPos].srcList[srcListPos]
-    val systemUiController = rememberSystemUiController()
-    val window = LocalView.current.context.findWindow()
+    val stream = videoStreams[streamListPos].srcList[srcListPos]
+
     val strings = LocalStringRes.current
     var appliedInitialPosition by remember { mutableStateOf(false) }
     val buttonShape = MaterialTheme.shapes.medium.toLegacyShape()
     val buttonColors = ButtonDefaults.legacyButtonTintList(MaterialTheme.colorScheme.primaryContainer)
     val progressColor = MaterialTheme.colorScheme.primary.toArgb()
+    val initialPos by component.initialPosition.collectAsState(component.initialPosition.getValueBlocking(0))
 
     RequireScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-    DisposableEffect(Unit) {
-        systemUiController.isSystemBarsVisible = false
-        systemUiController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        window.enterFullScreen()
-        onDispose {
-            window.exitFullScreen()
-            systemUiController.isSystemBarsVisible = true
-        }
-    }
+    RequireFullScreen()
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context)
@@ -89,10 +90,10 @@ fun VideoPlayer(component: VideoComponent) {
                     override fun onPlayerError(error: PlaybackException) {
                         super.onPlayerError(error)
 
-                        if (component.videoStreams[streamListPos].srcList.size - 1 > srcListPos) {
+                        if (videoStreams[streamListPos].srcList.size - 1 > srcListPos) {
                             srcListPos++
                         } else {
-                            if (component.videoStreams.size - 1 > streamListPos) {
+                            if (videoStreams.size - 1 > streamListPos) {
                                 streamListPos++
                                 srcListPos = 0
                             }
@@ -121,7 +122,7 @@ fun VideoPlayer(component: VideoComponent) {
                         super.onRenderedFirstFrame()
 
                         if (!appliedInitialPosition) {
-                            component.seekTo(component.initialPosition)
+                            component.seekTo(initialPos)
                             appliedInitialPosition = true
                         }
                         component.length.value = (this@apply as ExoPlayer).duration
@@ -134,6 +135,14 @@ fun VideoPlayer(component: VideoComponent) {
                             }
                         }
                     }
+
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        super.onPlaybackStateChanged(playbackState)
+
+                        if (playbackState == Player.STATE_ENDED) {
+                            component.playNextEpisode()
+                        }
+                    }
                 })
                 playWhenReady = true
                 prepare()
@@ -141,6 +150,9 @@ fun VideoPlayer(component: VideoComponent) {
     }
 
     SideEffect {
+        component.playListener = {
+            exoPlayer.play()
+        }
         component.playPauseListener = {
             if (exoPlayer.isPlaying) {
                 exoPlayer.pause()
@@ -160,6 +172,7 @@ fun VideoPlayer(component: VideoComponent) {
         exoPlayer.setMediaItem(MediaItem.fromUri(stream))
         exoPlayer.prepare()
     }
+    var keyEventListener: ((KeyEvent) -> Boolean)? = null
 
     DisposableEffect(
         AndroidView(factory = {
@@ -183,11 +196,17 @@ fun VideoPlayer(component: VideoComponent) {
             backButton.setOnClickListener {
                 component.onGoBack()
             }
-            title.text = component.episode.title
+            title.text = episode.title
             skipButton.shapeAppearanceModel = buttonShape
             skipButton.backgroundTintList = buttonColors
             progress.setPlayedColor(progressColor)
             progress.setScrubberColor(progressColor)
+
+            keyEventListener = { event ->
+                it.dispatchKeyEvent(event.nativeKeyEvent)
+            }
+        }, modifier = Modifier.onKeyEvent {
+            keyEventListener?.invoke(it) ?: false
         })
     ) {
         onDispose {

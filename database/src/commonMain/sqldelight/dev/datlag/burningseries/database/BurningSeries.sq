@@ -48,6 +48,10 @@ insertSeries:
 INSERT OR REPLACE INTO DBSeries(hrefTitle, href, title, coverHref, favoriteSince)
 VALUES (?, ?, ?, ?, ?);
 
+insertSeriesIfNotExists:
+INSERT OR IGNORE INTO DBSeries(hrefTitle, href, title, coverHref, favoriteSince)
+VALUES (?, ?, ?, ?, ?);
+
 updateSeriesHref:
 UPDATE DBSeries SET href = :href WHERE hrefTitle = :hrefTitle OR hrefTitle LIKE :hrefTitle;
 

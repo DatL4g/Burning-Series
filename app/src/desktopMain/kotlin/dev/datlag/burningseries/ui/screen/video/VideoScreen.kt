@@ -32,8 +32,10 @@ actual fun VideoScreen(component: VideoComponent) {
                     }
                 },
                 title = {
+                    val episode by component.episode.collectAsState(component.episode.value)
+
                     Text(
-                        text = component.episode.title,
+                        text = episode.title,
                         maxLines = 1,
                         textAlign = TextAlign.Start,
                         style = MaterialTheme.typography.headlineMedium,

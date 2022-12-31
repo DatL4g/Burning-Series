@@ -11,10 +11,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 interface VideoComponent : Component {
 
     val series: Series
-    val episode: Series.Episode
-    val videoStreams: List<VideoStream>
+    val episode: MutableStateFlow<Series.Episode>
+    val videoStreams: MutableStateFlow<List<VideoStream>>
     val onGoBack: () -> Unit
 
+    var playListener: (() -> Unit)?
     var playPauseListener: (() -> Unit)?
     var forwardListener: (() -> Unit)?
     var rewindListener: (() -> Unit)?
@@ -24,11 +25,13 @@ interface VideoComponent : Component {
     val position: MutableValue<Long>
     val length: MutableValue<Long>
 
-    val initialPosition: Long
+    val initialPosition: Flow<Long>
 
     fun triggerPlayPause()
     fun forward()
     fun rewind()
 
     fun seekTo(time: Long)
+
+    fun playNextEpisode()
 }

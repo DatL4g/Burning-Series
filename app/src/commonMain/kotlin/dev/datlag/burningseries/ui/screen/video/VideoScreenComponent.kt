@@ -6,22 +6,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToList
+import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.database.BurningSeriesDB
+import dev.datlag.burningseries.model.common.getDigitsOrNull
+import dev.datlag.burningseries.network.repository.EpisodeRepository
 import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
 import org.kodein.di.DI
 import org.kodein.di.instance
 import java.io.File
 import kotlin.math.max
+import dev.datlag.burningseries.common.CommonDispatcher
+import kotlinx.coroutines.flow.*
 
 class VideoScreenComponent(
     componentContext: ComponentContext,
     override val series: Series,
-    override val episode: Series.Episode,
-    override val videoStreams: List<VideoStream>,
+    private val initialEpisode: Series.Episode,
+    private val initialVideoStreams: List<VideoStream>,
     override val onGoBack: () -> Unit,
     override val di: DI
 ) : VideoComponent, ComponentContext by componentContext {
@@ -34,16 +41,29 @@ class VideoScreenComponent(
 
     private val db: BurningSeriesDB by di.instance()
     private val imageDir: File by di.instance("ImageDir")
+    private val episodeRepo: EpisodeRepository by di.instance()
 
-    private val dbEpisode = db.burningSeriesQueries.selectEpisodeByHref(
-        episode.href.trimHref()
-    ).executeAsOneOrNull()
-    override val initialPosition: Long = dbEpisode?.watchProgress ?: 0
-    private val initialLength: Long = dbEpisode?.length ?: 0
+    override val episode: MutableStateFlow<Series.Episode> = MutableStateFlow(initialEpisode)
+    override val videoStreams: MutableStateFlow<List<VideoStream>> = MutableStateFlow(initialVideoStreams)
+
+    private val dbEpisode = episode.transformLatest { episode ->
+        return@transformLatest emitAll(db.burningSeriesQueries.selectEpisodeByHref(
+            episode.href.trimHref()
+        ).asFlow().mapToOneOrNull(Dispatchers.IO))
+    }.flowOn(Dispatchers.IO)
+
+    private val hosterList = db.burningSeriesQueries.selectAllHosters().asFlow().mapToList(Dispatchers.IO)
+
+    override val initialPosition: Flow<Long> = dbEpisode.map { it?.watchProgress ?: 0 }
+    private val initialLength: Flow<Long> = dbEpisode.map { it?.length ?: 0 }
 
     override val playIcon: MutableValue<ImageVector> = MutableValue(Icons.Default.MoreHoriz)
-    override val position: MutableValue<Long> = MutableValue(initialPosition)
-    override val length: MutableValue<Long> = MutableValue(initialLength)
+    override val position: MutableValue<Long> = MutableValue(initialPosition.getValueBlocking(0))
+    override val length: MutableValue<Long> = MutableValue(initialLength.getValueBlocking(0))
+
+    private var loadingNextEpisode = false
+    private var nextEpisode: Pair<Series.Episode, List<VideoStream>>? = null
+    private var loopEpisode = episode.value
 
     override fun forward() {
         forwardListener?.invoke()
@@ -63,65 +83,126 @@ class VideoScreenComponent(
 
     init {
         scope.launch(Dispatchers.IO) {
-            val episodeHref = episode.href.trimHref()
-            val seriesHref = series.href.buildTitleHref()
-            var addedLength = false
-            val coverFile = File(imageDir, "${seriesHref.fileName()}.bs")
+            episode.collect {
+                loopEpisode = it
+                val episodeHref = it.href.trimHref()
+                val seriesHref = series.href.buildTitleHref()
+                var addedLength = false
+                val coverFile = File(imageDir, "${seriesHref.fileName()}.bs")
 
-            if (!coverFile.exists()) {
-                val coverBase64 = series.cover.base64
+                if (!coverFile.exists()) {
+                    val coverBase64 = series.cover.base64
 
-                if (coverBase64.isNotEmpty()) {
-                    try {
-                        coverFile.writeText(coverBase64)
-                    } catch (ignored: Throwable) { }
+                    if (coverBase64.isNotEmpty()) {
+                        try {
+                            coverFile.writeText(coverBase64)
+                        } catch (ignored: Throwable) { }
+                    }
+                }
+
+                db.burningSeriesQueries.insertSeriesIfNotExists(
+                    seriesHref,
+                    series.href,
+                    series.title,
+                    series.cover.href,
+                    0L
+                )
+
+                db.burningSeriesQueries.insertEpisode(
+                    episodeHref,
+                    it.title,
+                    max(initialLength.first(), if (it.watched == true) Long.MAX_VALUE else 0L),
+                    max(initialPosition.first(), if (it.watched == true) Long.MAX_VALUE else 0L),
+                    Clock.System.now().epochSeconds,
+                    it.watchHref,
+                    seriesHref
+                )
+
+                while (this.isActive && it == loopEpisode) {
+                    val pos = withContext(CommonDispatcher.Main) {
+                        position.value
+                    }
+                    val length = withContext(CommonDispatcher.Main) {
+                        length.value
+                    }
+
+                    if (pos >= 3000) {
+                        db.burningSeriesQueries.updateEpisodeWatchProgress(
+                            pos,
+                            episodeHref
+                        )
+                    }
+                    if (pos > 0 && length > 0 && pos >= length / 2) {
+                        loadNextEpisode(it)
+                    }
+                    if (length > 0 && !addedLength) {
+                        db.burningSeriesQueries.updateEpisodeLength(
+                            length,
+                            episodeHref
+                        )
+                        addedLength = true
+                    }
+                    db.burningSeriesQueries.updateEpisodeLastWatched(
+                        Clock.System.now().epochSeconds,
+                        episodeHref
+                    )
+                    delay(3000)
+                }
+            }
+        }
+    }
+
+    private suspend fun loadNextEpisode(currentEpisode: Series.Episode) {
+        if (!loadingNextEpisode) {
+            loadingNextEpisode = true
+
+            fun fallbackNextEpisode(): Series.Episode? {
+                val sortedEpisodes = series.episodes.sortedBy { it.number.toIntOrNull() }
+                val currentIndex = sortedEpisodes.indexOf(currentEpisode)
+                return if (currentIndex > -1 && currentIndex < sortedEpisodes.size - 1) {
+                    sortedEpisodes[currentIndex + 1]
+                } else {
+                    null
                 }
             }
 
-            db.burningSeriesQueries.insertSeries(
-                seriesHref,
-                series.href,
-                series.title,
-                series.cover.href,
-                0L
-            )
+            val currentEpisodeNumber = currentEpisode.number.toIntOrNull() ?: currentEpisode.number.getDigitsOrNull()?.toIntOrNull() ?: currentEpisode.episodeNumberOrListNumber
 
-            db.burningSeriesQueries.insertEpisode(
-                episodeHref,
-                episode.title,
-                max(initialLength, if (episode.watched == true) Long.MAX_VALUE else 0L),
-                max(initialPosition, if (episode.watched == true) Long.MAX_VALUE else 0L),
-                Clock.System.now().epochSeconds,
-                episode.watchHref,
-                seriesHref
-            )
+            val nextEpisode = if (currentEpisodeNumber != null) {
+                series.episodes.find {
+                    val nextEpisodeNumber = it.number.toIntOrNull() ?: it.number.getDigitsOrNull()?.toIntOrNull() ?: it.episodeNumberOrListNumber
+                    nextEpisodeNumber == currentEpisodeNumber + 1
+                }
+            } else {
+                null
+            } ?: fallbackNextEpisode()
 
-            while (this.isActive) {
-                val pos = withContext(CommonDispatcher.Main) {
-                    position.value
-                }
-                val length = withContext(CommonDispatcher.Main) {
-                    length.value
-                }
+            if (nextEpisode != null) {
+                episodeRepo.loadHosterStreams(nextEpisode)
+                val episodeData = episodeRepo.streams.first()
+                val hosterList = hosterList.first()
 
-                if (pos >= 3000) {
-                    db.burningSeriesQueries.updateEpisodeWatchProgress(
-                        pos,
-                        episodeHref
-                    )
+                if (episodeData.isNotEmpty()) {
+                    val sortedList = episodeData.sortedBy { stream ->
+                        hosterList.find { it.name.equals(stream.hoster.hoster, true) }?.position ?: Int.MAX_VALUE
+                    }
+                    this.nextEpisode = nextEpisode to sortedList
                 }
-                if (length > 0 && !addedLength) {
-                    db.burningSeriesQueries.updateEpisodeLength(
-                        length,
-                        episodeHref
-                    )
-                    addedLength = true
+            } else {
+                this.nextEpisode = null
+            }
+        }
+    }
+
+    override fun playNextEpisode() {
+        scope.launch(Dispatchers.IO) {
+            if (nextEpisode != null) {
+                episode.emit(nextEpisode!!.first)
+                videoStreams.emit(nextEpisode!!.second)
+                loadingNextEpisode = false
+                withContext(CommonDispatcher.Main) {
+                    playListener?.invoke()
                 }
-                db.burningSeriesQueries.updateEpisodeLastWatched(
-                    Clock.System.now().epochSeconds,
-                    episodeHref
-                )
-                delay(3000)
             }
         }
     }

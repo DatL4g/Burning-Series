@@ -240,10 +240,10 @@ class SeriesScreenComponent(
                     showDialog(DialogConfig.NoStream(episode))
                 }
             } else {
+                val sortedList = episodeData.sortedBy { stream ->
+                    hosterList.find { it.name.equals(stream.hoster.hoster, true) }?.position ?: Int.MAX_VALUE
+                }
                 withContext(CommonDispatcher.Main) {
-                    val sortedList = episodeData.sortedBy { stream ->
-                        hosterList.find { it.name.equals(stream.hoster.hoster, true) }?.position ?: Int.MAX_VALUE
-                    }
                     onEpisodeClicked(seriesRepo.series.value!!, episode, sortedList)
                 }
             }
