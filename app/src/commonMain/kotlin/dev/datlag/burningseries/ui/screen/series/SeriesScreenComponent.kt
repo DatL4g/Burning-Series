@@ -120,7 +120,7 @@ class SeriesScreenComponent(
     }.flowOn(Dispatchers.IO)
 
     override val isFavorite = dbSeries.map { (it?.favoriteSince ?: 0) > 0 }
-    private val dbEpisodes = dbSeries.map { it?.href ?: href.buildTitleHref() }.transform {
+    private val dbEpisodes = dbSeries.map { it?.hrefTitle ?: href.buildTitleHref() }.transform {
         return@transform emitAll(db.burningSeriesQueries.selectEpisodesBySeriesHref(it).asFlow().mapToList(Dispatchers.IO))
     }.flowOn(Dispatchers.IO)
 
@@ -197,7 +197,12 @@ class SeriesScreenComponent(
         dialogNavigation.dismiss()
         scope.launch(Dispatchers.IO) {
             seriesRepo.series.value?.let { series ->
-                seriesRepo.loadFromHref(series.hrefBuilder(series.currentSeason()?.value, language.value))
+                val newHref = series.hrefBuilder(series.currentSeason()?.value, language.value)
+                val hrefTitle = (dbSeries.firstOrNull()?.hrefTitle ?: series.href.buildTitleHref()).ifEmpty {
+                    href.buildTitleHref()
+                }
+                db.burningSeriesQueries.updateSeriesHref(newHref, hrefTitle)
+                seriesRepo.loadFromHref(newHref)
             }
         }
     }
@@ -206,7 +211,12 @@ class SeriesScreenComponent(
         dialogNavigation.dismiss()
         scope.launch(Dispatchers.IO) {
             seriesRepo.series.value?.let { series ->
-                seriesRepo.loadFromHref(series.hrefBuilder(season.value))
+                val newHref = series.hrefBuilder(season.value)
+                val hrefTitle = (dbSeries.firstOrNull()?.hrefTitle ?: series.href.buildTitleHref()).ifEmpty {
+                    href.buildTitleHref()
+                }
+                db.burningSeriesQueries.updateSeriesHref(newHref, hrefTitle)
+                seriesRepo.loadFromHref(newHref)
             }
         }
     }
@@ -257,6 +267,7 @@ class SeriesScreenComponent(
                 }
                 db.burningSeriesQueries.insertSeries(
                     href,
+                    seriesRepo.series.value?.href ?: this@SeriesScreenComponent.href,
                     seriesRepo.series.value?.title ?: initialInfo.title,
                     (seriesRepo.series.value?.cover?.href ?: String()).ifEmpty {
                         initialInfo.cover?.href

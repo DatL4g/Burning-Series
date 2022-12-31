@@ -3,7 +3,7 @@ package dev.datlag.burningseries.common
 import dev.datlag.burningseries.database.DBSeries
 
 fun DBSeries.coverFileName(): String {
-    return this.href.split(
+    return this.hrefTitle.split(
         '/',
         limit = 2
     ).joinToString(

@@ -39,6 +39,7 @@ fun EpisodeItem(content: Home.Episode, component: EpisodesComponent) {
 @Composable
 fun EpisodeItem(content: SelectLatestEpisodesAmount, component: EpisodesComponent) {
     val base64 = remember { File(component.imageDir, DBSeries(
+        content.hrefTitle,
         content.href,
         content.title,
         content.coverHref,

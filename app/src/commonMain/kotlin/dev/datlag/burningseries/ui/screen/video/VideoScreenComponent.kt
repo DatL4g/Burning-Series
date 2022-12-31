@@ -80,6 +80,7 @@ class VideoScreenComponent(
 
             db.burningSeriesQueries.insertSeries(
                 seriesHref,
+                series.href,
                 series.title,
                 series.cover.href,
                 0L
