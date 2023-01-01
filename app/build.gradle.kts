@@ -151,27 +151,38 @@ compose {
                 copyright = "© 2020 Jeff Retz (DatLag). All rights reserved."
                 licenseFile.set(rootProject.file("LICENSE"))
 
-                targetFormats(
-                    TargetFormat.Deb, TargetFormat.Rpm,
-                    TargetFormat.Exe, TargetFormat.Msi,
-                    TargetFormat.Msi
-                )
+                val hostOs = System.getProperty("os.name")
+                val isMingwX64 = hostOs.startsWith("Windows")
+
+                when {
+                    hostOs == "Linux" -> targetFormats(
+                        TargetFormat.AppImage, TargetFormat.Deb, TargetFormat.Rpm
+                    )
+                    hostOs == "Mac OS X" -> targetFormats(
+                        TargetFormat.Dmg
+                    )
+                    isMingwX64 -> targetFormats(
+                        TargetFormat.Exe, TargetFormat.Msi
+                    )
+                    else -> targetFormats(
+                        TargetFormat.Deb, TargetFormat.Rpm,
+                        TargetFormat.Exe, TargetFormat.Msi,
+                        TargetFormat.Dmg
+                    )
+                }
+
 
                 linux {
-
-
                     iconFile.set(file("src/commonMain/assets/png/launcher_128.png"))
                     rpmLicenseType = "GPL-3.0"
                     debMaintainer = "Jeff Retz (DatLag)"
                     appCategory = "Video"
                 }
                 windows {
-
                     iconFile.set(file("src/commonMain/assets/ico/launcher_128.ico"))
                     upgradeUuid = "3487d337-1ef5-4e01-87cb-d1ede6e10752"
                 }
                 macOS {
-
                     iconFile.set(file("src/commonMain/assets/icns/launcher.icns"))
                 }
 

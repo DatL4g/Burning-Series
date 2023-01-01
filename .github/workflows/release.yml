@@ -35,6 +35,21 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: ./gradlew packageDeb
 
+      - name: Create AppImage on Ubuntu
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          ./gradlew packageAppImage
+          mkdir -p ./build/release/main/image/Burning-Series/usr
+          curl --request GET --url https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage --location --output ./build/release/main/image/appimagetool.AppImage
+          curl --request GET --url https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-x86_64 --location --output ./build/release/main/image/Burning-Series/AppRun
+          chmod +x ./build/release/main/image/appimagetool.AppImage
+          chmod +x ./build/release/main/image/Burning-Series/AppRun
+          mv ./app/thirdParty/Burning-Series.desktop ./build/release/main/image/Burning-Series/
+          cp ./build/release/main/app/Burning-Series/lib/Burning-Series.png ./build/release/main/image/Burning-Series/
+          cp -r ./build/release/main/app/Burning-Series/bin ./build/release/main/image/Burning-Series/usr/
+          cp -r ./build/release/main/app/Burning-Series/lib ./build/release/main/image/Burning-Series/usr/
+          ./build/release/main/image/appimagetool.AppImage ./build/release/main/image/Burning-Series ./build/release/main/image/Burning-Series.AppImage
+
       - name: Create package on Fedora
         if: matrix.os == 'self-hosted'
         run: ./gradlew packageRpm

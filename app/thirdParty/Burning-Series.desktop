@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=Burning-Series
+Comment=Watch any series from Burning-Series using this app. This is an unofficial Burning-Series App
+Exec=burning-series
+Icon=Burning-Series
+Terminal=False
+Categories=Video;
