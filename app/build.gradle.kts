@@ -151,8 +151,14 @@ compose {
                 copyright = "© 2020 Jeff Retz (DatLag). All rights reserved."
                 licenseFile.set(rootProject.file("LICENSE"))
 
+                targetFormats(
+                    TargetFormat.Deb, TargetFormat.Rpm,
+                    TargetFormat.Exe, TargetFormat.Msi,
+                    TargetFormat.Msi
+                )
+
                 linux {
-                    targetFormats(TargetFormat.AppImage, TargetFormat.Deb, TargetFormat.Rpm)
+
 
                     iconFile.set(file("src/commonMain/assets/png/launcher_128.png"))
                     rpmLicenseType = "GPL-3.0"
@@ -160,13 +166,11 @@ compose {
                     appCategory = "Video"
                 }
                 windows {
-                    targetFormats(TargetFormat.Exe, TargetFormat.Msi)
 
                     iconFile.set(file("src/commonMain/assets/ico/launcher_128.ico"))
                     upgradeUuid = "3487d337-1ef5-4e01-87cb-d1ede6e10752"
                 }
                 macOS {
-                    targetFormats(TargetFormat.Dmg)
 
                     iconFile.set(file("src/commonMain/assets/icns/launcher.icns"))
                 }

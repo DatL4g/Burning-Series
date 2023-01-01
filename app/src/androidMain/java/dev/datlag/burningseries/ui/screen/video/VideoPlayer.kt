@@ -62,8 +62,8 @@ fun VideoPlayer(component: VideoComponent) {
     }
     val episode by component.episode.collectAsState(component.episode.value)
     val videoStreams by component.videoStreams.collectAsState(component.videoStreams.value)
-    var streamListPos by remember { mutableStateOf(0) }
-    var srcListPos by remember { mutableStateOf(0) }
+    var streamListPos by remember(videoStreams) { mutableStateOf(0) }
+    var srcListPos by remember(videoStreams) { mutableStateOf(0) }
     val stream = videoStreams[streamListPos].srcList[srcListPos]
 
     val strings = LocalStringRes.current
