@@ -86,6 +86,7 @@ class VideoScreenComponent(
         scope.launch(Dispatchers.IO) {
             episode.collect {
                 loopEpisode = it
+                loadingNextEpisode = false
                 val episodeHref = it.href.trimHref()
                 val seriesHref = series.href.buildTitleHref()
                 var addedLength = false

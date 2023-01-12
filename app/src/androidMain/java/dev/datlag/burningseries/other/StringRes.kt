@@ -200,6 +200,24 @@ actual class StringRes(private val context: Context) {
     actual val view: String
         get() = context.getString(R.string.view)
 
+    actual val watch: String
+        get() = context.getString(R.string.watch)
+
+    actual val `continue`: String
+        get() = context.getString(R.string.continue_text)
+
+    actual val saveSuccessHeader: String
+        get() = context.getString(R.string.save_success_header)
+
+    actual val saveErrorHeader: String
+        get() = context.getString(R.string.save_error_header)
+
+    actual val saveSuccess: String
+        get() = context.getString(R.string.save_success)
+
+    actual val saveError: String
+        get() = context.getString(R.string.save_error)
+
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
         if (runCatching {

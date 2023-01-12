@@ -122,6 +122,7 @@ class NavHostComponent private constructor(
                 screenConfig.series,
                 screenConfig.episode,
                 ::onGoBackClicked,
+                ::onWatchClicked,
                 di
             )
             is ScreenConfig.About -> AboutScreenComponent(
@@ -193,6 +194,10 @@ class NavHostComponent private constructor(
 
     private fun onAboutClicked() {
         navigation.push(ScreenConfig.About)
+    }
+
+    private fun onWatchClicked(series: Series, episode: Series.Episode, stream: VideoStream) {
+        navigation.push(ScreenConfig.Video(series, episode, listOf(stream)))
     }
 
     init {

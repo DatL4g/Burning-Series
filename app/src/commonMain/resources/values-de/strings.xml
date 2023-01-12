@@ -62,4 +62,11 @@
     <string name="loading_home">Lade neuste Serien und Episoden...</string>
     <string name="new_release">Hey eine neue Version ist verfügbar, das solltest du dir ansehen!</string>
     <string name="view">Ansehen</string>
+    <string name="watch">Ansehen</string>
+    <string name="continue_text">Weiter</string>
+
+    <string name="save_success_header">Speichern erfolgreich!</string>
+    <string name="save_error_header">Speichern fehlgeschlagen!</string>
+    <string name="save_success">Hoster erfolgreich gespeichert. Du kannst jetzt zurückgehen oder weiter surfen und weitere Hoster aktivieren :)</string>
+    <string name="save_error">Hoster konnte nicht gespeichert werden. Versuche es doch einfach später nochmal.</string>
 </resources>

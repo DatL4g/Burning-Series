@@ -204,6 +204,24 @@ actual class StringRes private constructor(
     actual val view: String
         get() = getLocaleOrDefaultFor("view")
 
+    actual val watch: String
+        get() = getLocaleOrDefaultFor("watch")
+
+    actual val `continue`: String
+        get() = getLocaleOrDefaultFor("continue_text")
+
+    actual val saveSuccessHeader: String
+        get() = getLocaleOrDefaultFor("save_success_header")
+
+    actual val saveErrorHeader: String
+        get() = getLocaleOrDefaultFor("save_error_header")
+
+    actual val saveSuccess: String
+        get() = getLocaleOrDefaultFor("save_success")
+
+    actual val saveError: String
+        get() = getLocaleOrDefaultFor("save_error")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }

@@ -3,9 +3,12 @@ package dev.datlag.burningseries.network.repository
 import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.networkResource
 import dev.datlag.burningseries.model.InsertStream
+import dev.datlag.burningseries.model.SaveInfo
 import dev.datlag.burningseries.model.ScrapedHoster
+import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.Status
+import dev.datlag.burningseries.network.VideoScraper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -33,16 +36,37 @@ class SaveRepository(
         return@transform emit(Status.create(it, true))
     }.flowOn(Dispatchers.IO)
 
-    val saveScrapedSuccess = _status.transform {
+    private val stream: MutableStateFlow<VideoStream?> = MutableStateFlow(null)
+    private val scrapedEpisodeHref: MutableStateFlow<String> = MutableStateFlow(String())
+
+    val saveInfo: Flow<SaveInfo> = _status.transform {
         when (it) {
-            is Resource.Status.Success -> return@transform emit(it.data.failed <= 0)
-            is Resource.Status.Error -> return@transform emit(false)
+            is Resource.Status.Success -> return@transform emit(SaveInfo(
+                it.data.failed <= 0,
+                scrapedEpisodeHref.value,
+                stream.value
+            ))
+            is Resource.Status.Error -> return@transform emit(
+                SaveInfo(
+                false,
+                scrapedEpisodeHref.value,
+                stream.value
+            )
+            )
             else -> { }
         }
     }.flowOn(Dispatchers.IO)
 
-
     suspend fun save(scrapedHoster: ScrapedHoster) = withContext(Dispatchers.IO) {
+        // resetting values, in case the user saved one previously
+        this@SaveRepository.stream.emit(null)
+        this@SaveRepository.scrapedEpisodeHref.emit(String())
+
+        // save on server
         this@SaveRepository._scrapedHoster.emit(scrapedHoster)
+
+        // set scraped data
+        this@SaveRepository.scrapedEpisodeHref.emit(scrapedHoster.href)
+        this@SaveRepository.stream.emit(VideoScraper.scrapeVideosFrom(scrapedHoster.toHosterStream()))
     }
 }

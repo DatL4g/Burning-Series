@@ -37,10 +37,10 @@ object VideoScraper {
             srcList.toList()
         }
 
-        return if (srcList.isEmpty()) {
+        return if (finalList.isEmpty()) {
             null
         } else {
-            VideoStream(hosterStream, srcList)
+            VideoStream(hosterStream, finalList)
         }
     }
 

@@ -65,4 +65,11 @@
     <string name="loading_home">Loading latest series and episodes...</string>
     <string name="new_release">Hey a new version is available you should check it out!</string>
     <string name="view">View</string>
+    <string name="watch">Watch</string>
+    <string name="continue_text">Continue</string>
+
+    <string name="save_success_header">Saving succeeded!</string>
+    <string name="save_error_header">Saving failed!</string>
+    <string name="save_success">Successfully saved the Hoster. You can go back now or continue browsing and activate some more hoster :)</string>
+    <string name="save_error">Hoster could not be saved. Maybe try again later.</string>
 </resources>

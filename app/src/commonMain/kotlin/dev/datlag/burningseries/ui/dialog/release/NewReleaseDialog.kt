@@ -67,7 +67,7 @@ fun NewReleaseDialog(component: NewReleaseComponent) {
                 ) {
                     Icon(
                         imageVector = Icons.Default.Clear,
-                        contentDescription = null
+                        contentDescription = LocalStringRes.current.close
                     )
                     Text(
                         text = LocalStringRes.current.close

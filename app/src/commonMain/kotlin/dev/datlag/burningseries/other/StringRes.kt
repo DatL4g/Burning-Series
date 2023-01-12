@@ -92,6 +92,13 @@ expect class StringRes {
 
     val newRelease: String
     val view: String
+    val watch: String
+    val `continue`: String
+
+    val saveSuccessHeader: String
+    val saveErrorHeader: String
+    val saveSuccess: String
+    val saveError: String
 
     fun openInBrowser(url: String): Boolean
 }

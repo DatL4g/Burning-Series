@@ -60,7 +60,7 @@ fun HomeScreen(component: HomeComponent) {
 
     val _githubIconInput = remember { loadGitHubIcon() }
     val githubIconInput = if (_githubIconInput.available() > 0) _githubIconInput else loadGitHubIcon()
-    var (background, content) = SnackbarDefaults.backgroundColor to androidx.compose.material.MaterialTheme.colors.surface
+    var snackbarColors by mutableStateOf(SnackbarDefaults.backgroundColor to androidx.compose.material.MaterialTheme.colors.surface)
     val colorScheme = MaterialTheme.colorScheme
 
     snackbarHandlerForStatus(
@@ -75,19 +75,10 @@ fun HomeScreen(component: HomeComponent) {
             }
         }
     ) { status ->
-        when (status) {
-            is Status.LOADING -> {
-                background = Color.Warning
-                content = Color.OnWarning
-            }
-            is Status.ERROR -> {
-                background = colorScheme.error
-                content = colorScheme.onError
-            }
-            else -> {
-                background = colorScheme.surface
-                content = colorScheme.onSurface
-            }
+        snackbarColors = when (status) {
+            is Status.LOADING -> Color.Warning to Color.OnWarning
+            is Status.ERROR -> colorScheme.error to colorScheme.onError
+            else -> colorScheme.surface to colorScheme.onSurface
         }
     }
 
@@ -179,8 +170,8 @@ fun HomeScreen(component: HomeComponent) {
             SnackbarHost(it) { data ->
                 Snackbar(
                     snackbarData = data,
-                    backgroundColor = background,
-                    contentColor = content,
+                    backgroundColor = snackbarColors.first,
+                    contentColor = snackbarColors.second,
                     shape = Shape.FullRoundedShape,
                     elevation = 0.dp,
                     actionOnNewLine = false
