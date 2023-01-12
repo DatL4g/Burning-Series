@@ -1,13 +1,18 @@
-package dev.datlag.burningseries.network
+package dev.datlag.burningseries.network.video
 
 import dev.datlag.burningseries.model.HosterStream
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.network.common.getSources
+import dev.datlag.burningseries.network.video.hoster.StreamZZ
 import dev.datlag.jsunpacker.JsUnpacker
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 object VideoScraper {
+
+    val MANIPULATION_LIST = listOf(
+        StreamZZ()
+    )
 
     suspend fun scrapeVideosFrom(hosterStream: HosterStream): VideoStream? {
         val doc = try {
@@ -31,11 +36,7 @@ object VideoScraper {
             }
         }
 
-        val finalList = if (hosterStream.hoster.equals("StreamZ", true) || hosterStream.hoster.equals("StreamZZ", true)) {
-            srcList.filterNot { it.contains("getlink") }
-        } else {
-            srcList.toList()
-        }
+        val finalList = applyHosterManipulation(srcList, hosterStream, doc)
 
         return if (finalList.isEmpty()) {
             null
@@ -78,6 +79,22 @@ object VideoScraper {
         }
 
         return srcList
+    }
+
+    private suspend fun applyHosterManipulation(initialList: List<String>, hoster: HosterStream, doc: Document): List<String> {
+        var manipulatedList: MutableList<String> = initialList.toMutableList()
+        MANIPULATION_LIST.mapNotNull {
+            if (it.match(hoster)) {
+                it
+            } else {
+                null
+            }
+        }.forEach {
+            manipulatedList.addAll(it.find(doc))
+            manipulatedList = it.remove(manipulatedList).toMutableList()
+        }
+
+        return manipulatedList
     }
 
 }

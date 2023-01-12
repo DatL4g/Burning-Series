@@ -10,23 +10,18 @@ import dev.datlag.burningseries.model.SaveInfo
 import dev.datlag.burningseries.model.ScrapedHoster
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.VideoStream
-import dev.datlag.burningseries.network.VideoScraper
 import dev.datlag.burningseries.network.repository.SaveRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import org.kodein.di.DI
 import org.kodein.di.instance
-import dev.datlag.burningseries.other.Logger
 import dev.datlag.burningseries.ui.dialog.DialogComponent
 import dev.datlag.burningseries.ui.dialog.save.SaveResultDialogComponent
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
 class ActivateScreenComponent(

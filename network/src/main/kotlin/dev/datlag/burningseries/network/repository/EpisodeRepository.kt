@@ -7,7 +7,7 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.Status
-import dev.datlag.burningseries.network.VideoScraper
+import dev.datlag.burningseries.network.video.VideoScraper
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
