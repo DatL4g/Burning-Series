@@ -14,6 +14,7 @@ import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.model.VideoStream
+import dev.datlag.burningseries.model.common.getDigitsOrNull
 import dev.datlag.burningseries.network.repository.EpisodeRepository
 import dev.datlag.burningseries.network.repository.SeriesRepository
 import dev.datlag.burningseries.other.DefaultValue
@@ -143,11 +144,15 @@ class SeriesScreenComponent(
         var continueEpisode = list.findLast { it.watchPosition > 0L } ?: list.firstOrNull()
         if (continueEpisode?.isFinished == true) {
             val finishedIndex = list.indexOf(continueEpisode)
-            if (list.size > finishedIndex) {
+            if (list.size - 1 > finishedIndex) {
                 continueEpisode = list[finishedIndex + 1]
             }
         }
-        continueEpisode
+        if (continueEpisode?.isFinished == true) {
+            null
+        } else {
+            continueEpisode
+        }
     }.flowOn(Dispatchers.IO)
 
     override val hosterSorted: Flow<Boolean> = db.burningSeriesQueries.hostersSorted().asFlow().mapToOneOrDefault(false, Dispatchers.IO)

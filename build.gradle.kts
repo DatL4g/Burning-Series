@@ -7,7 +7,7 @@ plugins {
     kotlin("android") version "1.7.22" apply false
     id("org.jetbrains.compose") version "1.2.2" apply false
     id("com.google.devtools.ksp") version "1.7.22-1.0.8" apply false
-    id("com.google.protobuf") version "0.9.1" apply false
+    id("com.google.protobuf") version "0.9.2" apply false
     id("de.undercouch.download") version "5.3.0" apply false
     id("com.squareup.sqldelight") version "1.5.4" apply false
     id("com.mikepenz.aboutlibraries.plugin") version "10.5.2" apply false

@@ -10,9 +10,9 @@ plugins {
 }
 
 val coroutines = "1.6.4"
-val decompose = "1.0.0-beta-02"
+val decompose = "1.0.0-beta-04"
 val kodein = "7.16.0"
-val ktor = "2.2.1"
+val ktor = "2.2.2"
 val exoplayer = "1.0.0-beta03"
 val accompanist = "0.25.1"
 
@@ -64,7 +64,7 @@ kotlin {
         val androidMain by getting {
             apply(plugin = "kotlin-parcelize")
             dependencies {
-                implementation("androidx.appcompat:appcompat:1.5.1")
+                implementation("androidx.appcompat:appcompat:1.6.0")
                 implementation("androidx.core:core-ktx:1.9.0")
                 implementation("androidx.activity:activity-ktx:1.6.1")
                 implementation("androidx.activity:activity-compose:1.6.1")

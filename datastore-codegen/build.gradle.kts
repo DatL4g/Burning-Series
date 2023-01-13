@@ -7,7 +7,7 @@ group = "dev.datlag.burningseries.datastore-codegen"
 
 dependencies {
     api("com.google.protobuf:protobuf-java:3.21.12")
-    api("io.grpc:grpc-protobuf:1.51.1")
+    api("io.grpc:grpc-protobuf:1.52.0")
 }
 
 protobuf {
