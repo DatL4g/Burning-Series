@@ -1,10 +1,11 @@
 package dev.datlag.burningseries.ui.custom
 
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.SnackbarDefaults
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 import dev.datlag.burningseries.network.Status
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -44,16 +45,10 @@ fun snackbarHandlerForStatus(
 fun snackbarHandlerForStatus(
     state: SnackbarHostState,
     status: Flow<Status>,
-    mapper: (Status) -> String?
+    mapper: (Status) -> String?,
 ) = snackbarHandlerForStatus(
     state = state,
     status = status,
     mapper = mapper,
     onReceive = null
-)
-
-data class SnackbarData(
-    val message: String,
-    val actionLabel: String? = null,
-    val duration: SnackbarDuration = SnackbarDuration.Short
 )

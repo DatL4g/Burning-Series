@@ -35,7 +35,6 @@ import dev.datlag.burningseries.other.EmptyInputStream
 import dev.datlag.burningseries.other.Resources
 import dev.datlag.burningseries.ui.Shape
 import dev.datlag.burningseries.ui.custom.*
-import dev.datlag.burningseries.ui.custom.SnackbarData
 import dev.datlag.burningseries.ui.dialog.release.NewReleaseComponent
 import dev.datlag.burningseries.ui.dialog.release.NewReleaseDialog
 import kotlinx.coroutines.launch
@@ -60,7 +59,9 @@ fun HomeScreen(component: HomeComponent) {
 
     val _githubIconInput = remember { loadGitHubIcon() }
     val githubIconInput = if (_githubIconInput.available() > 0) _githubIconInput else loadGitHubIcon()
-    var snackbarColors by mutableStateOf(SnackbarDefaults.backgroundColor to androidx.compose.material.MaterialTheme.colors.surface)
+
+    val defaultColors = SnackbarDefaults.backgroundColor to androidx.compose.material.MaterialTheme.colors.surface
+    var snackbarColors by remember { mutableStateOf(defaultColors) }
     val colorScheme = MaterialTheme.colorScheme
 
     snackbarHandlerForStatus(
