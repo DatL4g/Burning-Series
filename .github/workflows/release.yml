@@ -9,7 +9,7 @@ jobs:
   package:
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest, self-hosted ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
       fail-fast: false
     runs-on: ${{ matrix.os }}
 
@@ -29,7 +29,7 @@ jobs:
         run: sudo apt-get install -y fuse3; sudo apt-get install -y fuse
 
       - name: Export libraries on Unix
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'self-hosted'
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: ./gradlew app:exportLibraryDefinitions
 
       - name: Export libraries on Windows
@@ -42,35 +42,22 @@ jobs:
         run: ./gradlew app:packageDeb
 
       - name: Create AppImage on Ubuntu
+        continue-on-error: true
         if: matrix.os == 'ubuntu-latest'
         run: |
           ./gradlew app:packageAppImage
-          mkdir -p ./build/release/main/image/Burning-Series/usr
-          curl --request GET --url https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage --location --output ./build/release/main/image/appimagetool.AppImage
-          curl --request GET --url https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-x86_64 --location --output ./build/release/main/image/Burning-Series/AppRun
-          chmod +x ./build/release/main/image/appimagetool.AppImage
-          chmod +x ./build/release/main/image/Burning-Series/AppRun
-          mv ./app/thirdParty/Burning-Series.desktop ./build/release/main/image/Burning-Series/
-          cp ./build/release/main/app/Burning-Series/lib/Burning-Series.png ./build/release/main/image/Burning-Series/
-          cp -r ./build/release/main/app/Burning-Series/bin ./build/release/main/image/Burning-Series/usr/
-          cp -r ./build/release/main/app/Burning-Series/lib ./build/release/main/image/Burning-Series/usr/
-          ./build/release/main/image/appimagetool.AppImage ./build/release/main/image/Burning-Series ./build/release/main/image/Burning-Series.AppImage
           tar cJf ./build/release/main/app/Burning-Series.tar.xz ./build/release/main/app/Burning-Series
-
-      - name: Create package on Fedora
-        if: matrix.os == 'self-hosted'
-        run: ./gradlew app:packageRpm
 
       - name: Create package on Windows
         if: matrix.os == 'windows-latest'
-        run: .\gradlew app:packageExe; .\gradlew app:packageMsi
+        run: .\gradlew app:packageMsi
         working-directory: ${{ github.workspace }}
 
       - name: Create package on Mac
         if: matrix.os == 'macos-latest'
         run: ./gradlew app:packageDmg
 
-      - name: Release
+      - name: Upload release packages
         uses: softprops/action-gh-release@v1
         with:
           files: |
@@ -79,12 +66,8 @@ jobs:
             ./build/release/main/deb/*.deb
             ./build/release/main/rpm/*.rpm
             ./build/release/main/dmg/*.dmg
-            ./build/release/main/exe/*.exe
             ./build/release/main/msi/*.msi
-            build/release/main/exe/*.exe
             build/release/main/msi/*.msi
-            ${{ github.workspace }}/build/release/main/exe/*.exe
-            ${{ github.workspace }}/build/release/main/msi/*.msi
 
   app:
     runs-on: ubuntu-latest

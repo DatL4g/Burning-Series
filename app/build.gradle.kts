@@ -163,11 +163,11 @@ compose {
                         TargetFormat.Dmg
                     )
                     isMingwX64 -> targetFormats(
-                        TargetFormat.Exe, TargetFormat.Msi
+                        TargetFormat.Msi
                     )
                     else -> targetFormats(
                         TargetFormat.Deb, TargetFormat.Rpm,
-                        TargetFormat.Exe, TargetFormat.Msi,
+                        TargetFormat.Msi,
                         TargetFormat.Dmg
                     )
                 }
