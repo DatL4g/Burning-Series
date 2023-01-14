@@ -23,6 +23,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
+      - name: Setup Ubuntu
+        continue-on-error: true
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install fuse2 -y; sudo apt-get install fuse -y
+
       - name: Export libraries on Unix
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'self-hosted'
         run: ./gradlew app:exportLibraryDefinitions
