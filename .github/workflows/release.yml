@@ -50,6 +50,7 @@ jobs:
           cp -r ./build/release/main/app/Burning-Series/bin ./build/release/main/image/Burning-Series/usr/
           cp -r ./build/release/main/app/Burning-Series/lib ./build/release/main/image/Burning-Series/usr/
           ./build/release/main/image/appimagetool.AppImage ./build/release/main/image/Burning-Series ./build/release/main/image/Burning-Series.AppImage
+          tar cJf ./build/release/main/app/Burning-Series.tar.xz ./build/release/main/app/Burning-Series
 
       - name: Create package on Fedora
         if: matrix.os == 'self-hosted'
@@ -64,23 +65,21 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: ./gradlew app:packageDmg
 
-      - name: Releases on Unix
+      - name: Release
         uses: softprops/action-gh-release@v1
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'self-hosted'
         with:
           files: |
+            ./build/release/main/app/Burning-Series.tar.xz
+            ./build/release/main/image/Burning-Series.AppImage
             ./build/release/main/deb/*.deb
             ./build/release/main/rpm/*.rpm
             ./build/release/main/dmg/*.dmg
-
-      - name: Releases on Windows
-        uses: softprops/action-gh-release@v1
-        if: matrix.os == 'windows-latest'
-        working-directory: ${{ github.workspace }}
-        with:
-          files: |
+            ./build/release/main/exe/*.exe
+            ./build/release/main/msi/*.msi
             build/release/main/exe/*.exe
             build/release/main/msi/*.msi
+            ${{ github.workspace }}/build/release/main/exe/*.exe
+            ${{ github.workspace }}/build/release/main/msi/*.msi
 
   app:
     runs-on: ubuntu-latest
