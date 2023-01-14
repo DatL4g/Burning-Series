@@ -222,6 +222,9 @@ actual class StringRes private constructor(
     actual val saveError: String
         get() = getLocaleOrDefaultFor("save_error")
 
+    actual val downloadNow: String
+        get() = getLocaleOrDefaultFor("download_now")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }

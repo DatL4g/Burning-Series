@@ -16,6 +16,8 @@ object Constants {
     const val GITHUB_REPO_NEW = "BurningSeries"
     const val GITHUB_REPOSITORY_URL = "${PROTOCOL_HTTPS}${HOST_GITHUB_COM}/$GITHUB_OWNER/$GITHUB_REPO_OLD"
 
+    const val VLC_DOWNLOAD_URL = "${PROTOCOL_HTTPS}www.videolan.org/vlc/#download"
+
 
     fun getBurningSeriesUrl(href: String): String {
         return if (!href.matches("^\\w+?://.*".toRegex())) {

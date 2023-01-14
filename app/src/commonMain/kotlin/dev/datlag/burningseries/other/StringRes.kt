@@ -100,5 +100,7 @@ expect class StringRes {
     val saveSuccess: String
     val saveError: String
 
+    val downloadNow: String
+
     fun openInBrowser(url: String): Boolean
 }

@@ -4,7 +4,6 @@ import dev.datlag.burningseries.model.HosterStream
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.network.common.getSources
 import dev.datlag.burningseries.network.video.hoster.StreamZZ
-import dev.datlag.burningseries.network.video.hoster.Streamtape
 import dev.datlag.jsunpacker.JsUnpacker
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -12,8 +11,7 @@ import org.jsoup.nodes.Document
 object VideoScraper {
 
     val MANIPULATION_LIST = listOf(
-        StreamZZ(),
-        Streamtape()
+        StreamZZ()
     )
 
     suspend fun scrapeVideosFrom(hosterStream: HosterStream): VideoStream? {

@@ -3,8 +3,12 @@ package dev.datlag.burningseries.ui.screen.video
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,8 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.getValueBlocking
+import dev.datlag.burningseries.other.Constants
+import dev.datlag.burningseries.ui.custom.collapsingtoolbar.CollapsingToolbarScaffoldScopeInstance.align
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery
@@ -141,16 +148,33 @@ fun VideoPlayer(
             }
         )
     } else {
-        Box(
+        Column(
             modifier = Modifier.fillMaxSize().background(Color.Black),
-            contentAlignment = Alignment.Center
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val strings = LocalStringRes.current
+
+            Spacer(modifier = Modifier.weight(1F))
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = LocalStringRes.current.vlcMustBeInstalled,
+                text = strings.vlcMustBeInstalled,
                 color = Color.White,
                 textAlign = TextAlign.Center
             )
+
+            Button(onClick = {
+                strings.openInBrowser(Constants.VLC_DOWNLOAD_URL)
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Download,
+                    contentDescription = strings.downloadNow,
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                Text(text = strings.downloadNow)
+            }
+            Spacer(modifier = Modifier.weight(1F))
         }
     }
 }
