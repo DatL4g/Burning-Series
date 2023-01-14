@@ -10,10 +10,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.common.cardItemSize
 import dev.datlag.burningseries.common.coverFileName
 import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.database.DBSeries
@@ -22,6 +24,7 @@ import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.ui.custom.CoverImage
 import dev.datlag.burningseries.ui.screen.SeriesItemComponent
+import dev.datlag.burningseries.ui.screen.home.LocalFabGroupRequester
 import java.io.File
 
 @Composable
@@ -57,25 +60,31 @@ fun SeriesItem(
     cover: Cover,
     component: SeriesItemComponent
 ) {
-    Card(modifier = Modifier.fillMaxWidth().onClick {
+    val fabGroup = LocalFabGroupRequester.current
+
+    Card(modifier = Modifier.cardItemSize().onClick {
         component.onSeriesClicked(
             href,
             SeriesInitialInfo(title, cover)
         )
+    }.focusProperties {
+        if (fabGroup != null) {
+            down = fabGroup
+        }
     }) {
         CoverImage(
             cover = cover,
             description = title,
             scale = ContentScale.FillBounds,
             fallbackIconTint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.fillMaxWidth().height(300.dp)
+            modifier = Modifier.cardItemSize().height(300.dp)
         )
         Text(
             text = title,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth().padding(8.dp)
+            modifier = Modifier.cardItemSize().padding(8.dp)
         )
     }
 }

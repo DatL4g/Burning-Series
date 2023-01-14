@@ -4,15 +4,15 @@ import android.content.res.ColorStateList
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.shape.CornerBasedShape
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import com.google.android.material.shape.CornerSize
 import com.google.android.material.shape.ShapeAppearanceModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -50,4 +50,10 @@ fun ButtonDefaults.legacyButtonTintList(
     val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
     val colors = intArrayOf(containerColor.toArgb())
     return ColorStateList(states, colors)
+}
+
+@Composable
+actual fun isTv(): Boolean {
+    val context = LocalContext.current
+    return remember { (context.packageManager ?: context.applicationContext.packageManager).isTelevision() }
 }

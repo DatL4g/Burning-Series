@@ -11,6 +11,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.core.os.BuildCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.arkivanov.decompose.defaultComponentContext
 import dev.datlag.burningseries.*
 import dev.datlag.burningseries.module.DataStoreModule
@@ -26,6 +27,11 @@ import org.kodein.di.bindSingleton
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            this.setTheme(R.style.AppTheme)
+        } else {
+            installSplashScreen()
+        }
         super.onCreate(savedInstanceState)
 
         val di = DI {

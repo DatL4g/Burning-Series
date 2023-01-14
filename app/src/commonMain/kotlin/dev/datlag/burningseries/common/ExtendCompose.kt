@@ -7,6 +7,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import dev.datlag.burningseries.LocalOrientation
 import dev.datlag.burningseries.other.Orientation
@@ -129,5 +131,14 @@ fun Modifier.fillWidthInPortraitMode(fraction: Float = 1f): Modifier {
         this.fillMaxWidth(fraction)
     } else {
         this
+    }
+}
+
+@Composable
+fun Modifier.cardItemSize(): Modifier {
+    return if (isTv()) {
+        this.width(200.dp)
+    } else {
+        this.fillMaxWidth()
     }
 }

@@ -6,19 +6,24 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import dev.datlag.burningseries.LocalStringRes
 
 @Composable
 fun OverflowMenu(
+    modifier: Modifier = Modifier,
     tint: Color,
     content: @Composable ColumnScope.() -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
-    IconButton(onClick = {
-        showMenu = !showMenu
-    }) {
+    IconButton(
+        onClick = {
+            showMenu = !showMenu
+        },
+        modifier = modifier
+    ) {
         Icon(
             imageVector = Icons.Default.MoreVert,
             contentDescription = LocalStringRes.current.more,

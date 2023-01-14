@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.common
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 expect fun Modifier.onClick(
@@ -8,3 +9,6 @@ expect fun Modifier.onClick(
     onLongClick: (() -> Unit)? = null,
     onClick: () -> Unit
 ) : Modifier
+
+@Composable
+expect fun isTv(): Boolean

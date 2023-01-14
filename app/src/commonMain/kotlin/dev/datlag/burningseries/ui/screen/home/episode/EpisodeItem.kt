@@ -7,18 +7,22 @@ import dev.datlag.burningseries.common.onClick
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.common.cardItemSize
 import dev.datlag.burningseries.common.coverFileName
+import dev.datlag.burningseries.common.isTv
 import dev.datlag.burningseries.database.DBSeries
 import dev.datlag.burningseries.database.SelectLatestEpisodesAmount
 import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.ui.custom.CoverImage
+import dev.datlag.burningseries.ui.screen.home.LocalFabGroupRequester
 import java.io.File
 
 @Composable
@@ -71,28 +75,34 @@ fun EpisodeItem(
     continueWatching: Boolean,
     component: EpisodesComponent
 ) {
-    Card(modifier = Modifier.fillMaxWidth().onClick {
+    val fabGroup = LocalFabGroupRequester.current
+
+    Card(modifier = Modifier.cardItemSize().onClick {
         component.onEpisodeClicked(href, SeriesInitialInfo(series, cover), continueWatching)
+    }.focusProperties {
+        if (fabGroup != null) {
+            down = fabGroup
+        }
     }) {
         CoverImage(
             cover = cover,
             description = title,
             scale = ContentScale.FillBounds,
             fallbackIconTint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.fillMaxWidth().height(300.dp)
+            modifier = Modifier.cardItemSize().height(300.dp)
         )
         Text(
             text = series,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp)
+            modifier = Modifier.cardItemSize().padding(horizontal = 8.dp, vertical = 2.dp)
         )
         Text(
             text = episode,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth().padding(start = 8.dp, top = 2.dp, end = 8.dp, bottom = 8.dp)
+            modifier = Modifier.cardItemSize().padding(start = 8.dp, top = 2.dp, end = 8.dp, bottom = 8.dp)
         )
     }
 }

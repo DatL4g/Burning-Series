@@ -1,7 +1,9 @@
 package dev.datlag.burningseries.ui.screen.genre
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,7 +20,12 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,15 +33,16 @@ import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.model.SeriesInitialInfo
+import dev.datlag.burningseries.ui.screen.home.LocalFabGroupRequester
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun GenreScreen(component: GenreComponent) {
     val scaffoldState = rememberScaffoldState()
     val strings = LocalStringRes.current
     val genre by component.genre.collectAsState(null)
     val searchItems by component.searchItems.collectAsState(emptyList())
-
+    val (previousFab, nextFab) = FocusRequester.createRefs()
 
     Scaffold(
         topBar = {
@@ -48,7 +56,7 @@ fun GenreScreen(component: GenreComponent) {
             ) {
                 SmallFloatingActionButton(onClick = {
                     component.previousGenre()
-                }) {
+                }, modifier = Modifier.focusRequester(previousFab)) {
                     Icon(
                         imageVector = Icons.Default.ChevronLeft,
                         contentDescription = strings.previousGenre
@@ -56,7 +64,7 @@ fun GenreScreen(component: GenreComponent) {
                 }
                 ExtendedFloatingActionButton(onClick = {
                     component.openSearchBar()
-                }) {
+                }, modifier = Modifier) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = strings.search
@@ -68,7 +76,7 @@ fun GenreScreen(component: GenreComponent) {
                 }
                 SmallFloatingActionButton(onClick = {
                     component.nextGenre()
-                }) {
+                }, modifier = Modifier.focusRequester(nextFab)) {
                     Icon(
                         imageVector = Icons.Default.ChevronRight,
                         contentDescription = strings.nextGenre
@@ -95,7 +103,10 @@ fun GenreScreen(component: GenreComponent) {
                         Text(
                             modifier = Modifier.fillMaxWidth().clickable {
                                 component.onSeriesClicked(item.href, SeriesInitialInfo(item.title, null))
-                            }.padding(8.dp),
+                            }.padding(8.dp).focusProperties {
+                                left = previousFab
+                                right = nextFab
+                            },
                             text = item.title
                         )
                     }
@@ -105,7 +116,10 @@ fun GenreScreen(component: GenreComponent) {
                     Text(
                         modifier = Modifier.fillMaxWidth().clickable {
                             component.onSeriesClicked(item.href, SeriesInitialInfo(item.title, null))
-                        }.padding(8.dp),
+                        }.padding(8.dp).focusProperties {
+                            left = previousFab
+                            right = nextFab
+                        },
                         text = item.title
                     )
                 }

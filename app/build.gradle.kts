@@ -11,7 +11,7 @@ plugins {
 
 val coroutines = "1.6.4"
 val decompose = "1.0.0-beta-04"
-val kodein = "7.16.0"
+val kodein = "7.18.0"
 val ktor = "2.2.2"
 val exoplayer = "1.0.0-beta03"
 val accompanist = "0.25.1"
@@ -78,6 +78,7 @@ kotlin {
                 implementation("com.google.accompanist:accompanist-flowlayout:$accompanist")
                 implementation("androidx.constraintlayout:constraintlayout:2.1.4")
                 implementation("com.google.android.material:material:1.7.0")
+                implementation("androidx.core:core-splashscreen:1.0.0")
 
                 implementation("androidx.media3:media3-exoplayer:$exoplayer")
                 implementation("androidx.media3:media3-exoplayer-dash:$exoplayer")

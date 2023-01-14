@@ -1,5 +1,7 @@
 package dev.datlag.burningseries.ui.screen.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.material.*
@@ -40,8 +42,12 @@ import dev.datlag.burningseries.ui.dialog.release.NewReleaseDialog
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import androidx.compose.material.SnackbarDefaults
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.focus.*
 
-@OptIn(ExperimentalDecomposeApi::class)
+val LocalFabGroupRequester = compositionLocalOf<FocusRequester?> { null }
+
+@OptIn(ExperimentalDecomposeApi::class, ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(component: HomeComponent) {
     val dialogState = component.dialog.subscribeAsState()
@@ -63,6 +69,8 @@ fun HomeScreen(component: HomeComponent) {
     val defaultColors = SnackbarDefaults.backgroundColor to androidx.compose.material.MaterialTheme.colors.surface
     var snackbarColors by remember { mutableStateOf(defaultColors) }
     val colorScheme = MaterialTheme.colorScheme
+
+    val (fabGroupRequester) = FocusRequester.createRefs()
 
     snackbarHandlerForStatus(
         state = snackbarHostState,
@@ -106,7 +114,12 @@ fun HomeScreen(component: HomeComponent) {
                                 modifier = Modifier.size(32.dp)
                             )
                         }
-                        OverflowMenu(MaterialTheme.colorScheme.onTertiary) {
+                        OverflowMenu(
+                            modifier = Modifier.focusProperties {
+                                right = fabGroupRequester
+                            },
+                            tint = MaterialTheme.colorScheme.onTertiary
+                        ) {
                             DropdownMenuItem(onClick = {
                                 component.onSettingsClicked()
                             }, enabled = true, text = {
@@ -142,6 +155,7 @@ fun HomeScreen(component: HomeComponent) {
         },
         floatingActionButton = {
             Column(
+                modifier = Modifier.focusRequester(fabGroupRequester),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 val favoritesExists by component.favoritesExists.collectAsState(component.favoritesExists.getValueBlocking(false))
@@ -180,18 +194,12 @@ fun HomeScreen(component: HomeComponent) {
             }
         }
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            InfoCard(
-                title = strings.beta,
-                text = strings.betaText,
-                backgroundColor = Color.Warning,
-                contentColor = Color.OnWarning,
-                icon = Icons.Default.Warning,
-                modifier = Modifier.align(Alignment.CenterHorizontally).padding(8.dp)
-            )
-            HomeViewPager(component)
+        CompositionLocalProvider(LocalFabGroupRequester provides fabGroupRequester) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                HomeViewPager(component)
+            }
         }
     }
 
