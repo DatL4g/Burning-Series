@@ -50,7 +50,7 @@ jobs:
 
       - name: Create package on Windows
         if: matrix.os == 'windows-latest'
-        run: .\gradlew app:packageMsi
+        run: .\gradlew app:packageExe; .\gradlew app:packageMsi
         working-directory: ${{ github.workspace }}
 
       - name: Create package on Mac
@@ -66,7 +66,9 @@ jobs:
             ./build/release/main/deb/*.deb
             ./build/release/main/rpm/*.rpm
             ./build/release/main/dmg/*.dmg
+            ./build/release/main/exe/*.exe
             ./build/release/main/msi/*.msi
+            build/release/main/exe/*.exe
             build/release/main/msi/*.msi
 
   app:

@@ -10,10 +10,6 @@ kotlin {
     android()
     jvm("desktop")
 
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of("11"))
-    }
-
     sourceSets {
         val commonMain by getting {
             dependencies {
