@@ -48,7 +48,8 @@ fun SettingsScreen(component: SettingsComponent) {
                 },
                 title = {
                     Text(
-                        text = LocalStringRes.current.settings
+                        text = LocalStringRes.current.settings,
+                        color = MaterialTheme.colorScheme.onTertiary,
                     )
                 },
                 backgroundColor = MaterialTheme.colorScheme.tertiary,
