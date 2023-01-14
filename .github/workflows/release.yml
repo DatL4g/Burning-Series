@@ -66,8 +66,6 @@ jobs:
             ./build/release/main/deb/*.deb
             ./build/release/main/rpm/*.rpm
             ./build/release/main/dmg/*.dmg
-            ./build/release/main/exe/*.exe
-            ./build/release/main/msi/*.msi
             build/release/main/exe/*.exe
             build/release/main/msi/*.msi
 
