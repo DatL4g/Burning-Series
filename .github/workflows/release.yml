@@ -25,11 +25,11 @@ jobs:
 
       - name: Export libraries on Unix
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'self-hosted'
-        run: ./gradlew app:exportLibraryDefinitions -PaboutLibraries.exportPath=src/commonMain/assets/
+        run: ./gradlew app:exportLibraryDefinitions
 
       - name: Export libraries on Windows
         if: matrix.os == 'windows-latest'
-        run: .\gradlew app:exportLibraryDefinitions -PaboutLibraries.exportPath=src/commonMain/assets/
+        run: .\gradlew app:exportLibraryDefinitions
         working-directory: ${{ github.workspace }}
 
       - name: Create package on Ubuntu
