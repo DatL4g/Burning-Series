@@ -13,16 +13,49 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.OnWarning
 import dev.datlag.burningseries.common.Success
+import dev.datlag.burningseries.common.Warning
+import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.ui.custom.WebView
 import dev.datlag.burningseries.ui.Shape
+import dev.datlag.burningseries.ui.custom.snackbarHandlerForStatus
 import dev.datlag.burningseries.ui.dialog.save.SaveResultComponent
 import dev.datlag.burningseries.ui.dialog.save.SaveResultDialog
 import kotlinx.coroutines.launch
+import androidx.compose.material.SnackbarDefaults
 
 @Composable
 fun ActivateScreen(component: ActivateComponent) {
     val dialogState = component.dialog.subscribeAsState()
+    val strings = LocalStringRes.current
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scaffoldState = rememberScaffoldState(
+        snackbarHostState = snackbarHostState
+    )
+
+    val colorScheme = MaterialTheme.colorScheme
+    val defaultColors = SnackbarDefaults.backgroundColor to androidx.compose.material.MaterialTheme.colors.surface
+    var snackbarColors by remember { mutableStateOf(defaultColors) }
+
+    snackbarHandlerForStatus(
+        state = snackbarHostState,
+        status = component.status,
+        mapper = {
+            when (it) {
+                is Status.LOADING -> strings.loadingUrl
+                is Status.ERROR -> strings.errorTryAgain
+                else -> null
+            }
+        }
+    ) { status ->
+        snackbarColors = when (status) {
+            is Status.LOADING -> Color.Warning to Color.OnWarning
+            is Status.ERROR -> colorScheme.error to colorScheme.onError
+            else -> defaultColors
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -49,6 +82,19 @@ fun ActivateScreen(component: ActivateComponent) {
                 contentColor = MaterialTheme.colorScheme.onTertiary,
                 elevation = 0.dp
             )
+        },
+        scaffoldState = scaffoldState,
+        snackbarHost = {
+            SnackbarHost(it) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    backgroundColor = snackbarColors.first,
+                    contentColor = snackbarColors.second,
+                    shape = Shape.FullRoundedShape,
+                    elevation = 0.dp,
+                    actionOnNewLine = false
+                )
+            }
         }
     ) {
         WebView(component)

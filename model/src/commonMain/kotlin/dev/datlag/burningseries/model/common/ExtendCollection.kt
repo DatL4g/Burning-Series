@@ -24,3 +24,11 @@ fun <T> MutableList<T>.move(from: Int, to: Int): MutableList<T> {
     }
     return this
 }
+
+fun Collection<String>.contains(element: String?, ignoreCase: Boolean = false): Boolean {
+    return if (ignoreCase) {
+        this.any { it.equals(element, true) }
+    } else {
+        this.contains(element)
+    }
+}

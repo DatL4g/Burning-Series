@@ -66,9 +66,9 @@ fun HomeScreen(component: HomeComponent) {
     val _githubIconInput = remember { loadGitHubIcon() }
     val githubIconInput = if (_githubIconInput.available() > 0) _githubIconInput else loadGitHubIcon()
 
+    val colorScheme = MaterialTheme.colorScheme
     val defaultColors = SnackbarDefaults.backgroundColor to androidx.compose.material.MaterialTheme.colors.surface
     var snackbarColors by remember { mutableStateOf(defaultColors) }
-    val colorScheme = MaterialTheme.colorScheme
 
     val (fabGroupRequester) = FocusRequester.createRefs()
 
@@ -87,7 +87,7 @@ fun HomeScreen(component: HomeComponent) {
         snackbarColors = when (status) {
             is Status.LOADING -> Color.Warning to Color.OnWarning
             is Status.ERROR -> colorScheme.error to colorScheme.onError
-            else -> colorScheme.surface to colorScheme.onSurface
+            else -> defaultColors
         }
     }
 

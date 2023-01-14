@@ -12,6 +12,7 @@ import dev.datlag.burningseries.ui.screen.activate.ActivateComponent
 import kotlinx.coroutines.*
 import java.io.InputStream
 import dev.datlag.burningseries.R
+import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.other.*
 
 @Composable
@@ -31,7 +32,12 @@ actual fun WebView(component: ActivateComponent) {
 
     AndroidView(factory = { context ->
         WebView(context).apply {
-            webViewClient = WebViewClient(setOf(Constants.HOST_BS_TO), component.client)
+            webViewClient = WebViewClient(
+                allowedHosts = setOf(Constants.HOST_BS_TO),
+                client = component.client,
+                onLoading = { component.setStatus(Status.LOADING) },
+                onError = { component.setStatus(Status.ERROR.CLIENT) }
+            )
             clearHistory()
             clearCache(true)
             clearMatches()

@@ -10,6 +10,7 @@ import dev.datlag.burningseries.model.SaveInfo
 import dev.datlag.burningseries.model.ScrapedHoster
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.VideoStream
+import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.network.repository.SaveRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -22,6 +23,7 @@ import org.kodein.di.DI
 import org.kodein.di.instance
 import dev.datlag.burningseries.ui.dialog.DialogComponent
 import dev.datlag.burningseries.ui.dialog.save.SaveResultDialogComponent
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 
 class ActivateScreenComponent(
@@ -63,6 +65,7 @@ class ActivateScreenComponent(
     private val scrapedList: MutableList<ScrapedHoster> = mutableListOf()
 
     override val saveInfo: Flow<SaveInfo> = saveRepo.saveInfo
+    override val status: MutableStateFlow<Status> = MutableStateFlow(Status.LOADING)
 
     init {
         scope.launch(Dispatchers.IO) {
@@ -85,6 +88,12 @@ class ActivateScreenComponent(
             scope.launch(Dispatchers.IO) {
                 saveRepo.save(scraped)
             }
+        }
+    }
+
+    override fun setStatus(status: Status) {
+        scope.launch(Dispatchers.IO) {
+            this@ActivateScreenComponent.status.emit(status)
         }
     }
 

@@ -218,8 +218,14 @@ actual class StringRes(private val context: Context) {
     actual val saveError: String
         get() = context.getString(R.string.save_error)
 
+    actual val loadingUrl: String
+        get() = context.getString(R.string.loading_url)
+
     actual val downloadNow: String
         get() = context.getString(R.string.download_now)
+
+    actual val loadingAll: String
+        get() = context.getString(R.string.loading_all)
 
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())

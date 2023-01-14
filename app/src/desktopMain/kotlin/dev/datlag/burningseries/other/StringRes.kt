@@ -225,6 +225,12 @@ actual class StringRes private constructor(
     actual val downloadNow: String
         get() = getLocaleOrDefaultFor("download_now")
 
+    actual val loadingAll: String
+        get() = getLocaleOrDefaultFor("loading_all")
+
+    actual val loadingUrl: String
+        get() = getLocaleOrDefaultFor("loading_url")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }

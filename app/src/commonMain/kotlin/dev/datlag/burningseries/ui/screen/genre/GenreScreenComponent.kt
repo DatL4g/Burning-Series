@@ -36,6 +36,7 @@ class GenreScreenComponent(
     override val searchText: Value<String> = _searchText
     private var searchJob: Job? = null
     override val searchItems: Flow<List<Genre.Item>> = genreRepo.searchItems
+    override val status = genreRepo.status
 
     override fun nextGenre() {
         scope.launch(Dispatchers.IO) {

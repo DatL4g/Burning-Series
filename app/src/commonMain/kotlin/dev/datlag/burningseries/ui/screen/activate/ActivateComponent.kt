@@ -5,9 +5,11 @@ import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.SaveInfo
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.VideoStream
+import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.ui.dialog.DialogComponent
 import dev.datlag.burningseries.ui.navigation.Component
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.OkHttpClient
 
 interface ActivateComponent : Component {
@@ -22,5 +24,8 @@ interface ActivateComponent : Component {
 
     val saveInfo: Flow<SaveInfo>
 
+    val status: MutableStateFlow<Status>
+
     fun saveScrapedData(result: String)
+    fun setStatus(status: Status)
 }
