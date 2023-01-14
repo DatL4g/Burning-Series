@@ -29,7 +29,9 @@ jobs:
 
       - name: Export libraries on Windows
         if: matrix.os == 'windows-latest'
-        run: gradlew.bat app:exportLibraryDefinitions -PaboutLibraries.exportPath=src/commonMain/assets/ || gradlew.bat app:exportLibraryDefinitions -PaboutLibraries.exportPath=app/src/commonMain/assets/
+        run: |
+          dir
+          gradlew app:exportLibraryDefinitions -PaboutLibraries.exportPath=src/commonMain/assets/ || gradlew app:exportLibraryDefinitions -PaboutLibraries.exportPath=app/src/commonMain/assets/
         working-directory: ${{ github.workspace }}
 
       - name: Create package on Ubuntu
@@ -58,7 +60,7 @@ jobs:
 
       - name: Create package on Windows
         if: matrix.os == 'windows-latest'
-        run: gradlew.bat app:packageExe; gradlew.bat app:packageMsi
+        run: gradlew app:packageExe; gradlew app:packageMsi
         working-directory: ${{ github.workspace }}
 
       - name: Create package on Mac
