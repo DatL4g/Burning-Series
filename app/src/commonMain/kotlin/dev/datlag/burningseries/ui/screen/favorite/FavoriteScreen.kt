@@ -20,9 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.common.isTv
+import dev.datlag.burningseries.ui.custom.SearchAppBarState
 import dev.datlag.burningseries.ui.screen.home.gridCellSize
 import dev.datlag.burningseries.ui.screen.home.series.SeriesItem
 
@@ -30,21 +32,24 @@ import dev.datlag.burningseries.ui.screen.home.series.SeriesItem
 fun FavoriteScreen(component: FavoriteComponent) {
     val favorites by component.favorites.collectAsState(component.favorites.getValueBlocking(emptyList()))
     val searchFavorites by component.searchItems.collectAsState(emptyList())
+    val searchState by component.searchAppBarState.subscribeAsState()
 
     Scaffold(
         topBar = {
             FavoriteScreenAppBar(component)
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    component.openSearchBar()
+            if (searchState is SearchAppBarState.CLOSED) {
+                FloatingActionButton(
+                    onClick = {
+                        component.openSearchBar()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = LocalStringRes.current.search
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = LocalStringRes.current.search
-                )
             }
         }
     ) {
