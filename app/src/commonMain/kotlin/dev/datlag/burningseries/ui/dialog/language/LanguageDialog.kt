@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.ui.custom.DialogSurface
@@ -35,7 +36,9 @@ fun LanguageDialog(component: LanguageComponent) {
                     Text(
                         text = LocalStringRes.current.selectLanguage,
                         style = MaterialTheme.typography.headlineMedium,
-                        maxLines = 2
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = true
                     )
                 },
                 text = {
@@ -60,24 +63,31 @@ fun LanguageDialog(component: LanguageComponent) {
                                     onClick = null
                                 )
                                 Text(
-                                    text = it.text
+                                    text = it.text,
+                                    overflow = TextOverflow.Ellipsis,
+                                    softWrap = true
                                 )
                             }
                         }
                     }
                 },
                 confirmButton = {
-                    TextButton(onClick = {
-                        if (selectedItem != null && selectedItem != currentSelectedLanguage) {
-                            component.onConfirmNewLanguage(selectedItem!!)
-                        } else {
-                            component.onDismissClicked()
-                        }
-                    }, modifier = Modifier.padding(bottom = 8.dp)) {
+                    TextButton(
+                        onClick = {
+                            if (selectedItem != null && selectedItem != currentSelectedLanguage) {
+                                component.onConfirmNewLanguage(selectedItem!!)
+                            } else {
+                                component.onDismissClicked()
+                            }
+                        },
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
+                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                         Text(text = LocalStringRes.current.confirm)
                     }
                 },
@@ -91,8 +101,10 @@ fun LanguageDialog(component: LanguageComponent) {
                     ) {
                         Icon(
                             imageVector = Icons.Default.Clear,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
+                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                         Text(text = LocalStringRes.current.close)
                     }
                 }

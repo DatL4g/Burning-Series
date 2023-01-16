@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.SemiBlack
@@ -81,7 +82,9 @@ fun LandscapeToolbar(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             text = title,
                             style = MaterialTheme.typography.headlineMedium,
-                            maxLines = 2
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = true
                         )
                         SeriesLanguageSeasonButtons(
                             component,
@@ -121,7 +124,9 @@ fun LandscapeToolbar(
                     Text(
                         text = title,
                         color = MaterialTheme.colorScheme.onTertiary,
-                        maxLines = 1
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = true
                     )
                 }
             },

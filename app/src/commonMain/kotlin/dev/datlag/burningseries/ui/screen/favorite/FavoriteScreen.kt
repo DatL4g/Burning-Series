@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.getValueBlocking
@@ -49,6 +50,8 @@ fun FavoriteScreen(component: FavoriteComponent) {
                     Text(
                         text = LocalStringRes.current.favorites,
                         color = MaterialTheme.colorScheme.onTertiary,
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = true
                     )
                 }
             )

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalOrientation
@@ -40,6 +41,8 @@ import dev.datlag.burningseries.ui.dialog.language.LanguageComponent
 import dev.datlag.burningseries.ui.dialog.language.LanguageDialog
 import dev.datlag.burningseries.ui.custom.InfoCard
 import dev.datlag.burningseries.ui.custom.snackbarHandlerForStatus
+import dev.datlag.burningseries.ui.dialog.activate.ActivateComponent
+import dev.datlag.burningseries.ui.dialog.activate.ActivateDialog
 import dev.datlag.burningseries.ui.dialog.nostream.NoStreamComponent
 import dev.datlag.burningseries.ui.dialog.nostream.NoStreamDialog
 import dev.datlag.burningseries.ui.dialog.season.SeasonComponent
@@ -155,6 +158,9 @@ fun SeriesScreen(component: SeriesComponent) {
             is DialogConfig.NoStream -> {
                 NoStreamDialog(instance as NoStreamComponent)
             }
+            is DialogConfig.Activate -> {
+                ActivateDialog(instance as ActivateComponent)
+            }
         }
     }
 }
@@ -232,7 +238,9 @@ private fun LazyListScope.SeriesScreenContent(
 
     items(episodes) { episode ->
         Row(
-            modifier = Modifier.fillMaxWidth().onClick {
+            modifier = Modifier.fillMaxWidth().onClick(onLongClick = {
+                component.showDialog(DialogConfig.Activate(episode))
+            }) {
                 component.loadEpisode(episode)
             }.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -252,7 +260,9 @@ private fun LazyListScope.SeriesScreenContent(
             Text(
                 modifier = Modifier.weight(1F),
                 text = episode.title,
-                maxLines = 1
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = true
             )
             Icon(
                 imageVector = watchIcon,

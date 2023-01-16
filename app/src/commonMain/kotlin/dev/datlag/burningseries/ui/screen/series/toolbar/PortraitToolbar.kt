@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.SemiBlack
@@ -96,7 +97,9 @@ fun PortraitToolbar(
                     }
                 }),
                 style = MaterialTheme.typography.headlineMedium,
-                maxLines = 2
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = true
             )
         },
         title = {
@@ -110,7 +113,9 @@ fun PortraitToolbar(
                         0F
                     }
                 }),
-                maxLines = 1
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = true
             )
         },
         navigationIcon = {

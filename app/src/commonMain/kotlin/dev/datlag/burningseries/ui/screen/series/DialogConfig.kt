@@ -17,4 +17,6 @@ sealed class DialogConfig : Parcelable {
     ) : DialogConfig()
 
     data class NoStream(val episode: Series.Episode) : DialogConfig()
+
+    data class Activate(val episode: Series.Episode) : DialogConfig()
 }

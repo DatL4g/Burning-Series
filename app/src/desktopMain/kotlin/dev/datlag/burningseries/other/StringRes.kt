@@ -231,6 +231,12 @@ actual class StringRes private constructor(
     actual val loadingUrl: String
         get() = getLocaleOrDefaultFor("loading_url")
 
+    actual val activateText: String
+        get() = getLocaleOrDefaultFor("activate_text")
+
+    actual val browser: String
+        get() = getLocaleOrDefaultFor("browser")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }

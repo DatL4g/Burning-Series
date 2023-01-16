@@ -71,4 +71,6 @@
     <string name="download_now">Jetzt herunterladen</string>
     <string name="loading_all">Lade alle Series und Genre...</string>
     <string name="loading_url">Lade URL, bitte warten...</string>
+    <string name="activate_text">Willst du die Episode aktivieren oder im Browser öffnen?</string>
+    <string name="browser">Browser</string>
 </resources>

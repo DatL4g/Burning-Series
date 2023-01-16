@@ -105,5 +105,8 @@ expect class StringRes {
     val loadingAll: String
     val loadingUrl: String
 
+    val activateText: String
+    val browser: String
+
     fun openInBrowser(url: String): Boolean
 }

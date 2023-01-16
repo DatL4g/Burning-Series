@@ -96,12 +96,14 @@ fun EpisodeItem(
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            softWrap = true,
             modifier = Modifier.cardItemSize().padding(horizontal = 8.dp, vertical = 2.dp)
         )
         Text(
             text = episode,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            softWrap = true,
             modifier = Modifier.cardItemSize().padding(start = 8.dp, top = 2.dp, end = 8.dp, bottom = 8.dp)
         )
     }

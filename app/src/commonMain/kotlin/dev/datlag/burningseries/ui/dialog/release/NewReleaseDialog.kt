@@ -1,7 +1,9 @@
 package dev.datlag.burningseries.ui.dialog.release
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
@@ -10,6 +12,7 @@ import androidx.compose.material.icons.filled.NewReleases
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.other.Constants
@@ -30,12 +33,16 @@ fun NewReleaseDialog(component: NewReleaseComponent) {
                 Text(
                     text = component.newRelease.title,
                     style = MaterialTheme.typography.headlineMedium,
-                    maxLines = 2
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    softWrap = true
                 )
             },
             text = {
                 Text(
-                    text = strings.newRelease
+                    text = strings.newRelease,
+                    overflow = TextOverflow.Ellipsis,
+                    softWrap = true
                 )
             },
             confirmButton = {
@@ -46,12 +53,14 @@ fun NewReleaseDialog(component: NewReleaseComponent) {
                         })
                         component.onDismissClicked()
                     },
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp),
                 ) {
                     Icon(
                         imageVector = Icons.Default.NewReleases,
-                        contentDescription = component.newRelease.title
+                        contentDescription = component.newRelease.title,
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         text = strings.view
                     )
@@ -67,8 +76,10 @@ fun NewReleaseDialog(component: NewReleaseComponent) {
                 ) {
                     Icon(
                         imageVector = Icons.Default.Clear,
-                        contentDescription = LocalStringRes.current.close
+                        contentDescription = LocalStringRes.current.close,
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         text = LocalStringRes.current.close
                     )

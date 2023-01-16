@@ -1,7 +1,9 @@
 package dev.datlag.burningseries.ui.dialog.nostream
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
@@ -10,6 +12,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.ui.custom.DialogSurface
@@ -27,22 +30,31 @@ fun NoStreamDialog(component: NoStreamComponent) {
                 Text(
                     text = LocalStringRes.current.noStreamingSourceHeader,
                     style = MaterialTheme.typography.headlineMedium,
-                    maxLines = 2
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    softWrap = true
                 )
             },
             text = {
                 Text(
-                    text = LocalStringRes.current.noStreamingSourceText
+                    text = LocalStringRes.current.noStreamingSourceText,
+                    overflow = TextOverflow.Ellipsis,
+                    softWrap = true
                 )
             },
             confirmButton = {
-                TextButton(onClick = {
-                    component.onConfirmActivate()
-                }, modifier = Modifier.padding(bottom = 8.dp)) {
+                TextButton(
+                    onClick = {
+                        component.onConfirmActivate()
+                    },
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         text = LocalStringRes.current.activate
                     )
@@ -58,8 +70,10 @@ fun NoStreamDialog(component: NoStreamComponent) {
                 ) {
                     Icon(
                         imageVector = Icons.Default.Clear,
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         text = LocalStringRes.current.close
                     )

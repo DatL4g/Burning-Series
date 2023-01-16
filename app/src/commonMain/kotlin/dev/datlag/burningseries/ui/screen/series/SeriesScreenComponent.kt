@@ -19,6 +19,7 @@ import dev.datlag.burningseries.network.repository.EpisodeRepository
 import dev.datlag.burningseries.network.repository.SeriesRepository
 import dev.datlag.burningseries.other.DefaultValue
 import dev.datlag.burningseries.ui.dialog.DialogComponent
+import dev.datlag.burningseries.ui.dialog.activate.ActivateDialogComponent
 import dev.datlag.burningseries.ui.dialog.language.LanguageDialogComponent
 import dev.datlag.burningseries.ui.dialog.nostream.NoStreamDialogComponent
 import dev.datlag.burningseries.ui.dialog.season.SeasonDialogComponent
@@ -74,6 +75,13 @@ class SeriesScreenComponent(
                 onActivate = ::onActivate,
                 di = di
             )
+            is DialogConfig.Activate -> ActivateDialogComponent(
+                componentContext,
+                config.episode,
+                onDismissed = dialogNavigation::dismiss,
+                onActivate = ::onActivate,
+                di = di
+            ) as DialogComponent
         }
     }
     override val dialog: Value<ChildOverlay<DialogConfig, DialogComponent>> = _dialog

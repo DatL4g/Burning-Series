@@ -24,6 +24,7 @@ import dev.datlag.burningseries.ui.dialog.save.SaveResultComponent
 import dev.datlag.burningseries.ui.dialog.save.SaveResultDialog
 import kotlinx.coroutines.launch
 import androidx.compose.material.SnackbarDefaults
+import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
 fun ActivateScreen(component: ActivateComponent) {
@@ -75,7 +76,9 @@ fun ActivateScreen(component: ActivateComponent) {
                     Text(
                         text = component.series.title,
                         maxLines = 1,
-                        color = MaterialTheme.colorScheme.onTertiary
+                        color = MaterialTheme.colorScheme.onTertiary,
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = true
                     )
                 },
                 backgroundColor = MaterialTheme.colorScheme.tertiary,

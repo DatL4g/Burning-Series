@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
@@ -78,7 +79,9 @@ fun SettingsScreen(component: SettingsComponent) {
                         )
                         Text(
                             modifier = Modifier.weight(1F).padding(16.dp),
-                            text = item.name
+                            text = item.name,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = true
                         )
                         if (index > 0) {
                             IconButton(onClick = {

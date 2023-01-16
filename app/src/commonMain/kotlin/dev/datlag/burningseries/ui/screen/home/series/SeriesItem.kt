@@ -84,6 +84,7 @@ fun SeriesItem(
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            softWrap = true,
             modifier = Modifier.cardItemSize().padding(8.dp)
         )
     }

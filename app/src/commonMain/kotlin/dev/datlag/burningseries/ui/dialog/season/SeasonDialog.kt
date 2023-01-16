@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.ui.custom.DialogSurface
@@ -35,7 +36,9 @@ fun SeasonDialog(component: SeasonComponent) {
                     Text(
                         text = LocalStringRes.current.selectSeason,
                         style = MaterialTheme.typography.headlineMedium,
-                        maxLines = 2
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = true
                     )
                 },
                 text = {
@@ -60,7 +63,9 @@ fun SeasonDialog(component: SeasonComponent) {
                                     onClick = null
                                 )
                                 Text(
-                                    text = it.title
+                                    text = it.title,
+                                    overflow = TextOverflow.Ellipsis,
+                                    softWrap = true
                                 )
                             }
                         }
@@ -75,12 +80,14 @@ fun SeasonDialog(component: SeasonComponent) {
                                 component.onDismissClicked()
                             }
                         },
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(bottom = 8.dp),
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
+                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                         Text(text = LocalStringRes.current.confirm)
                     }
                 },
@@ -94,8 +101,10 @@ fun SeasonDialog(component: SeasonComponent) {
                     ) {
                         Icon(
                             imageVector = Icons.Default.Clear,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
+                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                         Text(text = LocalStringRes.current.close)
                     }
                 }

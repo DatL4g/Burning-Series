@@ -1,12 +1,12 @@
-package dev.datlag.burningseries.ui.dialog.save
+package dev.datlag.burningseries.ui.dialog.activate
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,23 +14,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
-import dev.datlag.burningseries.common.trimHref
+import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.ui.custom.DialogSurface
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SaveResultDialog(component: SaveResultComponent) {
+fun ActivateDialog(component: ActivateComponent) {
     val strings = LocalStringRes.current
 
     DialogSurface {
         AlertDialog(
-            modifier = Modifier.defaultMinSize(minWidth = 400.dp),
             onDismissRequest = {
                 component.onDismissClicked()
             },
             title = {
                 Text(
-                    text = if (component.success) strings.saveSuccessHeader else strings.saveErrorHeader,
+                    text = component.episode.title,
                     style = MaterialTheme.typography.headlineMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -39,7 +38,7 @@ fun SaveResultDialog(component: SaveResultComponent) {
             },
             text = {
                 Text(
-                    text = if (component.success) strings.saveSuccess else strings.saveError,
+                    text = strings.activateText,
                     overflow = TextOverflow.Ellipsis,
                     softWrap = true
                 )
@@ -52,58 +51,50 @@ fun SaveResultDialog(component: SaveResultComponent) {
                 ) {
                     TextButton(
                         onClick = {
-                            component.watchClicked(component.stream!!)
-                        },
-                        enabled = component.stream != null && (component.series.episodes.any {
-                            it.href.trimHref().equals(component.scrapedEpisodeHref.trimHref(), true) || it.hoster.any { hoster ->
-                                hoster.href.trimHref().equals(component.scrapedEpisodeHref.trimHref(), true)
-                            }
-                        } || (component.episode.href.trimHref().equals(component.scrapedEpisodeHref.trimHref(), true) || component.episode.hoster.any { hoster ->
-                            hoster.href.trimHref().equals(component.scrapedEpisodeHref.trimHref(), true)
-                        }))
+                            strings.openInBrowser(Constants.getBurningSeriesUrl(component.episode.href))
+                            component.onDismissClicked()
+                        }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = LocalStringRes.current.watch,
+                            imageVector = Icons.Default.Public,
+                            contentDescription = strings.browser,
                             modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
                         Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                         Text(
-                            text = LocalStringRes.current.watch
+                            text = strings.browser
                         )
                     }
-                    Spacer(
-                        modifier = Modifier.weight(1F)
-                    )
-                    TextButton(
-                        onClick = {
-                            component.backClicked()
-                        },
-                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = LocalStringRes.current.back,
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(
-                            text = LocalStringRes.current.back
-                        )
-                    }
+                    Spacer(modifier = Modifier.weight(1F))
                     TextButton(
                         onClick = {
                             component.onDismissClicked()
                         },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = LocalStringRes.current.`continue`,
+                            imageVector = Icons.Default.Close,
+                            contentDescription = strings.close,
                             modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
                         Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                         Text(
-                            text = LocalStringRes.current.`continue`
+                            text = strings.close
+                        )
+                    }
+                    TextButton(
+                        onClick = {
+                            component.onConfirmActivate()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = strings.activate,
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(
+                            text = strings.activate
                         )
                     }
                 }

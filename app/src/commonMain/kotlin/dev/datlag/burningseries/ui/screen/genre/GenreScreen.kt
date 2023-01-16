@@ -44,6 +44,7 @@ import dev.datlag.burningseries.ui.screen.home.LocalFabGroupRequester
 import dev.datlag.burningseries.ui.Shape
 import dev.datlag.burningseries.ui.custom.snackbarHandlerForStatus
 import androidx.compose.material.SnackbarDefaults
+import androidx.compose.ui.text.style.TextOverflow
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -156,7 +157,9 @@ fun GenreScreen(component: GenreComponent) {
                                 left = previousFab
                                 right = nextFab
                             },
-                            text = item.title
+                            text = item.title,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = true
                         )
                     }
                 }
@@ -169,7 +172,9 @@ fun GenreScreen(component: GenreComponent) {
                             left = previousFab
                             right = nextFab
                         },
-                        text = item.title
+                        text = item.title,
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = true
                     )
                 }
             }
