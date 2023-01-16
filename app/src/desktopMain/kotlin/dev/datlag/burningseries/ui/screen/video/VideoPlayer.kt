@@ -51,7 +51,7 @@ fun VideoPlayer(
         val videoStreams by component.videoStreams.collectAsState(component.videoStreams.value)
         val initialPos by component.initialPosition.collectAsState(component.initialPosition.getValueBlocking(0))
         var streamListPos by remember(videoStreams) { mutableStateOf(0) }
-        var srcListPos by remember(videoStreams) { mutableStateOf(0) }
+        var srcListPos by remember(streamListPos) { mutableStateOf(0) }
 
         SideEffect {
             mediaPlayerComponent.mediaPlayer()?.media()?.play(videoStreams[streamListPos].srcList[srcListPos])

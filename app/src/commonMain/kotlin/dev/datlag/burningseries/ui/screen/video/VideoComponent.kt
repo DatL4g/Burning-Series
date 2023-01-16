@@ -7,12 +7,13 @@ import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.ui.navigation.Component
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 interface VideoComponent : Component {
 
     val series: Series
-    val episode: MutableStateFlow<Series.Episode>
-    val videoStreams: MutableStateFlow<List<VideoStream>>
+    val episode: StateFlow<Series.Episode>
+    val videoStreams: StateFlow<List<VideoStream>>
     val onGoBack: () -> Unit
 
     var playListener: (() -> Unit)?

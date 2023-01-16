@@ -44,8 +44,8 @@ class VideoScreenComponent(
     private val imageDir: File by di.instance("ImageDir")
     private val episodeRepo: EpisodeRepository by di.instance()
 
-    override val episode: MutableStateFlow<Series.Episode> = MutableStateFlow(initialEpisode)
-    override val videoStreams: MutableStateFlow<List<VideoStream>> = MutableStateFlow(initialVideoStreams)
+    override val episode = MutableStateFlow(initialEpisode)
+    override val videoStreams = MutableStateFlow(initialVideoStreams)
 
     private val dbEpisode = episode.transformLatest { episode ->
         return@transformLatest emitAll(db.burningSeriesQueries.selectEpisodeByHref(
@@ -198,10 +198,9 @@ class VideoScreenComponent(
 
     override fun playNextEpisode() {
         scope.launch(Dispatchers.IO) {
-            if (nextEpisode != null) {
-                videoStreams.emit(nextEpisode!!.second)
-                episode.emit(nextEpisode!!.first)
-
+            nextEpisode?.let { (episode, streams) ->
+                videoStreams.emit(streams)
+                this@VideoScreenComponent.episode.emit(episode)
                 loadingNextEpisode = false
 
                 withContext(CommonDispatcher.Main) {
