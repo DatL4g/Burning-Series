@@ -39,7 +39,7 @@ fun SeriesItem(content: Home.Series, component: SeriesItemComponent) {
 
 @Composable
 fun SeriesItem(content: DBSeries, component: SeriesItemComponent) {
-    val base64 = remember { File(component.imageDir, content.coverFileName()).readText() }
+    val base64 = remember(content.hrefTitle) { File(component.imageDir, content.coverFileName()).readText() }
 
     SeriesItem(
         content.href,

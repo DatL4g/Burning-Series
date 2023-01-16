@@ -166,7 +166,7 @@ fun HomeScreen(component: HomeComponent) {
                     }) {
                         Icon(
                             imageVector = Icons.Default.Favorite,
-                            contentDescription = null
+                            contentDescription = LocalStringRes.current.favorites
                         )
                     }
                 }
@@ -175,7 +175,7 @@ fun HomeScreen(component: HomeComponent) {
                 }) {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = null
+                        contentDescription = LocalStringRes.current.search
                     )
                 }
             }
