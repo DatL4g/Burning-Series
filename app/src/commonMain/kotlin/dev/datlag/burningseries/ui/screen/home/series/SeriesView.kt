@@ -36,7 +36,7 @@ fun SeriesView(component: SeriesComponent) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            items(favorites) {
+            items(favorites, key = { it.href }) {
                 SeriesItem(it, component)
             }
             item {
@@ -44,7 +44,7 @@ fun SeriesView(component: SeriesComponent) {
                     Spacer(modifier = Modifier.width(32.dp))
                 }
             }
-            items(series) {
+            items(series, key = { it.href }) {
                 SeriesItem(it, component)
             }
         }
@@ -62,7 +62,7 @@ fun SeriesView(component: SeriesComponent) {
                         fontWeight = FontWeight.Bold
                     )
                 }
-                items(favorites) {
+                items(favorites, key = { it.href }) {
                     SeriesItem(it, component)
                 }
             }
@@ -72,7 +72,7 @@ fun SeriesView(component: SeriesComponent) {
                     fontWeight = FontWeight.Bold
                 )
             }
-            items(series) {
+            items(series, key = { it.href }) {
                 SeriesItem(it, component)
             }
         }

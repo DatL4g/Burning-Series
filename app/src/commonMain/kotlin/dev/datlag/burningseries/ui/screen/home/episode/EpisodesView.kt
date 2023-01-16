@@ -33,7 +33,7 @@ fun EpisodesView(component: EpisodesComponent) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            items(lastWatched) {
+            items(lastWatched, key = { it.href }) {
                 EpisodeItem(it, component)
             }
             item {
@@ -41,7 +41,7 @@ fun EpisodesView(component: EpisodesComponent) {
                     Spacer(modifier = Modifier.width(32.dp))
                 }
             }
-            items(episodes) {
+            items(episodes, key = { it.href }) {
                 EpisodeItem(it, component)
             }
         }
@@ -59,7 +59,7 @@ fun EpisodesView(component: EpisodesComponent) {
                         fontWeight = FontWeight.Bold
                     )
                 }
-                items(lastWatched) {
+                items(lastWatched, key = { it.href }) {
                     EpisodeItem(it, component)
                 }
             }
@@ -69,7 +69,7 @@ fun EpisodesView(component: EpisodesComponent) {
                     fontWeight = FontWeight.Bold
                 )
             }
-            items(episodes) {
+            items(episodes, key = { it.href }) {
                 EpisodeItem(it, component)
             }
         }
