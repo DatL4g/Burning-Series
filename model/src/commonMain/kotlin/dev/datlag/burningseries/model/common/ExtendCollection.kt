@@ -1,5 +1,7 @@
 package dev.datlag.burningseries.model.common
 
+import kotlin.collections.contains as defaultContains
+
 fun <T> Collection<T>.maxSize(size: Int): List<T> {
     return this.toList().subList(0, if (this.size < size) this.size else size)
 }
@@ -29,6 +31,6 @@ fun Collection<String>.contains(element: String?, ignoreCase: Boolean = false): 
     return if (ignoreCase) {
         this.any { it.equals(element, true) }
     } else {
-        this.contains(element)
+        this.defaultContains(element)
     }
 }

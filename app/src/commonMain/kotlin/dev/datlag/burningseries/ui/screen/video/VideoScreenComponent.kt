@@ -64,7 +64,47 @@ class VideoScreenComponent(
 
     private var loadingNextEpisode = false
     private var nextEpisode: Pair<Series.Episode, List<VideoStream>>? = null
-    private var loopEpisode = episode.value
+
+    private val episodeSaveFlow = episode.transformLatest { episode ->
+        val seriesHref = series.href.buildTitleHref()
+        val episodeHref = episode.href.trimHref()
+
+        return@transformLatest emit(db.burningSeriesQueries.insertEpisodeOrIgnore(
+            episodeHref,
+            episode.title,
+            max(initialLength.first(), if (episode.watched == true) Long.MAX_VALUE else 0L),
+            max(initialPosition.first(), if (episode.watched == true) Long.MAX_VALUE else 0L),
+            Clock.System.now().epochSeconds,
+            episode.watchHref,
+            seriesHref
+        ))
+    }.flowOn(Dispatchers.IO)
+
+
+    private val progressSaveFlow = combine(episode, position.toFlow().debounce(3000), length.toFlow().debounce(3000)) { episode, pos, length ->
+        val episodeHref = episode.href.trimHref()
+
+        if (pos >= 3000) {
+            db.burningSeriesQueries.updateEpisodeWatchProgress(
+                pos,
+                episodeHref
+            )
+        }
+        if (pos > 0 && length > 0 && pos >= length / 2) {
+            loadNextEpisode(episode)
+        }
+        if (length > 0) {
+            db.burningSeriesQueries.updateEpisodeLength(
+                length,
+                episodeHref
+            )
+        }
+
+        db.burningSeriesQueries.updateEpisodeLastWatched(
+            Clock.System.now().epochSeconds,
+            episodeHref
+        )
+    }.flowOn(Dispatchers.IO)
 
     override fun forward() {
         forwardListener?.invoke()
@@ -83,74 +123,34 @@ class VideoScreenComponent(
     }
 
     init {
+        val seriesHref = series.href.buildTitleHref()
+
         scope.launch(Dispatchers.IO) {
-            episode.collect {
-                loopEpisode = it
-                loadingNextEpisode = false
-                val episodeHref = it.href.trimHref()
-                val seriesHref = series.href.buildTitleHref()
-                var addedLength = false
-                val coverFile = File(imageDir, "${seriesHref.fileName()}.bs")
+            val coverFile = File(imageDir, "${seriesHref.fileName()}.bs")
 
-                if (!coverFile.exists()) {
-                    val coverBase64 = series.cover.base64
+            if (!coverFile.exists()) {
+                val coverBase64 = series.cover.base64
 
-                    if (coverBase64.isNotEmpty()) {
-                        try {
-                            coverFile.writeText(coverBase64)
-                        } catch (ignored: Throwable) { }
-                    }
-                }
-
-                db.burningSeriesQueries.insertSeriesIfNotExists(
-                    seriesHref,
-                    series.href,
-                    series.title,
-                    series.cover.href,
-                    0L
-                )
-
-                db.burningSeriesQueries.insertEpisode(
-                    episodeHref,
-                    it.title,
-                    max(initialLength.first(), if (it.watched == true) Long.MAX_VALUE else 0L),
-                    max(initialPosition.first(), if (it.watched == true) Long.MAX_VALUE else 0L),
-                    Clock.System.now().epochSeconds,
-                    it.watchHref,
-                    seriesHref
-                )
-
-                while (this.isActive && it == loopEpisode) {
-                    val pos = withContext(CommonDispatcher.Main) {
-                        position.value
-                    }
-                    val length = withContext(CommonDispatcher.Main) {
-                        length.value
-                    }
-
-                    if (pos >= 3000) {
-                        db.burningSeriesQueries.updateEpisodeWatchProgress(
-                            pos,
-                            episodeHref
-                        )
-                    }
-                    if (pos > 0 && length > 0 && pos >= length / 2) {
-                        loadNextEpisode(it)
-                    }
-                    if (length > 0 && !addedLength) {
-                        db.burningSeriesQueries.updateEpisodeLength(
-                            length,
-                            episodeHref
-                        )
-                        addedLength = true
-                    }
-                    db.burningSeriesQueries.updateEpisodeLastWatched(
-                        Clock.System.now().epochSeconds,
-                        episodeHref
-                    )
-                    delay(3000)
+                if (coverBase64.isNotEmpty()) {
+                    try {
+                        coverFile.writeText(coverBase64)
+                    } catch (ignored: Throwable) { }
                 }
             }
+
+            db.burningSeriesQueries.insertSeriesIfNotExists(
+                seriesHref,
+                series.href,
+                series.title,
+                series.cover.href,
+                0L
+            )
+        }
+        scope.launch(Dispatchers.IO) {
+            episodeSaveFlow.collect()
+        }
+        scope.launch(Dispatchers.IO) {
+            progressSaveFlow.collect()
         }
     }
 
@@ -199,9 +199,11 @@ class VideoScreenComponent(
     override fun playNextEpisode() {
         scope.launch(Dispatchers.IO) {
             if (nextEpisode != null) {
-                episode.emit(nextEpisode!!.first)
                 videoStreams.emit(nextEpisode!!.second)
+                episode.emit(nextEpisode!!.first)
+
                 loadingNextEpisode = false
+
                 withContext(CommonDispatcher.Main) {
                     playListener?.invoke()
                 }

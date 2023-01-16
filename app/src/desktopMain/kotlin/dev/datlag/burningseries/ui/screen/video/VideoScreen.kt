@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.ui.screen.video
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
@@ -45,9 +46,9 @@ actual fun VideoScreen(component: VideoComponent) {
             )
         }
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.weight(1F)) {
-                Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+            Box(modifier = Modifier.weight(1F).background(Color.Black)) {
+                Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
                     VideoPlayer(
                         component = component
                     )
