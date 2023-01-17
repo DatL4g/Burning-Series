@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.network.repository
 
 import com.hadiyarajesh.flower_core.Resource
+import com.hadiyarajesh.flower_core.dbBoundResource
 import com.hadiyarajesh.flower_core.networkResource
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.model.Genre
@@ -16,8 +17,13 @@ class GenreRepository(
     private val api: BurningSeries
 ) {
 
-    private val all: Flow<Resource<List<Genre>>> = networkResource(
-        makeNetworkRequest = { api.all() }
+    val allState: MutableStateFlow<List<Genre>> = MutableStateFlow(emptyList())
+
+    private val all: Flow<Resource<List<Genre>>> = dbBoundResource(
+        makeNetworkRequest = { api.all() },
+        fetchFromLocal = { allState },
+        shouldMakeNetworkRequest = { it.isNullOrEmpty() },
+        saveResponseData = { allState.emit(it) }
     ).flowOn(Dispatchers.IO).stateIn(GlobalScope, SharingStarted.Lazily, Resource.loading())
 
     private val _status = all.transform {

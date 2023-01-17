@@ -166,7 +166,17 @@ class SeriesScreenComponent(
     override val hosterSorted: Flow<Boolean> = db.burningSeriesQueries.hostersSorted().asFlow().mapToOneOrDefault(false, Dispatchers.IO)
     private val hosterList = db.burningSeriesQueries.selectAllHosters().asFlow().mapToList(Dispatchers.IO)
 
+    private val seriesStateFlow: MutableStateFlow<Series?> = seriesRepo.seriesState
+
     init {
+        stateKeeper.consume<Series>(key = SERIES_STATE)?.let {
+            seriesStateFlow.safeEmit(it, scope)
+        }
+
+        stateKeeper.register(key = SERIES_STATE) {
+            seriesStateFlow.value
+        }
+
         scope.launch(Dispatchers.IO) {
             seriesRepo.loadFromHref(href)
         }
@@ -300,6 +310,7 @@ class SeriesScreenComponent(
     private data class State(val loadedEpisode: Boolean = false) : Parcelable
 
     companion object {
+        private const val SERIES_STATE = "SERIES_STATE"
         private const val STATE_KEY = "STATE_KEY"
     }
 }

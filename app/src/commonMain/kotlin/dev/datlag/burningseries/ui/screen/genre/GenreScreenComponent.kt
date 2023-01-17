@@ -4,11 +4,15 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
+import com.arkivanov.essenty.statekeeper.consume
 import dev.datlag.burningseries.common.coroutineScope
 import dev.datlag.burningseries.network.repository.GenreRepository
 import org.kodein.di.DI
 import org.kodein.di.instance
 import dev.datlag.burningseries.common.CommonDispatcher
+import dev.datlag.burningseries.common.safeEmit
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.ui.custom.SearchAppBarState
@@ -37,6 +41,18 @@ class GenreScreenComponent(
     private var searchJob: Job? = null
     override val searchItems: Flow<List<Genre.Item>> = genreRepo.searchItems
     override val status = genreRepo.status
+
+    private val genreState = genreRepo.allState
+
+    init {
+        stateKeeper.consume<STATE>(key = GENRE_STATE)?.let {
+            genreState.safeEmit(it.genres, scope)
+        }
+
+        stateKeeper.register(key = GENRE_STATE) {
+            STATE(genreState.value)
+        }
+    }
 
     override fun nextGenre() {
         scope.launch(Dispatchers.IO) {
@@ -68,5 +84,14 @@ class GenreScreenComponent(
     @Composable
     override fun render() {
         GenreScreen(this)
+    }
+
+    @Parcelize
+    private data class STATE(
+        val genres: List<Genre>
+    ) : Parcelable
+
+    companion object {
+        private const val GENRE_STATE = "GENRE_STATE"
     }
 }

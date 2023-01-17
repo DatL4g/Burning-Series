@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.network.repository
 
 import com.hadiyarajesh.flower_core.Resource
+import com.hadiyarajesh.flower_core.dbBoundResource
 import com.hadiyarajesh.flower_core.networkResource
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.network.BurningSeries
@@ -14,12 +15,23 @@ import java.net.URLEncoder
 class SeriesRepository(
     private val api: BurningSeries
 ) {
+    val seriesState: MutableStateFlow<Series?> = MutableStateFlow(null)
+
     private val seriesHref: MutableStateFlow<String?> = MutableStateFlow(null)
-    private val _series: Flow<Resource<Series>> = seriesHref.debounce(500).transformLatest {
+    private val _series: Flow<Resource<Series?>> = seriesHref.transformLatest {
         if (it != null) {
-            return@transformLatest emitAll(networkResource(
+            return@transformLatest emitAll(dbBoundResource(
                 makeNetworkRequest = {
                     api.series(it)
+                },
+                fetchFromLocal = {
+                    seriesState
+                },
+                shouldMakeNetworkRequest = { series ->
+                    series == null
+                },
+                saveResponseData = { series ->
+                    seriesState.emit(series)
                 }
             ))
         }

@@ -1,19 +1,31 @@
 package dev.datlag.burningseries.network.repository
 
 import com.hadiyarajesh.flower_core.Resource
+import com.hadiyarajesh.flower_core.dbBoundResource
 import com.hadiyarajesh.flower_core.networkResource
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 
 class HomeRepository(
     private val api: BurningSeries
 ) {
-    private val home: Flow<Resource<Home>> = networkResource(
-        makeNetworkRequest = { api.home() }
+
+    val homeState: MutableStateFlow<Home> = MutableStateFlow(Home())
+
+    private val home: Flow<Resource<Home>> = dbBoundResource(
+        makeNetworkRequest = { api.home() },
+        fetchFromLocal = {
+            homeState
+        },
+        shouldMakeNetworkRequest = { it == null || (it.episodes.isEmpty() && it.series.isEmpty()) },
+        saveResponseData = {
+            homeState.emit(it)
+        },
     ).flowOn(Dispatchers.IO).stateIn(GlobalScope, SharingStarted.Lazily, Resource.loading())
 
     private val _status = home.transform {

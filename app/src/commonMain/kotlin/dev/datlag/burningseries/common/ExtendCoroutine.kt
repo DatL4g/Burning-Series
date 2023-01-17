@@ -64,3 +64,11 @@ fun <T : Any> Value<T>.toFlow(): Flow<T> = channelFlow {
         this@toFlow.unsubscribe(observer)
     }
 }
+
+fun <T> MutableStateFlow<T>.safeEmit(value: T, scope: CoroutineScope) {
+    if (!this.tryEmit(value)) {
+        scope.launch(Dispatchers.IO) {
+            this@safeEmit.emit(value)
+        }
+    }
+}

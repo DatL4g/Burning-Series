@@ -9,6 +9,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.observe
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.arkivanov.essenty.statekeeper.consume
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrDefault
 import dev.datlag.burningseries.common.coroutineScope
@@ -25,7 +26,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import org.kodein.di.DI
 import dev.datlag.burningseries.common.CommonDispatcher
+import dev.datlag.burningseries.common.safeEmit
+import dev.datlag.burningseries.model.Home
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -85,7 +90,17 @@ class HomeScreenComponent(
     override val status = homeRepo.status
     override val favoritesExists: Flow<Boolean> = db.burningSeriesQueries.favoritesExists().asFlow().mapToOneOrDefault(false)
 
+    private val homeStateFlow: MutableStateFlow<Home> = homeRepo.homeState
+
     init {
+        stateKeeper.consume<Home>(key = HOME_STATE)?.let {
+            homeStateFlow.safeEmit(it, scope)
+        }
+
+        stateKeeper.register(key = HOME_STATE) {
+            homeStateFlow.value
+        }
+
         childIndex.observe(lifecycle) {
             if (it == 0) {
                 navigation.replaceCurrent(View.Episode)
@@ -139,5 +154,9 @@ class HomeScreenComponent(
     sealed class View : Parcelable {
         object Episode : View()
         object Series : View()
+    }
+
+    companion object {
+        const val HOME_STATE = "HOME_STATE"
     }
 }
