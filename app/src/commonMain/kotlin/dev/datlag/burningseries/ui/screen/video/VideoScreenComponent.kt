@@ -64,6 +64,7 @@ class VideoScreenComponent(
 
     private var loadingNextEpisode = false
     private var nextEpisode: Pair<Series.Episode, List<VideoStream>>? = null
+    private var loopEpisode: Series.Episode = episode.value
 
     private val episodeSaveFlow = episode.transformLatest { episode ->
         val seriesHref = series.href.buildTitleHref()
@@ -78,32 +79,6 @@ class VideoScreenComponent(
             episode.watchHref,
             seriesHref
         ))
-    }.flowOn(Dispatchers.IO)
-
-
-    private val progressSaveFlow = combine(episode, position.toFlow().debounce(3000), length.toFlow().debounce(3000)) { episode, pos, length ->
-        val episodeHref = episode.href.trimHref()
-
-        if (pos >= 3000) {
-            db.burningSeriesQueries.updateEpisodeWatchProgress(
-                pos,
-                episodeHref
-            )
-        }
-        if (pos > 0 && length > 0 && pos >= length / 2) {
-            loadNextEpisode(episode)
-        }
-        if (length > 0) {
-            db.burningSeriesQueries.updateEpisodeLength(
-                length,
-                episodeHref
-            )
-        }
-
-        db.burningSeriesQueries.updateEpisodeLastWatched(
-            Clock.System.now().epochSeconds,
-            episodeHref
-        )
     }.flowOn(Dispatchers.IO)
 
     override fun forward() {
@@ -150,7 +125,42 @@ class VideoScreenComponent(
             episodeSaveFlow.collect()
         }
         scope.launch(Dispatchers.IO) {
-            progressSaveFlow.collect()
+            episode.collect {
+                val episodeHref = it.href.trimHref()
+                loopEpisode = it
+
+                while (this.isActive && loopEpisode == it) {
+                    val pos = withContext(CommonDispatcher.Main) {
+                        position.value
+                    }
+                    val length = withContext(CommonDispatcher.Main) {
+                        length.value
+                    }
+
+                    if (pos >= 3000) {
+                        db.burningSeriesQueries.updateEpisodeWatchProgress(
+                            pos,
+                            episodeHref
+                        )
+                    }
+                    if (pos > 0 && length > 0 && pos >= length / 2) {
+                        loadNextEpisode(it)
+                    }
+                    if (length > 0) {
+                        db.burningSeriesQueries.updateEpisodeLength(
+                            length,
+                            episodeHref
+                        )
+                    }
+
+                    db.burningSeriesQueries.updateEpisodeLastWatched(
+                        Clock.System.now().epochSeconds,
+                        episodeHref
+                    )
+
+                    delay(3000)
+                }
+            }
         }
     }
 
@@ -202,6 +212,8 @@ class VideoScreenComponent(
                 videoStreams.emit(streams)
                 this@VideoScreenComponent.episode.emit(episode)
                 loadingNextEpisode = false
+
+                delay(100)
 
                 withContext(CommonDispatcher.Main) {
                     playListener?.invoke()
