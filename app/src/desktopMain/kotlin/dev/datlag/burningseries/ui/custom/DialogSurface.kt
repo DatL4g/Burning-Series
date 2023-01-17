@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.SemiBlack
 
 @Composable
-actual fun DialogSurface(content: @Composable () -> Unit) {
+actual fun DialogSurface(modifier: Modifier, content: @Composable () -> Unit) {
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         color = Color.SemiBlack,
         elevation = 0.dp
     ) {

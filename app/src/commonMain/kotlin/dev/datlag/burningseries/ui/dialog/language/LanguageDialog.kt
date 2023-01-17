@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.ui.dialog.language
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +18,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.ui.custom.DialogSurface
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -27,7 +29,11 @@ fun LanguageDialog(component: LanguageComponent) {
         val currentSelectedLanguage = remember { component.languages.find { it.value.equals(component.selectedLanguage, true) } }
         var selectedItem by remember { mutableStateOf(currentSelectedLanguage) }
 
-        DialogSurface {
+        DialogSurface(
+            modifier = Modifier.onClick {
+                component.onDismissClicked()
+            }
+        ) {
             AlertDialog(
                 onDismissRequest = {
                     component.onDismissClicked()

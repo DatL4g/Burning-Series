@@ -18,6 +18,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.ui.custom.DialogSurface
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -26,7 +27,11 @@ fun SeasonDialog(component: SeasonComponent) {
     if (component.seasons.isNotEmpty()) {
         var selectedItem by remember { mutableStateOf(component.selectedSeason) }
 
-        DialogSurface {
+        DialogSurface(
+            modifier = Modifier.onClick {
+                component.onDismissClicked()
+            }
+        ) {
             AlertDialog(
                 modifier = Modifier.defaultMinSize(minWidth = 400.dp),
                 onDismissRequest = {

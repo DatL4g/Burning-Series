@@ -23,6 +23,7 @@ import java.io.File
 import kotlin.math.max
 import dev.datlag.burningseries.common.CommonDispatcher
 import kotlinx.coroutines.flow.*
+import dev.datlag.burningseries.other.Logger
 
 class VideoScreenComponent(
     componentContext: ComponentContext,
@@ -63,7 +64,9 @@ class VideoScreenComponent(
     override val length: MutableValue<Long> = MutableValue(initialLength.getValueBlocking(0))
 
     private var loadingNextEpisode = false
-    private var nextEpisode: Pair<Series.Episode, List<VideoStream>>? = null
+    private var loadingNextStream = false
+    private var nextEpisode: Series.Episode? = null
+    private var nextStream: List<VideoStream> = emptyList()
     private var loopEpisode: Series.Episode = episode.value
 
     private val episodeSaveFlow = episode.transformLatest { episode ->
@@ -145,6 +148,7 @@ class VideoScreenComponent(
                     }
                     if (pos > 0 && length > 0 && pos >= length / 2) {
                         loadNextEpisode(it)
+                        loadNextStream()
                     }
                     if (length > 0) {
                         db.burningSeriesQueries.updateEpisodeLength(
@@ -166,6 +170,7 @@ class VideoScreenComponent(
 
     private suspend fun loadNextEpisode(currentEpisode: Series.Episode) {
         if (!loadingNextEpisode) {
+            nextStream = emptyList()
             loadingNextEpisode = true
 
             fun fallbackNextEpisode(): Series.Episode? {
@@ -180,7 +185,7 @@ class VideoScreenComponent(
 
             val currentEpisodeNumber = currentEpisode.number.toIntOrNull() ?: currentEpisode.number.getDigitsOrNull()?.toIntOrNull() ?: currentEpisode.episodeNumberOrListNumber
 
-            val nextEpisode = if (currentEpisodeNumber != null) {
+            nextEpisode = if (currentEpisodeNumber != null) {
                 series.episodes.find {
                     val nextEpisodeNumber = it.number.toIntOrNull() ?: it.number.getDigitsOrNull()?.toIntOrNull() ?: it.episodeNumberOrListNumber
                     nextEpisodeNumber == currentEpisodeNumber + 1
@@ -189,34 +194,41 @@ class VideoScreenComponent(
                 null
             } ?: fallbackNextEpisode()
 
-            if (nextEpisode != null) {
-                episodeRepo.loadHosterStreams(nextEpisode)
-                val episodeData = episodeRepo.streams.first()
-                val hosterList = hosterList.first()
+            loadingNextStream = false
+        }
+    }
 
-                if (episodeData.isNotEmpty()) {
-                    val sortedList = episodeData.sortedBy { stream ->
-                        hosterList.find { it.name.equals(stream.hoster.hoster, true) }?.position ?: Int.MAX_VALUE
-                    }
-                    this.nextEpisode = nextEpisode to sortedList
+    private suspend fun loadNextStream() {
+        val episode = nextEpisode
+        if (!loadingNextStream && episode != null) {
+            loadingNextStream = true
+
+            episodeRepo.loadHosterStreams(episode)
+            val episodeData = episodeRepo.streams.first()
+            val hosterList = hosterList.first()
+
+            if (episodeData.isNotEmpty()) {
+                val sortedList = episodeData.sortedBy { stream ->
+                    hosterList.find { it.name.equals(stream.hoster.hoster, true) }?.position ?: Int.MAX_VALUE
                 }
+                nextStream = sortedList
             } else {
-                this.nextEpisode = null
+                loadingNextStream = false
             }
         }
     }
 
     override fun playNextEpisode() {
         scope.launch(Dispatchers.IO) {
-            nextEpisode?.let { (episode, streams) ->
-                videoStreams.emit(streams)
-                this@VideoScreenComponent.episode.emit(episode)
-                loadingNextEpisode = false
+            nextEpisode?.let { episode ->
+                if (nextStream.isNotEmpty()) {
+                    videoStreams.emit(nextStream)
+                    this@VideoScreenComponent.episode.emit(episode)
+                    loadingNextEpisode = false
 
-                delay(100)
-
-                withContext(CommonDispatcher.Main) {
-                    playListener?.invoke()
+                    withContext(CommonDispatcher.Main) {
+                        playListener?.invoke()
+                    }
                 }
             }
         }

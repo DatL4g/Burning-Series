@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.ui.custom.DialogSurface
 
@@ -23,7 +24,11 @@ import dev.datlag.burningseries.ui.custom.DialogSurface
 fun NewReleaseDialog(component: NewReleaseComponent) {
     val strings = LocalStringRes.current
 
-    DialogSurface {
+    DialogSurface(
+        modifier = Modifier.onClick {
+            component.onDismissClicked()
+        }
+    ) {
         AlertDialog(
             modifier = Modifier.defaultMinSize(minWidth = 400.dp),
             onDismissRequest = {
