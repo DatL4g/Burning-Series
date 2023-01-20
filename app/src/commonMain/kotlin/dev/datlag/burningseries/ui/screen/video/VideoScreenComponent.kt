@@ -203,6 +203,11 @@ class VideoScreenComponent(
         if (!loadingNextStream && episode != null) {
             loadingNextStream = true
 
+            if (episode.hoster.isEmpty()) {
+                nextStream = emptyList()
+                return
+            }
+
             episodeRepo.loadHosterStreams(episode)
             val episodeData = episodeRepo.streams.first()
             val hosterList = hosterList.first()
