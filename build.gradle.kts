@@ -1,5 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("multiplatform") version "1.8.0" apply false
@@ -52,6 +53,10 @@ tasks.withType<DependencyUpdatesTask> {
     rejectVersionIf {
         isNonStable(candidate.version) && !isNonStable(currentVersion)
     }
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "11"
 }
 
 fun isNonStable(version: String): Boolean {
