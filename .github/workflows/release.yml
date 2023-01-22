@@ -46,6 +46,17 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           ./gradlew app:packageAppImage
+          mkdir -p ./build/release/main/image/Burning-Series/usr
+          curl --request GET --url https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage --location --output ./build/release/main/image/appimagetool.AppImage
+          curl --request GET --url https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-x86_64 --location --output ./build/release/main/image/Burning-Series/AppRun
+          chmod +x ./build/release/main/image/appimagetool.AppImage
+          chmod +x ./build/release/main/image/Burning-Series/AppRun
+          cp ./app/thirdParty/Burning-Series.desktop ./build/release/main/image/Burning-Series/
+          cp ./build/release/main/app/Burning-Series/lib/Burning-Series.png ./build/release/main/image/Burning-Series/
+          cp -r ./build/release/main/app/Burning-Series/bin ./build/release/main/image/Burning-Series/usr/
+          mv ./build/release/main/image/Burning-Series/usr/bin/Burning-Series ./build/release/main/image/Burning-Series/usr/bin/burningseries
+          cp -r ./build/release/main/app/Burning-Series/lib ./build/release/main/image/Burning-Series/usr/
+          ./build/release/main/image/appimagetool.AppImage ./build/release/main/image/Burning-Series ./build/release/main/image/Burning-Series-${{  github.ref_name }}-x86_64.AppImage
           tar cJf ./build/release/main/app/Burning-Series.tar.xz ./build/release/main/app/Burning-Series
 
       - name: Create package on Windows
@@ -62,7 +73,7 @@ jobs:
         with:
           files: |
             ./build/release/main/app/Burning-Series.tar.xz
-            ./build/release/main/image/Burning-Series.AppImage
+            ./build/release/main/image/Burning-Series-${{  github.ref_name }}-x86_64.AppImage
             ./build/release/main/deb/*.deb
             ./build/release/main/rpm/*.rpm
             ./build/release/main/dmg/*.dmg
