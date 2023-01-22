@@ -54,7 +54,6 @@ jobs:
           cp ./app/thirdParty/Burning-Series.desktop ./build/release/main/image/Burning-Series/
           cp ./build/release/main/app/Burning-Series/lib/Burning-Series.png ./build/release/main/image/Burning-Series/
           cp -r ./build/release/main/app/Burning-Series/bin ./build/release/main/image/Burning-Series/usr/
-          mv ./build/release/main/image/Burning-Series/usr/bin/Burning-Series ./build/release/main/image/Burning-Series/usr/bin/burningseries
           cp -r ./build/release/main/app/Burning-Series/lib ./build/release/main/image/Burning-Series/usr/
           ./build/release/main/image/appimagetool.AppImage ./build/release/main/image/Burning-Series ./build/release/main/image/Burning-Series-${{  github.ref_name }}-x86_64.AppImage
           tar cJf ./build/release/main/app/Burning-Series.tar.xz ./build/release/main/app/Burning-Series

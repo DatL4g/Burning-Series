@@ -2,7 +2,7 @@
 Type=Application
 Name=Burning-Series
 Comment=Watch any series from Burning-Series using this app. This is an unofficial Burning-Series App
-Exec=burningseries
+Exec=Burning-Series
 Icon=Burning-Series
 Terminal=false
 Categories=Video;AudioVideo;
