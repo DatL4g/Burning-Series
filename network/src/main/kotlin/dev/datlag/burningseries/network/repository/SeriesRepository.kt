@@ -4,6 +4,7 @@ import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.dbBoundResource
 import com.hadiyarajesh.flower_core.networkResource
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.common.trimHref
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.Status
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,7 @@ class SeriesRepository(
                     seriesState
                 },
                 shouldMakeNetworkRequest = { series ->
-                    series == null
+                    series == null || !series.href.trimHref().equals(it.trimHref(), true)
                 },
                 saveResponseData = { series ->
                     seriesState.emit(series)

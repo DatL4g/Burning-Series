@@ -9,6 +9,7 @@ import com.arkivanov.essenty.parcelable.Parcelize
 import com.arkivanov.essenty.statekeeper.consume
 import com.squareup.sqldelight.runtime.coroutines.*
 import dev.datlag.burningseries.common.*
+import dev.datlag.burningseries.model.common.trimHref
 import dev.datlag.burningseries.database.BurningSeriesDB
 import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
@@ -169,17 +170,19 @@ class SeriesScreenComponent(
     private val seriesStateFlow: MutableStateFlow<Series?> = seriesRepo.seriesState
 
     init {
-        stateKeeper.consume<Series>(key = SERIES_STATE)?.let {
+        val seriesHref = stateKeeper.consume<Series>(key = SERIES_STATE)?.let {
             seriesStateFlow.safeEmit(it, scope)
-        }
+            it.href
+        } ?: href
 
         stateKeeper.register(key = SERIES_STATE) {
             seriesStateFlow.value
         }
 
         scope.launch(Dispatchers.IO) {
-            seriesRepo.loadFromHref(href)
+            seriesRepo.loadFromHref(seriesHref)
         }
+
         if (isEpisode) {
             if (continueWatching) {
                 scope.launch(Dispatchers.IO) {

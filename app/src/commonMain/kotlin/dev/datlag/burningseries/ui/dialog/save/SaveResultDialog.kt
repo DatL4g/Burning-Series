@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.onClick
-import dev.datlag.burningseries.common.trimHref
+import dev.datlag.burningseries.model.common.trimHref
 import dev.datlag.burningseries.ui.custom.DialogSurface
 import dev.datlag.burningseries.ui.custom.FlowAlertDialog
 

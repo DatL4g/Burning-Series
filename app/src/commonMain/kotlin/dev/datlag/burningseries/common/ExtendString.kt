@@ -1,5 +1,7 @@
 package dev.datlag.burningseries.common
 
+import dev.datlag.burningseries.model.common.trimHref
+
 
 fun String.safeDecodeBase64(): ByteArray? = runCatching {
     val decoded = this.decodeBase64()
@@ -9,17 +11,6 @@ fun String.safeDecodeBase64(): ByteArray? = runCatching {
         decoded
     }
 }.getOrNull()
-
-fun String.trimHref(): String {
-    var href = this.trim()
-    if(href.startsWith('/')) {
-        href = href.substring(1)
-    }
-    if(href.endsWith('/')) {
-        href = href.substring(0, href.length - 2)
-    }
-    return href.trim()
-}
 
 fun String.fileName(): String {
     return this.replace("[^a-zA-Z0-9-_\\.]".toRegex(), "_")

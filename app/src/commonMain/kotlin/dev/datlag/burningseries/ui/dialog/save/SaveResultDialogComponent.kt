@@ -1,7 +1,7 @@
 package dev.datlag.burningseries.ui.dialog.save
 
 import com.arkivanov.decompose.ComponentContext
-import dev.datlag.burningseries.common.trimHref
+import dev.datlag.burningseries.model.common.trimHref
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.VideoStream
 import org.kodein.di.DI

@@ -22,6 +22,7 @@ import org.kodein.di.instance
 import java.io.File
 import kotlin.math.max
 import dev.datlag.burningseries.common.CommonDispatcher
+import dev.datlag.burningseries.model.common.trimHref
 import kotlinx.coroutines.flow.*
 import dev.datlag.burningseries.other.Logger
 
