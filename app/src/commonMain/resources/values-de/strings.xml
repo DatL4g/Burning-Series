@@ -69,7 +69,7 @@
     <string name="save_success">Hoster erfolgreich gespeichert. Du kannst jetzt zurückgehen oder weiter surfen und weitere Hoster aktivieren :)</string>
     <string name="save_error">Hoster konnte nicht gespeichert werden. Versuche es doch einfach später nochmal.</string>
     <string name="download_now">Jetzt herunterladen</string>
-    <string name="loading_all">Lade alle Series und Genre...</string>
+    <string name="loading_all">Lade alle Serien und Genre...</string>
     <string name="loading_url">Lade URL, bitte warten...</string>
     <string name="activate_text">Willst du die Episode aktivieren oder im Browser öffnen?</string>
     <string name="browser">Browser</string>

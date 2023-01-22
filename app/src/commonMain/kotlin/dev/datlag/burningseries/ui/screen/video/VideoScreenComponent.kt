@@ -186,7 +186,7 @@ class VideoScreenComponent(
 
             val currentEpisodeNumber = currentEpisode.number.toIntOrNull() ?: currentEpisode.number.getDigitsOrNull()?.toIntOrNull() ?: currentEpisode.episodeNumberOrListNumber
 
-            nextEpisode = if (currentEpisodeNumber != null) {
+            val foundEpisode = if (currentEpisodeNumber != null) {
                 series.episodes.find {
                     val nextEpisodeNumber = it.number.toIntOrNull() ?: it.number.getDigitsOrNull()?.toIntOrNull() ?: it.episodeNumberOrListNumber
                     nextEpisodeNumber == currentEpisodeNumber + 1
@@ -194,6 +194,12 @@ class VideoScreenComponent(
             } else {
                 null
             } ?: fallbackNextEpisode()
+
+            nextEpisode = if (foundEpisode?.hoster.isNullOrEmpty()) {
+                null
+            } else {
+                foundEpisode
+            }
 
             loadingNextStream = false
         }

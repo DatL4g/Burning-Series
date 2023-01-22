@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -237,12 +238,13 @@ private fun LazyListScope.SeriesScreenContent(
     }
 
     items(episodes) { episode ->
+        val isEnabled = remember { episode.hoster.isNotEmpty() }
         Row(
-            modifier = Modifier.fillMaxWidth().onClick(onLongClick = {
+            modifier = Modifier.fillMaxWidth().onClick(enabled = isEnabled, onLongClick = {
                 component.showDialog(DialogConfig.Activate(episode))
             }) {
                 component.loadEpisode(episode)
-            }.padding(16.dp),
+            }.padding(16.dp).alpha(if (isEnabled) 0.5F else 1F),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

@@ -157,7 +157,7 @@ class SeriesScreenComponent(
                 continueEpisode = list[finishedIndex + 1]
             }
         }
-        if (continueEpisode?.isFinished == true) {
+        if (continueEpisode?.isFinished == true || continueEpisode?.hoster.isNullOrEmpty()) {
             null
         } else {
             continueEpisode
