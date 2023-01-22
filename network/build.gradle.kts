@@ -2,12 +2,13 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
+    id("de.jensklingenberg.ktorfit")
 }
 
 group = "dev.datlag.burningseries.network"
 
 val flower = "3.0.0"
-val ktorfit = "1.0.0-beta16"
+val ktorfit = "1.0.0-beta17"
 val jsunpacker = "1.0.1"
 val jsoup = "1.15.3"
 

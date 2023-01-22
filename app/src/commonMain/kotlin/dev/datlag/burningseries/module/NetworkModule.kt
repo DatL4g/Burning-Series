@@ -6,9 +6,9 @@ import de.jensklingenberg.ktorfit.ktorfitBuilder
 import dev.datlag.burningseries.common.cookieMap
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.datastore.preferences.UserSettings
+import dev.datlag.burningseries.network.BurningSeries
+import dev.datlag.burningseries.network.GitHub
 import dev.datlag.burningseries.network.converter.FlowerResponseConverter
-import dev.datlag.burningseries.network.createBurningSeries
-import dev.datlag.burningseries.network.createGitHub
 import dev.datlag.burningseries.network.repository.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.engine.okhttp.OkHttp
@@ -129,11 +129,11 @@ object NetworkModule {
         }
         bindSingleton {
             val bsKtor: Ktorfit = instance(TAG_KTORFIT_BURNINGSERIES)
-            bsKtor.createBurningSeries()
+            bsKtor.create<BurningSeries>()
         }
         bindSingleton {
             val githubKtor: Ktorfit = instance(TAG_KTORFIT_GITHUB)
-            githubKtor.createGitHub()
+            githubKtor.create<GitHub>()
         }
         bindSingleton {
             HomeRepository(instance())

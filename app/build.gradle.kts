@@ -7,6 +7,7 @@ plugins {
     id("com.android.application")
     id("kotlin-parcelize") apply false
     id("com.mikepenz.aboutlibraries.plugin")
+    id("de.jensklingenberg.ktorfit")
 }
 
 val coroutines = "1.6.4"
@@ -138,7 +139,7 @@ aboutLibraries {
 
 compose {
     kotlinCompilerPlugin.set(dependencies.compiler.forKotlin("1.7.20"))
-    kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=1.7.22")
+    kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=1.8.0")
 
     desktop {
         application {

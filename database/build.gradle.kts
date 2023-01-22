@@ -13,19 +13,19 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("com.squareup.sqldelight:coroutines-extensions:1.5.4")
+                api("com.squareup.sqldelight:coroutines-extensions:1.5.5")
             }
         }
 
         val androidMain by getting {
             dependencies {
-                implementation("com.squareup.sqldelight:android-driver:1.5.4")
+                implementation("com.squareup.sqldelight:android-driver:1.5.5")
             }
         }
 
         val desktopMain by getting {
             dependencies {
-                implementation("com.squareup.sqldelight:sqlite-driver:1.5.4")
+                implementation("com.squareup.sqldelight:sqlite-driver:1.5.5")
             }
         }
     }
