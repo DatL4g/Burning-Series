@@ -277,7 +277,8 @@ private fun LazyListScope.SeriesScreenContent(
                         Text(
                             text = canonText.first().toString(),
                             color = canonColor,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                     Text(
@@ -300,7 +301,8 @@ private fun LazyListScope.SeriesScreenContent(
                         Text(
                             text = mixedText.first().toString(),
                             color = mixedColor,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                     Text(
@@ -323,7 +325,8 @@ private fun LazyListScope.SeriesScreenContent(
                         Text(
                             text = fillerText.first().toString(),
                             color = fillerColor,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                     Text(
@@ -394,7 +397,8 @@ private fun LazyListScope.SeriesScreenContent(
                     Text(
                         text = chipText,
                         color = color,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
