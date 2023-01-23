@@ -108,5 +108,9 @@ expect class StringRes {
     val activateText: String
     val browser: String
 
+    val canon: String
+    val filler: String
+    val mixed: String
+
     fun openInBrowser(url: String): Boolean
 }

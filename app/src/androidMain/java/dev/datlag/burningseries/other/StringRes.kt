@@ -233,6 +233,15 @@ actual class StringRes(private val context: Context) {
     actual val browser: String
         get() = context.getString(R.string.browser)
 
+    actual val canon: String
+        get() = context.getString(R.string.canon)
+
+    actual val filler: String
+        get() = context.getString(R.string.filler)
+
+    actual val mixed: String
+        get() = context.getString(R.string.mixed)
+
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
         if (runCatching {

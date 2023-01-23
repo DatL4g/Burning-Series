@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.ui.screen.series
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ChipColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,21 +21,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalOrientation
 import dev.datlag.burningseries.LocalStringRes
-import dev.datlag.burningseries.common.OnWarning
-import dev.datlag.burningseries.common.Warning
-import dev.datlag.burningseries.common.fillWidthInPortraitMode
+import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.other.Orientation
 import dev.datlag.burningseries.ui.custom.readmoretext.ReadMoreText
 import dev.datlag.burningseries.ui.screen.series.toolbar.LandscapeToolbar
 import dev.datlag.burningseries.ui.screen.series.toolbar.PortraitToolbar
-import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.model.common.maxSize
 import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.ui.Shape
@@ -80,6 +82,8 @@ fun SeriesScreen(component: SeriesComponent) {
     val continueEpisode by component.continueEpisode.collectAsState(null)
     val hosterSorted by component.hosterSorted.collectAsState(false)
 
+    val isPortrait = LocalOrientation.current is Orientation.PORTRAIT
+
     Box(modifier = Modifier.fillMaxSize()) {
         when (LocalOrientation.current) {
             is Orientation.PORTRAIT -> PortraitToolbar(
@@ -100,7 +104,8 @@ fun SeriesScreen(component: SeriesComponent) {
                     genres,
                     additionalInfo,
                     hosterSorted,
-                    episodes,
+                    isPortrait,
+                    episodes
                 )
             }
 
@@ -122,6 +127,7 @@ fun SeriesScreen(component: SeriesComponent) {
                     genres,
                     additionalInfo,
                     hosterSorted,
+                    isPortrait,
                     episodes
                 )
             }
@@ -173,11 +179,12 @@ private fun LazyListScope.SeriesScreenContent(
     genres: List<String>,
     additionalInfo: List<Series.Info>,
     hosterSorted: Boolean,
+    isPortrait: Boolean,
     episodes: List<Series.Episode>
 ) {
     item {
         ReadMoreText(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp),
             text = description ?: String(),
             expanded = false,
             readMoreText = LocalStringRes.current.readMore
@@ -186,7 +193,7 @@ private fun LazyListScope.SeriesScreenContent(
 
     item {
         ChipGroup(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp),
             horizontalSpace = 8.dp,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -202,7 +209,7 @@ private fun LazyListScope.SeriesScreenContent(
 
     items(additionalInfo) { info ->
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -222,7 +229,7 @@ private fun LazyListScope.SeriesScreenContent(
     if (!hosterSorted) {
         item {
             Box(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                modifier = Modifier.fillParentMaxWidth().padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 InfoCard(
@@ -237,14 +244,123 @@ private fun LazyListScope.SeriesScreenContent(
         }
     }
 
+    if (
+        isPortrait && episodes.any {
+            it.isCanon != null || it.isFiller != null
+        }
+    ) {
+        item {
+            Column(
+                modifier = Modifier.fillParentMaxWidth().padding(16.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                val strings = LocalStringRes.current
+                val canonColor = Color.Success
+                val canonText = strings.canon
+                val mixedColor = Color.Warning
+                val mixedText = strings.mixed
+                val fillerColor = MaterialTheme.colorScheme.error
+                val fillerText = strings.filler
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Chip(
+                        onClick = {},
+                        shape = Shape.FullRoundedShape,
+                        colors = ChipDefaults.outlinedChipColors(
+                            contentColor = canonColor
+                        ),
+                        border = BorderStroke(1.dp, canonColor)
+                    ) {
+                        Text(
+                            text = canonText.first().toString(),
+                            color = canonColor,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Text(
+                        text = canonText
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Chip(
+                        onClick = {},
+                        shape = Shape.FullRoundedShape,
+                        colors = ChipDefaults.outlinedChipColors(
+                            contentColor = mixedColor
+                        ),
+                        border = BorderStroke(1.dp, mixedColor)
+                    ) {
+                        Text(
+                            text = mixedText.first().toString(),
+                            color = mixedColor,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Text(
+                        text = mixedText
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Chip(
+                        onClick = {},
+                        shape = Shape.FullRoundedShape,
+                        colors = ChipDefaults.outlinedChipColors(
+                            contentColor = fillerColor
+                        ),
+                        border = BorderStroke(1.dp, fillerColor)
+                    ) {
+                        Text(
+                            text = fillerText.first().toString(),
+                            color = fillerColor,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Text(
+                        text = fillerText
+                    )
+                }
+            }
+        }
+    }
+
     items(episodes) { episode ->
-        val isEnabled = remember { episode.hoster.isNotEmpty() }
+        val strings = LocalStringRes.current
+        val isEnabled = remember(episode.href) { episode.hoster.isNotEmpty() }
+        val colorScheme = MaterialTheme.colorScheme
+        val (color, text) = remember(episode.href) {
+            if (episode.isCanon == true && episode.isFiller == true) {
+                Color.Warning to strings.mixed
+            } else if (episode.isCanon == true) {
+                Color.Success to strings.canon
+            } else if (episode.isFiller == true) {
+                colorScheme.error to strings.filler
+            } else {
+                null to null
+            }
+        }
+        val chipText = if (isPortrait) {
+            text?.first()?.toString()
+        } else {
+            text
+        }
+
         Row(
-            modifier = Modifier.fillMaxWidth().onClick(enabled = isEnabled, onLongClick = {
+            modifier = Modifier.fillParentMaxWidth().onClick(enabled = isEnabled, onLongClick = {
                 component.showDialog(DialogConfig.Activate(episode))
             }) {
                 component.loadEpisode(episode)
-            }.padding(16.dp).alpha(if (isEnabled) 0.5F else 1F),
+            }.padding(16.dp).alpha(if (isEnabled) 1F else 0.5F),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -266,6 +382,22 @@ private fun LazyListScope.SeriesScreenContent(
                 overflow = TextOverflow.Ellipsis,
                 softWrap = true
             )
+            if (color != null && chipText != null) {
+                Chip(
+                    onClick = {},
+                    shape = Shape.FullRoundedShape,
+                    colors = ChipDefaults.outlinedChipColors(
+                        contentColor = color
+                    ),
+                    border = BorderStroke(1.dp, color)
+                ) {
+                    Text(
+                        text = chipText,
+                        color = color,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
             Icon(
                 imageVector = watchIcon,
                 contentDescription = null,

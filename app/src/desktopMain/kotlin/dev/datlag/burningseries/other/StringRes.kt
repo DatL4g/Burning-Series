@@ -237,6 +237,15 @@ actual class StringRes private constructor(
     actual val browser: String
         get() = getLocaleOrDefaultFor("browser")
 
+    actual val canon: String
+        get() = getLocaleOrDefaultFor("canon")
+
+    actual val filler: String
+        get() = getLocaleOrDefaultFor("filler")
+
+    actual val mixed: String
+        get() = getLocaleOrDefaultFor("mixed")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }

@@ -99,6 +99,8 @@ data class Series(
         @SerialName("href") val href: String,
         @SerialName("watched") val watched: Boolean? = null,
         @SerialName("watchHref") val watchHref: String? = null,
+        @SerialName("isCanon") val isCanon: Boolean? = null,
+        @SerialName("isFiller") val isFiller: Boolean? = null,
         @SerialName("hoster") val hoster: List<Hoster>
     ) : Parcelable {
 

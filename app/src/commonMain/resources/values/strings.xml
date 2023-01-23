@@ -76,4 +76,8 @@
     <string name="loading_url">Loading URL, please wait...</string>
     <string name="activate_text">Do you want to activate this episode or open it in browser?</string>
     <string name="browser">Browser</string>
+
+    <string name="canon" translatable="false">Canon</string>
+    <string name="filler" translatable="false">Filler</string>
+    <string name="mixed" translatable="false">Mixed</string>
 </resources>
