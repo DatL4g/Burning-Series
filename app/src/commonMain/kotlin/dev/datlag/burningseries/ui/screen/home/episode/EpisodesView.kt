@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -18,6 +20,7 @@ import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.common.header
 import dev.datlag.burningseries.common.isTv
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.screen.home.gridCellSize
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,7 +30,13 @@ fun EpisodesView(component: EpisodesComponent) {
     val lastWatched by component.lastWatched.collectAsState(component.lastWatched.getValueBlocking(emptyList()))
 
     if (isTv()) {
+        val state = rememberLazyListState(
+            StateSaver.homeEpisodeViewPos,
+            StateSaver.homeEpisodeViewOffset
+        )
+
         LazyRow(
+            state = state,
             modifier = Modifier.fillMaxHeight(),
             contentPadding = PaddingValues(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -45,8 +54,21 @@ fun EpisodesView(component: EpisodesComponent) {
                 EpisodeItem(it, component)
             }
         }
+
+        DisposableEffect(state) {
+            onDispose {
+                StateSaver.homeEpisodeViewPos = state.firstVisibleItemIndex
+                StateSaver.homeEpisodeViewOffset = state.firstVisibleItemScrollOffset
+            }
+        }
     } else {
+        val state = rememberLazyGridState(
+            StateSaver.homeEpisodeViewPos,
+            StateSaver.homeEpisodeViewOffset
+        )
+
         LazyVerticalGrid(
+            state = state,
             columns = gridCellSize(),
             contentPadding = PaddingValues(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -71,6 +93,13 @@ fun EpisodesView(component: EpisodesComponent) {
             }
             items(episodes, key = { it.href }) {
                 EpisodeItem(it, component)
+            }
+        }
+
+        DisposableEffect(state) {
+            onDispose {
+                StateSaver.homeEpisodeViewPos = state.firstVisibleItemIndex
+                StateSaver.homeEpisodeViewOffset = state.firstVisibleItemScrollOffset
             }
         }
     }

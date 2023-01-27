@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun <T : Any> DragDropColumn(
+    state: LazyListState = rememberLazyListState(),
     items: List<T>,
     onSwap: (Int, Int) -> Unit,
     itemsBefore: LazyListScope.() -> Unit = {},
@@ -31,9 +32,8 @@ fun <T : Any> DragDropColumn(
     itemsAfter: LazyListScope.() -> Unit = {}
 ) {
     var overscrollJob by remember { mutableStateOf<Job?>(null) }
-    val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-    val dragDropState = rememberDragDropState(listState) { fromIndex, toIndex ->
+    val dragDropState = rememberDragDropState(state) { fromIndex, toIndex ->
         onSwap(fromIndex, toIndex)
     }
 
@@ -72,7 +72,7 @@ fun <T : Any> DragDropColumn(
                     }
                 )
             },
-        state = listState,
+        state = state,
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

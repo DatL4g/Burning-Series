@@ -7,6 +7,7 @@ import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.FabPosition
@@ -45,6 +46,7 @@ import dev.datlag.burningseries.ui.Shape
 import dev.datlag.burningseries.ui.custom.snackbarHandlerForStatus
 import androidx.compose.material.SnackbarDefaults
 import androidx.compose.ui.text.style.TextOverflow
+import dev.datlag.burningseries.other.StateSaver
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -137,7 +139,15 @@ fun GenreScreen(component: GenreComponent) {
             }
         }
     ) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        val state = rememberLazyListState(
+            StateSaver.genreViewPos,
+            StateSaver.genreViewOffset
+        )
+
+        LazyColumn(
+            state = state,
+            modifier = Modifier.fillMaxSize()
+        ) {
             if (searchItems.isEmpty()) {
                 genre?.let { safeGenre ->
                     item(safeGenre) {

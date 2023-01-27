@@ -13,10 +13,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -30,6 +27,7 @@ import dev.datlag.burningseries.common.SemiBlack
 import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.other.DefaultValue
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.custom.CoverImage
 import dev.datlag.burningseries.ui.screen.series.SeriesComponent
 import dev.datlag.burningseries.ui.Shape
@@ -49,7 +47,10 @@ fun LandscapeToolbar(
     isFavorite: Boolean,
     content: LazyListScope.() -> Unit,
 ) {
-    val state = rememberLazyListState()
+    val state = rememberLazyListState(
+        StateSaver.seriesViewPos,
+        StateSaver.seriesViewOffset
+    )
 
     Box(modifier = Modifier.fillMaxWidth()) {
         LazyColumn(
@@ -159,5 +160,12 @@ fun LandscapeToolbar(
                 }
             }
         )
+    }
+
+    DisposableEffect(state) {
+        onDispose {
+            StateSaver.seriesViewPos = state.firstVisibleItemIndex
+            StateSaver.seriesViewOffset = state.firstVisibleItemScrollOffset
+        }
     }
 }

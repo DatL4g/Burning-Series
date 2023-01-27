@@ -55,6 +55,14 @@ actual fun WebView(component: ActivateComponent) {
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
 
+            scrollX = StateSaver.webviewScrollX
+            scrollY = StateSaver.webviewScrollY
+
+            setOnScrollChangeListener { _, scrollX, scrollY, _, _ ->
+                StateSaver.webviewScrollX = scrollX
+                StateSaver.webviewScrollY = scrollY
+            }
+
             loadUrl(Constants.getBurningSeriesUrl(component.episode.href))
         }
     }) { webView ->

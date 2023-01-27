@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.ui.screen.settings
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.other.Constants
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.custom.InfoCard
 import dev.datlag.burningseries.ui.custom.dragdrop.DragDropColumn
 import kotlinx.datetime.Clock
@@ -59,7 +61,13 @@ fun SettingsScreen(component: SettingsComponent) {
             )
         }
     ) {
+        val state = rememberLazyListState(
+            StateSaver.settingsViewPos,
+            StateSaver.settingsViewOffset
+        )
+
         DragDropColumn(
+            state = state,
             items = hosterList,
             onSwap = { old, new ->
                 component.swapHoster(old, new)
@@ -193,5 +201,12 @@ fun SettingsScreen(component: SettingsComponent) {
                 }
             }
         )
+
+        DisposableEffect(state) {
+            onDispose {
+                StateSaver.settingsViewPos = state.firstVisibleItemIndex
+                StateSaver.settingsViewOffset = state.firstVisibleItemScrollOffset
+            }
+        }
     }
 }

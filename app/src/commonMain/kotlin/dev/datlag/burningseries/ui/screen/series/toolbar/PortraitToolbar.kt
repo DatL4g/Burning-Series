@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -24,6 +25,7 @@ import dev.datlag.burningseries.common.SemiBlack
 import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.other.DefaultValue
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.custom.ArcShape
 import dev.datlag.burningseries.ui.custom.CoverImage
 import dev.datlag.burningseries.ui.custom.collapsingtoolbar.DefaultCollapsingToolbar
@@ -161,7 +163,12 @@ fun PortraitToolbar(
             }
         }
     ) {
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+        val contentState = rememberLazyListState(
+            StateSaver.seriesViewPos,
+            StateSaver.seriesViewOffset
+        )
+
+        LazyColumn(state = contentState, modifier = Modifier.fillMaxWidth()) {
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -180,6 +187,13 @@ fun PortraitToolbar(
             }
 
             content()
+        }
+
+        DisposableEffect(contentState) {
+            onDispose {
+                StateSaver.seriesViewPos = contentState.firstVisibleItemIndex
+                StateSaver.seriesViewOffset = contentState.firstVisibleItemScrollOffset
+            }
         }
     }
 }
