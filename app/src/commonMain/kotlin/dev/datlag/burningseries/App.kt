@@ -4,17 +4,16 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.other.Orientation
-import dev.datlag.burningseries.ui.theme.Colors
-import dev.datlag.burningseries.ui.theme.toLegacyColors
-import dev.datlag.burningseries.ui.theme.toLegacyShapes
 import dev.datlag.burningseries.other.StringRes
 import dev.datlag.burningseries.other.Resources
+import dev.datlag.burningseries.ui.theme.*
 import org.kodein.di.DI
 
 val LocalDarkMode = compositionLocalOf<Boolean> { error("No dark mode state provided") }
@@ -31,11 +30,13 @@ fun App(
 ) {
     CompositionLocalProvider(LocalDarkMode provides useDarkTheme) {
         MaterialTheme(
-            colorScheme = if (useDarkTheme) Colors.getDarkScheme() else Colors.getLightScheme()
+            colorScheme = if (useDarkTheme) Colors.getDarkScheme() else Colors.getLightScheme(),
+            typography = ManropeTypography()
         ) {
             androidx.compose.material.MaterialTheme(
                 colors = MaterialTheme.colorScheme.toLegacyColors(useDarkTheme),
-                shapes = MaterialTheme.shapes.toLegacyShapes()
+                shapes = MaterialTheme.shapes.toLegacyShapes(),
+                typography = ManropeTypographyLegacy()
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),

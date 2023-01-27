@@ -101,6 +101,7 @@ kotlin {
                 implementation("com.sealwu:kscript-tools:1.0.21")
                 implementation("net.harawata:appdirs:1.2.1")
                 implementation("uk.co.caprica:vlcj:4.8.2")
+                implementation("org.apache.commons:commons-lang3:3.12.0")
             }
         }
     }

@@ -4,6 +4,7 @@ import dev.datlag.burningseries.common.createWithParents
 import dev.datlag.burningseries.database.BurningSeriesDB
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.datastore.CryptoManager
+import dev.datlag.burningseries.other.AppIO
 import net.harawata.appdirs.AppDirs
 import net.harawata.appdirs.AppDirsFactory
 import org.kodein.di.*
@@ -18,29 +19,16 @@ actual object PlatformModule {
             CryptoManager()
         }
 
-        bindSingleton {
-            AppDirsFactory.getInstance()
-        }
-
         bindSingleton("UserSettingsFile") {
-            val dirs: AppDirs = instance()
-            val returnFile = File(dirs.getUserDataDir("BurningSeries", null, null), "UserSettings.pb")
-            returnFile.createWithParents()
-            returnFile
+            AppIO.getFileInUserDataDir("UserSettings.pb")
         }
 
         bindSingleton("AppSettingsFile") {
-            val dirs: AppDirs = instance()
-            val returnFile = File(dirs.getUserDataDir("BurningSeries", null, null), "AppSettings.pb")
-            returnFile.createWithParents()
-            returnFile
+            AppIO.getFileInUserDataDir("AppSettings.pb")
         }
 
         bindSingleton("DbFile") {
-            val dirs: AppDirs = instance()
-            val returnFile = File(dirs.getUserConfigDir("BurningSeries", null, null), "burning_series.db")
-            returnFile.createWithParents()
-            returnFile
+            AppIO.getFileInConfigDir("burning_series.db")
         }
 
         bindSingleton {
@@ -48,18 +36,7 @@ actual object PlatformModule {
         }
 
         bindSingleton("ImageDir") {
-            val dirs: AppDirs = instance()
-            val returnFile = File(dirs.getSiteDataDir("BurningSeries", null, null), "images")
-            if (!returnFile.exists()) {
-                try {
-                    returnFile.mkdirs()
-                } catch (ignored: Throwable) {
-                    try {
-                        returnFile.mkdir()
-                    } catch (ignored: Throwable) { }
-                }
-            }
-            returnFile
+            AppIO.getFolderInSiteDataDir("images")
         }
     }
 

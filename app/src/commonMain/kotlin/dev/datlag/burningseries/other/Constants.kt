@@ -12,9 +12,8 @@ object Constants {
     const val LINUX_DARK_MODE_LEGACY_CMD = "gsettings get org.gnome.desktop.interface gtk-theme"
 
     const val GITHUB_OWNER = "DatL4g"
-    const val GITHUB_REPO_OLD = "BurningSeries-Android"
-    const val GITHUB_REPO_NEW = "BurningSeries"
-    const val GITHUB_REPOSITORY_URL = "${PROTOCOL_HTTPS}${HOST_GITHUB_COM}/$GITHUB_OWNER/$GITHUB_REPO_OLD"
+    const val GITHUB_REPO = "BurningSeries"
+    const val GITHUB_REPOSITORY_URL = "${PROTOCOL_HTTPS}${HOST_GITHUB_COM}/$GITHUB_OWNER/$GITHUB_REPO"
 
     const val VLC_DOWNLOAD_URL = "${PROTOCOL_HTTPS}www.videolan.org/vlc/#download"
 

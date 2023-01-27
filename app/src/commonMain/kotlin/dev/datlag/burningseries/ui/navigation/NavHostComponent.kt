@@ -207,24 +207,12 @@ class NavHostComponent private constructor(
             })
         }
         scope.launch(Dispatchers.IO) {
-            var loadedNewRepo = false
             val installed = Resources.version
             githubRepo.loadReleases(
                 installed,
                 Constants.GITHUB_OWNER,
-                Constants.GITHUB_REPO_OLD
+                Constants.GITHUB_REPO
             )
-
-            githubRepo.status.collect {
-                if (!loadedNewRepo && it is Status.ERROR) {
-                    githubRepo.loadReleases(
-                        installed,
-                        Constants.GITHUB_OWNER,
-                        Constants.GITHUB_REPO_NEW
-                    )
-                    loadedNewRepo = true
-                }
-            }
         }
     }
 
