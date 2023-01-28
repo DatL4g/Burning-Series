@@ -4,4 +4,10 @@ option java_package = "dev.datlag.burningseries.datastore.preferences";
 option java_multiple_files = true;
 
 message AppSettings {
+  message Appearance {
+    int32 themeMode = 1;
+    bool amoled = 2;
+  }
+
+  Appearance appearance = 1;
 }

@@ -242,6 +242,24 @@ actual class StringRes(private val context: Context) {
     actual val mixed: String
         get() = context.getString(R.string.mixed)
 
+    actual val appearance: String
+        get() = context.getString(R.string.appearance)
+
+    actual val theming: String
+        get() = context.getString(R.string.theming)
+
+    actual val lightTheme: String
+        get() = context.getString(R.string.light_theme)
+
+    actual val darkTheme: String
+        get() = context.getString(R.string.dark_theme)
+
+    actual val followSystem: String
+        get() = context.getString(R.string.follow_system)
+
+    actual val amoledMode: String
+        get() = context.getString(R.string.amoled_mode)
+
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
         if (runCatching {

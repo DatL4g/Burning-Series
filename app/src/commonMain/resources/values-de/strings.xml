@@ -73,4 +73,11 @@
     <string name="loading_url">Lade URL, bitte warten...</string>
     <string name="activate_text">Willst du die Episode aktivieren oder im Browser öffnen?</string>
     <string name="browser">Browser</string>
+
+    <string name="appearance">Erscheinung</string>
+    <string name="theming">Design</string>
+    <string name="light_theme">Helles Thema</string>
+    <string name="dark_theme">Dunkles Thema</string>
+    <string name="follow_system">Systemeinstellungen</string>
+    <string name="amoled_mode">AMOLED Modus</string>
 </resources>

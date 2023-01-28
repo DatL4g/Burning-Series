@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.common
 
 import androidx.datastore.core.DataStore
+import dev.datlag.burningseries.datastore.preferences.AppSettings
 import dev.datlag.burningseries.datastore.preferences.UserSettings
 import dev.datlag.burningseries.other.Constants
 import io.ktor.http.*

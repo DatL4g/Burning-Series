@@ -1,5 +1,7 @@
 package dev.datlag.burningseries.other
 
+import com.arkivanov.essenty.parcelable.ParcelableContainer
+
 object StateSaver {
 
     var homeSeriesViewPos: Int = 0
@@ -23,4 +25,5 @@ object StateSaver {
     var webviewScrollX: Int = 0
     var webviewScrollY: Int = 0
 
+    val state: MutableMap<String, ParcelableContainer> = mutableMapOf()
 }

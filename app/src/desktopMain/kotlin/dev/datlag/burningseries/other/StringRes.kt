@@ -246,6 +246,24 @@ actual class StringRes private constructor(
     actual val mixed: String
         get() = getLocaleOrDefaultFor("mixed")
 
+    actual val appearance: String
+        get() = getLocaleOrDefaultFor("appearance")
+
+    actual val theming: String
+        get() = getLocaleOrDefaultFor("theming")
+
+    actual val lightTheme: String
+        get() = getLocaleOrDefaultFor("light_theme")
+
+    actual val darkTheme: String
+        get() = getLocaleOrDefaultFor("dark_theme")
+
+    actual val followSystem: String
+        get() = getLocaleOrDefaultFor("follow_system")
+
+    actual val amoledMode: String
+        get() = getLocaleOrDefaultFor("amoled_mode")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }

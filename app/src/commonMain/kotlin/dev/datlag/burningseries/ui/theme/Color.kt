@@ -17,10 +17,12 @@ object Colors {
 
     private const val THEME_LIGHT_TERTIARY = 0xFF2B5EA7
     private const val THEME_DARK_TERTIARY = 0xFF2c2c2c
+    private const val THEME_DARK_AMOLED_TERTIARY = 0xFF000000
     private const val THEME_LIGHT_ON_TERTIARY = 0xFFfafafa
     private const val THEME_DARK_ON_TERTIARY = 0xFFfafafa
     private const val THEME_LIGHT_TERTIARY_CONTAINER = 0xFFD7E3FF
     private const val THEME_DARK_TERTIARY_CONTAINER = 0xFF555555
+    private const val THEME_DARK_AMOLED_TERTIARY_CONTAINER = 0xFF2c2c2c
     private const val THEME_LIGHT_ON_TERTIARY_CONTAINER = 0xFF001B3E
     private const val THEME_DARK_ON_TERTIARY_CONTAINER = 0xFFfafafa
 
@@ -30,6 +32,7 @@ object Colors {
     private const val THEME_ON_ERROR_CONTAINER = 0xFF410004
 
     private const val THEME_DARK_BACKGROUND = 0xFF1A1C1E
+    private const val THEME_DARK_AMOLED_BACKGROUND = 0xFF000000
     private const val THEME_DARK_ON_BACKGROUND = 0xFFE3E2E6
     private const val THEME_LIGHT_BACKGROUND = 0xFFFDFCFF
     private const val THEME_LIGHT_ON_BACKGROUND = 0xFF1A1C1E
@@ -51,7 +54,7 @@ object Colors {
     private const val THEME_LIGHT_INVERSE_ON_SURFACE = 0xFFF1F0F4
     private const val THEME_INVERSE_PRIMARY = 0xFF0B61A4
 
-    fun getDarkScheme() = darkColorScheme(
+    fun getDarkScheme(amoled: Boolean = false) = darkColorScheme(
         primary = Color(THEME_PRIMARY),
         onPrimary = Color(THEME_ON_PRIMARY),
         primaryContainer = Color(THEME_PRIMARY_CONTAINER),
@@ -62,9 +65,9 @@ object Colors {
         secondaryContainer = Color(THEME_SECONDARY_CONTAINER),
         onSecondaryContainer = Color(THEME_ON_SECONDARY_CONTAINER),
 
-        tertiary = Color(THEME_DARK_TERTIARY),
+        tertiary = if (amoled) Color(THEME_DARK_AMOLED_TERTIARY) else Color(THEME_DARK_TERTIARY),
         onTertiary = Color(THEME_DARK_ON_TERTIARY),
-        tertiaryContainer = Color(THEME_DARK_TERTIARY_CONTAINER),
+        tertiaryContainer = if (amoled) Color(THEME_DARK_AMOLED_TERTIARY_CONTAINER) else Color(THEME_DARK_TERTIARY_CONTAINER),
         onTertiaryContainer = Color(THEME_DARK_ON_TERTIARY_CONTAINER),
 
         error = Color(THEME_ERROR),
@@ -72,7 +75,7 @@ object Colors {
         onError = Color(THEME_ON_ERROR),
         onErrorContainer = Color(THEME_ON_ERROR_CONTAINER),
 
-        background = Color(THEME_DARK_BACKGROUND),
+        background = if (amoled) Color(THEME_DARK_AMOLED_BACKGROUND) else Color(THEME_DARK_BACKGROUND),
         onBackground = Color(THEME_DARK_ON_BACKGROUND),
 
         surface = Color(THEME_DARK_SURFACE),

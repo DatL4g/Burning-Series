@@ -11,9 +11,11 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
+import androidx.datastore.core.DataStore
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import dev.datlag.burningseries.datastore.preferences.AppSettings
 import dev.datlag.burningseries.module.DataStoreModule
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.module.PlatformModule
@@ -24,6 +26,7 @@ import dev.datlag.burningseries.other.StringRes
 import dev.datlag.burningseries.ui.navigation.NavHostComponent
 import org.kodein.di.DI
 import org.kodein.di.bind
+import org.kodein.di.instance
 import org.kodein.di.singleton
 import javax.swing.SwingUtilities
 
@@ -78,7 +81,7 @@ fun main() {
                 }
             }
 
-            App {
+            App(di) {
                 root.render()
             }
         }

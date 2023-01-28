@@ -112,5 +112,12 @@ expect class StringRes {
     val filler: String
     val mixed: String
 
+    val appearance: String
+    val theming: String
+    val lightTheme: String
+    val darkTheme: String
+    val followSystem: String
+    val amoledMode: String
+
     fun openInBrowser(url: String): Boolean
 }

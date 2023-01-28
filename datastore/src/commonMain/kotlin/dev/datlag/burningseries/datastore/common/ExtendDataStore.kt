@@ -1,6 +1,8 @@
 package dev.datlag.burningseries.datastore.common
 
 import androidx.datastore.core.DataStore
+import dev.datlag.burningseries.datastore.preferences.AppSettings
+import dev.datlag.burningseries.datastore.preferences.AppSettings.Appearance
 import dev.datlag.burningseries.datastore.preferences.UserSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -54,6 +56,30 @@ suspend fun DataStore<UserSettings>.updateBSAccount(
                 uidCookieExpiration ?: it.burningSeries.uidCookieExpiration
             ).setShowedLogin(
                 showedLogin ?: it.burningSeries.showedLogin
+            ).build()
+        ).build()
+    }
+}
+
+val DataStore<AppSettings>.appearance: Flow<Appearance>
+    get() = this.data.map { it.appearance }
+
+val DataStore<AppSettings>.appearanceThemeMode: Flow<Int>
+    get() = this.data.map { it.appearance.themeMode }
+
+val DataStore<AppSettings>.appearanceAmoled: Flow<Boolean>
+    get() = this.data.map { it.appearance.amoled }
+
+suspend fun DataStore<AppSettings>.updateAppearance(
+    themeMode: Int? = null,
+    amoled: Boolean? = null
+): AppSettings {
+    return this.updateData {
+        it.toBuilder().setAppearance(
+            it.appearance.toBuilder().setThemeMode(
+                themeMode ?: it.appearance.themeMode
+            ).setAmoled(
+                amoled ?: it.appearance.amoled
             ).build()
         ).build()
     }

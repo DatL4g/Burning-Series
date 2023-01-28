@@ -18,16 +18,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.LocalDarkMode
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.StateSaver
+import dev.datlag.burningseries.other.isAndroid
 import dev.datlag.burningseries.ui.custom.InfoCard
 import dev.datlag.burningseries.ui.custom.dragdrop.DragDropColumn
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.math.max
+import dev.datlag.burningseries.ui.custom.DropdownMenu
+import dev.datlag.burningseries.ui.custom.DropdownMenuItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -192,6 +196,115 @@ fun SettingsScreen(component: SettingsComponent) {
                 }
             },
             itemsAfter = {
+                item {
+                    Text(
+                        modifier = Modifier.padding(top = 16.dp),
+                        text = LocalStringRes.current.appearance,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                item {
+                    val themeMode by component.themeMode.collectAsState(component.themeMode.getValueBlocking(0))
+                    var showMenu by remember { mutableStateOf(false) }
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = LocalStringRes.current.theming
+                        )
+                        Spacer(modifier = Modifier.weight(1F))
+                        Button(onClick = {
+                            showMenu = !showMenu
+                        }) {
+                            Text(
+                                text = when (themeMode) {
+                                    1 -> LocalStringRes.current.lightTheme
+                                    2 -> LocalStringRes.current.darkTheme
+                                    else -> LocalStringRes.current.followSystem
+                                }
+                            )
+                            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                            Icon(
+                                imageVector = Icons.Default.ExpandMore,
+                                contentDescription = LocalStringRes.current.more
+                            )
+
+                            DropdownMenu(
+                                expanded = showMenu,
+                                onDismissRequest = { showMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    onClick = { component.changeThemeMode(1) },
+                                    enabled = true,
+                                    text = {
+                                        Text(
+                                            text = LocalStringRes.current.lightTheme
+                                        )
+                                    },
+                                    icon = {
+                                        Icon(
+                                            imageVector = Icons.Default.LightMode,
+                                            contentDescription = LocalStringRes.current.lightTheme
+                                        )
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    onClick = { component.changeThemeMode(2) },
+                                    enabled = true,
+                                    text = {
+                                        Text(
+                                            text = LocalStringRes.current.darkTheme
+                                        )
+                                    },
+                                    icon = {
+                                        Icon(
+                                            imageVector = Icons.Default.DarkMode,
+                                            contentDescription = LocalStringRes.current.darkTheme
+                                        )
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    onClick = { component.changeThemeMode(0) },
+                                    enabled = true,
+                                    text = {
+                                        Text(
+                                            text = LocalStringRes.current.followSystem
+                                        )
+                                    },
+                                    icon = {
+                                        Icon(
+                                            imageVector = if (isAndroid) Icons.Default.PhonelinkSetup else Icons.Default.LaptopWindows,
+                                            contentDescription = LocalStringRes.current.followSystem
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                item {
+                    val amoled by component.amoled.collectAsState(component.amoled.getValueBlocking(false))
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = LocalStringRes.current.amoledMode
+                        )
+                        Spacer(modifier = Modifier.weight(1F))
+                        Switch(
+                            checked = amoled,
+                            onCheckedChange = {
+                                component.changeAmoledState(it)
+                            },
+                            enabled = LocalDarkMode.current
+                        )
+                    }
+                }
                 item {
                     Text(
                         text = LocalStringRes.current.copyright.format(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year),

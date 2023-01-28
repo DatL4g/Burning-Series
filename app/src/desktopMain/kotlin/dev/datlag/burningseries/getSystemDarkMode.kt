@@ -12,3 +12,6 @@ actual fun getSystemDarkMode(): Boolean {
 
     return linuxDarkMode
 }
+
+@Composable
+actual fun setSystemAppearance(themeMode: Int, usesDarkMode: Boolean, usesAmoled: Boolean) { }
