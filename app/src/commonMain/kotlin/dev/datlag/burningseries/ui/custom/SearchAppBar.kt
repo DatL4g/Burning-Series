@@ -11,14 +11,18 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchAppBar(
     text: String,
@@ -33,8 +37,12 @@ fun SearchAppBar(
         color = MaterialTheme.colorScheme.tertiary,
         contentColor = MaterialTheme.colorScheme.onTertiary
     ) {
+        val (searchFocusRequester) = FocusRequester.createRefs()
+
         TextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().focusRequester(searchFocusRequester).onGloballyPositioned {
+                searchFocusRequester.requestFocus()
+            },
             value = text,
             onValueChange = {
                 onTextChange(it)
