@@ -9,7 +9,7 @@ actual fun DropdownMenu(
     onDismissRequest: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    androidx.compose.material.DropdownMenu(
+    androidx.compose.material3.DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
     ) {
