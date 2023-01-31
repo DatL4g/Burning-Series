@@ -12,7 +12,7 @@ import dev.datlag.burningseries.common.SemiBlack
 actual fun DialogSurface(modifier: Modifier, content: @Composable () -> Unit) {
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Color.SemiBlack,
+        color = Color.Transparent,
         elevation = 0.dp
     ) {
         content()
