@@ -19,6 +19,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -140,5 +142,23 @@ fun Modifier.cardItemSize(): Modifier {
         this.width(200.dp)
     } else {
         this.fillMaxWidth()
+    }
+}
+
+@Composable
+fun Modifier.focusRequesterIf(requester: FocusRequester?, predicate: Boolean): Modifier {
+    return if(requester != null && predicate) {
+        this.focusRequester(requester)
+    } else {
+        this
+    }
+}
+
+@Composable
+fun Modifier.focusRequesterIf(requester: FocusRequester?, predicate: () -> Boolean): Modifier {
+    return if(requester != null && predicate()) {
+        this.focusRequester(requester)
+    } else {
+        this
     }
 }

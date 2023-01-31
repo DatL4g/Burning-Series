@@ -15,8 +15,11 @@ import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -33,6 +36,7 @@ import dev.datlag.burningseries.ui.screen.series.SeriesComponent
 import dev.datlag.burningseries.ui.Shape
 import dev.datlag.burningseries.ui.screen.series.SeriesLanguageSeasonButtons
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LandscapeToolbar(
     component: SeriesComponent,
@@ -51,6 +55,7 @@ fun LandscapeToolbar(
         StateSaver.seriesViewPos,
         StateSaver.seriesViewOffset
     )
+    val (buttonFocusRequester) = FocusRequester.createRefs()
 
     Box(modifier = Modifier.fillMaxWidth()) {
         LazyColumn(
@@ -93,7 +98,8 @@ fun LandscapeToolbar(
                             seasons,
                             selectedLanguage,
                             selectedSeason,
-                            seasonText
+                            seasonText,
+                            buttonFocusRequester
                         )
                     }
                 }
@@ -137,7 +143,13 @@ fun LandscapeToolbar(
                 }, modifier = Modifier.background(
                     color = if (state.firstVisibleItemIndex >= 1) Color.Transparent else Color.SemiBlack,
                     shape = Shape.FullRoundedShape
-                )) {
+                ).focusProperties {
+                    if (linkedSeries.isEmpty()) {
+                        next = buttonFocusRequester
+                        end = buttonFocusRequester
+                    }
+                    down = buttonFocusRequester
+                }) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = LocalStringRes.current.favorites,
@@ -150,7 +162,11 @@ fun LandscapeToolbar(
                     }, modifier = Modifier.background(
                         color = if (state.firstVisibleItemIndex >= 1) Color.Transparent else Color.SemiBlack,
                         shape = Shape.FullRoundedShape
-                    )) {
+                    ).focusProperties {
+                        next = buttonFocusRequester
+                        end = buttonFocusRequester
+                        down = buttonFocusRequester
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Link,
                             contentDescription = LocalStringRes.current.linkedSeries,

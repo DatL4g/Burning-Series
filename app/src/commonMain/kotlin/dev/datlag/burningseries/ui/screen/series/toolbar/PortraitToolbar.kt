@@ -181,7 +181,8 @@ fun PortraitToolbar(
                         seasons,
                         selectedLanguage,
                         selectedSeason,
-                        seasonText
+                        seasonText,
+                        null
                     )
                 }
             }
