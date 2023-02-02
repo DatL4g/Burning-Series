@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.collectAsStateSafe
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.common.header
 import dev.datlag.burningseries.common.isTv
@@ -26,8 +27,8 @@ import dev.datlag.burningseries.ui.screen.home.gridCellSize
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EpisodesView(component: EpisodesComponent) {
-    val episodes by component.episodes.collectAsState(component.episodes.getValueBlocking(emptyList()))
-    val lastWatched by component.lastWatched.collectAsState(component.lastWatched.getValueBlocking(emptyList()))
+    val episodes by component.episodes.collectAsStateSafe { component.episodes.getValueBlocking(emptyList()) }
+    val lastWatched by component.lastWatched.collectAsStateSafe { component.lastWatched.getValueBlocking(emptyList()) }
 
     if (isTv()) {
         val state = rememberLazyListState(

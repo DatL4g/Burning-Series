@@ -17,12 +17,14 @@ actual fun DropdownMenuItem(
     text: @Composable () -> Unit,
     icon: @Composable () -> Unit
 ) {
-    androidx.compose.material3.DropdownMenuItem(
+    androidx.compose.material.DropdownMenuItem(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        contentPadding = contentPadding,
-        leadingIcon = { icon() },
-        text = { text() }
-    )
+        contentPadding = contentPadding
+    ) {
+        icon()
+        Spacer(modifier = Modifier.padding(8.dp))
+        text()
+    }
 }

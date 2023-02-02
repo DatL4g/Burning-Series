@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.collectAsStateSafe
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.common.header
 import dev.datlag.burningseries.common.isTv
@@ -25,8 +26,8 @@ import dev.datlag.burningseries.ui.screen.home.gridCellSize
 
 @Composable
 fun SeriesView(component: SeriesComponent) {
-    val series by component.series.collectAsState(component.series.getValueBlocking(emptyList()))
-    val favorites by component.latestFavorites.collectAsState(component.latestFavorites.getValueBlocking(emptyList()))
+    val series by component.series.collectAsStateSafe { component.series.getValueBlocking(emptyList()) }
+    val favorites by component.latestFavorites.collectAsStateSafe { component.latestFavorites.getValueBlocking(emptyList()) }
 
     if (isTv()) {
         val state = rememberLazyListState(

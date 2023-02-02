@@ -1,8 +1,11 @@
 package dev.datlag.burningseries.ui.custom
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 @Composable
 actual fun DropdownMenuItem(
@@ -13,16 +16,14 @@ actual fun DropdownMenuItem(
     text: @Composable () -> Unit,
     icon: @Composable () -> Unit
 ) {
-    androidx.compose.material3.DropdownMenuItem(
-        text = {
-            text()
-        },
-        leadingIcon = {
-            icon()
-        },
+    androidx.compose.material.DropdownMenuItem(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier,
         contentPadding = contentPadding
-    )
+    ) {
+        icon()
+        Spacer(modifier = Modifier.padding(8.dp))
+        text()
+    }
 }

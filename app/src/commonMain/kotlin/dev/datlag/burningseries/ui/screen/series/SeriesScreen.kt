@@ -58,31 +58,31 @@ import kotlinx.coroutines.flow.consumeAsFlow
 @Composable
 fun SeriesScreen(component: SeriesComponent) {
     val dialogState = component.dialog.subscribeAsState()
-    val description by component.description.collectAsState(String())
-    val episodes by component.episodes.collectAsState(emptyList())
+    val description by component.description.collectAsStateSafe { String() }
+    val episodes by component.episodes.collectAsStateSafe { emptyList() }
 
-    val _title by component.title.collectAsState(component.initialInfo.title)
+    val _title by component.title.collectAsStateSafe { component.initialInfo.title }
     val title = _title ?: component.initialInfo.title
-    val _cover by component.cover.collectAsState(component.initialInfo.cover)
+    val _cover by component.cover.collectAsStateSafe { component.initialInfo.cover }
     val cover = _cover ?: component.initialInfo.cover
 
-    val selectedLanguage by component.selectedLanguage.collectAsState(null)
-    val languages by component.languages.collectAsState(null)
-    val seasons by component.seasons.collectAsState(null)
-    val seasonText by component.seasonText.collectAsState(null)
-    val selectedSeason by component.selectedSeason.collectAsState(null)
+    val selectedLanguage by component.selectedLanguage.collectAsStateSafe { null }
+    val languages by component.languages.collectAsStateSafe { null }
+    val seasons by component.seasons.collectAsStateSafe { null }
+    val seasonText by component.seasonText.collectAsStateSafe { null }
+    val selectedSeason by component.selectedSeason.collectAsStateSafe { null }
 
-    val genreInfo by component.genreInfo.collectAsState(null)
+    val genreInfo by component.genreInfo.collectAsStateSafe { null }
     val genres = genreInfo?.data?.trim()?.split("\\s".toRegex())?.maxSize(5) ?: emptyList()
 
-    val _additionalInfo by component.additionalInfo.collectAsState(null)
+    val _additionalInfo by component.additionalInfo.collectAsStateSafe { null }
     val additionalInfo = _additionalInfo ?: emptyList()
 
-    val linkedSeries by component.linkedSeries.collectAsState(emptyList())
-    val isFavorite by component.isFavorite.collectAsState(false)
+    val linkedSeries by component.linkedSeries.collectAsStateSafe { emptyList() }
+    val isFavorite by component.isFavorite.collectAsStateSafe { false }
 
-    val continueEpisode by component.continueEpisode.collectAsState(null)
-    val hosterSorted by component.hosterSorted.collectAsState(false)
+    val continueEpisode by component.continueEpisode.collectAsStateSafe { null }
+    val hosterSorted by component.hosterSorted.collectAsStateSafe { false }
 
     val isPortrait = LocalOrientation.current is Orientation.PORTRAIT
 

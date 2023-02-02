@@ -6,6 +6,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
@@ -13,7 +14,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.shape.ShapeAppearanceModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalFoundationApi::class)
 actual fun Modifier.onClick(
@@ -57,3 +61,9 @@ actual fun isTv(): Boolean {
     val context = LocalContext.current
     return remember { (context.packageManager ?: context.applicationContext.packageManager).isTelevision() }
 }
+
+@Composable
+actual fun <T> Flow<T>.collectAsStateSafe(initial: () -> T): State<T> = this.collectAsStateWithLifecycle(initial())
+
+@Composable
+actual fun <T> StateFlow<T>.collectAsStateSafe(): State<T> = this.collectAsStateWithLifecycle()

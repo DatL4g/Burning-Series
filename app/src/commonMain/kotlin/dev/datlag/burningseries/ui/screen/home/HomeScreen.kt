@@ -44,6 +44,7 @@ import java.io.InputStream
 import androidx.compose.material.SnackbarDefaults
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.focus.*
+import dev.datlag.burningseries.common.collectAsStateSafe
 
 val LocalFabGroupRequester = compositionLocalOf<FocusRequester?> { null }
 
@@ -158,7 +159,7 @@ fun HomeScreen(component: HomeComponent) {
                 modifier = Modifier.focusRequester(fabGroupRequester),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                val favoritesExists by component.favoritesExists.collectAsState(component.favoritesExists.getValueBlocking(false))
+                val favoritesExists by component.favoritesExists.collectAsStateSafe { component.favoritesExists.getValueBlocking(false) }
 
                 if (favoritesExists) {
                     FloatingActionButton(onClick = {

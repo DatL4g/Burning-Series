@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.*
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
@@ -60,8 +61,8 @@ fun VideoPlayer(component: VideoComponent) {
             .setAllowCrossProtocolRedirects(true)
             .setKeepPostFor302Redirects(true))
     }
-    val episode by component.episode.collectAsState(component.episode.value)
-    val videoStreams by component.videoStreams.collectAsState(component.videoStreams.value)
+    val episode by component.episode.collectAsStateSafe()
+    val videoStreams by component.videoStreams.collectAsStateSafe()
     var streamListPos by remember(videoStreams) { mutableStateOf(0) }
     var srcListPos by remember(streamListPos) { mutableStateOf(0) }
     val stream = videoStreams[streamListPos].srcList[srcListPos]
@@ -71,7 +72,7 @@ fun VideoPlayer(component: VideoComponent) {
     val buttonShape = MaterialTheme.shapes.medium.toLegacyShape()
     val buttonColors = ButtonDefaults.legacyButtonTintList(MaterialTheme.colorScheme.primaryContainer)
     val progressColor = MaterialTheme.colorScheme.primary.toArgb()
-    val initialPos by component.initialPosition.collectAsState(component.initialPosition.getValueBlocking(0))
+    val initialPos by component.initialPosition.collectAsStateSafe { component.initialPosition.getValueBlocking(0) }
 
     RequireScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     RequireFullScreen()

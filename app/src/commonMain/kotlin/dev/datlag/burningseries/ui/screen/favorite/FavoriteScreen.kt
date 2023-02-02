@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.collectAsStateSafe
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.common.isTv
 import dev.datlag.burningseries.other.StateSaver
@@ -33,8 +34,8 @@ import dev.datlag.burningseries.ui.screen.home.series.SeriesItem
 
 @Composable
 fun FavoriteScreen(component: FavoriteComponent) {
-    val favorites by component.favorites.collectAsState(component.favorites.getValueBlocking(emptyList()))
-    val searchFavorites by component.searchItems.collectAsState(emptyList())
+    val favorites by component.favorites.collectAsStateSafe { component.favorites.getValueBlocking(emptyList()) }
+    val searchFavorites by component.searchItems.collectAsStateSafe { emptyList() }
     val searchState by component.searchAppBarState.subscribeAsState()
 
     Scaffold(

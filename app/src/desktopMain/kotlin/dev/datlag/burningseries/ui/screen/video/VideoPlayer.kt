@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.collectAsStateSafe
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.ui.custom.collapsingtoolbar.CollapsingToolbarScaffoldScopeInstance.align
@@ -48,8 +49,8 @@ fun VideoPlayer(
                 EmbeddedMediaPlayerComponent()
             }
         }
-        val videoStreams by component.videoStreams.collectAsState(component.videoStreams.value)
-        val initialPos by component.initialPosition.collectAsState(component.initialPosition.getValueBlocking(0))
+        val videoStreams by component.videoStreams.collectAsStateSafe()
+        val initialPos by component.initialPosition.collectAsStateSafe { component.initialPosition.getValueBlocking(0) }
         var streamListPos by remember(videoStreams) { mutableStateOf(0) }
         var srcListPos by remember(streamListPos) { mutableStateOf(0) }
 

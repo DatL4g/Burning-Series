@@ -88,6 +88,8 @@ kotlin {
                 implementation("androidx.media3:media3-exoplayer-rtsp:$exoplayer")
                 implementation("androidx.media3:media3-exoplayer-smoothstreaming:$exoplayer")
                 implementation("androidx.media3:media3-ui:$exoplayer")
+
+                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha05")
             }
         }
 

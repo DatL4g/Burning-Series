@@ -14,10 +14,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -33,6 +30,7 @@ import androidx.compose.ui.zIndex
 import dev.datlag.burningseries.LocalOrientation
 import dev.datlag.burningseries.other.Orientation
 import dev.datlag.burningseries.ui.custom.dragdrop.DragDropState
+import kotlinx.coroutines.flow.Flow
 
 fun LazyGridScope.header(
     content: @Composable LazyGridItemScope.() -> Unit

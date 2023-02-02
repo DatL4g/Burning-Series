@@ -46,14 +46,15 @@ import dev.datlag.burningseries.ui.Shape
 import dev.datlag.burningseries.ui.custom.snackbarHandlerForStatus
 import androidx.compose.material.SnackbarDefaults
 import androidx.compose.ui.text.style.TextOverflow
+import dev.datlag.burningseries.common.collectAsStateSafe
 import dev.datlag.burningseries.other.StateSaver
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun GenreScreen(component: GenreComponent) {
     val strings = LocalStringRes.current
-    val genre by component.genre.collectAsState(null)
-    val searchItems by component.searchItems.collectAsState(emptyList())
+    val genre by component.genre.collectAsStateSafe { null }
+    val searchItems by component.searchItems.collectAsStateSafe { emptyList() }
     val (previousFab, nextFab) = FocusRequester.createRefs()
 
     val snackbarHostState = remember { SnackbarHostState() }

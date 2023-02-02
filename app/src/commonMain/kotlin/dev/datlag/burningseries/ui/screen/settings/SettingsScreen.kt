@@ -36,8 +36,8 @@ import dev.datlag.burningseries.ui.custom.DropdownMenuItem
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(component: SettingsComponent) {
-    val hosterList by component.hosterList.collectAsState(component.hosterList.getValueBlocking(emptyList()))
-    val newRelease by component.newRelease.collectAsState(null)
+    val hosterList by component.hosterList.collectAsStateSafe { component.hosterList.getValueBlocking(emptyList()) }
+    val newRelease by component.newRelease.collectAsStateSafe { null }
 
     Scaffold(
         topBar = {
@@ -205,7 +205,9 @@ fun SettingsScreen(component: SettingsComponent) {
                     )
                 }
                 item {
-                    val themeMode by component.themeMode.collectAsState(component.themeMode.getValueBlocking(0))
+                    val themeMode by component.themeMode.collectAsStateSafe {
+                        component.themeMode.getValueBlocking(0)
+                    }
                     var showMenu by remember { mutableStateOf(false) }
 
                     Row(
@@ -286,7 +288,9 @@ fun SettingsScreen(component: SettingsComponent) {
                     }
                 }
                 item {
-                    val amoled by component.amoled.collectAsState(component.amoled.getValueBlocking(false))
+                    val amoled by component.amoled.collectAsStateSafe {
+                        component.amoled.getValueBlocking(false)
+                    }
 
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),

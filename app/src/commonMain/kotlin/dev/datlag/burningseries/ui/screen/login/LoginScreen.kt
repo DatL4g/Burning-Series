@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.collectAsStateSafe
 import dev.datlag.burningseries.ui.custom.InfoCard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,9 +24,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(component: LoginComponent) {
-    val username by component.username.collectAsState(String())
-    val password by component.password.collectAsState(String())
-    val isErroneous by component.isErroneous.collectAsState(false)
+    val username by component.username.collectAsStateSafe { String() }
+    val password by component.password.collectAsStateSafe { String() }
+    val isErroneous by component.isErroneous.collectAsStateSafe { false }
     var displayPassword by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val textFieldColors = TextFieldDefaults.outlinedTextFieldColors(

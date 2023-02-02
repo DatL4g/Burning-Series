@@ -8,6 +8,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.datastore.core.DataStore
+import dev.datlag.burningseries.common.collectAsStateSafe
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.datastore.common.appearance
 import dev.datlag.burningseries.datastore.common.appearanceAmoled
@@ -39,8 +40,8 @@ fun App(
 ) {
     val settings: DataStore<AppSettings> by di.instance()
 
-    val themeMode by settings.appearanceThemeMode.collectAsState(settings.appearanceThemeMode.getValueBlocking(nightMode))
-    val amoled by settings.appearanceAmoled.collectAsState(settings.appearanceAmoled.getValueBlocking(false))
+    val themeMode by settings.appearanceThemeMode.collectAsStateSafe { settings.appearanceThemeMode.getValueBlocking(nightMode) }
+    val amoled by settings.appearanceAmoled.collectAsStateSafe { settings.appearanceAmoled.getValueBlocking(false) }
     val useDarkTheme = when (themeMode) {
         1 -> false
         2 -> true

@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import dev.datlag.burningseries.LocalStringRes
+import dev.datlag.burningseries.common.collectAsStateSafe
 
 @Composable
 actual fun VideoScreen(component: VideoComponent) {
@@ -34,7 +35,7 @@ actual fun VideoScreen(component: VideoComponent) {
                     }
                 },
                 title = {
-                    val episode by component.episode.collectAsState(component.episode.value)
+                    val episode by component.episode.collectAsStateSafe()
 
                     Text(
                         text = episode.title,
