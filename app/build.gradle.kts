@@ -18,8 +18,8 @@ val exoplayer = "1.0.0-beta03"
 val accompanist = "0.25.1"
 
 val artifact = "dev.datlag.burningseries"
-val appVersion = "4.2.0"
-val appCode = 420
+val appVersion = "4.3.0"
+val appCode = 430
 
 group = artifact
 version = appVersion

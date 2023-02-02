@@ -243,13 +243,15 @@ fun SettingsScreen(component: SettingsComponent) {
                                     enabled = true,
                                     text = {
                                         Text(
-                                            text = LocalStringRes.current.lightTheme
+                                            text = LocalStringRes.current.lightTheme,
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     },
                                     icon = {
                                         Icon(
                                             imageVector = Icons.Default.LightMode,
-                                            contentDescription = LocalStringRes.current.lightTheme
+                                            contentDescription = LocalStringRes.current.lightTheme,
+                                            tint = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 )
@@ -258,13 +260,15 @@ fun SettingsScreen(component: SettingsComponent) {
                                     enabled = true,
                                     text = {
                                         Text(
-                                            text = LocalStringRes.current.darkTheme
+                                            text = LocalStringRes.current.darkTheme,
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     },
                                     icon = {
                                         Icon(
                                             imageVector = Icons.Default.DarkMode,
-                                            contentDescription = LocalStringRes.current.darkTheme
+                                            contentDescription = LocalStringRes.current.darkTheme,
+                                            tint = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 )
@@ -273,13 +277,15 @@ fun SettingsScreen(component: SettingsComponent) {
                                     enabled = true,
                                     text = {
                                         Text(
-                                            text = LocalStringRes.current.followSystem
+                                            text = LocalStringRes.current.followSystem,
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     },
                                     icon = {
                                         Icon(
                                             imageVector = if (isAndroid) Icons.Default.PhonelinkSetup else Icons.Default.LaptopWindows,
-                                            contentDescription = LocalStringRes.current.followSystem
+                                            contentDescription = LocalStringRes.current.followSystem,
+                                            tint = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 )
