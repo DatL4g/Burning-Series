@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -55,7 +56,7 @@ fun LandscapeToolbar(
         StateSaver.seriesViewPos,
         StateSaver.seriesViewOffset
     )
-    val (buttonFocusRequester) = FocusRequester.createRefs()
+    val buttonFocusRequester = remember { FocusRequester() }
 
     Box(modifier = Modifier.fillMaxWidth()) {
         LazyColumn(
@@ -80,7 +81,7 @@ fun LandscapeToolbar(
                     }
 
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().focusRequester(buttonFocusRequester),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.Start
                     ) {
@@ -98,8 +99,7 @@ fun LandscapeToolbar(
                             seasons,
                             selectedLanguage,
                             selectedSeason,
-                            seasonText,
-                            buttonFocusRequester
+                            seasonText
                         )
                     }
                 }

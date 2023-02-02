@@ -13,6 +13,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.focusRequesterIf
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.other.Logger
 
 @Composable
 fun ColumnScope.SeriesLanguageSeasonButtons(
@@ -22,7 +23,6 @@ fun ColumnScope.SeriesLanguageSeasonButtons(
     selectedLanguage: String?,
     selectedSeason: Series.Season?,
     seasonText: String?,
-    focusRequester: FocusRequester?
 ) = with(this) {
     val selectedLang = languages?.find { it.value.equals(selectedLanguage, true) }
 
@@ -34,7 +34,7 @@ fun ColumnScope.SeriesLanguageSeasonButtons(
                     selectedLang.value
                 ))
             },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).focusRequesterIf(focusRequester, languages.size > 1),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             enabled = languages.size > 1
         ) {
             Text(
@@ -52,7 +52,7 @@ fun ColumnScope.SeriesLanguageSeasonButtons(
                     selectedSeason
                 ))
             },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).focusRequesterIf(focusRequester, languages.isNullOrEmpty()),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             enabled = seasons.size > 1
         ) {
             Text(
