@@ -125,24 +125,28 @@ fun HomeScreen(component: HomeComponent) {
                                 component.onSettingsClicked()
                             }, enabled = true, text = {
                                 Text(
-                                    text = strings.settings
+                                    text = strings.settings,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }, icon = {
                                 Icon(
                                     imageVector = Icons.Default.Settings,
-                                    contentDescription = strings.settings
+                                    contentDescription = strings.settings,
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             })
                             DropdownMenuItem(onClick = {
                                 component.onAboutClicked()
                             }, enabled = true, text = {
                                 Text(
-                                    text = strings.about
+                                    text = strings.about,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }, icon = {
                                 Icon(
                                     imageVector = Icons.Default.Info,
-                                    contentDescription = strings.about
+                                    contentDescription = strings.about,
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             })
                         }
