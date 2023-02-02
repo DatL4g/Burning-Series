@@ -53,8 +53,6 @@ import dev.datlag.burningseries.other.StateSaver
 @Composable
 fun GenreScreen(component: GenreComponent) {
     val strings = LocalStringRes.current
-    val genre by component.genre.collectAsStateSafe { null }
-    val searchItems by component.searchItems.collectAsStateSafe { emptyList() }
     val (previousFab, nextFab) = FocusRequester.createRefs()
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -144,6 +142,8 @@ fun GenreScreen(component: GenreComponent) {
             StateSaver.genreViewPos,
             StateSaver.genreViewOffset
         )
+        val searchItems by component.searchItems.collectAsStateSafe { emptyList() }
+        val genre by component.genre.collectAsStateSafe { null }
 
         LazyColumn(
             state = state,

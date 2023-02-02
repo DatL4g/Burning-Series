@@ -19,7 +19,6 @@ import dev.datlag.burningseries.ui.custom.SearchAppBarState
 @Composable
 fun FavoriteScreenAppBar(component: FavoriteComponent) {
     val searchAppBarState by component.searchAppBarState.subscribeAsState()
-    val searchText by component.searchText.subscribeAsState()
     val strings = LocalStringRes.current
 
     when (searchAppBarState) {
@@ -50,6 +49,8 @@ fun FavoriteScreenAppBar(component: FavoriteComponent) {
             )
         }
         is SearchAppBarState.OPENED -> {
+            val searchText by component.searchText.subscribeAsState()
+
             SearchAppBar(
                 text = searchText,
                 placeholder = strings.searchForSeries,

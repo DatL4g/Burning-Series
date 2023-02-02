@@ -34,15 +34,13 @@ import dev.datlag.burningseries.ui.screen.home.series.SeriesItem
 
 @Composable
 fun FavoriteScreen(component: FavoriteComponent) {
-    val favorites by component.favorites.collectAsStateSafe { component.favorites.getValueBlocking(emptyList()) }
-    val searchFavorites by component.searchItems.collectAsStateSafe { emptyList() }
-    val searchState by component.searchAppBarState.subscribeAsState()
-
     Scaffold(
         topBar = {
             FavoriteScreenAppBar(component)
         },
         floatingActionButton = {
+            val searchState by component.searchAppBarState.subscribeAsState()
+
             if (searchState is SearchAppBarState.CLOSED) {
                 FloatingActionButton(
                     onClick = {
@@ -57,6 +55,9 @@ fun FavoriteScreen(component: FavoriteComponent) {
             }
         }
     ) {
+        val favorites by component.favorites.collectAsStateSafe { component.favorites.getValueBlocking(emptyList()) }
+        val searchFavorites by component.searchItems.collectAsStateSafe { emptyList() }
+
         if (isTv()) {
             val state = rememberLazyListState(
                 StateSaver.favoriteViewPos,

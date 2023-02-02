@@ -19,7 +19,6 @@ import dev.datlag.burningseries.ui.custom.SearchAppBarState
 @Composable
 fun GenreScreenAppBar(component: GenreComponent) {
     val searchAppBarState by component.searchAppBarState.subscribeAsState()
-    val searchText by component.searchText.subscribeAsState()
     val strings = LocalStringRes.current
 
     when (searchAppBarState) {
@@ -49,6 +48,8 @@ fun GenreScreenAppBar(component: GenreComponent) {
             )
         }
         is SearchAppBarState.OPENED -> {
+            val searchText by component.searchText.subscribeAsState()
+
             SearchAppBar(
                 text = searchText,
                 placeholder = strings.searchForSeries,
