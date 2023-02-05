@@ -41,6 +41,7 @@ import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.R
 import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.other.Logger
+import dev.datlag.burningseries.ui.activity.KeyEventDispatcher
 import dev.datlag.burningseries.ui.custom.RequireFullScreen
 import dev.datlag.burningseries.ui.custom.RequireScreenOrientation
 import kotlinx.coroutines.*
@@ -173,13 +174,16 @@ fun VideoPlayer(component: VideoComponent) {
         exoPlayer.setMediaItem(MediaItem.fromUri(stream))
         exoPlayer.prepare()
     }
-    var keyEventListener: ((KeyEvent) -> Boolean)? = null
 
     DisposableEffect(
         AndroidView(factory = {
             val root = LayoutInflater.from(it).inflate(R.layout.video_player, null, false)
             root.apply {
-                findViewById<PlayerView>(R.id.player).player = exoPlayer
+                val playerView = findViewById<PlayerView>(R.id.player)
+                playerView.player = exoPlayer
+                KeyEventDispatcher = { event ->
+                    event?.let { ev -> playerView.dispatchKeyEvent(ev) }
+                }
 
                 layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
             }
@@ -202,16 +206,11 @@ fun VideoPlayer(component: VideoComponent) {
             skipButton.backgroundTintList = buttonColors
             progress.setPlayedColor(progressColor)
             progress.setScrubberColor(progressColor)
-
-            keyEventListener = { event ->
-                it.dispatchKeyEvent(event.nativeKeyEvent)
-            }
-        }, modifier = Modifier.onKeyEvent {
-            keyEventListener?.invoke(it) ?: false
         })
     ) {
         onDispose {
             exoPlayer.release()
+            KeyEventDispatcher = { null }
         }
     }
 }

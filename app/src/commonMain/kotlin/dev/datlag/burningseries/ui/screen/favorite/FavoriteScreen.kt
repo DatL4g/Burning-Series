@@ -18,8 +18,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
@@ -34,9 +37,11 @@ import dev.datlag.burningseries.ui.screen.home.series.SeriesItem
 
 @Composable
 fun FavoriteScreen(component: FavoriteComponent) {
+    val listRequester = remember { FocusRequester() }
+
     Scaffold(
         topBar = {
-            FavoriteScreenAppBar(component)
+            FavoriteScreenAppBar(component, listRequester)
         },
         floatingActionButton = {
             val searchState by component.searchAppBarState.subscribeAsState()
@@ -66,7 +71,7 @@ fun FavoriteScreen(component: FavoriteComponent) {
 
             LazyRow(
                 state = state,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().focusRequester(listRequester),
                 contentPadding = PaddingValues(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -83,6 +88,7 @@ fun FavoriteScreen(component: FavoriteComponent) {
 
             LazyVerticalGrid(
                 state = state,
+                modifier = Modifier.focusRequester(listRequester),
                 columns = gridCellSize(),
                 contentPadding = PaddingValues(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),

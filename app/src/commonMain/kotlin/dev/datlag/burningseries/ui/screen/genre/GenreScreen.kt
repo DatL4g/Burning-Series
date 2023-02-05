@@ -63,6 +63,7 @@ fun GenreScreen(component: GenreComponent) {
     val colorScheme = MaterialTheme.colorScheme
     val defaultColors = SnackbarDefaults.backgroundColor to androidx.compose.material.MaterialTheme.colors.surface
     var snackbarColors by remember { mutableStateOf(defaultColors) }
+    val listFocusRequester = remember { FocusRequester() }
 
     snackbarHandlerForStatus(
         state = snackbarHostState,
@@ -85,7 +86,7 @@ fun GenreScreen(component: GenreComponent) {
 
     Scaffold(
         topBar = {
-            GenreScreenAppBar(component)
+            GenreScreenAppBar(component, listFocusRequester)
         },
         floatingActionButton = {
             Row(
@@ -147,7 +148,7 @@ fun GenreScreen(component: GenreComponent) {
 
         LazyColumn(
             state = state,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().focusRequester(listFocusRequester)
         ) {
             if (searchItems.isEmpty()) {
                 genre?.let { safeGenre ->

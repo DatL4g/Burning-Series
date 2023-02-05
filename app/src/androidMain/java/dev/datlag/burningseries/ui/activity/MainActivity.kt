@@ -3,6 +3,7 @@ package dev.datlag.burningseries.ui.activity
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.view.KeyEvent
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
@@ -96,6 +97,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+        return (KeyEventDispatcher.invoke(event) ?: false) || super.dispatchKeyEvent(event)
+    }
+
     private fun SavedStateRegistryOwner.stateKeeper(onBundleTooLarge: (ParcelableContainer) -> Unit = {}): StateKeeper {
         val dispatcher = StateKeeperDispatcher(
             savedStateRegistry.consumeRestoredStateForKey(KEY_STATE)?.getSafeParcelable(KEY_STATE) ?: StateSaver.state[KEY_STATE]
@@ -122,3 +127,5 @@ class MainActivity : AppCompatActivity() {
         private const val SAVED_STATE_MAX_SIZE = 500_000
     }
 }
+
+var KeyEventDispatcher: (event: KeyEvent?) -> Boolean? = { null }

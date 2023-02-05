@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
@@ -17,7 +18,7 @@ import dev.datlag.burningseries.ui.custom.SearchAppBar
 import dev.datlag.burningseries.ui.custom.SearchAppBarState
 
 @Composable
-fun FavoriteScreenAppBar(component: FavoriteComponent) {
+fun FavoriteScreenAppBar(component: FavoriteComponent, listRequester: FocusRequester) {
     val searchAppBarState by component.searchAppBarState.subscribeAsState()
     val strings = LocalStringRes.current
 
@@ -56,7 +57,7 @@ fun FavoriteScreenAppBar(component: FavoriteComponent) {
                 placeholder = strings.searchForSeries,
                 onTextChange = { component.updateSearchText(it) },
                 onCloseClicked = { component.closeSearchBar() },
-                onSearchClicked = { }
+                onSearchClicked = { listRequester.requestFocus() }
             )
         }
     }
