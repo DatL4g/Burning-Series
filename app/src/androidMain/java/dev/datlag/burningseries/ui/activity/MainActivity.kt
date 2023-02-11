@@ -1,12 +1,16 @@
 package dev.datlag.burningseries.ui.activity
 
+import android.app.PictureInPictureParams
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Rational
 import android.view.KeyEvent
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.runtime.CompositionLocalProvider
@@ -101,6 +105,44 @@ class MainActivity : AppCompatActivity() {
         return (KeyEventDispatcher.invoke(event) ?: false) || super.dispatchKeyEvent(event)
     }
 
+    override fun onUserLeaveHint() {
+        if (PIPEventDispatcher.invoke() == true) {
+            enterPIPMode()
+        } else {
+            super.onUserLeaveHint()
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode)
+
+        PIPModeListener.invoke(isInPictureInPictureMode)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+
+        PIPModeListener.invoke(isInPictureInPictureMode)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun enterPIPMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val builder = PictureInPictureParams.Builder()
+                .setAspectRatio(Rational(16, 9))
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                builder.setAutoEnterEnabled(true)
+            }
+
+            this.enterPictureInPictureMode(builder.build())
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            this.enterPictureInPictureMode()
+        }
+    }
+
     private fun SavedStateRegistryOwner.stateKeeper(onBundleTooLarge: (ParcelableContainer) -> Unit = {}): StateKeeper {
         val dispatcher = StateKeeperDispatcher(
             savedStateRegistry.consumeRestoredStateForKey(KEY_STATE)?.getSafeParcelable(KEY_STATE) ?: StateSaver.state[KEY_STATE]
@@ -129,3 +171,5 @@ class MainActivity : AppCompatActivity() {
 }
 
 var KeyEventDispatcher: (event: KeyEvent?) -> Boolean? = { null }
+var PIPEventDispatcher: () -> Boolean? = { null }
+var PIPModeListener: (Boolean) -> Unit = { }

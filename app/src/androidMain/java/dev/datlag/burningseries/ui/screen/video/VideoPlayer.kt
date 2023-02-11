@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.screen.video
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -42,6 +43,8 @@ import dev.datlag.burningseries.R
 import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.other.Logger
 import dev.datlag.burningseries.ui.activity.KeyEventDispatcher
+import dev.datlag.burningseries.ui.activity.PIPEventDispatcher
+import dev.datlag.burningseries.ui.activity.PIPModeListener
 import dev.datlag.burningseries.ui.custom.RequireFullScreen
 import dev.datlag.burningseries.ui.custom.RequireScreenOrientation
 import kotlinx.coroutines.*
@@ -180,9 +183,19 @@ fun VideoPlayer(component: VideoComponent) {
             val root = LayoutInflater.from(it).inflate(R.layout.video_player, null, false)
             root.apply {
                 val playerView = findViewById<PlayerView>(R.id.player)
+                val controls = playerView.findViewById<View>(R.id.exoplayer_controls)
+
                 playerView.player = exoPlayer
                 KeyEventDispatcher = { event ->
                     event?.let { ev -> playerView.dispatchKeyEvent(ev) }
+                }
+                PIPEventDispatcher = { true }
+                PIPModeListener = { isInPIP ->
+                    if (isInPIP) {
+                        controls.visibility = View.GONE
+                    } else {
+                        controls.visibility = View.VISIBLE
+                    }
                 }
 
                 layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
@@ -206,11 +219,17 @@ fun VideoPlayer(component: VideoComponent) {
             skipButton.backgroundTintList = buttonColors
             progress.setPlayedColor(progressColor)
             progress.setScrubberColor(progressColor)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && it.context.findActivity()?.isInPictureInPictureMode == true) {
+                controls.visibility = View.GONE
+            }
         })
     ) {
         onDispose {
             exoPlayer.release()
             KeyEventDispatcher = { null }
+            PIPEventDispatcher = { null }
+            PIPModeListener = { }
         }
     }
 }

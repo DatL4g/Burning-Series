@@ -41,10 +41,14 @@
         android:name=".App"
         android:theme="@style/SplashScreenTheme"
         android:banner="@mipmap/tv_banner"
-        android:appCategory="video">
+        android:appCategory="video"
+        android:allowAudioPlaybackCapture="false">
         <activity
             android:name=".ui.activity.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:supportsPictureInPicture="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|fontScale|fontWeightAdjustment|keyboard|keyboardHidden|touchscreen"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
