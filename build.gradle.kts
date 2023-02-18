@@ -3,13 +3,12 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("multiplatform") version "1.8.0" apply false
-    kotlin("plugin.serialization") version "1.8.0" apply false
+    kotlin("multiplatform") version "1.8.10" apply false
+    kotlin("plugin.serialization") version "1.8.10" apply false
     kotlin("android") version "1.8.0" apply false
     id("org.jetbrains.compose") version "1.3.0" apply false
-    id("com.google.devtools.ksp") version "1.8.0-1.0.9" apply false
+    id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
     id("com.google.protobuf") version "0.9.2" apply false
-    id("de.undercouch.download") version "5.3.0" apply false
     id("com.squareup.sqldelight") version "1.5.5" apply false
     id("com.mikepenz.aboutlibraries.plugin") version "10.5.2" apply false
     id("de.jensklingenberg.ktorfit") version "1.0.0" apply false

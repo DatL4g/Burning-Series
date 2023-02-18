@@ -6,8 +6,8 @@ import evalBash
 
 @Composable
 actual fun getSystemDarkMode(): Boolean {
-    val linuxDarkMode = (Constants.LINUX_DARK_MODE_CMD.evalBash().getOrDefault(String())).ifEmpty {
-        Constants.LINUX_DARK_MODE_LEGACY_CMD.evalBash().getOrDefault(String())
+    val linuxDarkMode = (Constants.LINUX_DARK_MODE_CMD.evalBash(env = null).getOrDefault(String())).ifEmpty {
+        Constants.LINUX_DARK_MODE_LEGACY_CMD.evalBash(env = null).getOrDefault(String())
     }.contains("dark", true)
 
     return linuxDarkMode

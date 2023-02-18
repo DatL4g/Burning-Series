@@ -21,12 +21,12 @@ fun RequireFullScreen() {
         systemUiController.isSystemBarsVisible = false
         systemUiController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         window.enterFullScreen()
-        window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON and WindowManager.LayoutParams.FLAG_SECURE)
         onDispose {
             systemUiController.isSystemBarsVisible = true
             systemUiController.systemBarsBehavior = originalBehavior
             window.exitFullScreen()
-            window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON and WindowManager.LayoutParams.FLAG_SECURE)
         }
     }
 }

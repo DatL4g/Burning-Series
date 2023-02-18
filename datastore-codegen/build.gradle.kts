@@ -6,12 +6,12 @@ plugins {
 group = "dev.datlag.burningseries.datastore-codegen"
 
 dependencies {
-    api("com.google.protobuf:protobuf-java:3.21.12")
-    api("io.grpc:grpc-protobuf:1.52.1")
+    api("com.google.protobuf:protobuf-java:3.22.0")
+    api("io.grpc:grpc-protobuf:1.53.0")
 }
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.21.12"
+        artifact = "com.google.protobuf:protoc:3.22.0"
     }
 }

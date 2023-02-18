@@ -42,7 +42,7 @@ actual fun CoverImage(
         }
     }
     val base64Bytes = remember { cover.base64.safeDecodeBase64() }
-    val base64Image = base64Bytes?.let { remember { Image.makeFromEncoded(it).toComposeImageBitmap() } }
+    val base64Image = (base64Bytes ?: cover.base64.safeDecodeBase64())?.let { remember { Image.makeFromEncoded(it).toComposeImageBitmap() } }
     val displayImage = remember { image ?: base64Image }
 
 

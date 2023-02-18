@@ -49,7 +49,6 @@ import dev.datlag.burningseries.ui.custom.RequireFullScreen
 import dev.datlag.burningseries.ui.custom.RequireScreenOrientation
 import kotlinx.coroutines.*
 
-@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 fun VideoPlayer(component: VideoComponent) {

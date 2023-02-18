@@ -8,9 +8,9 @@ plugins {
 group = "dev.datlag.burningseries.network"
 
 val flower = "3.0.0"
-val ktorfit = "1.0.0-beta17"
+val ktorfit = "1.0.0-beta18"
 val jsunpacker = "1.0.1"
-val jsoup = "1.15.3"
+val jsoup = "1.15.4"
 
 dependencies {
     implementation("io.github.hadiyarajesh.flower-core:flower:$flower")

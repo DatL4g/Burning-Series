@@ -11,10 +11,10 @@ plugins {
 }
 
 val coroutines = "1.6.4"
-val decompose = "1.0.0-beta-04"
+val decompose = "1.0.0"
 val kodein = "7.18.0"
 val ktor = "2.2.3"
-val exoplayer = "1.0.0-beta03"
+val exoplayer = "1.0.0-rc01"
 val accompanist = "0.25.1"
 
 val artifact = "dev.datlag.burningseries"
@@ -65,7 +65,7 @@ kotlin {
         val androidMain by getting {
             apply(plugin = "kotlin-parcelize")
             dependencies {
-                implementation("androidx.appcompat:appcompat:1.6.0")
+                implementation("androidx.appcompat:appcompat:1.6.1")
                 implementation("androidx.core:core-ktx:1.9.0")
                 implementation("androidx.activity:activity-ktx:1.6.1")
                 implementation("androidx.activity:activity-compose:1.6.1")
@@ -89,7 +89,7 @@ kotlin {
                 implementation("androidx.media3:media3-exoplayer-smoothstreaming:$exoplayer")
                 implementation("androidx.media3:media3-ui:$exoplayer")
 
-                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha05")
+                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01")
             }
         }
 
@@ -100,7 +100,7 @@ kotlin {
                 implementation("io.github.pdvrieze.xmlutil:core-jvm:0.84.3")
                 implementation("io.github.pdvrieze.xmlutil:serialization-jvm:0.84.3")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines")
-                implementation("com.sealwu:kscript-tools:1.0.21")
+                implementation("com.sealwu:kscript-tools:1.0.22")
                 implementation("net.harawata:appdirs:1.2.1")
                 implementation("uk.co.caprica:vlcj:4.8.2")
                 implementation("org.apache.commons:commons-lang3:3.12.0")
@@ -142,7 +142,7 @@ aboutLibraries {
 
 compose {
     kotlinCompilerPlugin.set(dependencies.compiler.forKotlin("1.7.20"))
-    kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=1.8.0")
+    kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=1.8.10")
 
     desktop {
         application {
