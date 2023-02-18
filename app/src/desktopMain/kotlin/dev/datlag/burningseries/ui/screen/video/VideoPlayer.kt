@@ -116,7 +116,8 @@ fun VideoPlayer(
                     component.playNextEpisode()
                 }
             })
-
+        }
+        LaunchedEffect(mediaPlayerComponent) {
             component.playListener = {
                 mediaPlayerComponent.mediaPlayer()?.controls()?.play()
             }
@@ -137,17 +138,17 @@ fun VideoPlayer(
                 mediaPlayerComponent.mediaPlayer()?.controls()?.setTime(it)
             }
         }
-        DisposableEffect(Unit) {
-            onDispose {
-                mediaPlayerComponent.mediaPlayer()?.release()
-            }
-        }
         SwingPanel(
             background = Color.Black,
             factory = {
                 mediaPlayerComponent
             }
         )
+        DisposableEffect(mediaPlayerComponent) {
+            onDispose {
+                mediaPlayerComponent.mediaPlayer()?.release()
+            }
+        }
     } else {
         Column(
             modifier = Modifier.fillMaxSize().background(Color.Black),

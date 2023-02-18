@@ -70,21 +70,6 @@ class VideoScreenComponent(
     private var nextStream: List<VideoStream> = emptyList()
     private var loopEpisode: Series.Episode = episode.value
 
-    private val episodeSaveFlow = episode.transformLatest { episode ->
-        val seriesHref = series.href.buildTitleHref()
-        val episodeHref = episode.href.trimHref()
-
-        return@transformLatest emit(db.burningSeriesQueries.insertEpisodeOrIgnore(
-            episodeHref,
-            episode.title,
-            max(initialLength.first(), if (episode.watched == true) Long.MAX_VALUE else 0L),
-            max(initialPosition.first(), if (episode.watched == true) Long.MAX_VALUE else 0L),
-            Clock.System.now().epochSeconds,
-            episode.watchHref,
-            seriesHref
-        ))
-    }.flowOn(Dispatchers.IO)
-
     override fun forward() {
         forwardListener?.invoke()
     }
@@ -126,12 +111,19 @@ class VideoScreenComponent(
             )
         }
         scope.launch(Dispatchers.IO) {
-            episodeSaveFlow.collect()
-        }
-        scope.launch(Dispatchers.IO) {
             episode.collect {
                 val episodeHref = it.href.trimHref()
                 loopEpisode = it
+
+                db.burningSeriesQueries.insertEpisodeOrIgnore(
+                    episodeHref,
+                    it.title,
+                    max(initialLength.first(), if (it.watched == true) Long.MAX_VALUE else 0L),
+                    max(initialPosition.first(), if (it.watched == true) Long.MAX_VALUE else 0L),
+                    Clock.System.now().epochSeconds,
+                    it.watchHref,
+                    seriesHref
+                )
 
                 while (this.isActive && loopEpisode == it) {
                     val pos = withContext(CommonDispatcher.Main) {

@@ -1,31 +1,22 @@
 package dev.datlag.burningseries.ui.screen.video
 
-import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.key.KeyEvent
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.*
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
@@ -33,15 +24,12 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.*
-import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.DefaultTimeBar
 import androidx.media3.ui.PlayerView
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.material.button.MaterialButton
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.R
 import dev.datlag.burningseries.common.*
-import dev.datlag.burningseries.other.Logger
 import dev.datlag.burningseries.ui.activity.KeyEventDispatcher
 import dev.datlag.burningseries.ui.activity.PIPEventDispatcher
 import dev.datlag.burningseries.ui.activity.PIPModeListener
@@ -77,7 +65,6 @@ fun VideoPlayer(component: VideoComponent) {
     val progressColor = MaterialTheme.colorScheme.primary.toArgb()
     val initialPos by component.initialPosition.collectAsStateSafe { component.initialPosition.getValueBlocking(0) }
 
-    RequireScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     RequireFullScreen()
 
     val exoPlayer = remember {
@@ -153,7 +140,7 @@ fun VideoPlayer(component: VideoComponent) {
             }
     }
 
-    SideEffect {
+    LaunchedEffect(exoPlayer) {
         component.playListener = {
             exoPlayer.play()
         }
@@ -173,8 +160,10 @@ fun VideoPlayer(component: VideoComponent) {
         component.seekListener = {
             exoPlayer.seekTo(it)
         }
-        exoPlayer.setMediaItem(MediaItem.fromUri(stream))
-        exoPlayer.prepare()
+        withContext(Dispatchers.Main) {
+            exoPlayer.setMediaItem(MediaItem.fromUri(stream))
+            exoPlayer.prepare()
+        }
     }
 
     DisposableEffect(
