@@ -18,8 +18,8 @@ val exoplayer = "1.0.0-rc01"
 val accompanist = "0.25.1"
 
 val artifact = "dev.datlag.burningseries"
-val appVersion = "4.3.1"
-val appCode = 431
+val appVersion = "4.3.2"
+val appCode = 432
 
 group = artifact
 version = appVersion
@@ -138,6 +138,7 @@ aboutLibraries {
     includePlatform = true
     duplicationMode = com.mikepenz.aboutlibraries.plugin.DuplicateMode.MERGE
     duplicationRule = com.mikepenz.aboutlibraries.plugin.DuplicateRule.GROUP
+    excludeFields = arrayOf("generated")
 }
 
 compose {
@@ -200,3 +201,5 @@ compose {
 tasks.withType<Copy>().all {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+apply(from = "fix-profm.gradle")
