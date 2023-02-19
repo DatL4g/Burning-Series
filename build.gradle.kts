@@ -23,7 +23,6 @@ buildscript {
         gradlePluginPortal()
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://plugins.gradle.org/m2/") }
-        maven { url = uri("https://packages.jetbrains.team/maven/p/ui/dev") }
     }
     dependencies {
         classpath("com.android.tools.build:gradle:7.3.1")
@@ -40,7 +39,6 @@ allprojects {
         gradlePluginPortal()
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://plugins.gradle.org/m2/") }
-        maven { url = uri("https://packages.jetbrains.team/maven/p/ui/dev") }
     }
 }
 
