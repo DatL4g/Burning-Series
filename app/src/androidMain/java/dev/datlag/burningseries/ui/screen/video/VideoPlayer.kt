@@ -160,10 +160,6 @@ fun VideoPlayer(component: VideoComponent) {
         component.seekListener = {
             exoPlayer.seekTo(it)
         }
-        withContext(Dispatchers.Main) {
-            exoPlayer.setMediaItem(MediaItem.fromUri(stream))
-            exoPlayer.prepare()
-        }
     }
 
     DisposableEffect(
@@ -187,6 +183,9 @@ fun VideoPlayer(component: VideoComponent) {
                 }
 
                 layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
+
+                exoPlayer.setMediaItem(MediaItem.fromUri(stream))
+                exoPlayer.prepare()
             }
         }, update = {
             it.apply {
