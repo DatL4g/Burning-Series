@@ -160,3 +160,17 @@ fun Modifier.focusRequesterIf(requester: FocusRequester?, predicate: () -> Boole
         this
     }
 }
+
+@Composable
+fun RunOnce(block: @Composable () -> Unit) {
+    var ran by remember { mutableStateOf(false) }
+    if (!ran) {
+        ran = true
+        block()
+    }
+    DisposableEffect(ran) {
+        onDispose {
+            ran = false
+        }
+    }
+}

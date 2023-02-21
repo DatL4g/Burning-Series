@@ -183,9 +183,6 @@ fun VideoPlayer(component: VideoComponent) {
                 }
 
                 layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
-
-                exoPlayer.setMediaItem(MediaItem.fromUri(stream))
-                exoPlayer.prepare()
             }
         }, update = {
             it.apply {
@@ -218,5 +215,9 @@ fun VideoPlayer(component: VideoComponent) {
             PIPEventDispatcher = { null }
             PIPModeListener = { }
         }
+    }
+    RunOnce {
+        exoPlayer.setMediaItem(MediaItem.fromUri(stream))
+        exoPlayer.prepare()
     }
 }
