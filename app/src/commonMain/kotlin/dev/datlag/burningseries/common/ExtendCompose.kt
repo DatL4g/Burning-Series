@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import dev.datlag.burningseries.LocalOrientation
 import dev.datlag.burningseries.other.Orientation
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.custom.dragdrop.DragDropState
 import kotlinx.coroutines.flow.Flow
 
@@ -162,15 +163,16 @@ fun Modifier.focusRequesterIf(requester: FocusRequester?, predicate: () -> Boole
 }
 
 @Composable
-fun RunOnce(block: @Composable () -> Unit) {
-    var ran by remember { mutableStateOf(false) }
-    if (!ran) {
-        ran = true
-        block()
+fun RunOnce(key: Any?, orCheck: () -> Boolean = { false }, block: () -> Unit) {
+    SideEffect {
+        if (!StateSaver.runOnce.getOrDefault(key, false) || orCheck()) {
+            block()
+            StateSaver.runOnce[key] = true
+        }
     }
-    DisposableEffect(ran) {
+    DisposableEffect(key) {
         onDispose {
-            ran = false
+            StateSaver.runOnce.remove(key)
         }
     }
 }

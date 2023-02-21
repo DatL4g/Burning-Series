@@ -26,4 +26,6 @@ object StateSaver {
     var webviewScrollY: Int = 0
 
     val state: MutableMap<String, ParcelableContainer> = mutableMapOf()
+
+    var runOnce: MutableMap<Any?, Boolean> = mutableMapOf()
 }

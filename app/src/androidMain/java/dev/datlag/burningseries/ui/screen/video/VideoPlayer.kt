@@ -30,6 +30,8 @@ import com.google.android.material.button.MaterialButton
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.R
 import dev.datlag.burningseries.common.*
+import dev.datlag.burningseries.other.Logger
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.activity.KeyEventDispatcher
 import dev.datlag.burningseries.ui.activity.PIPEventDispatcher
 import dev.datlag.burningseries.ui.activity.PIPModeListener
@@ -216,7 +218,9 @@ fun VideoPlayer(component: VideoComponent) {
             PIPModeListener = { }
         }
     }
-    RunOnce {
+    RunOnce(exoPlayer, {
+        exoPlayer.mediaItemCount <= 0 || exoPlayer.playbackState == Player.STATE_IDLE
+    }) {
         exoPlayer.setMediaItem(MediaItem.fromUri(stream))
         exoPlayer.prepare()
     }
