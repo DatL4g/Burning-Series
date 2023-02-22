@@ -12,6 +12,7 @@ plugins {
     id("com.squareup.sqldelight") version "1.5.5" apply false
     id("com.mikepenz.aboutlibraries.plugin") version "10.5.2" apply false
     id("de.jensklingenberg.ktorfit") version "1.0.0" apply false
+    id("com.google.osdetector") version "1.7.3" apply false
     id("com.github.ben-manes.versions") version "0.45.0"
 }
 

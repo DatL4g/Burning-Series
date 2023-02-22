@@ -260,6 +260,15 @@ actual class StringRes(private val context: Context) {
     actual val amoledMode: String
         get() = context.getString(R.string.amoled_mode)
 
+    actual val activateWindow: String
+        get() = context.getString(R.string.activate_window)
+
+    actual val activateWindowOpenedText: String
+        get() = context.getString(R.string.activate_window_opened_text)
+
+    actual val waitComponentInit: String
+        get() = context.getString(R.string.wait_component_init)
+
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
         if (runCatching {

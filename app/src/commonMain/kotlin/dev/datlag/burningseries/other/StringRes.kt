@@ -119,5 +119,9 @@ expect class StringRes {
     val followSystem: String
     val amoledMode: String
 
+    val activateWindow: String
+    val activateWindowOpenedText: String
+    val waitComponentInit: String
+
     fun openInBrowser(url: String): Boolean
 }

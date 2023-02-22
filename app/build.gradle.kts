@@ -8,6 +8,7 @@ plugins {
     id("kotlin-parcelize") apply false
     id("com.mikepenz.aboutlibraries.plugin")
     id("de.jensklingenberg.ktorfit")
+    id("com.google.osdetector")
 }
 
 val coroutines = "1.6.4"
@@ -16,6 +17,16 @@ val kodein = "7.18.0"
 val ktor = "2.2.3"
 val exoplayer = "1.0.0-rc01"
 val accompanist = "0.25.1"
+
+val javafx = "19.0.2.1"
+val javafxModules = listOf(
+    "javafx.base",
+    "javafx.graphics", // depends on base
+    "javafx.controls", // depends on base & graphics
+    "javafx.media", // depends on base & graphics
+    "javafx.swing", // depends on base & graphics
+    "javafx.web", // depends on base & graphics & controls & media
+)
 
 val artifact = "dev.datlag.burningseries"
 val appVersion = "4.3.2"
@@ -104,6 +115,11 @@ kotlin {
                 implementation("net.harawata:appdirs:1.2.1")
                 implementation("uk.co.caprica:vlcj:4.8.2")
                 implementation("org.apache.commons:commons-lang3:3.12.0")
+
+                val javaFxSuffix = getJavaFxSuffix()
+                javafxModules.forEach { artifact ->
+                    implementation(javaFxLib(artifact, javafx, javaFxSuffix))
+                }
             }
         }
     }
@@ -157,23 +173,15 @@ compose {
                 copyright = "© 2020 Jeff Retz (DatLag). All rights reserved."
                 licenseFile.set(rootProject.file("LICENSE"))
 
-                val hostOs = System.getProperty("os.name")
-                val isMingwX64 = hostOs.startsWith("Windows")
-
-                when {
-                    hostOs == "Linux" -> targetFormats(
+                when (getHost()) {
+                    Host.Linux -> targetFormats(
                         TargetFormat.AppImage, TargetFormat.Deb, TargetFormat.Rpm
                     )
-                    hostOs == "Mac OS X" -> targetFormats(
+                    Host.MAC -> targetFormats(
                         TargetFormat.Dmg
                     )
-                    isMingwX64 -> targetFormats(
+                    Host.Windows -> targetFormats(
                         TargetFormat.Exe, TargetFormat.Msi
-                    )
-                    else -> targetFormats(
-                        TargetFormat.Deb, TargetFormat.Rpm,
-                        TargetFormat.Exe, TargetFormat.Msi,
-                        TargetFormat.Dmg
                     )
                 }
 
@@ -200,6 +208,46 @@ compose {
 
 tasks.withType<Copy>().all {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+fun getJavaFxSuffix(): String {
+    return when (osdetector.classifier) {
+        "linux-x86_64" -> "linux"
+        "linux-aarch_64" -> "linux-aarch64"
+        "windows-x86_64" -> "win"
+        "osx-x86_64" -> "mac"
+        "osx-aarch_64" -> "mac-aarch64"
+        else -> getHost().label
+    }
+}
+
+fun getHost(): Host {
+    return when (osdetector.os) {
+        "linux" -> Host.Linux
+        "osx" -> Host.MAC
+        "windows" -> Host.Windows
+        else -> {
+            val hostOs = System.getProperty("os.name")
+            val isMingwX64 = hostOs.startsWith("Windows")
+
+            when {
+                hostOs == "Linux" -> Host.Linux
+                hostOs == "Mac OS X" -> Host.MAC
+                isMingwX64 -> Host.Windows
+                else -> throw IllegalStateException("Unknown OS: ${osdetector.classifier}")
+            }
+        }
+    }
+}
+
+fun javaFxLib(artifactId: String, version: String, suffix: String): String {
+    return "org.openjfx:${artifactId.replace('.', '-')}:${version}:${suffix}"
+}
+
+enum class Host(val label: String) {
+    Linux("linux"),
+    Windows("win"),
+    MAC("mac");
 }
 
 apply(from = "fix-profm.gradle")

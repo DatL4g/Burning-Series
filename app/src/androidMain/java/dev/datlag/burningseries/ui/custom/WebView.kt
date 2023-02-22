@@ -70,7 +70,7 @@ actual fun WebView(component: ActivateComponent) {
             while (isActive && withContext(Dispatchers.Main) { webView.isAttachedToWindow }) {
                 withContext(Dispatchers.Main) {
                     webView.evaluateJavascript(javascript) { result ->
-                        if (result != null && result.isNotEmpty() && !result.equals("null", true)) {
+                        if (!result.isNullOrEmpty() && !result.equals("null", true)) {
                             component.saveScrapedData(result)
                         }
                     }

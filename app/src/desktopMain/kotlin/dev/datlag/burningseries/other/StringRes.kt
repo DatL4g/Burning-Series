@@ -264,6 +264,15 @@ actual class StringRes private constructor(
     actual val amoledMode: String
         get() = getLocaleOrDefaultFor("amoled_mode")
 
+    actual val activateWindow: String
+        get() = getLocaleOrDefaultFor("activate_window")
+
+    actual val activateWindowOpenedText: String
+        get() = getLocaleOrDefaultFor("activate_window_opened_text")
+
+    actual val waitComponentInit: String
+        get() = getLocaleOrDefaultFor("wait_component_init")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }

@@ -73,6 +73,9 @@
     <string name="loading_url">Lade URL, bitte warten...</string>
     <string name="activate_text">Willst du die Episode aktivieren oder im Browser öffnen?</string>
     <string name="browser">Browser</string>
+    <string name="activate_window">Aktivierungsfenster - Statusinformation im normalen Fenster</string>
+    <string name="activate_window_opened_text">Ein anderes Fenster wurde zum Aktivieren geöffnet, die Statusinformation wird hier angezeigt.</string>
+    <string name="wait_component_init">Warte bis die Komponente initialisiert wurde...</string>
 
     <string name="appearance">Erscheinung</string>
     <string name="theming">Design</string>

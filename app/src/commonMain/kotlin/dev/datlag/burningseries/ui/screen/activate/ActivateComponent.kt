@@ -27,5 +27,6 @@ interface ActivateComponent : Component {
     val status: MutableStateFlow<Status>
 
     fun saveScrapedData(result: String)
+    fun saveScrapedData(href: String, url: String)
     fun setStatus(status: Status)
 }

@@ -81,8 +81,20 @@ class ActivateScreenComponent(
         }
     }
 
+    override fun saveScrapedData(href: String, url: String) {
+        val scraped = ScrapedHoster(
+            href = href,
+            url = url
+        )
+        saveScrapedHoster(scraped)
+    }
+
     override fun saveScrapedData(result: String) {
         val scraped = json.decodeFromString<ScrapedHoster>(result)
+        saveScrapedHoster(scraped)
+    }
+
+    private fun saveScrapedHoster(scraped: ScrapedHoster) {
         if (!scrapedList.contains(scraped)) {
             scrapedList.add(scraped)
             scope.launch(Dispatchers.IO) {
