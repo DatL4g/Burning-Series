@@ -29,8 +29,8 @@ val javafxModules = listOf(
 )
 
 val artifact = "dev.datlag.burningseries"
-val appVersion = "4.3.2"
-val appCode = 432
+val appVersion = "4.3.3"
+val appCode = 433
 
 group = artifact
 version = appVersion
@@ -63,8 +63,8 @@ kotlin {
                 api("io.ktor:ktor-serialization-kotlinx-json:$ktor")
                 api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0")
 
-                implementation("com.mikepenz:aboutlibraries-compose:10.5.2")
-                implementation("com.mikepenz:aboutlibraries-core:10.5.2")
+                implementation("com.mikepenz:aboutlibraries-compose:10.6.1")
+                implementation("com.mikepenz:aboutlibraries-core:10.6.1")
 
                 implementation(project(":network"))
                 implementation(project(":datastore"))
@@ -100,7 +100,7 @@ kotlin {
                 implementation("androidx.media3:media3-exoplayer-smoothstreaming:$exoplayer")
                 implementation("androidx.media3:media3-ui:$exoplayer")
 
-                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01")
+                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-rc01")
             }
         }
 
@@ -108,8 +108,8 @@ kotlin {
             resources.srcDirs("src/desktopMain/resources", "src/commonMain/resources", "src/commonMain/assets")
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation("io.github.pdvrieze.xmlutil:core-jvm:0.84.3")
-                implementation("io.github.pdvrieze.xmlutil:serialization-jvm:0.84.3")
+                implementation("io.github.pdvrieze.xmlutil:core-jvm:0.85.0")
+                implementation("io.github.pdvrieze.xmlutil:serialization-jvm:0.85.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines")
                 implementation("com.sealwu:kscript-tools:1.0.22")
                 implementation("net.harawata:appdirs:1.2.1")
