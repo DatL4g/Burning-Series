@@ -1,14 +1,13 @@
-# BurningSeries-Android
+# Burning-Series
 
-[![Issues](https://img.shields.io/github/issues/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/issues)
-[![Stars](https://img.shields.io/github/stars/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/stargazers)
-[![Forks](https://img.shields.io/github/forks/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/network/members)
-[![Contributors](https://img.shields.io/github/contributors/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/graphs/contributors)
-[![License](https://img.shields.io/github/license/DATL4G/BurningSeries-Android.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/blob/master/LICENSE)
-[![Github all releases](https://img.shields.io/github/downloads/DATL4G/BurningSeries-Android/total.svg?style=for-the-badge)](https://github.com/DATL4G/BurningSeries-Android/releases)
+[![Issues](https://img.shields.io/github/issues/DATL4G/Burning-Series.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/issues)
+[![Stars](https://img.shields.io/github/stars/DATL4G/Burning-Series.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/stargazers)
+[![Forks](https://img.shields.io/github/forks/DATL4G/Burning-Series.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/network/members)
+[![Contributors](https://img.shields.io/github/contributors/DATL4G/Burning-Series.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/graphs/contributors)
+[![License](https://img.shields.io/github/license/DATL4G/Burning-Series.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/blob/master/LICENSE)
+[![Github all releases](https://img.shields.io/github/downloads/DATL4G/Burning-Series/total.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/releases)
 
-[![CodeFactor](https://www.codefactor.io/repository/github/datl4g/burningseries-android/badge)](https://sonarcloud.io/project/overview?id=DATL4G_BurningSeries-Android)
-[![Release Status](https://github.com/DatL4g/BurningSeries-Android/actions/workflows/release.yml/badge.svg)](https://github.com/DATL4G/BurningSeries-Android/actions/workflows/release.yml)
+[![Release Status](https://github.com/DatL4g/Burning-Series/actions/workflows/release.yml/badge.svg)](https://github.com/DATL4G/Burning-Series/actions/workflows/release.yml)
 
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/kotlin-%230095D5.svg?style=for-the-badge&logo=kotlin&logoColor=white)
@@ -20,9 +19,7 @@ Watch any series or videos on [Burning Series](https://bs.to/) easily with this 
 You can see the latest series and episodes, get an overview of all available series, save your favorites and start watching directly inside the app.
 **You can't login to your [Burning Series](https://bs.to/) Account because it's not using an official API.** Read the [Important Notice](#important-notice) for more info.
 
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-     alt="Get it on F-Droid"
-     height="60">](https://f-droid.org/packages/de.datlag.burningseries/)
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="60">](https://f-droid.org/packages/dev.datlag.burningseries/)
 
 - [Important Notice](#important-notice)
 - [Supported devices and Installation](#supported-devices-and-installation)
@@ -43,7 +40,7 @@ If the app stops working don't report that in any form on [Burning Series](https
 
 ## Supported devices and Installation
 
-All Android smartphones with version >=5.0 (Lollipop and up) as well as Android TVs are supported.
+All Android smartphones with version >=6.0 (Lollipop and up) as well as Android TVs are supported.
 
 To install the app head over to the [Release Section](https://github.com/DATL4G/BurningSeries-Android/releases) and download the ```.apk``` file. For more advanced users is an ```.aab``` file provided which can be installed using [bundletool](https://developer.android.com/studio/command-line/bundletool).
 Installing the ```.apk``` file is easy, just copy it to your phone (or download it directly on your phone) and open it to install. If this won't work you can use [ADB](https://developer.android.com/studio/command-line/adb) sideloading to install it from your pc on your phone.
@@ -52,18 +49,28 @@ You can also download the app from [F-Droid](https://f-droid.org/packages/de.dat
 
 Search on the internet if you face any problems. Don't ask for help here!
 
+### Desktop
+
+- **Windows** (tested by member)
+- **MacOS** (untested)
+- **Linux**
+  - Fedora
+  - AppImage
+  - Debian / Ubuntu
+  - Tarball
+
 ## Usage
 
-The usage is pretty self explanatory the screenshots below show some examples.
+The usage is pretty self-explanatory the screenshots below show some examples.
 
-| Home | All | Favorites | Series |
-|---|---|---|---|
-| ![Home Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png) | ![All Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png) | ![Favorites Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/7.png) | ![Series Dark](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/8.png) |
-| ![Home Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png) | ![All Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png) | ![Favorites Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png) | ![Series Light](https://github.com/DATL4G/BurningSeries-Android/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png) |
+| Home                                                                                                                               | All                                                                                                                               | Favorites                                                                                                                               | Series                                                                                                                               |
+|------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| ![Home Dark](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png)  | ![All Dark](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png)  | ![Favorites Dark](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/7.png)  | ![Series Dark](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/8.png)  |
+| ![Home Light](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png) | ![All Light](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png) | ![Favorites Light](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png) | ![Series Light](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png) |
 
 ## Contributing
 
-When you face any bugs or problems please open an [Issue](https://github.com/DATL4G/BurningSeries-Android/issues/new/choose).
+When you face any bugs or problems please open an [Issue](https://github.com/DATL4G/Burning-Series/issues/new/choose).
 
 To add functionality fork the project and create a pull request afterwards. You should know how that works if you are a developer :)
 You can add yourself to the list below if you want then.
