@@ -29,8 +29,8 @@ val javafxModules = listOf(
 )
 
 val artifact = "dev.datlag.burningseries"
-val appVersion = "4.3.3"
-val appCode = 433
+val appVersion = "4.4.0"
+val appCode = 440
 
 group = artifact
 version = appVersion
