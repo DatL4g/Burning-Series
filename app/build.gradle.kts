@@ -96,7 +96,7 @@ kotlin {
                 implementation("androidx.media3:media3-exoplayer-dash:$exoplayer")
                 implementation("androidx.media3:media3-exoplayer-hls:$exoplayer")
                 implementation("androidx.media3:media3-exoplayer-rtsp:$exoplayer")
-                implementation("androidx.media3:media3-exoplayer-rtsp:$exoplayer")
+                implementation("androidx.media3:media3-session:$exoplayer")
                 implementation("androidx.media3:media3-exoplayer-smoothstreaming:$exoplayer")
                 implementation("androidx.media3:media3-ui:$exoplayer")
 

@@ -1,7 +1,9 @@
 package dev.datlag.burningseries.ui.screen.video
 
+import android.app.RemoteAction
 import android.content.pm.ActivityInfo
 import android.os.Build
+import android.support.v4.media.session.MediaSessionCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
@@ -24,6 +26,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.*
+import androidx.media3.session.MediaController
+import androidx.media3.session.MediaSession
 import androidx.media3.ui.DefaultTimeBar
 import androidx.media3.ui.PlayerView
 import com.google.android.material.button.MaterialButton
@@ -33,6 +37,7 @@ import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.other.Logger
 import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.activity.KeyEventDispatcher
+import dev.datlag.burningseries.ui.activity.PIPActions
 import dev.datlag.burningseries.ui.activity.PIPEventDispatcher
 import dev.datlag.burningseries.ui.activity.PIPModeListener
 import dev.datlag.burningseries.ui.custom.RequireFullScreen
@@ -139,6 +144,8 @@ fun VideoPlayer(component: VideoComponent) {
                 })
                 playWhenReady = true
                 prepare()
+
+                MediaSession.Builder(context, this).build()
             }
     }
 
@@ -216,6 +223,7 @@ fun VideoPlayer(component: VideoComponent) {
             KeyEventDispatcher = { null }
             PIPEventDispatcher = { null }
             PIPModeListener = { }
+            PIPActions = { null }
         }
     }
     RunOnce(exoPlayer, {

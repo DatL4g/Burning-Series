@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.ui.activity
 
 import android.app.PictureInPictureParams
+import android.app.RemoteAction
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -137,6 +138,11 @@ class MainActivity : AppCompatActivity() {
                 builder.setAutoEnterEnabled(true)
             }
 
+            val actions = PIPActions.invoke()
+            if (!actions.isNullOrEmpty()) {
+                builder.setActions(actions)
+            }
+
             this.enterPictureInPictureMode(builder.build())
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             this.enterPictureInPictureMode()
@@ -173,3 +179,4 @@ class MainActivity : AppCompatActivity() {
 var KeyEventDispatcher: (event: KeyEvent?) -> Boolean? = { null }
 var PIPEventDispatcher: () -> Boolean? = { null }
 var PIPModeListener: (Boolean) -> Unit = { }
+var PIPActions: () -> ArrayList<RemoteAction>? = { null }
