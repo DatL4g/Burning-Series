@@ -38,14 +38,16 @@ fun SeriesItem(content: Home.Series, component: SeriesItemComponent) {
 
 @Composable
 fun SeriesItem(content: DBSeries, component: SeriesItemComponent) {
-    val base64 = remember(content.hrefTitle) { File(component.imageDir, content.coverFileName()).readText() }
+    val base64 = remember(content.hrefTitle) { runCatching {
+        File(component.imageDir, content.coverFileName()).readText()
+    }.getOrNull() }
 
     SeriesItem(
         content.href,
         content.title,
         Cover(
             href = content.coverHref ?: String(),
-            base64 = base64
+            base64 = base64 ?: String()
         ),
         component
     )

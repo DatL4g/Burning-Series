@@ -42,19 +42,21 @@ fun EpisodeItem(content: Home.Episode, component: EpisodesComponent) {
 
 @Composable
 fun EpisodeItem(content: SelectLatestEpisodesAmount, component: EpisodesComponent) {
-    val base64 = remember { File(component.imageDir, DBSeries(
-        content.hrefTitle,
-        content.href,
-        content.title,
-        content.coverHref,
-        content.favoriteSince
-    ).coverFileName()).readText() }
+    val base64 = remember { runCatching {
+        File(component.imageDir, DBSeries(
+            content.hrefTitle,
+            content.href,
+            content.title,
+            content.coverHref,
+            content.favoriteSince
+        ).coverFileName()).readText()
+    }.getOrNull() }
 
     EpisodeItem(
         content.episodeTitle,
         Cover(
             href = content.coverHref ?: String(),
-            base64 = base64
+            base64 = base64 ?: String()
         ),
         content.episodeHref,
         content.title,
