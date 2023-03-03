@@ -121,12 +121,12 @@ jobs:
         run: echo "Signed ${{ steps.sign_app.outputs.signedFilesCount }} files called ${{ steps.sign_app.outputs.signedFiles }}"
 
       - name: Split signed files
-        uses: xom9ikk/split@v1
+        uses: JungWinter/split@v2.1.0
         id: split
         with:
-          string: ${{ steps.sign_app.outputs.signedFiles }}
+          msg: ${{ steps.sign_app.outputs.signedFiles }}
           separator: ':'
-          limit: 2
+          maxsplit: 2
 
       - name: Release
         uses: softprops/action-gh-release@v1
