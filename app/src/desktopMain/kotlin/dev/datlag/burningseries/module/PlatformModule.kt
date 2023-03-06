@@ -4,6 +4,8 @@ import dev.datlag.burningseries.common.createWithParents
 import dev.datlag.burningseries.database.BurningSeriesDB
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.datastore.CryptoManager
+import dev.datlag.burningseries.network.video.Scraper
+import dev.datlag.burningseries.network.video.VideoScraper
 import dev.datlag.burningseries.other.AppIO
 import net.harawata.appdirs.AppDirs
 import net.harawata.appdirs.AppDirsFactory
@@ -37,6 +39,10 @@ actual object PlatformModule {
 
         bindSingleton("ImageDir") {
             AppIO.getFolderInSiteDataDir("images")
+        }
+
+        bindSingleton<Scraper> {
+            VideoScraper
         }
     }
 

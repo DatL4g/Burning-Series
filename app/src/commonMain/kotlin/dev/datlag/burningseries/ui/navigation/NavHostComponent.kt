@@ -6,8 +6,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.fade
-import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.plus
-import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.scale
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
@@ -19,7 +17,6 @@ import dev.datlag.burningseries.common.coroutineScope
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.datastore.common.showedLogin
 import dev.datlag.burningseries.datastore.preferences.UserSettings
-import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.model.VideoStream
@@ -28,14 +25,12 @@ import dev.datlag.burningseries.ui.screen.activate.ActivateScreenComponent
 import dev.datlag.burningseries.ui.screen.favorite.FavoriteScreenComponent
 import dev.datlag.burningseries.ui.screen.genre.GenreScreenComponent
 import dev.datlag.burningseries.ui.screen.home.HomeScreenComponent
-import dev.datlag.burningseries.ui.screen.login.LoginScreenComponent
 import dev.datlag.burningseries.ui.screen.series.SeriesScreenComponent
 import dev.datlag.burningseries.ui.screen.settings.SettingsScreenComponent
 import dev.datlag.burningseries.ui.screen.video.VideoScreenComponent
 import io.ktor.client.plugins.cookies.*
 import org.kodein.di.*
 import dev.datlag.burningseries.common.CommonDispatcher
-import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.network.repository.GitHubRepository
 import dev.datlag.burningseries.other.Constants
 import kotlinx.coroutines.Dispatchers
@@ -50,20 +45,11 @@ class NavHostComponent private constructor(
 
     private val scope = coroutineScope(CommonDispatcher.Main + SupervisorJob())
     private val navigation = StackNavigation<ScreenConfig>()
-    private val userDataStore: DataStore<UserSettings> by di.instance()
     private val githubRepo: GitHubRepository by di.instance()
 
     private val stack = childStack(
         source = navigation,
-        initialStack = {
-            val showedLogin = userDataStore.showedLogin.getValueBlocking(false)
-            val defaultScreen = if (showedLogin) {
-                ScreenConfig.Home
-            } else {
-                ScreenConfig.Home // Login, maybe find some workaround for session
-            }
-            listOf(defaultScreen)
-        },
+        initialConfiguration = ScreenConfig.Home,
         childFactory = ::createScreenComponent
     )
 
@@ -84,12 +70,6 @@ class NavHostComponent private constructor(
             )
         }
         return when (screenConfig) {
-            is ScreenConfig.Login -> LoginScreenComponent(
-                componentContext,
-                ::onLoginClicked,
-                ::onLoginSkipClicked,
-                di
-            )
             is ScreenConfig.Home -> homeConfig
             is ScreenConfig.Genre -> GenreScreenComponent(
                 componentContext,

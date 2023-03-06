@@ -141,9 +141,6 @@ object NetworkModule {
         bindSingleton {
             GenreRepository(instance())
         }
-        bindSingleton {
-            UserRepository(instance(), instance())
-        }
         bindProvider {
             SeriesRepository(instance())
         }
@@ -151,7 +148,7 @@ object NetworkModule {
             EpisodeRepository(instance())
         }
         bindProvider {
-            SaveRepository(instance())
+            SaveRepository(instance(), instance())
         }
         bindSingleton {
             GitHubRepository(instance())

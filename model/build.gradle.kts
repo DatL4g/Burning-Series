@@ -10,6 +10,9 @@ group = "dev.datlag.burningseries.model"
 kotlin {
     android()
     jvm("desktop")
+    js(IR) {
+        browser()
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -25,6 +28,8 @@ kotlin {
         }
 
         val desktopMain by getting
+
+        val jsMain by getting
     }
 }
 
