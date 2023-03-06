@@ -2,4 +2,14 @@ package dev.datlag.burningseries.model.common
 
 import kotlinx.datetime.LocalDate
 
-fun LocalDate.asIsoString() = "%d-%02d-%02d".format(this.year, this.monthNumber, this.dayOfMonth)
+fun LocalDate.asIsoString(): String {
+    fun doubleDigit(value: Int): String {
+        return if (value <= 9) {
+            "0$value"
+        } else {
+            "$value"
+        }
+    }
+
+    return "${this.year}-${doubleDigit(this.monthNumber)}-${doubleDigit(this.dayOfMonth)}"
+}

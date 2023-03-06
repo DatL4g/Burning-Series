@@ -7,11 +7,10 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.common.trimHref
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.Status
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.JsonElement
-import java.net.URLEncoder
+import dev.datlag.burningseries.network.common.Dispatchers
 
 class SeriesRepository(
     private val api: BurningSeries

@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+
+  "name": "Burning-Series Activate",
+  "description": "Burning-Series Activate is an extension to activate episodes for the app in your browser.",
+  "version": "0.0.0",
+
+  "icons": {
+    "16": "launcher_16.png",
+    "32": "launcher_32.png",
+    "48": "launcher_48.png",
+    "64": "launcher_64.png",
+    "96": "launcher_96.png",
+    "128": "launcher_128.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.bs.to/serie/*",
+        "*://*.burningseries.co/serie/*",
+        "*://*.burningseries.sx/serie/*",
+        "*://*.burningseries.ac/serie/*",
+        "*://*.burningseries.vc/serie/*",
+        "*://*.burningseries.cx/serie/*",
+        "*://*.burningseries.nz/serie/*",
+        "*://*.burningseries.se/serie/*"
+      ],
+      "js": [
+        "browser-polyfill.min.js",
+        "content_script.js"
+      ]
+    }
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "permissions": [
+    "activeTab",
+    "background"
+  ]
+}

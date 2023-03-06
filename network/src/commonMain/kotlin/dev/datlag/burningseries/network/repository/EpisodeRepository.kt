@@ -7,13 +7,14 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.Status
-import dev.datlag.burningseries.network.video.VideoScraper
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import dev.datlag.burningseries.network.common.Dispatchers
+import dev.datlag.burningseries.network.video.Scraper
 
 class EpisodeRepository(
-    private val api: BurningSeries
+    private val api: BurningSeries,
+    private val scraper: Scraper? = null
 ) {
 
     private val episode: MutableStateFlow<Series.Episode?> = MutableStateFlow(null)
@@ -58,7 +59,7 @@ class EpisodeRepository(
         if (it != null) {
             return@transformLatest emit(withContext(Dispatchers.IO) {
                 it.map { hoster -> async {
-                    VideoScraper.scrapeVideosFrom(hoster)
+                    scraper?.scrapeVideosFrom(hoster)
                 } }.awaitAll().filterNotNull()
             })
         }

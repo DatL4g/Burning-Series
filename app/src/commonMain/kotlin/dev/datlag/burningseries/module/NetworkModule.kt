@@ -145,7 +145,7 @@ object NetworkModule {
             SeriesRepository(instance())
         }
         bindProvider {
-            EpisodeRepository(instance())
+            EpisodeRepository(instance(), instance())
         }
         bindProvider {
             SaveRepository(instance(), instance())

@@ -6,3 +6,5 @@ include("network")
 include("datastore")
 include("datastore-codegen")
 include("database")
+
+include("extension")
