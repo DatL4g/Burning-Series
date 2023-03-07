@@ -152,6 +152,9 @@ actual class StringRes(private val context: Context) {
     actual val readMore: String
         get() = context.getString(R.string.read_more)
 
+    actual val readLess: String
+        get() = context.getString(R.string.read_less)
+
     actual val sortHosterHint: String
         get() = context.getString(R.string.sort_hoster_hint)
 

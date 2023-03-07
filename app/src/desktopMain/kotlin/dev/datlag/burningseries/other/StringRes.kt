@@ -156,6 +156,9 @@ actual class StringRes private constructor(
     actual val readMore: String
         get() = getLocaleOrDefaultFor("read_more")
 
+    actual val readLess: String
+        get() = getLocaleOrDefaultFor("read_less")
+
     actual val sortHosterHint: String
         get() = getLocaleOrDefaultFor("sort_hoster_hint")
 

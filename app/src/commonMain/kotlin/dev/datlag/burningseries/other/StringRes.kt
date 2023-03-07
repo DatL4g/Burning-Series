@@ -68,6 +68,7 @@ expect class StringRes {
     val startEpisode: String
 
     val readMore: String
+    val readLess: String
     val sortHosterHint: String
 
     val moveUp: String

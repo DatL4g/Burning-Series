@@ -50,6 +50,7 @@
     <string name="continue_episode">Continue [Ep. %s]</string>
     <string name="start_episode">Start [Ep. %s]</string>
     <string name="read_more">Read More</string>
+    <string name="read_less">Read Less</string>
     <string name="sort_hoster_hint">Please sort the hoster in settings first</string>
     <string name="move_up">Move Up</string>
     <string name="move_down">Move Down</string>

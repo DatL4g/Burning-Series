@@ -17,12 +17,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +37,6 @@ import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.other.Orientation
-import dev.datlag.burningseries.ui.custom.readmoretext.ReadMoreText
 import dev.datlag.burningseries.ui.screen.series.toolbar.LandscapeToolbar
 import dev.datlag.burningseries.ui.screen.series.toolbar.PortraitToolbar
 import dev.datlag.burningseries.model.common.maxSize
@@ -45,6 +46,8 @@ import dev.datlag.burningseries.ui.custom.ChipGroup
 import dev.datlag.burningseries.ui.dialog.language.LanguageComponent
 import dev.datlag.burningseries.ui.dialog.language.LanguageDialog
 import dev.datlag.burningseries.ui.custom.InfoCard
+import dev.datlag.burningseries.ui.custom.readmoretext.ReadMoreText
+import dev.datlag.burningseries.ui.custom.readmoretext.ReadMoreTextOverflow
 import dev.datlag.burningseries.ui.custom.snackbarHandlerForStatus
 import dev.datlag.burningseries.ui.dialog.activate.ActivateComponent
 import dev.datlag.burningseries.ui.dialog.activate.ActivateDialog
@@ -185,11 +188,17 @@ private fun LazyListScope.SeriesScreenContent(
     episodes: List<Series.Episode>
 ) {
     item {
+        val (expand, onExpandChange) = rememberSaveable { mutableStateOf(false) }
+
         ReadMoreText(
             modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp),
             text = description ?: String(),
-            expanded = false,
-            readMoreText = LocalStringRes.current.readMore
+            expanded = expand,
+            onExpandedChange = onExpandChange,
+            readMoreText = LocalStringRes.current.readMore,
+            readMoreColor = MaterialTheme.colorScheme.primary,
+            readLessText = LocalStringRes.current.readLess,
+            readMoreOverflow = ReadMoreTextOverflow.Clip
         )
     }
 

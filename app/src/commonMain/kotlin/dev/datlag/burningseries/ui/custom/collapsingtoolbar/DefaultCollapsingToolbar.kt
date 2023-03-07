@@ -1,7 +1,12 @@
 package dev.datlag.burningseries.ui.custom.collapsingtoolbar
 
 import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -34,7 +39,7 @@ fun DefaultCollapsingToolbar(
         modifier = Modifier.fillMaxWidth(),
         state = state,
         scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
-        toolbarModifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 56.dp),
+        toolbarModifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 56.dp).verticalScroll(rememberScrollState()),
         toolbar = {
             expandedBody(state)
 
