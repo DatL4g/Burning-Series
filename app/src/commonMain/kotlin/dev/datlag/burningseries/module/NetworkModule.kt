@@ -44,14 +44,13 @@ object NetworkModule {
 
             try {
                 tempDir.deleteOnExit()
-            } catch (ignored: Throwable) {
-            }
+            } catch (ignored: Throwable) { }
 
             tempDir
         }
 
         bindSingleton(TAG_OKHTTP_BOOTSTRAP_CLIENT) {
-            okhttp3.OkHttpClient.Builder().cache(Cache(instance(TAG_OKHTTP_CACHE_FOLDER), 4096)).build()
+            OkHttpClient.Builder().cache(Cache(instance(TAG_OKHTTP_CACHE_FOLDER), 4096)).build()
         }
 
         bindSingleton {
