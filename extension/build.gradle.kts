@@ -1,3 +1,6 @@
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
+
 plugins {
     kotlin("js")
     kotlin("plugin.serialization")
@@ -27,6 +30,7 @@ tasks {
 
     val buildAndCopy = register("buildAndCopy") {
         dependsOn(rootProject.tasks.clean, assemble)
+
         doLast {
             copy {
                 from(File(buildDir, "distributions")) {
@@ -36,9 +40,8 @@ tasks {
             }
 
             copy {
-                into(extensionFolder)
-
                 from(File(resourcesFolder, "manifest.json"))
+                into(extensionFolder)
 
                 from(iconsFolder) {
                     include("launcher_*.png")
@@ -58,10 +61,20 @@ tasks {
                 }
                 into(extensionFolder)
             }
+
+            jsonObjectAsMap(
+                JsonSlurper().parse(File(extensionFolder, "manifest.json"))
+            )?.toMutableMap()?.let { json ->
+                if (json.containsKey("version")) {
+                    json["version"] = rootProject.project("app").version.toString()
+                }
+
+                File(extensionFolder, "manifest.json").writeText(JsonBuilder(json).toPrettyString())
+            }
         }
     }
 
-    val pack = register<Zip>("pack") {
+    register<Zip>("pack") {
         dependsOn(buildAndCopy)
 
         mkdir(releaseFolder)
@@ -69,4 +82,16 @@ tasks {
         archiveBaseName.set("extension-${rootProject.project("app").version}")
         destinationDirectory.set(releaseFolder)
     }
+}
+
+@Suppress("UNCHECKED_CAST")
+fun jsonObjectAsMap(data: Any?): Map<String, Any>? {
+    if (data == null) {
+        return null
+    }
+
+    val map = data as? Map<*, *> ?: return null
+    return runCatching {
+        map as Map<String, Any>
+    }.getOrNull()
 }

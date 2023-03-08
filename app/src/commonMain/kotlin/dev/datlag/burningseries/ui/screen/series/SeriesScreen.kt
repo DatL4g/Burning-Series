@@ -48,6 +48,7 @@ import dev.datlag.burningseries.ui.dialog.language.LanguageDialog
 import dev.datlag.burningseries.ui.custom.InfoCard
 import dev.datlag.burningseries.ui.custom.readmoretext.ReadMoreText
 import dev.datlag.burningseries.ui.custom.readmoretext.ReadMoreTextOverflow
+import dev.datlag.burningseries.ui.custom.readmoretext.ToggleArea
 import dev.datlag.burningseries.ui.custom.snackbarHandlerForStatus
 import dev.datlag.burningseries.ui.dialog.activate.ActivateComponent
 import dev.datlag.burningseries.ui.dialog.activate.ActivateDialog
@@ -190,16 +191,19 @@ private fun LazyListScope.SeriesScreenContent(
     item {
         val (expand, onExpandChange) = rememberSaveable { mutableStateOf(false) }
 
-        ReadMoreText(
-            modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp),
-            text = description ?: String(),
-            expanded = expand,
-            onExpandedChange = onExpandChange,
-            readMoreText = LocalStringRes.current.readMore,
-            readMoreColor = MaterialTheme.colorScheme.primary,
-            readLessText = LocalStringRes.current.readLess,
-            readMoreOverflow = ReadMoreTextOverflow.Clip
-        )
+        if (!description.isNullOrEmpty()) {
+            ReadMoreText(
+                modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                text = description,
+                expanded = expand,
+                onExpandedChange = onExpandChange,
+                readMoreText = LocalStringRes.current.readMore,
+                readMoreColor = MaterialTheme.colorScheme.primary,
+                readLessText = LocalStringRes.current.readLess,
+                readMoreOverflow = ReadMoreTextOverflow.Ellipsis,
+                toggleArea = ToggleArea.More
+            )
+        }
     }
 
     item {

@@ -24,7 +24,8 @@
         "*://*.burningseries.vc/serie/*",
         "*://*.burningseries.cx/serie/*",
         "*://*.burningseries.nz/serie/*",
-        "*://*.burningseries.se/serie/*"
+        "*://*.burningseries.se/serie/*",
+        "*://*.burningseries.tw/serie/*"
       ],
       "js": [
         "browser-polyfill.min.js",

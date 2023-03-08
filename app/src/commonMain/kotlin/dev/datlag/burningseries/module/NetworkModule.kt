@@ -10,6 +10,7 @@ import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.GitHub
 import dev.datlag.burningseries.network.converter.FlowerResponseConverter
 import dev.datlag.burningseries.network.repository.*
+import dev.datlag.burningseries.other.MultiDoH
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.*
@@ -54,10 +55,34 @@ object NetworkModule {
         }
 
         bindSingleton {
-            DnsOverHttps.Builder().client(instance(TAG_OKHTTP_BOOTSTRAP_CLIENT))
-                .url("https://dns.google/dns-query".toHttpUrl())
-                .bootstrapDnsHosts(InetAddress.getByName("8.8.4.4"), InetAddress.getByName("8.8.8.8"))
-                .build()
+            val bootstrapClient: OkHttpClient = instance(TAG_OKHTTP_BOOTSTRAP_CLIENT)
+            MultiDoH(
+                DnsOverHttps.Builder().client(bootstrapClient)
+                    .url("https://dns.google/dns-query".toHttpUrl())
+                    .bootstrapDnsHosts(InetAddress.getByName("8.8.4.4"), InetAddress.getByName("8.8.8.8"))
+                    .build(),
+                DnsOverHttps.Builder().client(bootstrapClient)
+                    .url("https://dns.google/dns-query".toHttpUrl())
+                    .bootstrapDnsHosts(InetAddress.getByName("8.8.4.4"), InetAddress.getByName("8.8.8.8"))
+                    .post(true)
+                    .build(),
+                DnsOverHttps.Builder().client(bootstrapClient)
+                    .url("https://1.1.1.1/dns-query".toHttpUrl())
+                    .bootstrapDnsHosts(InetAddress.getByName("1.1.1.1"), InetAddress.getByName("1.0.0.1"))
+                    .includeIPv6(false)
+                    .build(),
+                DnsOverHttps.Builder().client(bootstrapClient)
+                    .url("https://cloudflare-dns.com/dns-query".toHttpUrl())
+                    .bootstrapDnsHosts(InetAddress.getByName("1.1.1.1"), InetAddress.getByName("1.0.0.1"))
+                    .includeIPv6(false)
+                    .post(true)
+                    .build(),
+                DnsOverHttps.Builder().client(bootstrapClient)
+                    .url("https://dns.dnsoverhttps.net/dns-query".toHttpUrl())
+                    .includeIPv6(false)
+                    .build(),
+                Dns.SYSTEM
+            )
         }
 
         bindSingleton {
