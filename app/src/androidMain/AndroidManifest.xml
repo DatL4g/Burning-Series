@@ -27,6 +27,10 @@
         android:required="false" />
 
     <uses-feature
+            android:name="android.hardware.ethernet"
+            android:required="false" />
+
+    <uses-feature
         android:name="android.software.webview"
         android:required="false" />
 
