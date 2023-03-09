@@ -6,12 +6,12 @@
   "version": "0.0.0",
 
   "icons": {
-    "16": "launcher_16.png",
-    "32": "launcher_32.png",
-    "48": "launcher_48.png",
-    "64": "launcher_64.png",
-    "96": "launcher_96.png",
-    "128": "launcher_128.png"
+    "16": "icons/launcher_16.png",
+    "32": "icons/launcher_32.png",
+    "48": "icons/launcher_48.png",
+    "64": "icons/launcher_64.png",
+    "96": "icons/launcher_96.png",
+    "128": "icons/launcher_128.png"
   },
 
   "content_scripts": [

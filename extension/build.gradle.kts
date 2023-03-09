@@ -16,9 +16,6 @@ kotlin {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-js"))
-    implementation(project(":network"))
-    
     runtimeOnly(npm("webextension-polyfill", "0.10.0"))
 }
 
@@ -29,7 +26,11 @@ tasks {
     val releaseFolder = File(rootProject.buildDir, "release/main/extension")
 
     val buildAndCopy = register("buildAndCopy") {
-        dependsOn(rootProject.tasks.clean, assemble)
+        dependsOn(
+            project("content").tasks.build,
+            project("background").tasks.build,
+            assemble
+        )
 
         doLast {
             copy {
