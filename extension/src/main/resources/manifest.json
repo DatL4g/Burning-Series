@@ -41,5 +41,10 @@
   "permissions": [
     "activeTab",
     "background"
+  ],
+
+  "host_permissions": [
+    "https://jsonbase.com/*",
+    "https://api.datlag.dev/*"
   ]
 }

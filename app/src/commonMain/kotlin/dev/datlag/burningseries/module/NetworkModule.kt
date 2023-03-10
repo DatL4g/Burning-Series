@@ -1,22 +1,15 @@
 package dev.datlag.burningseries.module
 
-import androidx.datastore.core.DataStore
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.ktorfitBuilder
-import dev.datlag.burningseries.common.cookieMap
-import dev.datlag.burningseries.common.getValueBlocking
-import dev.datlag.burningseries.datastore.preferences.UserSettings
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.GitHub
 import dev.datlag.burningseries.network.converter.FlowerResponseConverter
 import dev.datlag.burningseries.network.repository.*
 import dev.datlag.burningseries.other.MultiDoH
-import io.ktor.client.engine.okhttp.*
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.cookies.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.utils.io.core.*
 import kotlinx.serialization.json.Json
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -91,33 +84,11 @@ object NetworkModule {
         }
 
         bindSingleton {
-            val userSettings: DataStore<UserSettings> = instance()
-            val userCookies = userSettings.cookieMap.getValueBlocking(emptyList())
-
-            object : CookieJar {
-                override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {}
-
-                override fun loadForRequest(url: HttpUrl): List<Cookie> {
-                    val list = userCookies.toMap().entries.map { (t, u) ->
-                        Cookie.Builder()
-                            .name(t)
-                            .value(u)
-                            .domain("api.datlag.dev")
-                            .build()
-                    }
-
-                    return list
-                }
-            }
-        }
-
-        bindSingleton {
             ktorfitBuilder {
                 responseConverter(FlowerResponseConverter())
                 httpClient(OkHttp) {
                     engine {
                         config {
-                            cookieJar(instance())
                             dns(instance())
                             connectTimeout(3, TimeUnit.MINUTES)
                             readTimeout(3, TimeUnit.MINUTES)
