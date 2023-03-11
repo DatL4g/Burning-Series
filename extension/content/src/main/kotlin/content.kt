@@ -1,7 +1,4 @@
-import common.collect
-import common.forEachNotNull
-import common.isNullOrEmpty
-import common.onReady
+import common.*
 import dev.datlag.burningseries.model.ExtensionMessage
 import kotlinx.browser.document
 import kotlinx.dom.hasClass
@@ -52,6 +49,9 @@ private fun checkSeason() {
 
 private fun checkEpisode() {
     fun checkHoster(hoster: Element) {
+        if (hoster.hasClass("active")) {
+            return
+        }
         hoster.getElementsByTagName("a")[0]?.getAttribute("href")?.let { href ->
             dbEntryExists(href) { exists ->
                 if (exists) {
@@ -67,33 +67,35 @@ private fun checkEpisode() {
     }
 
     fun observeActivation(hoster: Element) {
-        if (hoster.hasClass("active")) {
-            val observer = MutationObserver { mutations, _ ->
-                for (mutation in mutations) {
-                    if (mutation.addedNodes.length <= 0) {
-                        continue
-                    }
-                    for (i in 0 until mutation.addedNodes.length) {
-                        val node = mutation.addedNodes[i]
-                        if (!node.isNullOrEmpty() && !node.asDynamic().tagName.unsafeCast<String?>().isNullOrEmpty()) {
-                            val tagName = node.asDynamic().tagName.unsafeCast<String?>()
-                            val url = if (tagName!!.equals("a", true)) {
-                                (node as? Element)?.getAttribute("href")
-                            } else if (tagName.equals("iframe", true)) {
-                                (node as? Element)?.getAttribute("src")
-                            } else {
-                                null
-                            }
-                            val href = hoster.getElementsByTagName("a")[0]?.getAttribute("href")
-                            if (!url.isNullOrEmpty() && !href.isNullOrEmpty()) {
-                                dbEntrySave(href!!, url!!) { saved ->
-                                    if (saved) {
-                                        getActivatedColor().collect { color ->
-                                            val styleBuilder = buildString {
-                                                append("background-color: $color;")
-                                            }
-                                            hoster.setAttribute("style", styleBuilder)
+        if (!hoster.hasClass("active")) {
+            return
+        }
+
+        val observer = MutationObserver { mutations, _ ->
+            for (mutation in mutations) {
+                if (mutation.addedNodes.length <= 0) {
+                    continue
+                }
+                for (i in 0 until mutation.addedNodes.length) {
+                    val node = mutation.addedNodes[i]
+                    if (!node.isNullOrEmpty() && !node.asDynamic().tagName.unsafeCast<String?>().isNullOrEmpty()) {
+                        val tagName = node.asDynamic().tagName.unsafeCast<String?>()
+                        val url = if (tagName!!.equals("a", true)) {
+                            (node as? Element)?.getAttribute("href")
+                        } else if (tagName.equals("iframe", true)) {
+                            (node as? Element)?.getAttribute("src")
+                        } else {
+                            null
+                        }
+                        val href = hoster.getElementsByTagName("a")[0]?.getAttribute("href")
+                        if (!url.isNullOrEmpty() && !href.isNullOrEmpty()) {
+                            dbEntrySave(href!!, url!!) { saved ->
+                                if (saved) {
+                                    getActivatedColor().collect { color ->
+                                        val styleBuilder = buildString {
+                                            append("background-color: $color;")
                                         }
+                                        hoster.setAttribute("style", styleBuilder)
                                     }
                                 }
                             }
@@ -101,17 +103,63 @@ private fun checkEpisode() {
                     }
                 }
             }
+        }
 
-            document.getElementsByClassName("hoster-player")[0]?.let { node ->
-                observer.observe(
-                    node,
-                    MutationObserverInit(
-                        childList = true,
-                        subtree = true,
-                        attributes = false,
-                        characterData = false
-                    )
+        document.getElementsByClassName("hoster-player")[0]?.let { node ->
+            observer.observe(
+                node,
+                MutationObserverInit(
+                    childList = true,
+                    subtree = true,
+                    attributes = false,
+                    characterData = false
                 )
+            )
+        }
+    }
+
+    fun getSavedHoster(tabArea: Element, hoster: Element) {
+        if (!hoster.hasClass("active")) {
+            return
+        }
+
+        hoster.getElementsByTagName("a")[0]?.getAttribute("href")?.let { href ->
+            dbEntryGet(href) { url ->
+                if (url.isNullOrEmpty()) {
+                    return@dbEntryGet
+                }
+
+                getActivatedColor().collect { color ->
+                    val hosterStyle = buildString {
+                        append("background-color: $color;")
+                    }
+                    hoster.setAttribute("style", hosterStyle)
+
+                    val newDiv = document.createElement("div")
+                    val styleBuilder = buildString {
+                        append("border-color: $color;")
+                        append("border-width: 5px;")
+                        append("border-radius: 5px;")
+                        append("border-style: solid;")
+                        append("width: 100%;")
+                        append("height: 100px;")
+                        append("display: flex;")
+                        append("justify-content: center;")
+                        append("align-items: center;")
+                        append("align-content: center;")
+                    }
+                    val a = document.createElement("a")
+                    val linkText = document.createTextNode(url!!)
+                    a.appendChild(linkText)
+                    a.setAttribute("href", url)
+                    a.setAttribute("title", url)
+                    a.setAttribute("target", "_blank")
+
+                    newDiv.setAttribute("style", styleBuilder)
+                    newDiv.appendChild(a)
+
+                    tabArea.insertAfter(newDiv)
+                }
             }
         }
     }
@@ -122,6 +170,7 @@ private fun checkEpisode() {
         hosters.forEachNotNull { hoster ->
             checkHoster(hoster)
             observeActivation(hoster)
+            getSavedHoster(area, hoster)
         }
     }
 }
@@ -148,6 +197,18 @@ private fun dbEntrySave(href: String, url: String, callback: (Boolean) -> Unit) 
         ))
     ).collect {
         callback(it as? Boolean ?: false)
+    }
+}
+
+private fun dbEntryGet(href: String, callback: (String?) -> Unit) {
+    val json = Json
+    browser.runtime.sendMessage(
+        message = json.encodeToString(ExtensionMessage(
+            query = ExtensionMessage.QueryType.GET,
+            id = href
+        ))
+    ).collect {
+        callback(it as? String)
     }
 }
 

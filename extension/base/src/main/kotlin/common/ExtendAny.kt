@@ -65,3 +65,7 @@ inline fun <I> objectOf(
     writer(jsonObject)
     return jsonObject
 }
+
+fun Element.insertAfter(newNode: Node) {
+    this.parentNode?.insertBefore(newNode, this.nextSibling)
+}

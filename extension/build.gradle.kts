@@ -97,7 +97,7 @@ tasks {
 
         mkdir(releaseFolder)
         from(extensionFolder)
-        archiveBaseName.set("extension-${rootProject.project("app").version}")
+        archiveBaseName.set("BrowserExtension-${rootProject.project("app").version}")
         destinationDirectory.set(releaseFolder)
     }
 }

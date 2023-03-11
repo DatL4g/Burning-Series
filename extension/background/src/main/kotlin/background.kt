@@ -15,6 +15,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -78,6 +79,9 @@ fun main() {
                 ExtensionMessage.QueryType.SET -> {
                     return@promise save(saveRepo, message)
                 }
+                ExtensionMessage.QueryType.GET -> {
+                    return@promise get(jsonBase, message)
+                }
 
                 else -> {
                     false
@@ -107,4 +111,28 @@ private suspend fun save(repository: SaveRepository, message: ExtensionMessage):
         href = message.id,
         url = message.url!!
     ))
+}
+
+private suspend fun get(jsonBase: JsonBase, message: ExtensionMessage): String? {
+    val id = MD5.hexString(message.id)
+    return networkResource(makeNetworkRequest = {
+        jsonBase.burningSeriesCaptcha(id)
+    }).mapNotNull {
+        when (it.status) {
+            is Resource.Status.Loading -> null
+            else -> it
+        }
+    }.map {
+        when (it.status) {
+            is Resource.Status.Success -> {
+                val data = (it.status as Resource.Status.Success).data
+                if (data.broken) {
+                    null
+                } else {
+                    data.url
+                }
+            }
+            else -> null
+        }
+    }.first()
 }
