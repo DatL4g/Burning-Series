@@ -7,4 +7,10 @@ include("datastore")
 include("datastore-codegen")
 include("database")
 
-include("extension", "extension:base", "extension:content", "extension:background")
+include(
+    "extension",
+    "extension:base",
+    "extension:content",
+    "extension:background",
+    "extension:popup",
+)

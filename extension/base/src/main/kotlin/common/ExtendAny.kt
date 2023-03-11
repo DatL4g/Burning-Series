@@ -1,5 +1,6 @@
 package common
 
+import kotlinx.dom.removeClass
 import org.w3c.dom.*
 import kotlin.js.Promise
 
@@ -60,4 +61,23 @@ fun ByteArray.toHexString(): String {
         builder.append(doubleDigit((it.toInt() and 0xFF).toString(16)))
     }
     return builder.toString()
+}
+
+fun Element?.removeAllClasses() {
+    if (this == null) {
+        return
+    }
+
+    val allClasses = this.classList
+    for (i in 0 until allClasses.length) {
+        this.removeClass(allClasses[i] ?: String())
+    }
+}
+
+inline fun <I> objectOf(
+    jsonObject: I = js("new Object()").unsafeCast<I>(),
+    writer: I.() -> Unit
+): I {
+    writer(jsonObject)
+    return jsonObject
 }

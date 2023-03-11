@@ -22,13 +22,16 @@ dependencies {
 tasks {
     val extensionFolder = File(rootProject.buildDir, "extension")
     val resourcesFolder = File(projectDir, "src/main/resources")
-    val iconsFolder = File(rootProject.project("app").projectDir, "src/commonMain/assets/png")
+    val assetsFolder = File(rootProject.project("app").projectDir, "src/commonMain/assets")
+    val iconsFolder = File(assetsFolder, "png")
+    val svgFolder = File(assetsFolder, "svg")
     val releaseFolder = File(rootProject.buildDir, "release/main/extension")
 
     val buildAndCopy = register("buildAndCopy") {
         dependsOn(
             project("content").tasks.build,
             project("background").tasks.build,
+            project("popup").tasks.build,
             assemble
         )
 
@@ -42,10 +45,20 @@ tasks {
 
             copy {
                 from(File(resourcesFolder, "manifest.json"))
+                from(File(resourcesFolder, "html")) {
+                    include("*.html")
+                }
+                from(File(resourcesFolder, "css")) {
+                    include("*.css")
+                }
                 into(extensionFolder)
 
                 from(iconsFolder) {
                     include("launcher_*.png")
+                    into("icons")
+                }
+                from(svgFolder) {
+                    include("GitHub.svg")
                     into("icons")
                 }
             }
@@ -59,6 +72,9 @@ tasks {
                 from(buildDirs.map { File(it, "js/node_modules/webextension-polyfill/dist") }) {
                     include("browser-polyfill.min.js")
                     include("browser-polyfill.min.js.map")
+                }
+                from(buildDirs.map { File(it, "js/node_modules/@jaames/iro/dist") }) {
+                    include("iro.min.js")
                 }
                 into(extensionFolder)
             }

@@ -19,7 +19,7 @@ import kotlin.js.Promise
  * href="manifest/externally_connectable.html">web messaging</a>.
  * @param message The message to send. This message should be a JSON-ifiable object.
  */
-external fun sendMessage(
+public external fun sendMessage(
     extensionId: String? = definedExternally,
     message: Any,
     options: SendMessageOptions? = definedExternally
@@ -29,4 +29,4 @@ external fun sendMessage(
  * Fired when a message is sent from either an extension process (by $(ref:runtime.sendMessage)) or
  * a content script (by $(ref:tabs.sendMessage)).
  */
-external val onMessage: Event<OnMessageListener, Any?> = definedExternally
+public external val onMessage: Event<OnMessageListener, Any?> = definedExternally

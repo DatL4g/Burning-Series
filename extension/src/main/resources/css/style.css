@@ -1,0 +1,110 @@
+body {
+    min-width: 300px;
+}
+
+.dark {
+    background-color: #121212;
+    color: #fafafa;
+}
+
+.topbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    padding-bottom: 16px;
+}
+
+.light {
+    background-color: #fafafa;
+    color: #121212;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #0c61a4;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #0c61a4;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.save {
+    background-color: #0c61a4;
+    border-radius: 28px;
+    display: inline-block;
+    cursor: pointer;
+    color: #fafafa;
+    font-size: 16px;
+    padding: 8px 16px;
+    text-decoration: none;
+    margin-top: 8px;
+}
+
+.save:hover {
+    background-color: #0b61a4;
+}
+
+.github-light {
+    width: 34px;
+    height: 34px;
+}
+
+.github-dark {
+    width: 34px;
+    height: 34px;
+    filter: invert(1);
+}

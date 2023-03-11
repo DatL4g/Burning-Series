@@ -24,7 +24,21 @@ private fun checkSeason() {
         hoster.getAttribute("href")?.let { href ->
             dbEntryExists(href) { exists ->
                 if (exists) {
-                    hoster.setAttribute("style", "background-color: #f5cd67;")
+                    browser.storage.sync.get("color").collect {
+                        val colorItem = runCatching {
+                            it as? String
+                        }.getOrNull() ?: runCatching {
+                            it.unsafeCast<String?>()
+                        }.getOrNull()
+                        val color = (colorItem as? String) ?: it.asDynamic()["color"].unsafeCast<String?>() ?: "#f5cd67"
+
+                        val styleBuilder = buildString {
+                            append("background-color: $color;")
+                            append("border: 3px solid $color;")
+                            append("border-radius: 3px;")
+                        }
+                        hoster.setAttribute("style", styleBuilder)
+                    }
                 }
             }
         }

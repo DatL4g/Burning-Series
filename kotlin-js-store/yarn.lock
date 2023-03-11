@@ -12,6 +12,19 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
+"@irojs/iro-core@^1.2.0":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@irojs/iro-core/-/iro-core-1.2.1.tgz#ab45cf0899717fae785ef9661b82bb6f78cd3748"
+  integrity sha512-p2OvsBSSmidsDsTSkID6jEyXDF7lcyxPrkh3qBzasBZFpjkYd6kZ3yMWai3MlAaQ3F7li/Et7rSJVV09Fpei+A==
+
+"@jaames/iro@5.5.0":
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/@jaames/iro/-/iro-5.5.0.tgz#96acd4fbe4506d29f42895344fe1cb23ca5924a9"
+  integrity sha512-vhSMttBS7dcQ4ZKoZjG8NLxMw3k+48NCVtkfzRoPR4+FnlPmClVxtyYY7CJSZoyXxOkxuUsX+I/w8FbbYekh4A==
+  dependencies:
+    "@irojs/iro-core" "^1.2.0"
+    preact "^10.0.0"
+
 "@jridgewell/gen-mapping@^0.3.0":
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@jridgewell/gen-mapping/-/gen-mapping-0.3.2.tgz#c1aedc61e853f2bb9f5dfe6d4442d3b565b253b9"
@@ -1988,6 +2001,11 @@ pkg-dir@^4.2.0:
   integrity sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==
   dependencies:
     find-up "^4.0.0"
+
+preact@^10.0.0:
+  version "10.13.1"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.13.1.tgz#d220bd8771b8fa197680d4917f3cefc5eed88720"
+  integrity sha512-KyoXVDU5OqTpG9LXlB3+y639JAGzl8JSBXLn1J9HTSB3gbKcuInga7bZnXLlxmK94ntTs1EFeZp0lrja2AuBYQ==
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
