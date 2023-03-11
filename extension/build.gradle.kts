@@ -17,6 +17,7 @@ kotlin {
 
 dependencies {
     runtimeOnly(npm("webextension-polyfill", "0.10.0"))
+    runtimeOnly(npm("@jaames/iro", "5.5.0"))
 }
 
 tasks {

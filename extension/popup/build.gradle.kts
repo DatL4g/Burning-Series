@@ -5,8 +5,6 @@ plugins {
 
 dependencies {
     parent?.project("base")?.let { implementation(it) }
-
-    runtimeOnly(npm("@jaames/iro", "5.5.0"))
 }
 
 kotlin {

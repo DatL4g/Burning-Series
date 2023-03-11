@@ -8,6 +8,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.w3c.dom.Element
 import org.w3c.dom.get
+import kotlin.js.Promise
 
 fun main() {
     document.onReady {
@@ -24,14 +25,7 @@ private fun checkSeason() {
         hoster.getAttribute("href")?.let { href ->
             dbEntryExists(href) { exists ->
                 if (exists) {
-                    browser.storage.sync.get("color").collect {
-                        val colorItem = runCatching {
-                            it as? String
-                        }.getOrNull() ?: runCatching {
-                            it.unsafeCast<String?>()
-                        }.getOrNull()
-                        val color = (colorItem as? String) ?: it.asDynamic()["color"].unsafeCast<String?>() ?: "#f5cd67"
-
+                    getActivatedColor().collect { color ->
                         val styleBuilder = buildString {
                             append("background-color: $color;")
                             append("border: 3px solid $color;")
@@ -65,3 +59,13 @@ private fun dbEntryExists(href: String, callback: (Boolean) -> Unit) {
     }
 }
 
+private fun getActivatedColor(): Promise<String> {
+    return browser.storage.sync.get("color").then {
+        val colorItem = runCatching {
+            it as? String
+        }.getOrNull() ?: runCatching {
+            it.unsafeCast<String?>()
+        }.getOrNull()
+        (colorItem as? String) ?: it.asDynamic()["color"].unsafeCast<String?>() ?: "#f5cd67"
+    }
+}
