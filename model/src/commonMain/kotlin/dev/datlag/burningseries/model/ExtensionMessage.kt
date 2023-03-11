@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 data class ExtensionMessage(
     @SerialName("query") val query: QueryType,
     @SerialName("id") val id: String,
-    @SerialName("embed") val embed: Boolean? = null,
     @SerialName("url") val url: String? = null
 ) {
 

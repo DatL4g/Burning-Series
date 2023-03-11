@@ -1,3 +1,6 @@
+package dev.datlag.burningseries.model.algorithm
+
+import dev.datlag.burningseries.model.common.toHexString
 import kotlin.math.abs
 import kotlin.math.sin
 
@@ -103,5 +106,13 @@ object MD5 {
             }
         }
         return md5
+    }
+
+    fun hexString(byteArray: ByteArray): String {
+        return compute(byteArray).toHexString()
+    }
+
+    fun hexString(value: String): String {
+        return hexString(value.encodeToByteArray())
     }
 }

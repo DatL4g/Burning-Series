@@ -9,28 +9,22 @@ class MultiDoH internal constructor(
     val dnsServers: List<Dns>
 ) : Dns {
 
-    private val inetHostMatch: MutableMap<String, Set<InetAddress>> = mutableMapOf()
-
     constructor(vararg servers: Dns) : this(servers.toList())
 
     @Throws(UnknownHostException::class)
     override fun lookup(hostname: String): List<InetAddress> {
-        return inetHostMatch[hostname]?.ifEmpty { null }?.toList() ?: run {
-            val failures: MutableList<Exception> = mutableListOf()
-            for (i in dnsServers.indices) {
-                try {
-                    val newList = inetHostMatch.getOrDefault(hostname, emptySet()).toMutableSet().apply {
-                        addAll(dnsServers[i].lookup(hostname))
-                    }
-                    inetHostMatch[hostname] = newList
-                } catch (e: Exception) {
-                    failures.add(e)
-                    continue
-                }
+        val inetList: MutableList<InetAddress> = mutableListOf()
+        val failures: MutableList<Exception> = mutableListOf()
+        for (i in dnsServers.indices) {
+            try {
+                inetList.addAll(dnsServers[i].lookup(hostname))
+            } catch (e: Exception) {
+                failures.add(e)
+                continue
             }
-            inetHostMatch.getOrDefault(hostname, emptySet()).toList().ifEmpty {
-                throwBestFailure(hostname, failures)
-            }
+        }
+        return inetList.ifEmpty {
+            throwBestFailure(hostname, failures)
         }
     }
 

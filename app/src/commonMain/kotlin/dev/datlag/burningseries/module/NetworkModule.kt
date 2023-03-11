@@ -4,6 +4,7 @@ import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.ktorfitBuilder
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.GitHub
+import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.converter.FlowerResponseConverter
 import dev.datlag.burningseries.network.repository.*
 import dev.datlag.burningseries.other.MultiDoH
@@ -23,6 +24,7 @@ object NetworkModule {
 
     private const val TAG_KTORFIT_BURNINGSERIES = "BurningSeriesKtorfit"
     private const val TAG_KTORFIT_GITHUB = "GitHubKtorfit"
+    private const val TAG_KTORFIT_JSONBASE = "JsonBaseKtorfit"
     const val TAG_OKHTTP_CACHE_FOLDER = "OkHttpCacheFolder"
     const val TAG_OKHTTP_BOOTSTRAP_CLIENT = "OkHttpBootstrapClient"
     const val NAME = "NetworkModule"
@@ -98,7 +100,7 @@ object NetworkModule {
                     install(ContentNegotiation) {
                         json(Json {
                             ignoreUnknownKeys = true
-                            isLenient = false
+                            isLenient = true
                         })
                     }
                 }
@@ -116,6 +118,12 @@ object NetworkModule {
                 baseUrl("https://api.github.com/")
             }
         }
+        bindSingleton(TAG_KTORFIT_JSONBASE) {
+            val builder: Ktorfit.Builder = instance()
+            builder.build {
+                baseUrl("https://jsonbase.com/")
+            }
+        }
         bindSingleton {
             Json {
                 ignoreUnknownKeys = true
@@ -131,6 +139,10 @@ object NetworkModule {
             githubKtor.create<GitHub>()
         }
         bindSingleton {
+            val jsonBaseKtor: Ktorfit = instance(TAG_KTORFIT_JSONBASE)
+            jsonBaseKtor.create<JsonBase>()
+        }
+        bindSingleton {
             HomeRepository(instance())
         }
         bindSingleton {
@@ -143,7 +155,7 @@ object NetworkModule {
             EpisodeRepository(instance(), instance())
         }
         bindProvider {
-            SaveRepository(instance(), instance())
+            SaveRepository(instance(), instance(), instance())
         }
         bindSingleton {
             GitHubRepository(instance())

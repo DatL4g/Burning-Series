@@ -47,22 +47,6 @@ fun Document?.onReady(listener: () -> Unit) {
     }
 }
 
-fun ByteArray.toHexString(): String {
-    fun doubleDigit(value: String): String {
-        return if (value.length == 1) {
-            "0$value"
-        } else {
-            value
-        }
-    }
-
-    val builder = StringBuilder()
-    this.forEach {
-        builder.append(doubleDigit((it.toInt() and 0xFF).toString(16)))
-    }
-    return builder.toString()
-}
-
 fun Element?.removeAllClasses() {
     if (this == null) {
         return

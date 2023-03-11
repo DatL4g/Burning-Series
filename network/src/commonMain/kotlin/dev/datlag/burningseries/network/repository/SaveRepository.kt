@@ -2,11 +2,10 @@ package dev.datlag.burningseries.network.repository
 
 import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.networkResource
-import dev.datlag.burningseries.model.InsertStream
-import dev.datlag.burningseries.model.SaveInfo
-import dev.datlag.burningseries.model.ScrapedHoster
-import dev.datlag.burningseries.model.VideoStream
+import dev.datlag.burningseries.model.*
+import dev.datlag.burningseries.model.algorithm.MD5
 import dev.datlag.burningseries.network.BurningSeries
+import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.Status
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -15,6 +14,7 @@ import dev.datlag.burningseries.network.video.Scraper
 
 class SaveRepository(
     private val api: BurningSeries,
+    private val jsonBase: JsonBase,
     private val scraper: Scraper? = null
 ) {
 
@@ -69,5 +69,22 @@ class SaveRepository(
         // set scraped data
         this@SaveRepository.scrapedEpisodeHref.emit(scrapedHoster.href)
         this@SaveRepository.stream.emit(scraper?.scrapeVideosFrom(scrapedHoster.toHosterStream()))
+
+        return@withContext networkResource(makeNetworkRequest = {
+            jsonBase.setBurningSeriesCaptcha(
+                id = MD5.hexString(scrapedHoster.href),
+                body = JsonBaseCaptchaEntry(
+                    url = scrapedHoster.url,
+                    embed = false
+                )
+            )
+        }).mapNotNull {
+            when (it.status) {
+                is Resource.Status.Loading -> null
+                is Resource.Status.Error -> false
+                is Resource.Status.Success -> true
+                is Resource.Status.EmptySuccess -> true
+            }
+        }.first()
     }
 }

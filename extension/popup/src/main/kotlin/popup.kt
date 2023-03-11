@@ -20,7 +20,7 @@ fun main() {
             }.getOrNull() ?: runCatching {
                 it.unsafeCast<Boolean?>()
             }.getOrNull()
-            val darkMode = (darkModeItem as? Boolean) ?: it.asDynamic()["darkMode"].unsafeCast<Boolean?>()
+            val darkMode = (darkModeItem as? Boolean) ?: it.asDynamic().darkMode.unsafeCast<Boolean?>()
 
             modeChanged(darkMode, defaultColorSchemeDark, toggle)
         }
@@ -31,7 +31,7 @@ fun main() {
             }.getOrNull() ?: runCatching {
                 it.unsafeCast<String?>()
             }.getOrNull()
-            val savedColor = (colorItem as? String) ?: it.asDynamic()["color"].unsafeCast<String?>() ?: "#f5cd67"
+            val savedColor = (colorItem as? String) ?: it.asDynamic().color.unsafeCast<String?>() ?: "#f5cd67"
 
             val options = objectOf<dynamic> {
                 color = savedColor
@@ -44,7 +44,7 @@ fun main() {
 
 
         toggle?.addEventListener("change", { event ->
-            val checked = event.currentTarget?.asDynamic()["checked"].unsafeCast<Boolean>()
+            val checked = event.currentTarget?.asDynamic().checked.unsafeCast<Boolean>()
 
             if (!settingToggle) {
                 if (checked) {

@@ -1,11 +1,15 @@
 import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.networkResource
 import common.isNullOrEmpty
-import common.toHexString
 import de.jensklingenberg.ktorfit.ktorfit
+import de.jensklingenberg.ktorfit.ktorfitBuilder
 import dev.datlag.burningseries.model.ExtensionMessage
+import dev.datlag.burningseries.model.ScrapedHoster
+import dev.datlag.burningseries.model.algorithm.MD5
+import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.converter.FlowerResponseConverter
+import dev.datlag.burningseries.network.repository.SaveRepository
 import io.ktor.client.engine.js.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
@@ -21,8 +25,7 @@ fun main() {
         isLenient = true
     }
 
-    val ktorfit = ktorfit {
-        baseUrl("https://jsonbase.com/")
+    val ktorfit = ktorfitBuilder {
         responseConverter(FlowerResponseConverter())
         httpClient(Js) {
             developmentMode = false
@@ -32,8 +35,15 @@ fun main() {
             }
         }
     }
-
-    val jsonBase = ktorfit.create<JsonBase>()
+    val jsonBaseKtor = ktorfit.build {
+        baseUrl("https://jsonbase.com/")
+    }
+    val burningSeriesKtor = ktorfit.build {
+        baseUrl("https://api.datlag.dev/bs/")
+    }
+    val jsonBase = jsonBaseKtor.create<JsonBase>()
+    val burningSeries = burningSeriesKtor.create<BurningSeries>()
+    val saveRepo = SaveRepository(burningSeries, jsonBase, null)
 
     browser.runtime.onMessage.addListener {
         val msg = if (it.message.isNullOrEmpty()) {
@@ -65,6 +75,9 @@ fun main() {
                 ExtensionMessage.QueryType.EXISTS -> {
                     return@promise exists(jsonBase, message)
                 }
+                ExtensionMessage.QueryType.SET -> {
+                    return@promise save(saveRepo, message)
+                }
 
                 else -> {
                     false
@@ -75,7 +88,7 @@ fun main() {
 }
 
 private suspend fun exists(jsonBase: JsonBase, message: ExtensionMessage): Boolean {
-    val id = MD5.compute(message.id.encodeToByteArray()).toHexString()
+    val id = MD5.hexString(message.id)
     val result = networkResource(makeNetworkRequest = {
         jsonBase.burningSeriesCaptcha(id)
     }).mapNotNull {
@@ -87,4 +100,11 @@ private suspend fun exists(jsonBase: JsonBase, message: ExtensionMessage): Boole
     }.first()
 
     return result.status is Resource.Status.Success && !(result.status as Resource.Status.Success).data.broken
+}
+
+private suspend fun save(repository: SaveRepository, message: ExtensionMessage): Boolean {
+    return repository.save(ScrapedHoster(
+        href = message.id,
+        url = message.url!!
+    ))
 }
