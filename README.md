@@ -61,6 +61,9 @@ Search on the internet if you face any problems. Don't ask for help here!
 
 ### Browser (Activation Extension)
 
+If you can't access [bs.to](https://bs.to) you have to enable DoH (DNS over HTTPs).
+Setting this up may differ depending on your browser, however I suggest to use **Cloudflare** as provider.
+
 - **Chromium**
   - Chrome
   - Brave
