@@ -108,3 +108,20 @@ input:checked + .slider:before {
     height: 34px;
     filter: invert(1);
 }
+
+#picker {
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    align-content: center;
+}
+
+@font-face {
+    font-family: Manrope;
+    src: url("./manrope_regular.ttf");
+}
+
+* {
+    font-family: Manrope, ui-rounded;
+}

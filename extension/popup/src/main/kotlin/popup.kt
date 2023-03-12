@@ -1,14 +1,20 @@
-import common.collect
-import common.objectOf
-import common.onReady
-import common.removeAllClasses
+import common.*
 import kotlinx.browser.document
 import kotlinx.browser.window
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.dom.addClass
 import org.w3c.dom.Element
+import kotlin.js.Promise
 
 var settingToggle = false
 fun main() {
+    val saveColor: MutableStateFlow<dynamic> = MutableStateFlow(null)
+
     document.onReady {
         val defaultColorSchemeDark = window.matchMedia("(prefers-color-scheme: dark)").matches
         val toggle = document.getElementById("toggleDark")
@@ -40,8 +46,11 @@ fun main() {
             picker = runCatching {
                 iro.ColorPicker("#picker", options)
             }.getOrNull() ?: iro.default.ColorPicker("#picker", options)
-        }
 
+            runCatching {
+                picker.on("color:change") { color -> saveColor.tryEmit(color) } as Unit
+            }
+        }
 
         toggle?.addEventListener("change", { event ->
             val checked = event.currentTarget?.asDynamic().checked.unsafeCast<Boolean>()
@@ -53,10 +62,6 @@ fun main() {
                     browser.storage.sync.set(objectOf<dynamic> { darkMode = false } as Any)
                 }
             }
-        })
-
-        document.getElementById("save")?.addEventListener("click", {
-            browser.storage.sync.set(objectOf<dynamic> { color = picker.color.hexString } as Any)
         })
 
         browser.storage.onChanged.addListener {
@@ -78,6 +83,14 @@ fun main() {
 
             if (changed != null) {
                 modeChanged(changed, toggle)
+            }
+        }
+    }
+
+    GlobalScope.launch(Dispatchers.Default) {
+        saveColor.debounce(1000).collect {
+            withContext(Dispatchers.Main) {
+                onColorChange(it)
             }
         }
     }
@@ -107,6 +120,13 @@ private fun modeChanged(dark: Boolean?, fallback: Boolean, toggle: Element?) {
     settingToggle = true
     toggle?.asDynamic()["checked"] = dark ?: fallback
     settingToggle = false
+}
+
+private fun onColorChange(changeColor: dynamic) {
+    if (changeColor.unsafeCast<Any?>().isNullOrEmpty()) {
+        return
+    }
+    browser.storage.sync.set(objectOf<dynamic> { color = changeColor.hexString } as Any)
 }
 
 @JsModule("@jaames/iro")

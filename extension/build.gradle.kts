@@ -23,10 +23,13 @@ dependencies {
 tasks {
     val extensionFolder = File(rootProject.buildDir, "extension")
     val resourcesFolder = File(projectDir, "src/main/resources")
-    val assetsFolder = File(rootProject.project("app").projectDir, "src/commonMain/assets")
+    val commonAppFolder = File(rootProject.project("app").projectDir, "src/commonMain")
+    val assetsFolder = File(commonAppFolder, "assets")
     val iconsFolder = File(assetsFolder, "png")
     val svgFolder = File(assetsFolder, "svg")
+    val fontFolder = File(commonAppFolder, "resources/font")
     val releaseFolder = File(rootProject.buildDir, "release/main/extension")
+    var firefox = false
 
     val buildAndCopy = register("buildAndCopy") {
         dependsOn(
@@ -51,6 +54,9 @@ tasks {
                 }
                 from(File(resourcesFolder, "css")) {
                     include("*.css")
+                }
+                from(fontFolder) {
+                    include("manrope_regular.ttf")
                 }
                 into(extensionFolder)
 
@@ -86,18 +92,39 @@ tasks {
                 if (json.containsKey("version")) {
                     json["version"] = rootProject.project("app").version.toString()
                 }
+                if (firefox) {
+                    json["background"] = mapOf("scripts" to listOf("background.js"))
+                    json["browser_specific_settings"] = mapOf("gecko" to mapOf("id" to "burningseries@datlag.dev"))
+
+                    val permissions = ((json["permissions"] as? List<String>) ?: listOf("storage")).toMutableList()
+                    permissions.remove("background")
+                    permissions.add("activeTab")
+                    json["permissions"] = permissions
+                }
 
                 File(extensionFolder, "manifest.json").writeText(JsonBuilder(json).toPrettyString())
             }
         }
     }
 
-    register<Zip>("pack") {
+    register<Zip>("packChromium") {
+        firefox = false
         dependsOn(buildAndCopy)
 
         mkdir(releaseFolder)
         from(extensionFolder)
-        archiveBaseName.set("BrowserExtension-${rootProject.project("app").version}")
+        archiveBaseName.set("Chromium-${rootProject.project("app").version}")
+        destinationDirectory.set(releaseFolder)
+    }
+
+    register<Zip>("packFirefox") {
+        firefox = true
+        dependsOn(buildAndCopy)
+
+        mkdir(releaseFolder)
+        from(extensionFolder)
+        archiveBaseName.set("Firefox-${rootProject.project("app").version}")
+        archiveExtension.set("xpi")
         destinationDirectory.set(releaseFolder)
     }
 }

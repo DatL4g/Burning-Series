@@ -40,6 +40,11 @@ fun Document?.onReady(listener: () -> Unit) {
         return
     }
 
+    if (this.readyState == DocumentReadyState.COMPLETE) {
+        listener()
+        return
+    }
+
     this.onreadystatechange = {
         if (this.readyState == DocumentReadyState.COMPLETE) {
             listener()
