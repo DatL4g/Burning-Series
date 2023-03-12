@@ -40,12 +40,12 @@ If the app stops working don't report that in any form on [Burning Series](https
 
 ## Supported devices and Installation
 
-All Android smartphones with version >=6.0 (Lollipop and up) as well as Android TVs are supported.
+All Android smartphones with version >=6.0 (Marshmallow and up) as well as Android TVs are supported.
 
 To install the app head over to the [Release Section](https://github.com/DATL4G/BurningSeries-Android/releases) and download the ```.apk``` file. For more advanced users is an ```.aab``` file provided which can be installed using [bundletool](https://developer.android.com/studio/command-line/bundletool).
 Installing the ```.apk``` file is easy, just copy it to your phone (or download it directly on your phone) and open it to install. If this won't work you can use [ADB](https://developer.android.com/studio/command-line/adb) sideloading to install it from your pc on your phone.
 
-You can also download the app from [F-Droid](https://f-droid.org/packages/de.datlag.burningseries/).
+You can also download the app from [F-Droid](https://f-droid.org/packages/dev.datlag.burningseries/).
 
 Search on the internet if you face any problems. Don't ask for help here!
 
@@ -58,6 +58,17 @@ Search on the internet if you face any problems. Don't ask for help here!
   - AppImage
   - Debian / Ubuntu
   - Tarball
+
+### Browser (Activation Extension)
+
+- **Chromium**
+  - Chrome
+  - Brave
+  - Opera
+  - Edge
+  - etc...
+- **Firefox**
+  - may require to allow some website permissions manually
 
 ## Usage
 
