@@ -58,11 +58,11 @@ jobs:
           ./build/release/main/image/appimagetool.AppImage ./build/release/main/image/Burning-Series ./build/release/main/image/Burning-Series-${{  github.ref_name }}-x86_64.AppImage
           tar cJf ./build/release/main/app/Burning-Series.tar.xz ./build/release/main/app/Burning-Series
 
-      - name: Create Browser Extension on Ubuntu
+      - name: Create Browser Extensions on Ubuntu
         continue-on-error: true
         if: matrix.os == 'ubuntu-latest'
         run: |
-          ./gradlew extension:pack
+          ./gradlew extension:packChromium; ./gradlew extension:packFirefox
 
       - name: Create package on Windows
         if: matrix.os == 'windows-latest'
@@ -85,6 +85,7 @@ jobs:
             build/release/main/exe/*.exe
             build/release/main/msi/*.msi
             ./build/release/main/extension/*.zip
+            ./build/release/main/extension/*.xpi
 
   app:
     runs-on: ubuntu-latest
