@@ -137,8 +137,6 @@ fun VideoPlayer(component: VideoComponent) {
                 })
                 playWhenReady = true
                 prepare()
-
-                MediaSession.Builder(context, this).build()
             }
     }
 
@@ -162,6 +160,10 @@ fun VideoPlayer(component: VideoComponent) {
         component.seekListener = {
             exoPlayer.seekTo(it)
         }
+    }
+
+    val session = remember(exoPlayer) {
+        MediaSession.Builder(context, exoPlayer).build()
     }
 
     DisposableEffect(
@@ -213,6 +215,7 @@ fun VideoPlayer(component: VideoComponent) {
     ) {
         onDispose {
             exoPlayer.release()
+            session.release()
             KeyEventDispatcher = { null }
             PIPEventDispatcher = { null }
             PIPModeListener = { }
