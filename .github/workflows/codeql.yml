@@ -43,7 +43,7 @@ jobs:
 
     - name: Manual Build
       run: |
-        ./gradlew build
+        ./gradlew app:build
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
