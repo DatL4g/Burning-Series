@@ -4,6 +4,7 @@ plugins {
     id("de.jensklingenberg.ktorfit")
 }
 
+// don't use 2.2.4, serialization not working
 val ktor = "2.2.3"
 
 dependencies {

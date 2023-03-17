@@ -14,9 +14,10 @@ plugins {
 val coroutines = "1.6.4"
 val decompose = "1.0.0"
 val kodein = "7.18.0"
+// don't use 2.2.4, serialization not working
 val ktor = "2.2.3"
-val exoplayer = "1.0.0-rc01"
-val accompanist = "0.25.1"
+val exoplayer = "1.0.0-rc02"
+val accompanist = "0.28.0"
 
 val javafx = "19.0.2.1"
 val javafxModules = listOf(
@@ -100,7 +101,7 @@ kotlin {
                 implementation("androidx.media3:media3-exoplayer-smoothstreaming:$exoplayer")
                 implementation("androidx.media3:media3-ui:$exoplayer")
 
-                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-rc01")
+                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
             }
         }
 
@@ -158,9 +159,6 @@ aboutLibraries {
 }
 
 compose {
-    kotlinCompilerPlugin.set(dependencies.compiler.forKotlin("1.7.20"))
-    kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=1.8.10")
-
     desktop {
         application {
             mainClass = "dev.datlag.burningseries.MainKt"
