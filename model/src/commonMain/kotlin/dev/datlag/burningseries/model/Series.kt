@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.model
 
+import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import dev.datlag.burningseries.model.common.getDigitsOrNull
@@ -105,14 +106,18 @@ data class Series(
     ) : Parcelable {
 
         @Transient
+        @IgnoredOnParcel
         var length: Long = 0L
 
         @Transient
+        @IgnoredOnParcel
         var watchPosition: Long = 0L
 
+        @IgnoredOnParcel
         val isFinished: Boolean
             get() = watchPercentage() > 85F
 
+        @IgnoredOnParcel
         val episodeNumber: Int?
             get() {
                 val matched = "[|({]\\s*Ep([.]|isode)?\\s*(\\d+)\\s*[|)}]".toRegex(RegexOption.IGNORE_CASE).find(title.trim())
@@ -122,6 +127,7 @@ data class Series(
                 }
             }
 
+        @IgnoredOnParcel
         val episodeNumberOrListNumber: Int?
             get() = episodeNumber ?: number.toIntOrNull() ?: number.getDigitsOrNull()?.toIntOrNull()
 

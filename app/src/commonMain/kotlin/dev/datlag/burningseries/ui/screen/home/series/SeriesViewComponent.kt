@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
-import dev.datlag.burningseries.common.coroutineScope
 import dev.datlag.burningseries.database.BurningSeriesDB
 import dev.datlag.burningseries.model.SeriesInitialInfo
 import dev.datlag.burningseries.network.repository.HomeRepository
@@ -44,8 +43,8 @@ class SeriesViewComponent(
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun onSeriesClicked(href: String, info: SeriesInitialInfo) {
-        onSeries(href, info)
+    override fun onSeriesClicked(href: String, initialInfo: SeriesInitialInfo) {
+        onSeries(href, initialInfo)
     }
 
     @Composable
