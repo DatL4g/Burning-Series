@@ -2,6 +2,7 @@ package dev.datlag.burningseries.other
 
 import io.ktor.http.*
 import okhttp3.*
+import okhttp3.dnsoverhttps.DnsOverHttps
 import java.net.InetAddress
 import java.net.UnknownHostException
 
@@ -15,14 +16,39 @@ class MultiDoH internal constructor(
     override fun lookup(hostname: String): List<InetAddress> {
         val inetList: MutableList<InetAddress> = mutableListOf()
         val failures: MutableList<Exception> = mutableListOf()
-        for (i in dnsServers.indices) {
+
+        val noPostDns = dnsServers.filter { it is DnsOverHttps && !it.post }
+        val postDns = dnsServers.filter { it is DnsOverHttps && it.post }
+        val otherDns = dnsServers.filter { it !is DnsOverHttps }
+
+        noPostDns.forEach {
             try {
-                inetList.addAll(dnsServers[i].lookup(hostname))
+                inetList.addAll(it.lookup(hostname))
             } catch (e: Exception) {
                 failures.add(e)
-                continue
             }
         }
+
+        if (failures.isNotEmpty() || inetList.isEmpty()) {
+            otherDns.forEach {
+                try {
+                    inetList.addAll(it.lookup(hostname))
+                } catch (e: Exception) {
+                    failures.add(e)
+                }
+            }
+        }
+
+        if (failures.isNotEmpty() || inetList.isEmpty()) {
+            postDns.forEach {
+                try {
+                    inetList.addAll(it.lookup(hostname))
+                } catch (e: Exception) {
+                    failures.add(e)
+                }
+            }
+        }
+
         return inetList.ifEmpty {
             throwBestFailure(hostname, failures)
         }

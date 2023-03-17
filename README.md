@@ -17,7 +17,7 @@
 
 Watch any series or videos on [Burning Series](https://bs.to/) easily with this app.
 You can see the latest series and episodes, get an overview of all available series, save your favorites and start watching directly inside the app.
-**You can't login to your [Burning Series](https://bs.to/) Account because it's not using an official API.** Read the [Important Notice](#important-notice) for more info.
+**You can't log in to your [Burning Series](https://bs.to/) Account because it's not using an official API.** Read the [Important Notice](#important-notice) for more info.
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="60">](https://f-droid.org/packages/dev.datlag.burningseries/)
 
@@ -38,11 +38,13 @@ If the app stops working don't report that in any form on [Burning Series](https
 
 **This project is not related to any owner, developer or other staff from [Burning Series](https://bs.to/)**
 
+**Furthermore, this project is for personal and educational purposes only**
+
 ## Supported devices and Installation
 
 All Android smartphones with version >=6.0 (Marshmallow and up) as well as Android TVs are supported.
 
-To install the app head over to the [Release Section](https://github.com/DATL4G/BurningSeries-Android/releases) and download the ```.apk``` file. For more advanced users is an ```.aab``` file provided which can be installed using [bundletool](https://developer.android.com/studio/command-line/bundletool).
+To install the app head over to the [Release Section](https://github.com/DATL4G/Burning-Series/releases) and download the ```.apk``` file. For more advanced users is an ```.aab``` file provided which can be installed using [bundletool](https://developer.android.com/studio/command-line/bundletool).
 Installing the ```.apk``` file is easy, just copy it to your phone (or download it directly on your phone) and open it to install. If this won't work you can use [ADB](https://developer.android.com/studio/command-line/adb) sideloading to install it from your pc on your phone.
 
 You can also download the app from [F-Droid](https://f-droid.org/packages/dev.datlag.burningseries/).
@@ -61,8 +63,11 @@ Search on the internet if you face any problems. Don't ask for help here!
 
 ### Browser (Activation Extension)
 
-If you can't access [bs.to](https://bs.to) you have to enable DoH (DNS over HTTPs).
+If you can't access [bs.to](https://bs.to) you have to enable DoH (DNS over HTTPS).
 Setting this up may differ depending on your browser, however I suggest to use **Cloudflare** as provider.
+
+The extension doesn't need to be updated every version, it just follows the overall versioning scheme.
+If an update is required/recommended, then there is a hint in the [release notes](https://github.com/DATL4G/Burning-Series/releases/latest).
 
 - **Chromium**
   - Chrome
@@ -99,9 +104,11 @@ You can add yourself to the list below if you want then.
 
 [![Github-sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA)](https://github.com/sponsors/DATL4G)
 [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/datlag)
-[![Patreon](https://img.shields.io/badge/Patreon-F96854?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/datlag)
+
+### This is a non-profit project!
+
+Sponsoring to this project means sponsoring to all my projects!
+So the further text is not to be attributed to this project, but to all my apps and libraries.
 
 Supporting this project helps to keep it up-to-date. You can donate if you want or contribute to the project as well.
-This shows that the app is used by people and it's worth to maintain.
-
-Another way of supporting is to actually use the app and activate hoster, so you and other people can start watching without bothering.
+This shows that the app is used by people, and it's worth to maintain.
