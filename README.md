@@ -8,6 +8,7 @@
 [![Github all releases](https://img.shields.io/github/downloads/DATL4G/Burning-Series/total.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/releases)
 
 [![Release Status](https://github.com/DatL4g/Burning-Series/actions/workflows/release.yml/badge.svg)](https://github.com/DATL4G/Burning-Series/actions/workflows/release.yml)
+[![CodeQL](https://github.com/DATL4G/Burning-Series/actions/workflows/codeql.yml/badge.svg)](https://github.com/DATL4G/Burning-Series/actions/workflows/codeql.yml)
 
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/kotlin-%230095D5.svg?style=for-the-badge&logo=kotlin&logoColor=white)
