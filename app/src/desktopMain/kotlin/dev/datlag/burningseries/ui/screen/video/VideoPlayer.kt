@@ -21,10 +21,12 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.collectAsStateSafe
 import dev.datlag.burningseries.common.getValueBlocking
+import dev.datlag.burningseries.model.common.containsKey
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.ui.custom.collapsingtoolbar.CollapsingToolbarScaffoldScopeInstance.align
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.apache.commons.lang3.SystemUtils
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery
 import uk.co.caprica.vlcj.player.base.MediaPlayer
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter
@@ -55,6 +57,7 @@ fun VideoPlayer(
         var srcListPos by remember(streamListPos) { mutableStateOf(0) }
 
         SideEffect {
+            applyHeaders(videoStreams[streamListPos].header, mediaPlayerComponent.mediaPlayer())
             mediaPlayerComponent.mediaPlayer()?.media()?.play(videoStreams[streamListPos].srcList[srcListPos])
             mediaPlayerComponent.mediaPlayer()?.events()?.addMediaPlayerEventListener(object : MediaPlayerEventAdapter() {
                 override fun error(mediaPlayer: MediaPlayer?) {
@@ -73,6 +76,7 @@ fun VideoPlayer(
 
                     if (play) scope.launch(Dispatchers.Main) {
                         mediaPlayer?.media()?.play(videoStreams[streamListPos].srcList[srcListPos])
+                        applyHeaders(videoStreams[streamListPos].header, mediaPlayerComponent.mediaPlayer())
                     }
                 }
 
@@ -191,5 +195,20 @@ private fun MediaPlayerComponent.mediaPlayer(): MediaPlayer? {
 
 private fun isMacOs(): Boolean {
     val os = System.getProperty("os.name", "generic").lowercase(Locale.ENGLISH)
-    return os.indexOf("mac") >= 0 || os.indexOf("darwin") >= 0
+    return os.indexOf("mac") >= 0 || os.indexOf("darwin") >= 0 || SystemUtils.IS_OS_MAC
+}
+
+private fun applyHeaders(headers: Map<String, String>, mediaPlayer: MediaPlayer?) {
+    if (headers.containsKey("Referer", true)) {
+        val referer = headers.getOrElse("Referer") {
+            headers.entries.firstNotNullOf {
+                if (it.key.equals("Referer", true)) {
+                    it.value
+                } else {
+                    null
+                }
+            }
+        }
+        mediaPlayer?.media()?.options()?.add("--http-referrer", referer)
+    }
 }

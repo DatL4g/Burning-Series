@@ -34,3 +34,11 @@ fun Collection<String>.contains(element: String?, ignoreCase: Boolean = false): 
         this.defaultContains(element)
     }
 }
+
+fun Map<String, *>.containsKey(element: String?, ignoreCase: Boolean = false): Boolean {
+    return if (ignoreCase) {
+        this.keys.any { it.equals(element, true) }
+    } else {
+        this.defaultContains(element)
+    }
+}
