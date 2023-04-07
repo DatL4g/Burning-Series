@@ -10,4 +10,6 @@ interface VideoStreamManipulation {
     fun find(doc: Document): List<String>
 
     fun remove(source: List<String>): List<String>
+
+    fun headers(source: Map<String, String>, hosterStream: HosterStream): Map<String, String> = source
 }

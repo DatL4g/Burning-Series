@@ -47,16 +47,18 @@ fun VideoPlayer(component: VideoComponent) {
             FLAG_ALLOW_NON_IDR_KEYFRAMES and FLAG_DETECT_ACCESS_UNITS and FLAG_ENABLE_HDMV_DTS_AUDIO_STREAMS
         )
     }
-    val dataSourceFactory = remember {
-        DefaultDataSource.Factory(context, DefaultHttpDataSource.Factory()
-            .setAllowCrossProtocolRedirects(true)
-            .setKeepPostFor302Redirects(true))
-    }
     val episode by component.episode.collectAsStateSafe()
     val videoStreams by component.videoStreams.collectAsStateSafe()
     var streamListPos by remember(videoStreams) { mutableStateOf(0) }
     var srcListPos by remember(streamListPos) { mutableStateOf(0) }
     val stream = videoStreams[streamListPos].srcList[srcListPos]
+    val headers = videoStreams[streamListPos].header
+
+    val dataSourceFactory = remember(headers) {
+        DefaultDataSource.Factory(context, DefaultHttpDataSource.Factory().setDefaultRequestProperties(headers)
+            .setAllowCrossProtocolRedirects(true)
+            .setKeepPostFor302Redirects(true))
+    }
 
     val strings = LocalStringRes.current
     var appliedInitialPosition by remember { mutableStateOf(false) }
@@ -67,7 +69,7 @@ fun VideoPlayer(component: VideoComponent) {
 
     RequireFullScreen()
 
-    val exoPlayer = remember {
+    val exoPlayer = remember(dataSourceFactory) {
         ExoPlayer.Builder(context)
             .apply {
                 setSeekBackIncrementMs(10000)

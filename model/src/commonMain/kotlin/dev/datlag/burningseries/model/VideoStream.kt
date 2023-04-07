@@ -9,5 +9,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class VideoStream(
     @SerialName("hoster") val hoster: HosterStream,
-    @SerialName("srcList") val srcList: List<String>
+    @SerialName("srcList") val srcList: List<String>,
+    @SerialName("header") val header: Map<String, String>
 ) : Parcelable

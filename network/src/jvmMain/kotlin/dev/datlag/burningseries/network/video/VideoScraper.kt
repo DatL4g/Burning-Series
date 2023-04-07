@@ -3,6 +3,7 @@ package dev.datlag.burningseries.network.video
 import dev.datlag.burningseries.model.HosterStream
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.network.common.getSources
+import dev.datlag.burningseries.network.video.hoster.Mixdrop
 import dev.datlag.burningseries.network.video.hoster.StreamZZ
 import dev.datlag.jsunpacker.JsUnpacker
 import org.jsoup.Jsoup
@@ -11,7 +12,8 @@ import org.jsoup.nodes.Document
 object VideoScraper : Scraper {
 
     val MANIPULATION_LIST = listOf(
-        StreamZZ()
+        StreamZZ(),
+        Mixdrop()
     )
 
     override suspend fun scrapeVideosFrom(hosterStream: HosterStream): VideoStream? {
@@ -36,12 +38,12 @@ object VideoScraper : Scraper {
             }
         }
 
-        val finalList = applyHosterManipulation(srcList, hosterStream, doc)
+        val (finalList, headers) = applyHosterManipulation(srcList, mapOf(), hosterStream, doc)
 
         return if (finalList.isEmpty()) {
             null
         } else {
-            VideoStream(hosterStream, finalList)
+            VideoStream(hosterStream, finalList, headers)
         }
     }
 
@@ -81,8 +83,14 @@ object VideoScraper : Scraper {
         return srcList
     }
 
-    private suspend fun applyHosterManipulation(initialList: List<String>, hoster: HosterStream, doc: Document): List<String> {
+    private suspend fun applyHosterManipulation(
+        initialList: List<String>,
+        headers: Map<String, String>,
+        hoster: HosterStream,
+        doc: Document
+    ): Pair<List<String>, Map<String, String>> {
         var manipulatedList: MutableList<String> = initialList.toMutableList()
+        var headerManipulation: MutableMap<String, String> = headers.toMutableMap()
         MANIPULATION_LIST.mapNotNull {
             if (it.match(hoster)) {
                 it
@@ -92,9 +100,10 @@ object VideoScraper : Scraper {
         }.forEach {
             manipulatedList.addAll(it.find(doc))
             manipulatedList = it.remove(manipulatedList).toMutableList()
+            headerManipulation = it.headers(headers, hoster).toMutableMap()
         }
 
-        return manipulatedList
+        return manipulatedList to headerManipulation
     }
 
 }
