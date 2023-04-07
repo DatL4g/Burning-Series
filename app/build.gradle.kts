@@ -13,13 +13,13 @@ plugins {
 
 val coroutines = "1.6.4"
 val decompose = "1.0.0"
-val kodein = "7.18.0"
+val kodein = "7.20.1"
 // don't use 2.2.4, serialization not working
 val ktor = "2.2.3"
-val exoplayer = "1.0.0-rc02"
-val accompanist = "0.28.0"
+val exoplayer = "1.0.0"
+val accompanist = "0.30.1"
 
-val javafx = "19.0.2.1"
+val javafx = "20"
 val javafxModules = listOf(
     "javafx.base",
     "javafx.graphics", // depends on base
@@ -30,13 +30,12 @@ val javafxModules = listOf(
 )
 
 val artifact = "dev.datlag.burningseries"
-val appVersion = "4.5.1"
-val appCode = 451
+val appVersion = "4.5.2"
+val appCode = 452
 
 group = artifact
 version = appVersion
 
-@OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
 kotlin {
     android()
     jvm("desktop")
@@ -78,14 +77,14 @@ kotlin {
             apply(plugin = "kotlin-parcelize")
             dependencies {
                 implementation("androidx.appcompat:appcompat:1.6.1")
-                implementation("androidx.core:core-ktx:1.9.0")
-                implementation("androidx.activity:activity-ktx:1.6.1")
-                implementation("androidx.activity:activity-compose:1.6.1")
+                implementation("androidx.core:core-ktx:1.10.0")
+                implementation("androidx.activity:activity-ktx:1.7.0")
+                implementation("androidx.activity:activity-compose:1.7.0")
                 runtimeOnly("androidx.compose.material3:material3:1.0.1")
                 implementation("androidx.multidex:multidex:2.0.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines")
-                implementation("io.coil-kt:coil-compose:2.2.2")
-                implementation("io.coil-kt:coil-svg:2.2.2")
+                implementation("io.coil-kt:coil-compose:2.3.0")
+                implementation("io.coil-kt:coil-svg:2.3.0")
                 implementation("com.google.accompanist:accompanist-pager:$accompanist")
                 implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanist")
                 implementation("com.google.accompanist:accompanist-flowlayout:$accompanist")
@@ -101,7 +100,7 @@ kotlin {
                 implementation("androidx.media3:media3-exoplayer-smoothstreaming:$exoplayer")
                 implementation("androidx.media3:media3-ui:$exoplayer")
 
-                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
+                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
             }
         }
 
