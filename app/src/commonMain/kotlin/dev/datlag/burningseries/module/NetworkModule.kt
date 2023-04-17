@@ -7,6 +7,7 @@ import dev.datlag.burningseries.network.GitHub
 import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.converter.FlowerResponseConverter
 import dev.datlag.burningseries.network.repository.*
+import dev.datlag.burningseries.other.EasyDns
 import dev.datlag.burningseries.other.MultiDoH
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.*
@@ -75,6 +76,7 @@ object NetworkModule {
                     .url("https://dns.dnsoverhttps.net/dns-query".toHttpUrl())
                     .includeIPv6(false)
                     .build(),
+                EasyDns(),
                 Dns.SYSTEM
             )
         }
@@ -152,7 +154,7 @@ object NetworkModule {
             SeriesRepository(instance())
         }
         bindProvider {
-            EpisodeRepository(instance(), instance())
+            EpisodeRepository(instance(), instance(), instance())
         }
         bindProvider {
             SaveRepository(instance(), instance(), instance())

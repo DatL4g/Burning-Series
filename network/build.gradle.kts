@@ -33,7 +33,8 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation("dev.datlag.jsunpacker:jsunpacker:$jsunpacker")
-                implementation("org.jsoup:jsoup:$jsoup")
+                api("org.jsoup:jsoup:$jsoup")
+                implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0")
             }
         }
     }

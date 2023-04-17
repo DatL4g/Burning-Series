@@ -66,6 +66,8 @@ kotlin {
                 implementation("com.mikepenz:aboutlibraries-compose:10.6.1")
                 implementation("com.mikepenz:aboutlibraries-core:10.6.1")
 
+                implementation("dnsjava:dnsjava:3.5.2")
+
                 implementation(project(":network"))
                 implementation(project(":datastore"))
                 implementation(project(":model"))

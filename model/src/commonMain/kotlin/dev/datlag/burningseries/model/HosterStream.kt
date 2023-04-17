@@ -10,15 +10,15 @@ import kotlinx.serialization.Serializable
 data class HosterStream(
     @SerialName("hoster") val hoster: String,
     @SerialName("url") val url: String,
-    @SerialName("config") val config: Config
+    @SerialName("config") val config: Config = Config()
 ) : Parcelable {
 
     @Parcelize
     @Serializable
     data class Config(
-        @SerialName("throwback") val recap: Info,
-        @SerialName("intro") val intro: Info,
-        @SerialName("outro") val outro: Info
+        @SerialName("throwback") val recap: Info = Info(),
+        @SerialName("intro") val intro: Info = Info(),
+        @SerialName("outro") val outro: Info = Info()
     ) : Parcelable {
 
         @Parcelize

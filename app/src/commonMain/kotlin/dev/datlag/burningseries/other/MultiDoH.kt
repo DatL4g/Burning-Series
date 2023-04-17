@@ -49,7 +49,7 @@ class MultiDoH internal constructor(
             }
         }
 
-        return inetList.ifEmpty {
+        return inetList.toSet().toList().ifEmpty {
             throwBestFailure(hostname, failures)
         }
     }

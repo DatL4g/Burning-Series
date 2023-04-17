@@ -15,6 +15,7 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleC
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.sun.javafx.application.PlatformImpl
 import dev.datlag.burningseries.common.isStarted
+import dev.datlag.burningseries.common.systemProperty
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.other.AppIO
 import dev.datlag.burningseries.other.Orientation
@@ -40,6 +41,7 @@ fun main() {
     val di = DI {
         import(NetworkModule.di)
     }
+    systemProperty("sun.net.http.allowRestrictedHeaders", "true")
 
     val root = NavHostComponent.create(DefaultComponentContext(lifecycle), di)
     val resources = Resources()

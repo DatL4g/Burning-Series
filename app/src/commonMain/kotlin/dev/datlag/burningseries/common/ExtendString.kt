@@ -33,3 +33,19 @@ fun String.buildTitleHref(): String {
 
     return hrefSplit[0].trimHref()
 }
+
+fun systemProperty(key: String): String? = runCatching {
+    System.getProperty(key).ifEmpty {
+        null
+    }
+}.getOrNull()
+
+fun systemEnv(key: String): String? = runCatching {
+    System.getenv(key).ifEmpty {
+        null
+    }
+}.getOrNull()
+
+fun systemProperty(key: String, value: String) = runCatching {
+    System.setProperty(key, value)
+}.getOrNull()

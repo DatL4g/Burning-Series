@@ -5,7 +5,9 @@ import com.hadiyarajesh.flower_core.networkResource
 import dev.datlag.burningseries.model.HosterStream
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.VideoStream
+import dev.datlag.burningseries.model.algorithm.MD5
 import dev.datlag.burningseries.network.BurningSeries
+import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.Status
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -14,6 +16,7 @@ import dev.datlag.burningseries.network.video.Scraper
 
 class EpisodeRepository(
     private val api: BurningSeries,
+    private val jsonBase: JsonBase,
     private val scraper: Scraper? = null
 ) {
 
@@ -43,14 +46,16 @@ class EpisodeRepository(
             }
             is Resource.Status.Error -> {
                 it.data?.ifEmpty {
-                    emptyList()
-                } ?: emptyList()
+                    backupStreams(episode.value)
+                } ?: backupStreams(episode.value)
             }
             is Resource.Status.EmptySuccess -> {
-                emptyList()
+                backupStreams(episode.value)
             }
             is Resource.Status.Success -> {
-                it.data
+                it.data.ifEmpty {
+                    backupStreams(episode.value)
+                }
             }
         })
     }.flowOn(Dispatchers.IO).distinctUntilChanged()
@@ -67,5 +72,30 @@ class EpisodeRepository(
 
     suspend fun loadHosterStreams(episode: Series.Episode) {
         this.episode.emit(episode)
+    }
+
+    private suspend fun backupStreams(episode: Series.Episode?): List<HosterStream> = coroutineScope {
+        if (episode == null) {
+            return@coroutineScope emptyList()
+        }
+        return@coroutineScope episode.hoster.map { hoster ->
+            async {
+                networkResource(makeNetworkRequest = {
+                    jsonBase.burningSeriesCaptcha(MD5.hexString(hoster.href))
+                }).mapNotNull {
+                    when (it.status) {
+                        is Resource.Status.Loading -> null
+                        else -> it
+                    }
+                }.map {
+                    when (it.status) {
+                        is Resource.Status.Success -> {
+                            HosterStream(hoster.title, (it.status as Resource.Status.Success).data.url)
+                        }
+                        else -> null
+                    }
+                }.first()
+            }
+        }.awaitAll().filterNotNull()
     }
 }

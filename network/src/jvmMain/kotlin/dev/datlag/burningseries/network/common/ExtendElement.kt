@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.network.common
 
+import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
 fun Element.getTitle(): String {
@@ -25,4 +26,13 @@ fun Element.getSources(): List<String> {
         val sources = this.select("source")
         sources.map { it.getSources() }.flatten()
     }
+}
+
+fun Element.recursiveCount(): Int {
+    var count = 0
+    this.children().forEach {
+        count += it.childrenSize()
+        count += it.recursiveCount()
+    }
+    return count
 }
