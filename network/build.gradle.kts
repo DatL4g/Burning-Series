@@ -3,6 +3,7 @@ plugins {
     kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
     id("de.jensklingenberg.ktorfit")
+    id("com.android.library")
 }
 
 group = "dev.datlag.burningseries.network"
@@ -14,6 +15,7 @@ val jsoup = "1.15.4"
 val coroutines = "1.6.4"
 
 kotlin {
+    android()
     jvm()
     js(IR) {
         browser()
@@ -33,8 +35,16 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation("dev.datlag.jsunpacker:jsunpacker:$jsunpacker")
-                api("org.jsoup:jsoup:$jsoup")
-                implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0")
+                implementation("org.jsoup:jsoup:$jsoup")
+                implementation(project(":scraper"))
+            }
+        }
+
+        val androidMain by getting {
+            dependencies {
+                implementation("dev.datlag.jsunpacker:jsunpacker:$jsunpacker")
+                implementation("org.jsoup:jsoup:$jsoup")
+                implementation(project(":scraper"))
             }
         }
     }
@@ -43,5 +53,22 @@ kotlin {
 dependencies {
     add("kspCommonMainMetadata", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfit")
     add("kspJvm", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfit")
+    add("kspAndroid", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfit")
     add("kspJs", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfit")
+}
+
+android {
+    sourceSets["main"].setRoot("src/androidMain/")
+
+    compileSdk = Configuration.compileSdk
+    buildToolsVersion = Configuration.buildTools
+
+    defaultConfig {
+        minSdk = Configuration.minSdk
+    }
+
+    compileOptions {
+        sourceCompatibility = CompileOptions.sourceCompatibility
+        targetCompatibility = CompileOptions.targetCompatibility
+    }
 }

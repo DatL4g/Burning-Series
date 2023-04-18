@@ -193,18 +193,6 @@ class SeriesScreenComponent(
                         }
                     }
                 }
-            } else {
-                scope.launch(Dispatchers.IO) {
-                    episodes.collect { list ->
-                        if (!loadedWantedEpisode) {
-                            val wantedEpisode = list.find { it.href.equals(href, true) }
-                            wantedEpisode?.let {
-                                loadedWantedEpisode = true
-                                loadEpisode(it)
-                            }
-                        }
-                    }
-                }
             }
         }
         scope.launch(Dispatchers.IO) {

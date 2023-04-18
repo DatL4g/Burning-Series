@@ -1,13 +1,13 @@
 package dev.datlag.burningseries.network.repository
 
+import com.hadiyarajesh.flower_core.ApiSuccessResponse
 import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.dbBoundResource
-import com.hadiyarajesh.flower_core.networkResource
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
-import dev.datlag.burningseries.model.algorithm.Levenshtein
 import dev.datlag.burningseries.network.Status
+import dev.datlag.burningseries.network.bs.BsScraper
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -20,7 +20,11 @@ class GenreRepository(
     val allState: MutableStateFlow<List<Genre>> = MutableStateFlow(emptyList())
 
     private val all: Flow<Resource<List<Genre>>> = dbBoundResource(
-        makeNetworkRequest = { api.all() },
+        makeNetworkRequest = {
+            BsScraper.getAll("andere-serien")?.let { genres ->
+                ApiSuccessResponse(genres, emptySet())
+            } ?: api.all()
+        },
         fetchFromLocal = { allState },
         shouldMakeNetworkRequest = { it.isNullOrEmpty() },
         saveResponseData = { allState.emit(it) }

@@ -6,6 +6,7 @@ include("network")
 include("datastore")
 include("datastore-codegen")
 include("database")
+include("scraper")
 
 include(
     "extension",

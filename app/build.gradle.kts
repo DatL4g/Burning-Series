@@ -1,5 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
+dependencies {
+    implementation("io.ktor:ktor-client-okhttp-jvm:2.2.4")
+}
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")

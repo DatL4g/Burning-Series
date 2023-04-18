@@ -1,19 +1,21 @@
 package dev.datlag.burningseries.network.repository
 
+import com.hadiyarajesh.flower_core.ApiSuccessResponse
 import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.dbBoundResource
-import com.hadiyarajesh.flower_core.networkResource
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.common.trimHref
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.Status
+import dev.datlag.burningseries.network.bs.BsScraper
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
-import kotlinx.serialization.json.JsonElement
 import dev.datlag.burningseries.network.common.Dispatchers
+import io.ktor.client.*
 
 class SeriesRepository(
-    private val api: BurningSeries
+    private val api: BurningSeries,
+    private val client: HttpClient
 ) {
     val seriesState: MutableStateFlow<Series?> = MutableStateFlow(null)
 
@@ -22,7 +24,9 @@ class SeriesRepository(
         if (it != null) {
             return@transformLatest emitAll(dbBoundResource(
                 makeNetworkRequest = {
-                    api.series(it)
+                    BsScraper.getSeries(it, client)?.let { series ->
+                        ApiSuccessResponse(series, emptySet())
+                    } ?: api.series(it)
                 },
                 fetchFromLocal = {
                     seriesState

@@ -1,6 +1,5 @@
-package dev.datlag.burningseries.network.common
+package dev.datlag.burningseries.scraper.common
 
-import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
 fun Element.getTitle(): String {
@@ -28,11 +27,19 @@ fun Element.getSources(): List<String> {
     }
 }
 
-fun Element.recursiveCount(): Int {
-    var count = 0
-    this.children().forEach {
-        count += it.childrenSize()
-        count += it.recursiveCount()
+fun Element.getSrc(): String? {
+    return if (this.hasAttr("src")) {
+        this.attr("src")
+    } else {
+        val sources = this.select("source")
+        sources.firstOrNull()?.getSrc()
     }
-    return count
+}
+
+fun Element.getValue(): String? {
+    return if (this.hasAttr("value")) {
+        this.attr("value")
+    } else {
+        null
+    }
 }

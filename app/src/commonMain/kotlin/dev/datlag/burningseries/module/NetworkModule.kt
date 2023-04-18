@@ -9,14 +9,20 @@ import dev.datlag.burningseries.network.converter.FlowerResponseConverter
 import dev.datlag.burningseries.network.repository.*
 import dev.datlag.burningseries.other.EasyDns
 import dev.datlag.burningseries.other.MultiDoH
-import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import okhttp3.*
+import okhttp3.Cache
+import okhttp3.Dns
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttpClient
 import okhttp3.dnsoverhttps.DnsOverHttps
-import org.kodein.di.*
+import org.kodein.di.DI
+import org.kodein.di.bindProvider
+import org.kodein.di.bindSingleton
+import org.kodein.di.instance
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.createTempDirectory
@@ -40,7 +46,8 @@ object NetworkModule {
 
             try {
                 tempDir.deleteOnExit()
-            } catch (ignored: Throwable) { }
+            } catch (ignored: Throwable) {
+            }
 
             tempDir
         }
@@ -88,24 +95,28 @@ object NetworkModule {
         }
 
         bindSingleton {
-            ktorfitBuilder {
-                responseConverter(FlowerResponseConverter())
-                httpClient(OkHttp) {
-                    engine {
-                        config {
-                            dns(instance())
-                            connectTimeout(3, TimeUnit.MINUTES)
-                            readTimeout(3, TimeUnit.MINUTES)
-                            writeTimeout(3, TimeUnit.MINUTES)
-                        }
-                    }
-                    install(ContentNegotiation) {
-                        json(Json {
-                            ignoreUnknownKeys = true
-                            isLenient = true
-                        })
+            HttpClient(OkHttp) {
+                engine {
+                    config {
+                        dns(instance())
+                        connectTimeout(3, TimeUnit.MINUTES)
+                        readTimeout(3, TimeUnit.MINUTES)
+                        writeTimeout(3, TimeUnit.MINUTES)
                     }
                 }
+                install(ContentNegotiation) {
+                    json(Json {
+                        ignoreUnknownKeys = true
+                        isLenient = true
+                    })
+                }
+            }
+        }
+
+        bindSingleton {
+            ktorfitBuilder {
+                responseConverter(FlowerResponseConverter())
+                httpClient(instance<HttpClient>())
             }
         }
         bindSingleton(TAG_KTORFIT_BURNINGSERIES) {
@@ -151,7 +162,7 @@ object NetworkModule {
             GenreRepository(instance())
         }
         bindProvider {
-            SeriesRepository(instance())
+            SeriesRepository(instance(), instance())
         }
         bindProvider {
             EpisodeRepository(instance(), instance(), instance())

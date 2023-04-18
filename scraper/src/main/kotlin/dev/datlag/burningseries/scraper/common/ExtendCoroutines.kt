@@ -1,8 +1,6 @@
-package dev.datlag.burningseries.network.common
+package dev.datlag.burningseries.scraper.common
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 
 suspend fun <T> suspendCatching(block: suspend CoroutineScope.() -> T): Result<T> = coroutineScope {
     return@coroutineScope try {

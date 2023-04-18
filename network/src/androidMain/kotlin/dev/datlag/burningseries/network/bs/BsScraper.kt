@@ -58,4 +58,5 @@ actual object BsScraper {
             null
         }
     }
+
 }

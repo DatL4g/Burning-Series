@@ -9,7 +9,7 @@ group = "dev.datlag.burningseries.model"
 
 kotlin {
     android()
-    jvm("desktop")
+    jvm()
     js(IR) {
         browser()
     }
@@ -27,7 +27,7 @@ kotlin {
             apply(plugin = "kotlin-parcelize")
         }
 
-        val desktopMain by getting
+        val jvmMain by getting
 
         val jsMain by getting
     }

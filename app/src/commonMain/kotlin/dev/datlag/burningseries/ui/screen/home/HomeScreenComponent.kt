@@ -28,13 +28,16 @@ import org.kodein.di.DI
 import dev.datlag.burningseries.common.CommonDispatcher
 import dev.datlag.burningseries.common.safeEmit
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.model.Release
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Dns
 import org.kodein.di.instance
+import dev.datlag.burningseries.network.bs.BsScraper
 
 class HomeScreenComponent(
     componentContext: ComponentContext,
@@ -86,6 +89,7 @@ class HomeScreenComponent(
     private val homeRepo: HomeRepository by di.instance()
     private val db: BurningSeriesDB by di.instance()
     private val githubRepo: GitHubRepository by di.instance()
+    private val dns: Dns by di.instance()
 
     override val status = homeRepo.status
     override val favoritesExists: Flow<Boolean> = db.burningSeriesQueries.favoritesExists().asFlow().mapToOneOrDefault(false)

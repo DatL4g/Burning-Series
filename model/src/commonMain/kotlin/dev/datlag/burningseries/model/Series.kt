@@ -173,4 +173,33 @@ data class Series(
         @SerialName("title") val title: String,
         @SerialName("href") val href: String
     ) : Parcelable
+
+    @Parcelize
+    @Serializable
+    data class Slug(
+        @SerialName("data") val data: SlugData
+    ) : Parcelable {
+
+        @Parcelize
+        @Serializable
+        data class SlugData(
+            @SerialName("cannonEpisodes") val cannonEpisodes: List<Int> = emptyList(),
+            @SerialName("fillerEpisodes") val fillerEpisodes: List<Int> = emptyList(),
+            @SerialName("mixedEpisodes") val mixedEpisodes: List<Int> = emptyList(),
+        ) : Parcelable
+    }
+
+    @Parcelize
+    @Serializable
+    data class Shows(
+        @SerialName("data") val data: List<Show> = emptyList()
+    ): Parcelable {
+
+        @Parcelize
+        @Serializable
+        data class Show(
+            @SerialName("name") val name: String = String(),
+            @SerialName("slug") val slug: String = String()
+        ): Parcelable
+    }
 }

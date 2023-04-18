@@ -2,7 +2,7 @@ package dev.datlag.burningseries.network.video
 
 import dev.datlag.burningseries.model.HosterStream
 import dev.datlag.burningseries.model.VideoStream
-import dev.datlag.burningseries.network.common.getSources
+import dev.datlag.burningseries.scraper.common.getSources
 import dev.datlag.burningseries.network.video.hoster.Mixdrop
 import dev.datlag.burningseries.network.video.hoster.StreamZZ
 import dev.datlag.jsunpacker.JsUnpacker
