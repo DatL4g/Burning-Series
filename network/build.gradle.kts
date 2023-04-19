@@ -65,6 +65,7 @@ android {
 
     defaultConfig {
         minSdk = Configuration.minSdk
+        namespace = "dev.datlag.burningseries.network"
     }
 
     compileOptions {

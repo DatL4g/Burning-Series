@@ -230,20 +230,22 @@ object JvmBsScraper {
             }.any { it.data.contains("Anime", true) }
         ) {
             if (FillerCache.loadShows()) {
-                suspendCatching {
-                    val shows: Series.Shows = client.get(Constants.ANIME_FILLER_SHOWS_URL).body()
+                val showsResult = suspendCatching {
+                    val shows: Series.Shows = client.get(Constants.ANIME_FILLER_SHOWS_URL).body<Series.Shows>()
                     shows
-                }.getOrNull()?.let {
+                }
+                showsResult.getOrNull()?.let {
                     FillerCache.addAllShows(it)
                 }
             }
             val matchingSlug = FillerCache.findShow(normalizedTitle)?.slug
 
             if (!matchingSlug.isNullOrEmpty()) {
-                val slug = suspendCatching {
-                    val slug: Series.Slug = client.get("${Constants.ANIME_FILLER_SLUG_URL}${matchingSlug}").body()
+                val slugResult = suspendCatching {
+                    val slug: Series.Slug = client.get("${Constants.ANIME_FILLER_SLUG_URL}${matchingSlug}").body<Series.Slug>()
                     slug.data
-                }.getOrNull()
+                }
+                val slug = slugResult.getOrNull()
 
                 canon = slug?.cannonEpisodes ?: emptyList()
                 filler = slug?.fillerEpisodes ?: emptyList()
