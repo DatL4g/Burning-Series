@@ -10,7 +10,6 @@ group = "dev.datlag.burningseries.network"
 
 val flower = "3.0.0"
 val ktorfit = "1.0.1"
-val jsunpacker = "1.0.1"
 val jsoup = "1.15.4"
 val coroutines = "1.6.4"
 
@@ -34,17 +33,13 @@ kotlin {
 
         val jvmMain by getting {
             dependencies {
-                implementation("dev.datlag.jsunpacker:jsunpacker:$jsunpacker")
-                implementation("org.jsoup:jsoup:$jsoup")
-                implementation(project(":scraper"))
+                api(project(":scraper"))
             }
         }
 
         val androidMain by getting {
             dependencies {
-                implementation("dev.datlag.jsunpacker:jsunpacker:$jsunpacker")
-                implementation("org.jsoup:jsoup:$jsoup")
-                implementation(project(":scraper"))
+                api(project(":scraper"))
             }
         }
     }

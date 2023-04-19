@@ -1,4 +1,4 @@
-package dev.datlag.burningseries.network.video
+package dev.datlag.burningseries.scraper.video
 
 import dev.datlag.burningseries.model.HosterStream
 import org.jsoup.nodes.Document

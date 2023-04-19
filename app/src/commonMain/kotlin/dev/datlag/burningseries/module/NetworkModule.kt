@@ -7,6 +7,7 @@ import dev.datlag.burningseries.network.GitHub
 import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.converter.FlowerResponseConverter
 import dev.datlag.burningseries.network.repository.*
+import dev.datlag.burningseries.network.video.Scraper
 import dev.datlag.burningseries.other.EasyDns
 import dev.datlag.burningseries.other.MultiDoH
 import io.ktor.client.*

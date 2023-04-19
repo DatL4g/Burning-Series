@@ -1,7 +1,7 @@
-package dev.datlag.burningseries.network.video.hoster
+package dev.datlag.burningseries.scraper.video.hoster
 
 import dev.datlag.burningseries.model.HosterStream
-import dev.datlag.burningseries.network.video.VideoStreamManipulation
+import dev.datlag.burningseries.scraper.video.VideoStreamManipulation
 import dev.datlag.jsunpacker.JsUnpacker
 import org.jsoup.nodes.Document
 

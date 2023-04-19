@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.datastore.dataStoreFile
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.datastore.CryptoManager
+import dev.datlag.burningseries.model.HosterStream
+import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.network.video.Scraper
-import dev.datlag.burningseries.network.video.VideoScraper
+import dev.datlag.burningseries.scraper.video.VideoScraper
 import org.kodein.di.*
 import java.io.File
 
@@ -49,8 +51,12 @@ actual object PlatformModule {
             returnFile
         }
 
-        bindSingleton<Scraper> {
-            VideoScraper
+        bindSingleton {
+            object : Scraper {
+                override suspend fun scrapeVideosFrom(hosterStream: HosterStream): VideoStream? {
+                    return VideoScraper.scrapeVideosFrom(hosterStream)
+                }
+            }
         }
     }
 

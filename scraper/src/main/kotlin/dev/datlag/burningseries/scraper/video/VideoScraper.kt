@@ -1,22 +1,22 @@
-package dev.datlag.burningseries.network.video
+package dev.datlag.burningseries.scraper.video
 
 import dev.datlag.burningseries.model.HosterStream
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.scraper.common.getSources
-import dev.datlag.burningseries.network.video.hoster.Mixdrop
-import dev.datlag.burningseries.network.video.hoster.StreamZZ
+import dev.datlag.burningseries.scraper.video.hoster.Mixdrop
+import dev.datlag.burningseries.scraper.video.hoster.StreamZZ
 import dev.datlag.jsunpacker.JsUnpacker
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-object VideoScraper : Scraper {
+object VideoScraper {
 
     val MANIPULATION_LIST = listOf(
         StreamZZ(),
         Mixdrop()
     )
 
-    override suspend fun scrapeVideosFrom(hosterStream: HosterStream): VideoStream? {
+    suspend fun scrapeVideosFrom(hosterStream: HosterStream): VideoStream? {
         val doc = try {
             Jsoup.connect(hosterStream.url).get()
         } catch (ignored: Throwable) {
