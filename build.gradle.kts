@@ -6,11 +6,11 @@ plugins {
     kotlin("multiplatform") version "1.8.10" apply false
     kotlin("plugin.serialization") version "1.8.10" apply false
     kotlin("android") version "1.8.10" apply false
-    id("org.jetbrains.compose") version "1.3.1" apply false
+    id("org.jetbrains.compose") version "1.4.0" apply false
     id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
     id("com.google.protobuf") version "0.9.2" apply false
     id("com.squareup.sqldelight") version "1.5.5" apply false
-    id("com.mikepenz.aboutlibraries.plugin") version "10.6.1" apply false
+    id("com.mikepenz.aboutlibraries.plugin") version "10.6.2" apply false
     id("de.jensklingenberg.ktorfit") version "1.0.0" apply false
     id("com.google.osdetector") version "1.7.3" apply false
     id("com.github.ben-manes.versions") version "0.46.0"

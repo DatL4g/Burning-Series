@@ -9,7 +9,7 @@ plugins {
 group = "dev.datlag.burningseries.network"
 
 val flower = "3.0.0"
-val ktorfit = "1.0.1"
+val ktorfit = "1.1.0"
 val jsoup = "1.15.4"
 val coroutines = "1.6.4"
 
