@@ -12,3 +12,7 @@ actual fun String.decodeBase64(): ByteArray {
 actual fun String.encodeBase64(): String {
     return Base64.getEncoder().encodeToString(this.toByteArray())
 }
+
+actual fun ByteArray.encodeBase64(): String {
+    return Base64.getEncoder().encodeToString(this)
+}

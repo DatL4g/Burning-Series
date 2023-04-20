@@ -7,3 +7,7 @@ actual fun String.decodeBase64(): ByteArray {
 actual fun String.encodeBase64(): String {
     return String()
 }
+
+actual fun ByteArray.encodeBase64(): String {
+    return String()
+}
