@@ -177,7 +177,9 @@ class NavHostComponent private constructor(
     }
 
     private fun onWatchClicked(series: Series, episode: Series.Episode, stream: VideoStream) {
-        navigation.push(ScreenConfig.Video(series, episode, listOf(stream)))
+        navigation.pop {
+            navigation.push(ScreenConfig.Video(series, episode, listOf(stream)))
+        }
     }
 
     init {

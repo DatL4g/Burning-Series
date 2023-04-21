@@ -48,7 +48,7 @@ actual object BsScraper {
     actual suspend fun getSeries(url: String?, client: HttpClient): Series? {
         return try {
             if (url != null) {
-                JvmBsScraper.getDocument(url)?.let {
+                JvmBsScraper.getDocument(JvmBsScraper.fixSeriesHref(url))?.let {
                     JvmBsScraper.getSeries(it, client)
                 }
             } else {

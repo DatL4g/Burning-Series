@@ -220,38 +220,19 @@ object JvmBsScraper {
         var filler: List<Int> = emptyList()
         var mixed: List<Int> = emptyList()
 
-        if (
-            infoList.mapNotNull {
-                if (it.header.equals("Genre", true) || it.header.equals("Genres", true)) {
-                    it
-                } else {
-                    null
-                }
-            }.any { it.data.contains("Anime", true) }
-        ) {
-            if (FillerCache.loadShows()) {
-                val showsResult = suspendCatching {
-                    val shows: Series.Shows = client.get(Constants.ANIME_FILLER_SHOWS_URL).body<Series.Shows>()
-                    shows
-                }
-                showsResult.getOrNull()?.let {
-                    FillerCache.addAllShows(it)
-                }
-            }
-            val matchingSlug = FillerCache.findShow(normalizedTitle)?.slug
-
-            if (!matchingSlug.isNullOrEmpty()) {
-                val slugResult = suspendCatching {
-                    val slug: Series.Slug = client.get("${Constants.ANIME_FILLER_SLUG_URL}${matchingSlug}").body<Series.Slug>()
-                    slug.data
-                }
-                val slug = slugResult.getOrNull()
-
-                canon = slug?.cannonEpisodes ?: emptyList()
-                filler = slug?.fillerEpisodes ?: emptyList()
-                mixed = slug?.mixedEpisodes ?: emptyList()
-            }
-        }
+        /**
+         * if (
+         *             infoList.mapNotNull {
+         *                 if (it.header.equals("Genre", true) || it.header.equals("Genres", true)) {
+         *                     it
+         *                 } else {
+         *                     null
+         *                 }
+         *             }.any { it.data.contains("Anime", true) }
+         *         ) {
+         *             // Check for filler information here
+         *         }
+         */
 
         val episodes = doc.select(".serie .episodes tr")
         val episodeInfoList = episodes.mapNotNull { episodesElement ->
@@ -379,6 +360,10 @@ object JvmBsScraper {
     private fun normalizeHref(href: String): String {
         val regex = "serie\\S+".toRegex(RegexOption.IGNORE_CASE)
         return regex.find(href)?.value ?: href
+    }
+
+    fun fixSeriesHref(href: String): String {
+        return rebuildHrefFromData(hrefDataFromHref(normalizeHref(href)))
     }
 
     private fun hrefDataFromHref(href: String): Triple<String, String?, String?> {

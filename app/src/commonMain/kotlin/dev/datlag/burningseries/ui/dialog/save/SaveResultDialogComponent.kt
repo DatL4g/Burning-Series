@@ -24,7 +24,6 @@ class SaveResultDialogComponent(
     }
 
     override fun watchClicked(stream: VideoStream) {
-        onDismissed()
         val watchEpisode = series.episodes.find {
             it.href.trimHref().equals(scrapedEpisodeHref.trimHref(), true) || it.hoster.any { hoster ->
                 hoster.href.trimHref().equals(scrapedEpisodeHref.trimHref(), true)
@@ -43,7 +42,6 @@ class SaveResultDialogComponent(
     }
 
     override fun backClicked() {
-        onDismissed()
         onBack()
     }
 }
