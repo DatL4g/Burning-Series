@@ -14,6 +14,10 @@ actual object BsScraper {
         }
     }
 
+    actual fun client(client: HttpClient) = apply {
+        JvmBsScraper.client(client)
+    }
+
     actual suspend fun getHome(url: String?): Home? {
         return try {
             if (url != null) {
@@ -45,11 +49,11 @@ actual object BsScraper {
         }
     }
 
-    actual suspend fun getSeries(url: String?, client: HttpClient): Series? {
+    actual suspend fun getSeries(url: String?): Series? {
         return try {
             if (url != null) {
                 JvmBsScraper.getDocument(JvmBsScraper.fixSeriesHref(url))?.let {
-                    JvmBsScraper.getSeries(it, client)
+                    JvmBsScraper.getSeries(it)
                 }
             } else {
                 null

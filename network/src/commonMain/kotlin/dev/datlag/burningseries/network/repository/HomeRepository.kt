@@ -12,16 +12,18 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import dev.datlag.burningseries.network.common.Dispatchers
+import io.ktor.client.*
 
 class HomeRepository(
-    private val api: BurningSeries
+    private val api: BurningSeries,
+    private val client: HttpClient
 ) {
 
     val homeState: MutableStateFlow<Home> = MutableStateFlow(Home())
 
     private val home: Flow<Resource<Home>> = dbBoundResource(
         makeNetworkRequest = {
-            BsScraper.getHome(String())?.let { home ->
+            BsScraper.client(client).getHome(String())?.let { home ->
                 ApiSuccessResponse(home, emptySet())
             } ?: api.home()
         },

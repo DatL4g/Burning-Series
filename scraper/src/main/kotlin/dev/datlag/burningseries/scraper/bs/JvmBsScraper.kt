@@ -10,6 +10,7 @@ import dev.datlag.burningseries.scraper.common.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -27,10 +28,22 @@ object JvmBsScraper {
         Cover(String()) to false
     }
 
+    private var client: HttpClient? = null
+
+    fun client(client: HttpClient) = apply {
+        if (this.client == null) {
+            this.client = client
+        }
+    }
+
     suspend fun getDocument(url: String): Document? = withTimeout(15.seconds) {
         return@withTimeout suspendCatching {
             Jsoup.connect(Constants.getBurningSeriesLink(url)).followRedirects(true).get()
-        }.getOrNull()
+        }.getOrNull() ?: client?.let {
+            suspendCatching {
+                Jsoup.parse(it.get(Constants.getBurningSeriesLink(url)).bodyAsText())
+            }.getOrNull()
+        }
     }
 
     suspend fun getLatestEpisodes(doc: Document): List<Home.Episode> = coroutineScope {
@@ -119,7 +132,7 @@ object JvmBsScraper {
         }.awaitAll().filterNotNull()
     }
 
-    suspend fun getSeries(doc: Document, client: HttpClient): Series? {
+    suspend fun getSeries(doc: Document): Series? {
         val title = doc.selectFirst(".serie h2")?.wholeText() ?: String()
         val description = doc.selectFirst(".serie #sp_left > p")?.text() ?: String()
 

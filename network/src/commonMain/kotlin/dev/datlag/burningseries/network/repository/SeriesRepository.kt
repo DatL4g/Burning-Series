@@ -24,7 +24,7 @@ class SeriesRepository(
         if (it != null) {
             return@transformLatest emitAll(dbBoundResource(
                 makeNetworkRequest = {
-                    BsScraper.getSeries(it, client)?.let { series ->
+                    BsScraper.client(client).getSeries(it)?.let { series ->
                         ApiSuccessResponse(series, emptySet())
                     } ?: api.series(it)
                 },

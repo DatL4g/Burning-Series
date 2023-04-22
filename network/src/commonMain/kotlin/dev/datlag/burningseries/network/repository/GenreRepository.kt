@@ -12,16 +12,18 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import dev.datlag.burningseries.network.common.Dispatchers
+import io.ktor.client.*
 
 class GenreRepository(
-    private val api: BurningSeries
+    private val api: BurningSeries,
+    private val client: HttpClient
 ) {
 
     val allState: MutableStateFlow<List<Genre>> = MutableStateFlow(emptyList())
 
     private val all: Flow<Resource<List<Genre>>> = dbBoundResource(
         makeNetworkRequest = {
-            BsScraper.getAll("andere-serien")?.let { genres ->
+            BsScraper.client(client).getAll("andere-serien")?.let { genres ->
                 ApiSuccessResponse(genres, emptySet())
             } ?: api.all()
         },

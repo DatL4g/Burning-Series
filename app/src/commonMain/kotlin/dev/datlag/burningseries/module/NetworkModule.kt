@@ -157,10 +157,10 @@ object NetworkModule {
             jsonBaseKtor.create<JsonBase>()
         }
         bindSingleton {
-            HomeRepository(instance())
+            HomeRepository(instance(), instance())
         }
         bindSingleton {
-            GenreRepository(instance())
+            GenreRepository(instance(), instance())
         }
         bindProvider {
             SeriesRepository(instance(), instance())

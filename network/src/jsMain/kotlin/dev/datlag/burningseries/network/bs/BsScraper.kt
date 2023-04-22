@@ -6,6 +6,9 @@ import dev.datlag.burningseries.model.Series
 import io.ktor.client.*
 
 actual object BsScraper {
+
+    actual fun client(client: HttpClient): BsScraper = apply {  }
+
     actual suspend fun getHome(url: String?): Home? {
         return null
     }
@@ -14,10 +17,7 @@ actual object BsScraper {
         return null
     }
 
-    actual suspend fun getSeries(
-        url: String?,
-        client: HttpClient
-    ): Series? {
+    actual suspend fun getSeries(url: String?): Series? {
         return null
     }
 
