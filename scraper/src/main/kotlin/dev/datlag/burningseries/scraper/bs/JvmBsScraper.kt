@@ -41,7 +41,9 @@ object JvmBsScraper {
             Jsoup.connect(Constants.getBurningSeriesLink(url)).followRedirects(true).get()
         }.getOrNull() ?: client?.let {
             suspendCatching {
-                Jsoup.parse(it.get(Constants.getBurningSeriesLink(url)).bodyAsText())
+                it.get(Constants.getBurningSeriesLink(url)).bodyAsText().trim().ifEmpty { null }?.let { body ->
+                    Jsoup.parse(body)
+                }
             }.getOrNull()
         }
     }
