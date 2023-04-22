@@ -176,3 +176,8 @@ fun RunOnce(key: Any?, orCheck: () -> Boolean = { false }, block: () -> Unit) {
         }
     }
 }
+
+inline fun Modifier.ifTrue(predicate: Boolean, builder: Modifier.() -> Modifier) = then(if (predicate) builder() else Modifier)
+inline fun Modifier.ifFalse(predicate: Boolean, builder: Modifier.() -> Modifier) = then(if (!predicate) builder() else Modifier)
+
+inline fun <T : Any> Modifier.ifNotNull(value: T?, builder: (T) -> Modifier): Modifier = then(if (value != null) builder(value) else Modifier)

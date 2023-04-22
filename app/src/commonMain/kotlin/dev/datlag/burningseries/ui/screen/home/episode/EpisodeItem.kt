@@ -1,11 +1,13 @@
 package dev.datlag.burningseries.ui.screen.home.episode
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import dev.datlag.burningseries.common.onClick
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
@@ -13,9 +15,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.LocalDarkMode
 import dev.datlag.burningseries.common.cardItemSize
 import dev.datlag.burningseries.common.coverFileName
-import dev.datlag.burningseries.common.isTv
 import dev.datlag.burningseries.database.DBSeries
 import dev.datlag.burningseries.database.SelectLatestEpisodesAmount
 import dev.datlag.burningseries.model.Cover
@@ -78,14 +80,27 @@ fun EpisodeItem(
     component: EpisodesComponent
 ) {
     val fabGroup = LocalFabGroupRequester.current
+    val interactionSource = remember { MutableInteractionSource() }
 
-    Card(modifier = Modifier.cardItemSize().onClick {
-        component.onEpisodeClicked(href, SeriesInitialInfo(series, cover), continueWatching)
-    }.focusProperties {
-        if (fabGroup != null) {
-            down = fabGroup
-        }
-    }) {
+    val isHovered by interactionSource.collectIsHoveredAsState()
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    val borderColor = if (LocalDarkMode.current) {
+        Color.White
+    } else {
+        MaterialTheme.colorScheme.tertiary
+    }
+
+    Card(
+        modifier = Modifier.cardItemSize().hoverable(interactionSource).focusable(interactionSource = interactionSource).onClick {
+            component.onEpisodeClicked(href, SeriesInitialInfo(series, cover), continueWatching)
+        }.focusProperties {
+            if (fabGroup != null) {
+                down = fabGroup
+            }
+        },
+        border = if (isHovered || isFocused) BorderStroke(2.dp, borderColor) else null
+    ) {
         CoverImage(
             cover = cover,
             description = title,
