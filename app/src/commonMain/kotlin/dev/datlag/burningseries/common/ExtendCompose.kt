@@ -4,27 +4,33 @@ import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import dev.datlag.burningseries.LocalOrientation
@@ -181,3 +187,42 @@ inline fun Modifier.ifTrue(predicate: Boolean, builder: Modifier.() -> Modifier)
 inline fun Modifier.ifFalse(predicate: Boolean, builder: Modifier.() -> Modifier) = then(if (!predicate) builder() else Modifier)
 
 inline fun <T : Any> Modifier.ifNotNull(value: T?, builder: (T) -> Modifier): Modifier = then(if (value != null) builder(value) else Modifier)
+
+@Composable
+fun Modifier.ifFocused(
+    hoverable: Boolean = true,
+    focusable: Boolean = true,
+    builder: Modifier.() -> Modifier
+): Modifier {
+    val interactionSource = remember { MutableInteractionSource() }
+
+    val isHovered by interactionSource.collectIsHoveredAsState()
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    return this.ifTrue(isHovered || isFocused) {
+        builder(this)
+    }.hoverable(
+        interactionSource = interactionSource,
+        enabled = hoverable
+    ).focusable(
+        interactionSource = interactionSource,
+        enabled = focusable
+    )
+}
+
+@Composable
+fun Modifier.focusBorder(
+    color: Color,
+    space: Dp = 2.dp,
+    shape: Shape = CircleShape,
+    hoverable: Boolean = true,
+    focusable: Boolean = true
+): Modifier {
+    return this.ifFocused(
+        hoverable = hoverable,
+        focusable = focusable
+    ) {
+        padding(space)
+        border(2.dp, color, shape)
+    }
+}

@@ -1,9 +1,12 @@
 package dev.datlag.burningseries.ui.screen.home
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.icons.Icons
@@ -28,9 +31,6 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stac
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.LocalResources
 import dev.datlag.burningseries.LocalStringRes
-import dev.datlag.burningseries.common.OnWarning
-import dev.datlag.burningseries.common.Warning
-import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.EmptyInputStream
@@ -42,9 +42,11 @@ import dev.datlag.burningseries.ui.dialog.release.NewReleaseDialog
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import androidx.compose.material.SnackbarDefaults
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.focus.*
-import dev.datlag.burningseries.common.collectAsStateSafe
+import androidx.compose.ui.graphics.RectangleShape
+import dev.datlag.burningseries.common.*
 
 val LocalFabGroupRequester = compositionLocalOf<FocusRequester?> { null }
 
@@ -104,9 +106,12 @@ fun HomeScreen(component: HomeComponent) {
                         )
                     },
                     actions = {
-                        IconButton(onClick = {
-                            strings.openInBrowser(Constants.GITHUB_REPOSITORY_URL)
-                        }) {
+                        IconButton(
+                            modifier = Modifier.focusBorder(MaterialTheme.colorScheme.onTertiary),
+                            onClick = {
+                                strings.openInBrowser(Constants.GITHUB_REPOSITORY_URL)
+                            }
+                        ) {
                             SVGImage(
                                 stream = githubIconInput,
                                 description = strings.githubRepository,
@@ -118,7 +123,7 @@ fun HomeScreen(component: HomeComponent) {
                         OverflowMenu(
                             modifier = Modifier.focusProperties {
                                 right = fabGroupRequester
-                            },
+                            }.focusBorder(MaterialTheme.colorScheme.onTertiary),
                             tint = MaterialTheme.colorScheme.onTertiary
                         ) {
                             DropdownMenuItem(onClick = {
@@ -166,18 +171,22 @@ fun HomeScreen(component: HomeComponent) {
                 val favoritesExists by component.favoritesExists.collectAsStateSafe { component.favoritesExists.getValueBlocking(false) }
 
                 if (favoritesExists) {
-                    FloatingActionButton(onClick = {
-                        component.onFavoritesClicked()
-                    }) {
+                    FloatingActionButton(
+                        onClick = {
+                            component.onFavoritesClicked()
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Favorite,
                             contentDescription = LocalStringRes.current.favorites
                         )
                     }
                 }
-                FloatingActionButton(onClick = {
-                    component.onSearchClicked()
-                }) {
+                FloatingActionButton(
+                    onClick = {
+                        component.onSearchClicked()
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = LocalStringRes.current.search

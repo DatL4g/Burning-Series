@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.SemiBlack
+import dev.datlag.burningseries.common.focusBorder
 import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.other.DefaultValue
@@ -115,7 +116,7 @@ fun LandscapeToolbar(
             navigationIcon = {
                 IconButton(onClick = {
                     component.onGoBack()
-                }, modifier = Modifier.background(
+                }, modifier = Modifier.focusBorder(MaterialTheme.colorScheme.onTertiary).background(
                     color = if (state.firstVisibleItemIndex >= 1) Color.Transparent else Color.SemiBlack,
                     shape = Shape.FullRoundedShape
                 )) {
@@ -140,7 +141,7 @@ fun LandscapeToolbar(
             actions = {
                 IconButton(onClick = {
                     component.toggleFavorite()
-                }, modifier = Modifier.background(
+                }, modifier = Modifier.focusBorder(MaterialTheme.colorScheme.onTertiary).background(
                     color = if (state.firstVisibleItemIndex >= 1) Color.Transparent else Color.SemiBlack,
                     shape = Shape.FullRoundedShape
                 ).focusProperties {
@@ -159,7 +160,7 @@ fun LandscapeToolbar(
                 if (linkedSeries.isNotEmpty()) {
                     IconButton(onClick = {
 
-                    }, modifier = Modifier.background(
+                    }, modifier = Modifier.focusBorder(MaterialTheme.colorScheme.onTertiary).background(
                         color = if (state.firstVisibleItemIndex >= 1) Color.Transparent else Color.SemiBlack,
                         shape = Shape.FullRoundedShape
                     ).focusProperties {

@@ -278,7 +278,7 @@ object JvmBsScraper {
 
                     null
                 } else {
-                    text to episodeHref
+                    text.trim() to episodeHref
                 }
             }
 

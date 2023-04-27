@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalStringRes
 import dev.datlag.burningseries.common.SemiBlack
+import dev.datlag.burningseries.common.focusBorder
 import dev.datlag.burningseries.model.Cover
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.other.DefaultValue
@@ -123,7 +124,7 @@ fun PortraitToolbar(
         navigationIcon = {
             IconButton(onClick = {
                 component.onGoBack()
-            }, modifier = Modifier.background(
+            }, modifier = Modifier.focusBorder(MaterialTheme.colorScheme.onTertiary).background(
                 color = if (state.toolbarState.progress == 1F) Color.SemiBlack else Color.Black.copy(alpha = state.toolbarState.progress / 10F),
                 shape = Shape.FullRoundedShape
             )) {
@@ -137,7 +138,7 @@ fun PortraitToolbar(
         actions = {
             IconButton(onClick = {
                 component.toggleFavorite()
-            }, modifier = Modifier.background(
+            }, modifier = Modifier.focusBorder(MaterialTheme.colorScheme.onTertiary).background(
                     color = if (state.toolbarState.progress == 1F) Color.SemiBlack else Color.Black.copy(alpha = state.toolbarState.progress / 10F),
                 shape = Shape.FullRoundedShape
             )) {
@@ -150,7 +151,7 @@ fun PortraitToolbar(
             if (linkedSeries.isNotEmpty()) {
                 IconButton(onClick = {
 
-                }, modifier = Modifier.background(
+                }, modifier = Modifier.focusBorder(MaterialTheme.colorScheme.onTertiary).background(
                     color = if (state.toolbarState.progress == 1F) Color.SemiBlack else Color.Black.copy(alpha = state.toolbarState.progress / 10F),
                     shape = Shape.FullRoundedShape
                 )) {
