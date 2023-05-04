@@ -15,7 +15,7 @@ val coroutines = "1.6.4"
 val decompose = "1.0.0"
 val kodein = "7.20.1"
 // don't use 2.2.4, serialization not working
-val ktor = "2.2.3"
+val ktor = "2.3.0"
 val exoplayer = "1.0.1"
 val accompanist = "0.30.1"
 
@@ -61,7 +61,7 @@ kotlin {
                 api("io.ktor:ktor-client-okhttp:$ktor")
                 api("io.ktor:ktor-client-content-negotiation:$ktor")
                 api("io.ktor:ktor-serialization-kotlinx-json:$ktor")
-                api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0")
+                api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.11.0")
 
                 implementation("com.mikepenz:aboutlibraries-compose:10.6.2")
                 implementation("com.mikepenz:aboutlibraries-core:10.6.2")

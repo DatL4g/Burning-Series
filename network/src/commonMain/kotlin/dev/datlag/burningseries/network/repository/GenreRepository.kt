@@ -3,6 +3,7 @@ package dev.datlag.burningseries.network.repository
 import com.hadiyarajesh.flower_core.ApiSuccessResponse
 import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.dbBoundResource
+import dev.datlag.burningseries.model.ActionLogger
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
@@ -16,16 +17,23 @@ import io.ktor.client.*
 
 class GenreRepository(
     private val api: BurningSeries,
+    override val logger: ActionLogger,
     private val client: HttpClient
-) {
+) : LogRepository {
+
+    override val mode: Int = 2
 
     val allState: MutableStateFlow<List<Genre>> = MutableStateFlow(emptyList())
 
     private val all: Flow<Resource<List<Genre>>> = dbBoundResource(
         makeNetworkRequest = {
-            BsScraper.client(client).getAll("andere-serien")?.let { genres ->
+            info("Loading genre info")
+            BsScraper.client(client).logger(logger).getAll("andere-serien")?.let { genres ->
                 ApiSuccessResponse(genres, emptySet())
-            } ?: api.all()
+            } ?: run {
+                warning("Could not scrape genres on-device")
+                api.all()
+            }
         },
         fetchFromLocal = { allState },
         shouldMakeNetworkRequest = { it.isNullOrEmpty() },
@@ -46,12 +54,14 @@ class GenreRepository(
                 it.data ?: emptyList()
             }
             is Resource.Status.EmptySuccess -> {
+                warning("Got empty response when loading genres")
                 emptyList()
             }
             is Resource.Status.Success -> {
                 it.data
             }
             is Resource.Status.Error -> {
+                error("Could not load genres: (${it.statusCode}) ${it.message}")
                 it.data ?: emptyList()
             }
         })

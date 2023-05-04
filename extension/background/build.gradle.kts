@@ -5,7 +5,7 @@ plugins {
 }
 
 // don't use 2.2.4, serialization not working
-val ktor = "2.2.3"
+val ktor = "2.3.0"
 
 dependencies {
     parent?.project("base")?.let { implementation(it) }

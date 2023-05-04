@@ -4,6 +4,7 @@ import dev.datlag.burningseries.common.createWithParents
 import dev.datlag.burningseries.database.BurningSeriesDB
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.datastore.CryptoManager
+import dev.datlag.burningseries.model.ActionLogger
 import dev.datlag.burningseries.model.HosterStream
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.network.video.Scraper
@@ -49,6 +50,17 @@ actual object PlatformModule {
                     return VideoScraper.scrapeVideosFrom(hosterStream)
                 }
             }
+        }
+
+        bindSingleton("ErrorFile") {
+            AppIO.getFileInConfigDir("error.log")
+        }
+
+        bindSingleton("LoggingFile") {
+            AppIO.getFileInConfigDir("logging.log")
+        }
+        bindSingleton {
+            ActionLogger(instance("LoggingFile"))
         }
     }
 

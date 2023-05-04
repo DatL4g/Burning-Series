@@ -4,6 +4,8 @@ import dev.datlag.burningseries.database.DBHoster
 import dev.datlag.burningseries.model.Release
 import dev.datlag.burningseries.ui.navigation.Component
 import kotlinx.coroutines.flow.Flow
+import java.io.File
+import dev.datlag.burningseries.model.ActionLogger
 
 interface SettingsComponent : Component {
 
@@ -15,8 +17,15 @@ interface SettingsComponent : Component {
     val themeMode: Flow<Int>
     val amoled: Flow<Boolean>
 
+    val errorFile: File
+    val loggingMode: Flow<Int>
+    val actionLogger: ActionLogger
+    val loggingFile: File
+
     fun swapHoster(oldPos: Int, newPos: Int)
 
     fun changeThemeMode(state: Int)
     fun changeAmoledState(state: Boolean)
+
+    fun changeLoggingMode(state: Int)
 }

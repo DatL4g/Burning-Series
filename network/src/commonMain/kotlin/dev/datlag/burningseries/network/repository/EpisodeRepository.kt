@@ -2,6 +2,7 @@ package dev.datlag.burningseries.network.repository
 
 import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.networkResource
+import dev.datlag.burningseries.model.ActionLogger
 import dev.datlag.burningseries.model.HosterStream
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.VideoStream
@@ -17,15 +18,20 @@ import dev.datlag.burningseries.network.video.Scraper
 class EpisodeRepository(
     private val api: BurningSeries,
     private val jsonBase: JsonBase,
+    override val logger: ActionLogger,
     private val scraper: Scraper? = null
-) {
+) : LogRepository {
+
+    override val mode: Int = 4
 
     private val episode: MutableStateFlow<Series.Episode?> = MutableStateFlow(null)
     private val _hosterStreams: Flow<Resource<List<HosterStream>>> = episode.debounce(500).distinctUntilChanged().transformLatest {
         if (it != null) {
             return@transformLatest emitAll(networkResource(
                 makeNetworkRequest = {
-                    api.hosterStreams(it.hoster.map { hoster -> hoster.href })
+                    val data = it.hoster.map { hoster -> hoster.href }
+                    info("Load streams $data")
+                    api.hosterStreams(data)
                 }
             ).distinctUntilChanged())
         }
@@ -45,11 +51,13 @@ class EpisodeRepository(
                 it.data
             }
             is Resource.Status.Error -> {
+                warning("Could not load streams: (${it.statusCode}) ${it.message}")
                 it.data?.ifEmpty {
                     backupStreams(episode.value)
                 } ?: backupStreams(episode.value)
             }
             is Resource.Status.EmptySuccess -> {
+                warning("Got empty response when loading streams")
                 backupStreams(episode.value)
             }
             is Resource.Status.Success -> {
@@ -71,11 +79,16 @@ class EpisodeRepository(
     }.flowOn(Dispatchers.IO).distinctUntilChanged()
 
     suspend fun loadHosterStreams(episode: Series.Episode) {
+        info("Load streams for ${episode.title}")
+        info( episode.hoster.joinToString(separator = "\n") { it.href })
+        info( "------------------------------")
         this.episode.emit(episode)
     }
 
     private suspend fun backupStreams(episode: Series.Episode?): List<HosterStream> = coroutineScope {
+        warning( "Could not load streams, trying backup strategy")
         if (episode == null) {
+            error("Streams could not be loaded, episode null")
             return@coroutineScope emptyList()
         }
         return@coroutineScope episode.hoster.map { hoster ->
@@ -92,7 +105,10 @@ class EpisodeRepository(
                         is Resource.Status.Success -> {
                             HosterStream(hoster.title, (it.status as Resource.Status.Success).data.url)
                         }
-                        else -> null
+                        else -> {
+                            error( "Could not load streams using backup strategy either")
+                            null
+                        }
                     }
                 }.first()
             }

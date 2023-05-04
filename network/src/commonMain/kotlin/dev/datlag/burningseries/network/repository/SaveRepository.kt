@@ -15,6 +15,7 @@ import dev.datlag.burningseries.network.video.Scraper
 class SaveRepository(
     private val api: BurningSeries,
     private val jsonBase: JsonBase,
+    private val logger: ActionLogger,
     private val scraper: Scraper? = null
 ) {
 

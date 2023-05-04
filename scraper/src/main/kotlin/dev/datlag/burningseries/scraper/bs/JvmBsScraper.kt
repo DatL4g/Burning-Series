@@ -1,9 +1,6 @@
 package dev.datlag.burningseries.scraper.bs
 
-import dev.datlag.burningseries.model.Cover
-import dev.datlag.burningseries.model.Genre
-import dev.datlag.burningseries.model.Home
-import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.*
 import dev.datlag.burningseries.model.common.getDigitsOrNull
 import dev.datlag.burningseries.scraper.Constants
 import dev.datlag.burningseries.scraper.common.*
@@ -29,6 +26,7 @@ object JvmBsScraper {
     }
 
     private var client: HttpClient? = null
+    private var logger: ActionLogger? = null
 
     fun client(client: HttpClient) = apply {
         if (this.client == null) {
@@ -36,16 +34,25 @@ object JvmBsScraper {
         }
     }
 
-    suspend fun getDocument(url: String): Document? = withTimeout(15.seconds) {
-        return@withTimeout suspendCatching {
-            Jsoup.connect(Constants.getBurningSeriesLink(url)).followRedirects(true).get()
-        }.getOrNull() ?: client?.let {
+    fun logger(logger: ActionLogger) = apply {
+        if (this.logger == null) {
+            this.logger = logger
+        }
+    }
+
+    suspend fun getDocument(url: String, mode: Int? = null): Document? = withTimeout(15.seconds) {
+        val link = Constants.getBurningSeriesLink(url)
+        info(mode, "Loading document from url: $link")
+        return@withTimeout client?.let {
             suspendCatching {
-                it.get(Constants.getBurningSeriesLink(url)).bodyAsText().trim().ifEmpty { null }?.let { body ->
+                it.get(link).bodyAsText().trim().ifEmpty { null }?.let { body ->
                     Jsoup.parse(body)
                 }
             }.getOrNull()
-        }
+        } ?: suspendCatching {
+            warning(mode, "Could not load with ktor client, trying with plain jsoup")
+            Jsoup.connect(link).followRedirects(true).get()
+        }.getOrNull()
     }
 
     suspend fun getLatestEpisodes(doc: Document): List<Home.Episode> = coroutineScope {
@@ -413,6 +420,24 @@ object JvmBsScraper {
             "serie/${hrefData.first}/${hrefData.third}"
         } else {
             "serie/${hrefData.first}"
+        }
+    }
+
+    private fun info(mode: Int?, info: String) {
+        if (mode != null) {
+            logger?.logInfo(mode, info)
+        }
+    }
+
+    private fun warning(mode: Int?, info: String) {
+        if (mode != null) {
+            logger?.logWarning(mode, info)
+        }
+    }
+
+    private fun error(mode: Int?, info: String) {
+        if (mode != null) {
+            logger?.logError(mode, info)
         }
     }
 

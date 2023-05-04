@@ -15,11 +15,9 @@ import kotlinx.coroutines.flow.map
 import org.kodein.di.DI
 import org.kodein.di.instance
 import dev.datlag.burningseries.common.CommonDispatcher
-import dev.datlag.burningseries.datastore.common.appearance
-import dev.datlag.burningseries.datastore.common.appearanceAmoled
-import dev.datlag.burningseries.datastore.common.appearanceThemeMode
-import dev.datlag.burningseries.datastore.common.updateAppearance
+import dev.datlag.burningseries.datastore.common.*
 import dev.datlag.burningseries.datastore.preferences.AppSettings
+import dev.datlag.burningseries.model.ActionLogger
 import dev.datlag.burningseries.model.Release
 import dev.datlag.burningseries.model.common.move
 import dev.datlag.burningseries.network.Status
@@ -27,6 +25,7 @@ import dev.datlag.burningseries.network.repository.GitHubRepository
 import dev.datlag.burningseries.other.Constants
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.io.File
 
 class SettingsScreenComponent(
     componentContext: ComponentContext,
@@ -38,6 +37,9 @@ class SettingsScreenComponent(
     private val db: BurningSeriesDB by di.instance()
     private val githubRepo: GitHubRepository by di.instance()
     private val appSettings: DataStore<AppSettings> by di.instance()
+    override val errorFile: File by di.instance("ErrorFile")
+    override val actionLogger: ActionLogger by di.instance()
+    override val loggingFile: File by di.instance("LoggingFile")
 
     override val newRelease: Flow<Release?> = githubRepo.newRelease
 
@@ -49,6 +51,7 @@ class SettingsScreenComponent(
 
     override val themeMode: Flow<Int> = appSettings.appearanceThemeMode
     override val amoled: Flow<Boolean> = appSettings.appearanceAmoled
+    override val loggingMode: Flow<Int> = appSettings.loggingMode
 
     override fun swapHoster(oldPos: Int, newPos: Int) {
         scope.launch(Dispatchers.IO) {
@@ -72,6 +75,15 @@ class SettingsScreenComponent(
             appSettings.updateAppearance(
                 amoled = state
             )
+        }
+    }
+
+    override fun changeLoggingMode(state: Int) {
+        scope.launch(Dispatchers.IO) {
+            appSettings.updateLogging(
+                mode = state
+            )
+            actionLogger.reset(state)
         }
     }
 

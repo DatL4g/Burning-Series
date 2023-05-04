@@ -159,7 +159,7 @@ fun LandscapeToolbar(
                 }
                 if (linkedSeries.isNotEmpty()) {
                     IconButton(onClick = {
-
+                        throw IllegalArgumentException("Exception on purpose")
                     }, modifier = Modifier.focusBorder(MaterialTheme.colorScheme.onTertiary).background(
                         color = if (state.firstVisibleItemIndex >= 1) Color.Transparent else Color.SemiBlack,
                         shape = Shape.FullRoundedShape

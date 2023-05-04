@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.network.bs
 
+import dev.datlag.burningseries.model.ActionLogger
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.Series
@@ -16,6 +17,10 @@ actual object BsScraper {
 
     actual fun client(client: HttpClient) = apply {
         JvmBsScraper.client(client)
+    }
+
+    actual fun logger(logger: ActionLogger) = apply {
+        JvmBsScraper.logger(logger)
     }
 
     actual suspend fun getHome(url: String?): Home? {

@@ -5,9 +5,9 @@ plugins {
 
 group = "dev.datlag.burningseries.scraper"
 
-val jsoup = "1.15.4"
+val jsoup = "1.16.1"
 val coroutines = "1.6.4"
-val ktor = "2.2.3"
+val ktor = "2.3.0"
 val jsunpacker = "1.0.1"
 
 dependencies {

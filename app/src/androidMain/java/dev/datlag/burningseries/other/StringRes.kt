@@ -1,5 +1,7 @@
 package dev.datlag.burningseries.other
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat
@@ -272,6 +274,30 @@ actual class StringRes(private val context: Context) {
     actual val waitComponentInit: String
         get() = context.getString(R.string.wait_component_init)
 
+    actual val logging: String
+        get() = context.getString(R.string.logging)
+
+    actual val error: String
+        get() = context.getString(R.string.error)
+
+    actual val errorText: String
+        get() = context.getString(R.string.error_text)
+
+    actual val none: String
+        get() = context.getString(R.string.none)
+
+    actual val home: String
+        get() = context.getString(R.string.home)
+
+    actual val series: String
+        get() = context.getString(R.string.series)
+
+    actual val streams: String
+        get() = context.getString(R.string.streams)
+
+    actual val loggingText: String
+        get() = context.getString(R.string.logging_text)
+
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
         if (runCatching {
@@ -284,5 +310,10 @@ actual class StringRes(private val context: Context) {
         return runCatching {
             ContextCompat.startActivity(context, newIntent, null)
         }.isSuccess
+    }
+
+    actual fun copyToClipboard(value: String) {
+        val manager = context.getSystemService(ClipboardManager::class.java)
+        manager?.setPrimaryClip(ClipData.newPlainText(appName, value))
     }
 }

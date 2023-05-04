@@ -8,6 +8,10 @@ message AppSettings {
     int32 themeMode = 1;
     bool amoled = 2;
   }
+  message Logging {
+    int32 mode= 1;
+  }
 
   Appearance appearance = 1;
+  Logging logging = 2;
 }

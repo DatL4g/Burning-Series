@@ -157,19 +157,19 @@ object NetworkModule {
             jsonBaseKtor.create<JsonBase>()
         }
         bindSingleton {
-            HomeRepository(instance(), instance())
+            HomeRepository(instance(), instance(), instance())
         }
         bindSingleton {
-            GenreRepository(instance(), instance())
+            GenreRepository(instance(), instance(), instance())
         }
         bindProvider {
-            SeriesRepository(instance(), instance())
+            SeriesRepository(instance(), instance(), instance())
         }
         bindProvider {
-            EpisodeRepository(instance(), instance(), instance())
+            EpisodeRepository(instance(), instance(), instance(), instance())
         }
         bindProvider {
-            SaveRepository(instance(), instance(), instance())
+            SaveRepository(instance(), instance(), instance(), instance())
         }
         bindSingleton {
             GitHubRepository(instance())

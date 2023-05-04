@@ -84,4 +84,12 @@
     <string name="dark_theme">Dunkles Thema</string>
     <string name="follow_system">Systemeinstellungen</string>
     <string name="amoled_mode">AMOLED Modus</string>
+    <string name="logging">Protokoll</string>
+    <string name="error">Error</string>
+    <string name="error_text">Bitte füge das zu Bug/Crash Berichten hinzu. Klick einfach hier um es in deine Zwischenablage zu kopieren.</string>
+    <string name="none">Nichts</string>
+    <string name="home">Home</string>
+    <string name="series">Serie</string>
+    <string name="streams">Streams</string>
+    <string name="logging_text">Bitte füge das zu Bug Berichten hinzu. Klick einfach hier um es in deine Zwischenablage zu kopieren.</string>
 </resources>

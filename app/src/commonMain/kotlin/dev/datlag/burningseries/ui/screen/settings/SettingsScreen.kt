@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.screen.settings
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
@@ -137,17 +138,16 @@ fun SettingsScreen(component: SettingsComponent) {
                                 .defaultMinSize(minWidth = Dp(cardMinWidth.toFloat()))
                                 .padding(vertical = 16.dp)
                                 .onClick {
-                                strings.openInBrowser(newRelease!!.htmlUrl.ifEmpty {
-                                    Constants.GITHUB_REPOSITORY_URL
-                                })
-                            }.onSizeChanged {
-                                if (it.width > cardMinWidth) {
-                                    cardMinWidth = it.width
+                                    strings.openInBrowser(newRelease!!.htmlUrl.ifEmpty {
+                                        Constants.GITHUB_REPOSITORY_URL
+                                    })
+                                }.onSizeChanged {
+                                    if (it.width > cardMinWidth) {
+                                        cardMinWidth = it.width
+                                    }
                                 }
-                            }
                         )
                     }
-
 
                     InfoCard(
                         title = LocalStringRes.current.hosterOrder,
@@ -317,8 +317,105 @@ fun SettingsScreen(component: SettingsComponent) {
                 }
                 item {
                     Text(
+                        modifier = Modifier.padding(top = 16.dp),
+                        text = LocalStringRes.current.logging,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                item {
+                    val errorContent = component.errorFile.content()?.ifBlank { null }
+                    val strings = LocalStringRes.current
+
+                    if (!errorContent.isNullOrEmpty()) {
+                        InfoCard(
+                            title = strings.error,
+                            text = strings.errorText,
+                            backgroundColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                            icon = Icons.Default.Report,
+                            modifier = Modifier
+                                .fillParentMaxWidth()
+                                .padding(vertical = 8.dp)
+                                .onClick {
+                                    strings.copyToClipboard(errorContent)
+                                }
+                        )
+                    }
+                }
+                item {
+                    val loggingContent = component.loggingFile.content()?.ifBlank { null }
+                    val strings = LocalStringRes.current
+
+                    if (!loggingContent.isNullOrEmpty()) {
+                        val (color, onColor) = when {
+                            loggingContent.contains("ERROR", true) -> {
+                                MaterialTheme.colorScheme.error to MaterialTheme.colorScheme.onError
+                            }
+                            loggingContent.contains("WARNING", true) -> {
+                                Color.Warning to Color.OnWarning
+                            }
+                            else -> {
+                                MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
+                            }
+                        }
+
+                        InfoCard(
+                            title = strings.logging,
+                            text = strings.loggingText,
+                            backgroundColor = color,
+                            contentColor = onColor,
+                            icon = Icons.Default.Report,
+                            modifier = Modifier
+                                .fillParentMaxWidth()
+                                .padding(vertical = 8.dp)
+                                .onClick {
+                                    strings.copyToClipboard(loggingContent)
+                                }
+                        )
+                    }
+                }
+                item {
+                    val modes = mapOf(
+                        0 to LocalStringRes.current.none,
+                        1 to LocalStringRes.current.home,
+                        2 to LocalStringRes.current.search,
+                        3 to LocalStringRes.current.series,
+                        4 to LocalStringRes.current.streams
+                    )
+                    val selected by component.loggingMode.collectAsStateSafe {
+                        component.loggingMode.getValueBlocking(0)
+                    }
+
+                    Column(modifier = Modifier.fillParentMaxWidth()) {
+                        modes.forEach { (t, u) ->
+                            Row(
+                                modifier = Modifier.fillParentMaxWidth().selectable(
+                                    selected = t == selected,
+                                    onClick = {
+                                        component.changeLoggingMode(t)
+                                    }
+                                ),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = t == selected,
+                                    onClick = {
+                                        component.changeLoggingMode(t)
+                                    }
+                                )
+                                Text(
+                                    text = u,
+                                    modifier = Modifier.padding(start = 16.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+                item {
+                    Text(
                         text = LocalStringRes.current.copyright.format(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                         textAlign = TextAlign.Center
                     )
                 }

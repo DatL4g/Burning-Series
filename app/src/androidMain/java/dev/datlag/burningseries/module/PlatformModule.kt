@@ -2,8 +2,10 @@ package dev.datlag.burningseries.module
 
 import android.content.Context
 import androidx.datastore.dataStoreFile
+import dev.datlag.burningseries.common.createWithParents
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.datastore.CryptoManager
+import dev.datlag.burningseries.model.ActionLogger
 import dev.datlag.burningseries.model.HosterStream
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.network.video.Scraper
@@ -57,6 +59,24 @@ actual object PlatformModule {
                     return VideoScraper.scrapeVideosFrom(hosterStream)
                 }
             }
+        }
+
+        bindSingleton("ErrorFile") {
+            val app: Context = instance()
+            File(app.filesDir, "error.log").also {
+                it.createWithParents()
+            }
+        }
+
+        bindSingleton("LoggingFile") {
+            val app: Context = instance()
+            File(app.filesDir, "logging.log").also {
+                it.createWithParents()
+            }
+        }
+
+        bindSingleton {
+            ActionLogger(instance("LoggingFile"))
         }
     }
 

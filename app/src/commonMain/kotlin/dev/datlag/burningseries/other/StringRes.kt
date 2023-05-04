@@ -124,5 +124,16 @@ expect class StringRes {
     val activateWindowOpenedText: String
     val waitComponentInit: String
 
+    val logging: String
+    val error: String
+    val errorText: String
+    val none: String
+    val home: String
+    val series: String
+    val streams: String
+    val loggingText: String
+
     fun openInBrowser(url: String): Boolean
+
+    fun copyToClipboard(value: String)
 }

@@ -3,6 +3,7 @@ package dev.datlag.burningseries.datastore.common
 import androidx.datastore.core.DataStore
 import dev.datlag.burningseries.datastore.preferences.AppSettings
 import dev.datlag.burningseries.datastore.preferences.AppSettings.Appearance
+import dev.datlag.burningseries.datastore.preferences.AppSettings.Logging
 import dev.datlag.burningseries.datastore.preferences.UserSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -80,6 +81,24 @@ suspend fun DataStore<AppSettings>.updateAppearance(
                 themeMode ?: it.appearance.themeMode
             ).setAmoled(
                 amoled ?: it.appearance.amoled
+            ).build()
+        ).build()
+    }
+}
+
+val DataStore<AppSettings>.logging: Flow<Logging>
+    get() = this.data.map { it.logging }
+
+val DataStore<AppSettings>.loggingMode: Flow<Int>
+    get() = this.data.map { it.logging.mode }
+
+suspend fun DataStore<AppSettings>.updateLogging(
+    mode: Int? = null
+): AppSettings {
+    return this.updateData {
+        it.toBuilder().setLogging(
+            it.logging.toBuilder().setMode(
+                mode ?: it.logging.mode
             ).build()
         ).build()
     }

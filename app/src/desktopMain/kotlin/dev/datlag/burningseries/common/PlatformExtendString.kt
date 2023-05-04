@@ -1,5 +1,7 @@
 package dev.datlag.burningseries.common
 
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 import java.util.Base64
 
 @Suppress("NewApi")

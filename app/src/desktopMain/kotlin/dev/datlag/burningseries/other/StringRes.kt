@@ -6,6 +6,8 @@ import dev.datlag.burningseries.common.openInBrowser
 import dev.datlag.burningseries.model.XMLResources
 import kotlinx.serialization.decodeFromString
 import nl.adaptivity.xmlutil.serialization.XML
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 import java.util.Locale
 
 actual class StringRes private constructor(
@@ -276,6 +278,30 @@ actual class StringRes private constructor(
     actual val waitComponentInit: String
         get() = getLocaleOrDefaultFor("wait_component_init")
 
+    actual val logging: String
+        get() = getLocaleOrDefaultFor("logging")
+
+    actual val error: String
+        get() = getLocaleOrDefaultFor("error")
+
+    actual val errorText: String
+        get() = getLocaleOrDefaultFor("error_text")
+
+    actual val none: String
+        get() = getLocaleOrDefaultFor("none")
+
+    actual val home: String
+        get() = getLocaleOrDefaultFor("home")
+
+    actual val series: String
+        get() = getLocaleOrDefaultFor("series")
+
+    actual val streams: String
+        get() = getLocaleOrDefaultFor("streams")
+
+    actual val loggingText: String
+        get() = getLocaleOrDefaultFor("logging_text")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }
@@ -292,6 +318,10 @@ actual class StringRes private constructor(
 
     actual fun openInBrowser(url: String): Boolean {
         return url.openInBrowser("Unsupported System").isSuccess
+    }
+
+    actual fun copyToClipboard(value: String) {
+        Toolkit.getDefaultToolkit()?.systemClipboard?.setContents(StringSelection(value), null)
     }
 
     companion object {
