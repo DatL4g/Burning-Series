@@ -121,9 +121,9 @@ fun HomeScreen(component: HomeComponent) {
                             )
                         }
                         OverflowMenu(
-                            modifier = Modifier.focusProperties {
+                            modifier = Modifier.focusBorder(MaterialTheme.colorScheme.onTertiary).focusProperties {
                                 right = fabGroupRequester
-                            }.focusBorder(MaterialTheme.colorScheme.onTertiary),
+                            },
                             tint = MaterialTheme.colorScheme.onTertiary
                         ) {
                             DropdownMenuItem(onClick = {
