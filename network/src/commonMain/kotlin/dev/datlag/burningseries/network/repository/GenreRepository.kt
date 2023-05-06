@@ -6,6 +6,7 @@ import com.hadiyarajesh.flower_core.dbBoundResource
 import dev.datlag.burningseries.model.ActionLogger
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.model.Genre
+import dev.datlag.burningseries.model.LoggingMode
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.network.bs.BsScraper
@@ -21,7 +22,7 @@ class GenreRepository(
     private val client: HttpClient
 ) : LogRepository {
 
-    override val mode: Int = 2
+    override val mode: Int = LoggingMode.SEARCH
 
     val allState: MutableStateFlow<List<Genre>> = MutableStateFlow(emptyList())
 

@@ -6,6 +6,7 @@ import com.hadiyarajesh.flower_core.dbBoundResource
 import com.hadiyarajesh.flower_core.networkResource
 import dev.datlag.burningseries.model.ActionLogger
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.model.LoggingMode
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.Status
 import dev.datlag.burningseries.network.bs.BsScraper
@@ -21,7 +22,7 @@ class HomeRepository(
     private val client: HttpClient
 ) : LogRepository {
 
-    override val mode: Int = 1
+    override val mode: Int = LoggingMode.HOME
 
     val homeState: MutableStateFlow<Home> = MutableStateFlow(Home())
 

@@ -33,6 +33,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.math.max
 import dev.datlag.burningseries.ui.custom.DropdownMenu
 import dev.datlag.burningseries.ui.custom.DropdownMenuItem
+import dev.datlag.burningseries.model.LoggingMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -377,14 +378,14 @@ fun SettingsScreen(component: SettingsComponent) {
                 }
                 item {
                     val modes = mapOf(
-                        0 to LocalStringRes.current.none,
-                        1 to LocalStringRes.current.home,
-                        2 to LocalStringRes.current.search,
-                        3 to LocalStringRes.current.series,
-                        4 to LocalStringRes.current.streams
+                        LoggingMode.NONE to LocalStringRes.current.none,
+                        LoggingMode.HOME to LocalStringRes.current.home,
+                        LoggingMode.SEARCH to LocalStringRes.current.search,
+                        LoggingMode.SERIES to LocalStringRes.current.series,
+                        LoggingMode.STREAMS to LocalStringRes.current.streams
                     )
                     val selected by component.loggingMode.collectAsStateSafe {
-                        component.loggingMode.getValueBlocking(0)
+                        component.loggingMode.getValueBlocking(LoggingMode.NONE)
                     }
 
                     Column(modifier = Modifier.fillParentMaxWidth()) {

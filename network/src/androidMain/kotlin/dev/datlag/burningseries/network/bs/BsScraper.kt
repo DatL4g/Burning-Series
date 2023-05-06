@@ -1,9 +1,6 @@
 package dev.datlag.burningseries.network.bs
 
-import dev.datlag.burningseries.model.ActionLogger
-import dev.datlag.burningseries.model.Genre
-import dev.datlag.burningseries.model.Home
-import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.*
 import dev.datlag.burningseries.scraper.bs.JvmBsScraper
 import io.ktor.client.*
 
@@ -26,7 +23,7 @@ actual object BsScraper {
     actual suspend fun getHome(url: String?): Home? {
         return try {
             if (url != null) {
-                JvmBsScraper.getDocument(url, 1)?.let {
+                JvmBsScraper.getDocument(url, LoggingMode.HOME)?.let {
                     Home(
                         episodes = JvmBsScraper.getLatestEpisodes(it),
                         series = JvmBsScraper.getLatestSeries(it)
@@ -43,7 +40,7 @@ actual object BsScraper {
     actual suspend fun getAll(url: String?): List<Genre>? {
         return try {
             if (url != null) {
-                JvmBsScraper.getDocument(url, 2)?.let {
+                JvmBsScraper.getDocument(url, LoggingMode.SEARCH)?.let {
                     JvmBsScraper.getAllSeries(it)
                 }
             } else {
@@ -57,8 +54,9 @@ actual object BsScraper {
     actual suspend fun getSeries(url: String?): Series? {
         return try {
             if (url != null) {
-                JvmBsScraper.getDocument(JvmBsScraper.fixSeriesHref(url), 3)?.let {
-                    JvmBsScraper.getSeries(it)
+                val href = BSUtil.fixSeriesHref(url)
+                JvmBsScraper.getDocument(href, LoggingMode.SERIES)?.let {
+                    JvmBsScraper.getSeries(it, href)
                 }
             } else {
                 null

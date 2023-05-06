@@ -4,6 +4,7 @@ import com.hadiyarajesh.flower_core.ApiSuccessResponse
 import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.dbBoundResource
 import dev.datlag.burningseries.model.ActionLogger
+import dev.datlag.burningseries.model.LoggingMode
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.common.trimHref
 import dev.datlag.burningseries.network.BurningSeries
@@ -20,7 +21,7 @@ class SeriesRepository(
     private val client: HttpClient
 ) : LogRepository {
 
-    override val mode: Int = 3
+    override val mode: Int = LoggingMode.SERIES
 
     val seriesState: MutableStateFlow<Series?> = MutableStateFlow(null)
 

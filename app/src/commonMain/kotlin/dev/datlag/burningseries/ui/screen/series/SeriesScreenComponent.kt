@@ -11,14 +11,9 @@ import com.squareup.sqldelight.runtime.coroutines.*
 import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.model.common.trimHref
 import dev.datlag.burningseries.database.BurningSeriesDB
-import dev.datlag.burningseries.model.Cover
-import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.SeriesInitialInfo
-import dev.datlag.burningseries.model.VideoStream
-import dev.datlag.burningseries.model.common.getDigitsOrNull
+import dev.datlag.burningseries.model.*
 import dev.datlag.burningseries.network.repository.EpisodeRepository
 import dev.datlag.burningseries.network.repository.SeriesRepository
-import dev.datlag.burningseries.other.DefaultValue
 import dev.datlag.burningseries.ui.dialog.DialogComponent
 import dev.datlag.burningseries.ui.dialog.activate.ActivateDialogComponent
 import dev.datlag.burningseries.ui.dialog.language.LanguageDialogComponent
@@ -169,6 +164,8 @@ class SeriesScreenComponent(
 
     private val seriesStateFlow: MutableStateFlow<Series?> = seriesRepo.seriesState
 
+    private val logger: ActionLogger by di.instance()
+
     init {
         val seriesHref = stateKeeper.consume<Series>(key = SERIES_STATE)?.let {
             seriesStateFlow.safeEmit(it, scope)
@@ -212,6 +209,7 @@ class SeriesScreenComponent(
         scope.launch(Dispatchers.IO) {
             seriesRepo.series.value?.let { series ->
                 val newHref = series.hrefBuilder(series.currentSeason()?.value, language.value)
+                logger.logInfo(LoggingMode.SERIES, "New Series Href (Language): $newHref")
                 val hrefTitle = (dbSeries.firstOrNull()?.hrefTitle ?: series.href.buildTitleHref()).ifEmpty {
                     href.buildTitleHref()
                 }
@@ -226,6 +224,7 @@ class SeriesScreenComponent(
         scope.launch(Dispatchers.IO) {
             seriesRepo.series.value?.let { series ->
                 val newHref = series.hrefBuilder(season.value)
+                logger.logInfo(LoggingMode.SERIES, "New Series Href (Season): $newHref")
                 val hrefTitle = (dbSeries.firstOrNull()?.hrefTitle ?: series.href.buildTitleHref()).ifEmpty {
                     href.buildTitleHref()
                 }

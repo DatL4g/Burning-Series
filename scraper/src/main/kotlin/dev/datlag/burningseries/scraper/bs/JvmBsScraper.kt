@@ -59,7 +59,7 @@ object JvmBsScraper {
         return@coroutineScope doc.select("#newest_episodes li").mapNotNull {
             async {
                 val episodeTitle = it.selectFirst("li a")?.getTitle() ?: String()
-                val episodeHref = normalizeHref(it.selectFirst("li a")?.getHref() ?: String())
+                val episodeHref = BSUtil.normalizeHref(it.selectFirst("li a")?.getHref() ?: String())
                 val episodeInfo = it.selectFirst("li .info")?.text() ?: String()
                 val episodeFlagElements = it.select("li .info i")
 
@@ -92,7 +92,7 @@ object JvmBsScraper {
         return@coroutineScope doc.select("#newest_series li").mapNotNull {
             async {
                 val seriesTitle = it.selectFirst("a")?.getTitle() ?: String()
-                val seriesHref = normalizeHref(it.selectFirst("a")?.getHref() ?: String())
+                val seriesHref = BSUtil.normalizeHref(it.selectFirst("a")?.getHref() ?: String())
 
                 if (seriesTitle.isNotEmpty() && seriesHref.isNotEmpty()) {
                     val (cover, nsfw) = getCover(seriesHref)
@@ -121,7 +121,7 @@ object JvmBsScraper {
                         it.select("li").mapNotNull { item ->
                             async {
                                 val title = item.selectFirst("a")?.text() ?: String()
-                                val href = normalizeHref(item.selectFirst("a")?.getHref() ?: String())
+                                val href = BSUtil.normalizeHref(item.selectFirst("a")?.getHref() ?: String())
 
                                 if (title.isNotEmpty() && href.isNotEmpty()) {
                                     Genre.Item(
@@ -141,13 +141,13 @@ object JvmBsScraper {
         }.awaitAll().filterNotNull()
     }
 
-    suspend fun getSeries(doc: Document): Series? {
+    suspend fun getSeries(doc: Document, href: String): Series? {
         val title = doc.selectFirst(".serie h2")?.wholeText() ?: String()
         val description = doc.selectFirst(".serie #sp_left > p")?.text() ?: String()
 
         val seasons: List<Series.Season> = doc.select(".serie #seasons ul li").mapIndexed { index, it ->
             val seasonTitle = it.selectFirst("a")?.text() ?: it.text()
-            val link = normalizeHref(it.selectFirst("a")?.getHref() ?: it.getHref() ?: String())
+            val link = BSUtil.normalizeHref(it.selectFirst("a")?.getHref() ?: it.getHref() ?: String())
             val value: Int = if (link.isEmpty()) {
                 index
             } else {
@@ -159,13 +159,23 @@ object JvmBsScraper {
             }
             Series.Season(seasonTitle, value)
         }
-        val href = try {
-            Url(doc.location()).encodedPath
+
+        val docLocation = doc.location().trim()
+        fun fallbackDocHref(): String = try {
+            URI(docLocation).path.ifBlank { href }
         } catch (ignored: Throwable) {
+            href
+        }
+
+        val docHref = if (docLocation.isEmpty()) {
+            href
+        } else {
             try {
-                URI(doc.location()).path
+                Url(docLocation).encodedPath.ifBlank {
+                    fallbackDocHref()
+                }
             } catch (ignored: Throwable) {
-                String()
+                fallbackDocHref()
             }
         }
 
@@ -209,7 +219,7 @@ object JvmBsScraper {
             return@mapNotNull if (linkedHref.isNullOrEmpty()) {
                 null
             } else {
-                Series.Linked(isSpinOff, isMainStory, linked.text(), normalizeHref(linkedHref))
+                Series.Linked(isSpinOff, isMainStory, linked.text(), BSUtil.normalizeHref(linkedHref))
             }
         }
 
@@ -266,7 +276,7 @@ object JvmBsScraper {
 
             val episodeList = episodesElement.select("td a").mapNotNull { data ->
                 val text = data.selectFirst("a")?.text() ?: String()
-                val episodeHref = normalizeHref(data.selectFirst("a")?.getHref() ?: String())
+                val episodeHref = BSUtil.normalizeHref(data.selectFirst("a")?.getHref() ?: String())
                 val isWatchIcon = data.selectFirst(".fas") != null
 
                 if (isWatchIcon) {
@@ -358,7 +368,7 @@ object JvmBsScraper {
             seasons,
             episodeInfoList,
             linkedSeries,
-            href
+            docHref
         )
     }
 
@@ -377,50 +387,6 @@ object JvmBsScraper {
         } != null
 
         return coverBlock(cover, isNsfw)
-    }
-
-    private fun normalizeHref(href: String): String {
-        val regex = "serie\\S+".toRegex(RegexOption.IGNORE_CASE)
-        return regex.find(href)?.value ?: href
-    }
-
-    fun fixSeriesHref(href: String): String {
-        return rebuildHrefFromData(hrefDataFromHref(normalizeHref(href)))
-    }
-
-    private fun hrefDataFromHref(href: String): Triple<String, String?, String?> {
-        var newHref = normalizeHref(href)
-        if (newHref.startsWith('/')) {
-            newHref = newHref.substring(1)
-        }
-        if (newHref.startsWith("serie/", true) || newHref.startsWith("series/", true)) {
-            newHref = newHref.substringAfter('/')
-        }
-        val hrefSplit = newHref.split('/')
-        val season = if (hrefSplit.size >= 2) hrefSplit[1] else null
-        val language = if (hrefSplit.size >= 3) hrefSplit[2] else null
-        val fallbackLanguage = if (hrefSplit.size >= 4) hrefSplit[3] else null
-        return Triple(
-            hrefSplit[0],
-            if (season.isNullOrEmpty()) null else season,
-            if (!fallbackLanguage.isNullOrEmpty()) {
-                fallbackLanguage
-            } else {
-                if (language.isNullOrEmpty()) null else language
-            }
-        )
-    }
-
-    private fun rebuildHrefFromData(hrefData: Triple<String, String?, String?>): String {
-        return if (hrefData.second != null && hrefData.third != null) {
-            "serie/${hrefData.first}/${hrefData.second}/${hrefData.third}"
-        } else if (hrefData.second != null) {
-            "serie/${hrefData.first}/${hrefData.second}"
-        } else if (hrefData.third != null) {
-            "serie/${hrefData.first}/${hrefData.third}"
-        } else {
-            "serie/${hrefData.first}"
-        }
     }
 
     private fun info(mode: Int?, info: String) {

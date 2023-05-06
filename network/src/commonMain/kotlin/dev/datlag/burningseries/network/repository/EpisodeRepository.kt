@@ -2,10 +2,7 @@ package dev.datlag.burningseries.network.repository
 
 import com.hadiyarajesh.flower_core.Resource
 import com.hadiyarajesh.flower_core.networkResource
-import dev.datlag.burningseries.model.ActionLogger
-import dev.datlag.burningseries.model.HosterStream
-import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.VideoStream
+import dev.datlag.burningseries.model.*
 import dev.datlag.burningseries.model.algorithm.MD5
 import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.network.JsonBase
@@ -22,7 +19,7 @@ class EpisodeRepository(
     private val scraper: Scraper? = null
 ) : LogRepository {
 
-    override val mode: Int = 4
+    override val mode: Int = LoggingMode.STREAMS
 
     private val episode: MutableStateFlow<Series.Episode?> = MutableStateFlow(null)
     private val _hosterStreams: Flow<Resource<List<HosterStream>>> = episode.debounce(500).distinctUntilChanged().transformLatest {

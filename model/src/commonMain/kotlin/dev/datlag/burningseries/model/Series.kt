@@ -39,24 +39,19 @@ data class Series(
     }
 
     fun hrefBuilder(season: Int?, language: String = selectedLanguage): String {
-        var verifiedHref = href
-        if (verifiedHref.startsWith('/')) {
-            verifiedHref = verifiedHref.substring(1)
-        }
-        if (verifiedHref.endsWith('/')) {
-            verifiedHref = verifiedHref.substring(0..(verifiedHref.length - 2))
-        }
-        val splitHref = verifiedHref.split('/')
-        var joinedHref = splitHref.joinToString(separator = "/", limit = 2, truncated = String())
-        if (!joinedHref.endsWith('/')) {
-            joinedHref += '/'
-        }
-        joinedHref += season?.toString() ?: String()
-        if (!joinedHref.endsWith('/')) {
-            joinedHref += '/'
-        }
-        joinedHref += language
-        return joinedHref
+        val hrefData = BSUtil.hrefDataFromHref(
+            BSUtil.normalizeHref(href)
+        )
+
+        return BSUtil.fixSeriesHref(
+            BSUtil.rebuildHrefFromData(
+                Triple(
+                    first = hrefData.first,
+                    second = season?.toString() ?: hrefData.second,
+                    third = language
+                )
+            )
+        )
     }
 
     @Parcelize
