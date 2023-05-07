@@ -48,11 +48,12 @@ object BSUtil {
         val season = if (hrefSplit.size >= 2) hrefSplit[1] else null
         val language = if (hrefSplit.size >= 3) hrefSplit[2] else null
         val fallbackLanguage = if (hrefSplit.size >= 4) hrefSplit[3] else null
-        val title = getTitle().ifBlank {
-            hrefSplit[0]
+        var title = hrefSplit[0].ifBlank {
+            getTitle()
         }
-        println(href)
-        println(title)
+        if (title.equals(season, true)) {
+            title = getTitle()
+        }
         return Triple(
             title,
             if (season.isNullOrEmpty()) null else season,
