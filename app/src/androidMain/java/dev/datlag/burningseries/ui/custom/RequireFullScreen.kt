@@ -3,6 +3,7 @@ package dev.datlag.burningseries.ui.custom
 import android.view.WindowManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -12,7 +13,7 @@ import dev.datlag.burningseries.common.findWindow
 
 @Composable
 fun RequireFullScreen() {
-    val window = LocalView.current.context.findWindow()
+    val window = LocalView.current.context.findWindow() ?: LocalContext.current.findWindow()
     val systemUiController = rememberSystemUiController()
 
     DisposableEffect(Unit) {

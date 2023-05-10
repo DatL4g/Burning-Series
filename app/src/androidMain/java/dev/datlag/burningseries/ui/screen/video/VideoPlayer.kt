@@ -188,6 +188,7 @@ fun VideoPlayer(component: VideoComponent) {
                     }
                 }
 
+                keepScreenOn = true
                 layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
             }
         }, update = {
