@@ -72,3 +72,14 @@ fun <T> MutableStateFlow<T>.safeEmit(value: T, scope: CoroutineScope) {
         }
     }
 }
+
+fun <T> Flow<T>.mutable(value: T, scope: CoroutineScope): MutableStateFlow<T> {
+    val stateFlow = MutableStateFlow(value)
+
+    scope.launch {
+        stateFlow.emitAll(this@mutable)
+    }
+    return stateFlow
+}
+
+fun <T> StateFlow<T>.mutable(scope: CoroutineScope): MutableStateFlow<T> = this.mutable(this.value, scope)

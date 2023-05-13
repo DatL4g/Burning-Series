@@ -27,6 +27,7 @@ import com.google.android.gms.cast.framework.CastState
 import dev.datlag.burningseries.R
 import dev.datlag.burningseries.common.findActivity
 import dev.datlag.burningseries.common.getValueBlocking
+import dev.datlag.burningseries.common.mutable
 import dev.datlag.burningseries.common.safeEmit
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.other.Logger
@@ -42,14 +43,18 @@ class ExtendedPlayer private constructor(
     castContext: CastContext?,
     context: Context,
     private val scope: CoroutineScope,
-    private val _currentStreams: List<VideoStream>,
+    private val initialStreams: StateFlow<List<VideoStream>>,
     private val position: StateFlow<Long>
 ) : FrameLayout(context), CustomPlayer, Player.Listener, SessionAvailabilityListener {
 
-    private val currentStreams: MutableStateFlow<List<VideoStream>> = MutableStateFlow(_currentStreams)
+    private val currentStreams: MutableStateFlow<List<VideoStream>> = initialStreams.mutable(scope)
 
-    private val currentStreamIndex: MutableStateFlow<Int> = MutableStateFlow(0)
-    private val currentSourceIndex: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val currentStreamIndex: MutableStateFlow<Int> = currentStreams.mapLatest {
+        0
+    }.mutable(0, scope)
+    private val currentSourceIndex: MutableStateFlow<Int> = currentStreams.mapLatest {
+        0
+    }.mutable(0, scope)
 
     private var streamHeader = combine(currentStreams, currentStreamIndex) { list, index ->
         list[index].header
@@ -267,6 +272,15 @@ class ExtendedPlayer private constructor(
         }
     }
 
+    override fun onPlaybackStateChanged(playbackState: Int) {
+        super.onPlaybackStateChanged(playbackState)
+
+        if (playbackState == Player.STATE_ENDED) {
+            currentStreams.safeEmit(nextStreams, scope)
+            nextStreams.clear()
+        }
+    }
+
     fun release() {
         playerView.player = null
         castPlayer?.setSessionAvailabilityListener(null)
@@ -294,13 +308,9 @@ class ExtendedPlayer private constructor(
 
     class Builder(private val context: Context, private val scope: CoroutineScope) {
 
-        private var _streams: List<VideoStream> = emptyList()
+        private var _streamFlow: StateFlow<List<VideoStream>> = MutableStateFlow(emptyList())
         private var _castContext: CastContext? = CastContext.getSharedInstance()
         private var _position: StateFlow<Long> = MutableStateFlow(0)
-
-        fun initialStreams(list: List<VideoStream>) = apply {
-            _streams = list
-        }
 
         fun castContext(castContext: CastContext?) = apply {
             _castContext = castContext
@@ -310,11 +320,19 @@ class ExtendedPlayer private constructor(
             _position = flow
         }
 
+        fun streamFlow(flow: StateFlow<List<VideoStream>>) = apply {
+            _streamFlow = flow
+        }
+
+        fun streamFlow(flow: Flow<List<VideoStream>>, initValue: List<VideoStream>) {
+            _streamFlow = flow.stateIn(scope, SharingStarted.WhileSubscribed(), initValue)
+        }
+
         fun build() = ExtendedPlayer(
             _castContext,
             context,
             scope,
-            _streams,
+            _streamFlow,
             _position
         )
     }

@@ -34,11 +34,10 @@ fun VideoPlayer(component: VideoComponent) {
     val scope = rememberCoroutineScope()
     val castContext = LocalCastContext.current
     val episode by component.episode.collectAsStateSafe()
-    val videoStreams by component.videoStreams.collectAsStateSafe()
 
     val extendedPlayer = remember(context) {
         context.extendedPlayer(scope) {
-            initialStreams(videoStreams)
+            streamFlow(component.videoStreams)
             castContext(castContext)
             position(
                 component.initialPosition.stateIn(
