@@ -40,6 +40,14 @@
                 app:layout_constraintStart_toEndOf="@id/backButton"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/castButton"/>
+
+        <androidx.mediarouter.app.MediaRouteButton
+                android:id="@+id/castButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:mediaRouteButtonTint="@android:color/white"
+                app:layout_constraintStart_toEndOf="@id/title"
                 app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -101,6 +101,8 @@ kotlin {
                 implementation("androidx.media3:media3-session:$exoplayer")
                 implementation("androidx.media3:media3-exoplayer-smoothstreaming:$exoplayer")
                 implementation("androidx.media3:media3-ui:$exoplayer")
+                implementation("androidx.media3:media3-cast:$exoplayer")
+                implementation("com.google.android.gms:play-services-cast-framework:21.3.0")
 
                 implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
             }
