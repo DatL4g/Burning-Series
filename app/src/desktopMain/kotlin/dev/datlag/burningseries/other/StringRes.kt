@@ -302,6 +302,9 @@ actual class StringRes private constructor(
     actual val loggingText: String
         get() = getLocaleOrDefaultFor("logging_text")
 
+    actual val selectSubtitle: String
+        get() = getLocaleOrDefaultFor("select_subtitle")
+
     private fun getLocaleOrDefaultFor(name: String): String {
         val defaultValue = defaultStringRes.strings.firstOrNull { it.name == name }
             ?: defaultStringRes.strings.firstOrNull { it.name.equals(name, true) }

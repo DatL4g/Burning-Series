@@ -49,10 +49,11 @@ fun VideoPlayer(component: VideoComponent) {
         }
     }
 
-    val strings = LocalStringRes.current
     val buttonShape = MaterialTheme.shapes.medium.toLegacyShape()
     val buttonColors = ButtonDefaults.legacyButtonTintList(MaterialTheme.colorScheme.primaryContainer)
     val progressColor = MaterialTheme.colorScheme.primary.toArgb()
+    val subtitles by extendedPlayer.subtitles.collectAsStateSafe()
+    val selectedLanguage by extendedPlayer.selectedLanguage.collectAsStateSafe()
 
     RequireFullScreen()
 
@@ -72,19 +73,25 @@ fun VideoPlayer(component: VideoComponent) {
         component.seekListener = {
             extendedPlayer.seekTo(it)
         }
+        component.subtitleListener = {
+            extendedPlayer.setPreferredLanguage(it)
+        }
     }
 
     DisposableEffect(
         AndroidView(
             factory = {
-                extendedPlayer
+                extendedPlayer.apply {
+                    onEnded { component.playNextEpisode() }
+                }
             },
-            update = {
-                val controls = it.controlsView
+            update = { player ->
+                val controls = player.controlsView
                 val backButton = controls.findViewById<ImageButton>(R.id.backButton)
                 val title = controls.findViewById<TextView>(R.id.title)
-                val skipButton = it.findViewById<MaterialButton>(R.id.skip)
+                val skipButton = player.findViewById<MaterialButton>(R.id.skip)
                 val progress = controls.findViewById<DefaultTimeBar>(R.id.exo_progress)
+                val subtitleButton = controls.findViewById<ImageButton>(R.id.subtitle)
 
                 backButton.setOnClickListener {
                     component.onGoBack()
@@ -95,7 +102,19 @@ fun VideoPlayer(component: VideoComponent) {
                 progress.setPlayedColor(progressColor)
                 progress.setScrubberColor(progressColor)
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && it.context.findActivity()?.isInPictureInPictureMode == true) {
+                if (subtitles.isEmpty()) {
+                    subtitleButton.visibility = View.INVISIBLE
+                    subtitleButton.isEnabled = false
+                } else {
+                    subtitleButton.visibility = View.VISIBLE
+                    subtitleButton.isEnabled = true
+                }
+                subtitleButton.setOnClickListener {
+                    player.pause()
+                    component.selectSubtitle(subtitles, selectedLanguage)
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && player.context.findActivity()?.isInPictureInPictureMode == true) {
                     controls.visibility = View.GONE
                 }
             }

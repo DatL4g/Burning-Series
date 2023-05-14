@@ -5,7 +5,9 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.overlay.*
 import com.arkivanov.decompose.value.MutableValue
+import com.arkivanov.decompose.value.Value
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
@@ -22,9 +24,12 @@ import org.kodein.di.instance
 import java.io.File
 import kotlin.math.max
 import dev.datlag.burningseries.common.CommonDispatcher
+import dev.datlag.burningseries.model.Language
 import dev.datlag.burningseries.model.common.trimHref
 import kotlinx.coroutines.flow.*
 import dev.datlag.burningseries.other.Logger
+import dev.datlag.burningseries.ui.dialog.DialogComponent
+import dev.datlag.burningseries.ui.dialog.subtitle.SubtitleDialogComponent
 
 class VideoScreenComponent(
     componentContext: ComponentContext,
@@ -41,6 +46,7 @@ class VideoScreenComponent(
     override var playPauseListener: (() -> Unit)? = null
     override var rewindListener: (() -> Unit)? = null
     override var seekListener: ((Long) -> Unit)? = null
+    override var subtitleListener: ((Language?) -> Unit)? = null
 
     private val db: BurningSeriesDB by di.instance()
     private val imageDir: File by di.instance("ImageDir")
@@ -69,6 +75,26 @@ class VideoScreenComponent(
     private var nextEpisode: Series.Episode? = null
     private var nextStream: List<VideoStream> = emptyList()
     private var loopEpisode: Series.Episode = episode.value
+
+    private val dialogNavigation = OverlayNavigation<DialogConfig>()
+    private val _dialog = childOverlay(
+        source = dialogNavigation,
+        handleBackButton = true
+    ) { config, componentContext ->
+        when (config) {
+            is DialogConfig.Subtitle -> SubtitleDialogComponent(
+                componentContext,
+                config.languages,
+                config.selectedLanguage,
+                onDismissed = dialogNavigation::dismiss,
+                onSelected = {
+                    subtitleListener?.invoke(it)
+                },
+                di
+            )
+        }
+    }
+    override val dialog: Value<ChildOverlay<DialogConfig, DialogComponent>> = _dialog
 
     override fun forward() {
         forwardListener?.invoke()
@@ -236,6 +262,10 @@ class VideoScreenComponent(
                 }
             }
         }
+    }
+
+    override fun selectSubtitle(languages: List<Language>, selectedLanguage: Language?) {
+        dialogNavigation.activate(DialogConfig.Subtitle(languages, selectedLanguage))
     }
 
     @Composable

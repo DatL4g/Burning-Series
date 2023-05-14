@@ -23,7 +23,9 @@
                 android:background="@android:color/transparent"
                 android:src="@drawable/baseline_arrow_back_24"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/title"/>
+                app:layout_constraintEnd_toStartOf="@id/title"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
         <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/title"
@@ -48,7 +50,9 @@
                 android:layout_height="match_parent"
                 app:mediaRouteButtonTint="@android:color/white"
                 app:layout_constraintStart_toEndOf="@id/title"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -116,9 +120,8 @@
             android:textStyle="bold"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="48dp"
             android:textColor="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bottomContainer"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="00:00"/>
 
@@ -146,4 +149,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="00:00"/>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottomContainer"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:tint="@android:color/white"
+                android:background="@android:color/transparent"
+                android:layout_marginHorizontal="16dp"
+                android:src="@drawable/baseline_subtitles_24"
+                app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

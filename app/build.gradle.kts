@@ -63,8 +63,8 @@ kotlin {
                 api("io.ktor:ktor-serialization-kotlinx-json:$ktor")
                 api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.11.0")
 
-                implementation("com.mikepenz:aboutlibraries-compose:10.6.2")
-                implementation("com.mikepenz:aboutlibraries-core:10.6.2")
+                implementation("com.mikepenz:aboutlibraries-compose:10.6.3")
+                implementation("com.mikepenz:aboutlibraries-core:10.6.3")
 
                 implementation("dnsjava:dnsjava:3.5.2")
 
@@ -79,10 +79,10 @@ kotlin {
             apply(plugin = "kotlin-parcelize")
             dependencies {
                 implementation("androidx.appcompat:appcompat:1.6.1")
-                implementation("androidx.core:core-ktx:1.10.0")
+                implementation("androidx.core:core-ktx:1.10.1")
                 implementation("androidx.activity:activity-ktx:1.7.1")
                 implementation("androidx.activity:activity-compose:1.7.1")
-                runtimeOnly("androidx.compose.material3:material3:1.0.1")
+                runtimeOnly("androidx.compose.material3:material3:1.1.0")
                 implementation("androidx.multidex:multidex:2.0.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines")
                 implementation("io.coil-kt:coil-compose:2.3.0")
@@ -91,7 +91,7 @@ kotlin {
                 implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanist")
                 implementation("com.google.accompanist:accompanist-flowlayout:$accompanist")
                 implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-                implementation("com.google.android.material:material:1.8.0")
+                implementation("com.google.android.material:material:1.9.0")
                 implementation("androidx.core:core-splashscreen:1.0.1")
 
                 implementation("androidx.media3:media3-exoplayer:$exoplayer")
@@ -112,8 +112,8 @@ kotlin {
             resources.srcDirs("src/desktopMain/resources", "src/commonMain/resources", "src/commonMain/assets")
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation("io.github.pdvrieze.xmlutil:core-jvm:0.85.0")
-                implementation("io.github.pdvrieze.xmlutil:serialization-jvm:0.85.0")
+                implementation("io.github.pdvrieze.xmlutil:core-jvm:0.86.0")
+                implementation("io.github.pdvrieze.xmlutil:serialization-jvm:0.86.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines")
                 implementation("com.sealwu:kscript-tools:1.0.22")
                 implementation("net.harawata:appdirs:1.2.1")

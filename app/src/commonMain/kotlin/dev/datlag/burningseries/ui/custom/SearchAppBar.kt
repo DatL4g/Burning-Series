@@ -93,7 +93,7 @@ fun SearchAppBar(
                 onSearchClicked(text)
             }),
             colors = TextFieldDefaults.textFieldColors(
-                textColor = MaterialTheme.colorScheme.onTertiary,
+                MaterialTheme.colorScheme.onTertiary,
                 containerColor = Color.Transparent,
                 cursorColor = MaterialTheme.colorScheme.onTertiary,
                 focusedIndicatorColor = Color.Transparent,

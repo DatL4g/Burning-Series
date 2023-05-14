@@ -92,4 +92,6 @@
     <string name="series">Serie</string>
     <string name="streams">Streams</string>
     <string name="logging_text">Bitte füge das zu Bug Berichten hinzu. Klick einfach hier um es in deine Zwischenablage zu kopieren.</string>
+
+    <string name="select_subtitle">Untertitle auswählen</string>
 </resources>

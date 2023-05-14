@@ -7,9 +7,7 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
-import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
+import androidx.media3.common.*
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
@@ -17,6 +15,7 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.extractor.DefaultExtractorsFactory
+import androidx.media3.extractor.mp4.Track
 import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.*
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
@@ -29,6 +28,7 @@ import dev.datlag.burningseries.common.findActivity
 import dev.datlag.burningseries.common.getValueBlocking
 import dev.datlag.burningseries.common.mutable
 import dev.datlag.burningseries.common.safeEmit
+import dev.datlag.burningseries.model.Language
 import dev.datlag.burningseries.model.VideoStream
 import dev.datlag.burningseries.other.Logger
 import dev.datlag.burningseries.ui.activity.KeyEventDispatcher
@@ -36,6 +36,7 @@ import dev.datlag.burningseries.ui.activity.PIPEventDispatcher
 import dev.datlag.burningseries.ui.activity.PIPModeListener
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import java.util.Locale
 
 @SuppressLint("ViewConstructor")
 @UnstableApi
@@ -49,12 +50,8 @@ class ExtendedPlayer private constructor(
 
     private val currentStreams: MutableStateFlow<List<VideoStream>> = initialStreams.mutable(scope)
 
-    private val currentStreamIndex: MutableStateFlow<Int> = currentStreams.mapLatest {
-        0
-    }.mutable(0, scope)
-    private val currentSourceIndex: MutableStateFlow<Int> = currentStreams.mapLatest {
-        0
-    }.mutable(0, scope)
+    private val currentStreamIndex: MutableStateFlow<Int> = currentStreams.mapLatest { 0 }.mutable(0, scope)
+    private val currentSourceIndex: MutableStateFlow<Int> = currentStreams.mapLatest { 0 }.mutable(0, scope)
 
     private var streamHeader = combine(currentStreams, currentStreamIndex) { list, index ->
         list[index].header
@@ -114,8 +111,6 @@ class ExtendedPlayer private constructor(
         list[stream].srcList[source]
     }.stateIn(scope, SharingStarted.WhileSubscribed(), currentStreams.value[currentStreamIndex.value].srcList[currentSourceIndex.value])
 
-    private val nextStreams: MutableList<VideoStream> = mutableListOf()
-
     private val player: Player?
         get() = currentPlayer.value
 
@@ -127,6 +122,11 @@ class ExtendedPlayer private constructor(
     private val mediaItemUriFlow: Flow<String> = currentMediaItemURI
 
     private var session: MediaSession? = null
+
+    private var endedListener: () -> Unit = { }
+
+    val subtitles: MutableStateFlow<List<Language>> = MutableStateFlow(emptyList())
+    val selectedLanguage: MutableStateFlow<Language?> = MutableStateFlow(null)
 
     init {
         setBackgroundColor(Color.BLACK)
@@ -188,6 +188,21 @@ class ExtendedPlayer private constructor(
 
                     session?.release()
                     session = MediaSession.Builder(context, p).build()
+                }
+            }
+        }
+        scope.launch(Dispatchers.IO) {
+            combine(subtitles, selectedLanguage) { l, s ->
+                l to s
+            }.collect { (languages, selected) ->
+                val chosen = languages.firstOrNull { it.code == selected?.code }
+                withContext(Dispatchers.Main) {
+                    player?.let { p ->
+                        p.trackSelectionParameters = p.trackSelectionParameters
+                            .buildUpon()
+                            .setPreferredTextLanguage(chosen?.code)
+                            .build()
+                    }
                 }
             }
         }
@@ -276,9 +291,35 @@ class ExtendedPlayer private constructor(
         super.onPlaybackStateChanged(playbackState)
 
         if (playbackState == Player.STATE_ENDED) {
-            currentStreams.safeEmit(nextStreams, scope)
-            nextStreams.clear()
+            endedListener.invoke()
         }
+    }
+
+    override fun onTracksChanged(tracks: Tracks) {
+        super.onTracksChanged(tracks)
+
+        val languages = tracks.groups.mapNotNull { group ->
+            if (group.type != C.TRACK_TYPE_TEXT) {
+                return@mapNotNull null
+            }
+
+            val formats = (0 until group.length).map { index ->
+                group.getTrackFormat(index)
+            }
+            formats.mapNotNull { format ->
+                format.language
+            }
+        }.flatten().toSet().map {
+            Language(
+                code = it,
+                title = Locale(it).displayLanguage
+            )
+        }
+        subtitles.safeEmit(languages, scope)
+    }
+
+    fun onEnded(`do`: () -> Unit) {
+        endedListener = `do`
     }
 
     fun release() {
@@ -289,9 +330,8 @@ class ExtendedPlayer private constructor(
         session?.release()
     }
 
-    fun queueStreams(list: List<VideoStream>) {
-        nextStreams.clear()
-        nextStreams.addAll(list)
+    fun setPreferredLanguage(language: Language?) {
+        selectedLanguage.safeEmit(language, scope)
     }
 
     val playerView: PlayerView

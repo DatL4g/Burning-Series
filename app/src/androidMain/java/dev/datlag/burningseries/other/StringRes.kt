@@ -298,6 +298,9 @@ actual class StringRes(private val context: Context) {
     actual val loggingText: String
         get() = context.getString(R.string.logging_text)
 
+    actual val selectSubtitle: String
+        get() = context.getString(R.string.select_subtitle)
+
     actual fun openInBrowser(url: String): Boolean {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
         if (runCatching {

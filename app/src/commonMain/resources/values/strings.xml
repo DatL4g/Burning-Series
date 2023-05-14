@@ -99,4 +99,6 @@
     <string name="series">Series</string>
     <string name="streams">Streams</string>
     <string name="logging_text">Please add this to Bug reports. Just click here to copy it to your clipboard.</string>
+
+    <string name="select_subtitle">Select Subtitle</string>
 </resources>

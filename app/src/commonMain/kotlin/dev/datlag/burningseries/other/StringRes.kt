@@ -133,6 +133,8 @@ expect class StringRes {
     val streams: String
     val loggingText: String
 
+    val selectSubtitle: String
+
     fun openInBrowser(url: String): Boolean
 
     fun copyToClipboard(value: String)
