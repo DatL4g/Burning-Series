@@ -250,6 +250,9 @@ class VideoScreenComponent(
 
     override fun playNextEpisode() {
         scope.launch(Dispatchers.IO) {
+            if (nextEpisode != null && nextStream.isEmpty()) {
+                loadNextStream()
+            }
             nextEpisode?.let { episode ->
                 if (nextStream.isNotEmpty()) {
                     videoStreams.emit(nextStream)

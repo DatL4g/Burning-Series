@@ -45,7 +45,9 @@ class ExtendedPlayer private constructor(
     context: Context,
     private val scope: CoroutineScope,
     private val initialStreams: StateFlow<List<VideoStream>>,
-    private val position: StateFlow<Long>
+    private val position: StateFlow<Long>,
+    private val progress: (Long) -> Unit,
+    private val ended: () -> Unit = { }
 ) : FrameLayout(context), CustomPlayer, Player.Listener, SessionAvailabilityListener {
 
     private val currentStreams: MutableStateFlow<List<VideoStream>> = initialStreams.mutable(scope)
@@ -92,7 +94,11 @@ class ExtendedPlayer private constructor(
     private val currentPlayer = combine(localPlayer.mapNotNull { it }, playerOption) { player, option ->
         when (option) {
             PlayerOptions.UNDEFINED -> {
-                player
+                if (castPlayer?.isCastSessionAvailable == true && streamHeader.value.isEmpty()) {
+                    castPlayer
+                } else {
+                    player
+                }
             }
             PlayerOptions.LOCAL -> player
             PlayerOptions.CAST -> {
@@ -100,7 +106,7 @@ class ExtendedPlayer private constructor(
             }
         }
     }.stateIn(scope, SharingStarted.WhileSubscribed(), run {
-        if (castPlayer?.isCastSessionAvailable == true) {
+        if (castPlayer?.isCastSessionAvailable == true && streamHeader.value.isEmpty()) {
             castPlayer
         } else {
             localPlayer.getValueBlocking(null)
@@ -123,10 +129,10 @@ class ExtendedPlayer private constructor(
 
     private var session: MediaSession? = null
 
-    private var endedListener: () -> Unit = { }
-
     val subtitles: MutableStateFlow<List<Language>> = MutableStateFlow(emptyList())
     val selectedLanguage: MutableStateFlow<Language?> = MutableStateFlow(null)
+
+    var castAvailableJob: Job? = null
 
     init {
         setBackgroundColor(Color.BLACK)
@@ -206,6 +212,13 @@ class ExtendedPlayer private constructor(
                 }
             }
         }
+        scope.launch(Dispatchers.IO) {
+            streamHeader.map { it.isEmpty() }.collect { supported ->
+                withContext(Dispatchers.Main) {
+                    controlsView.findViewById<MediaRouteButton>(R.id.castButton).isEnabled = supported
+                }
+            }
+        }
     }
 
     private fun buildDataSource(context: Context, header: Map<String, String>): DataSource.Factory {
@@ -261,10 +274,18 @@ class ExtendedPlayer private constructor(
 
 
     override fun onCastSessionAvailable() {
-        playerOption.safeEmit(PlayerOptions.CAST, scope)
+        castAvailableJob?.cancel()
+        castAvailableJob = scope.launch(Dispatchers.IO) {
+            streamHeader.map { it.isEmpty() }.collect { supported ->
+                if (supported) {
+                    playerOption.emit(PlayerOptions.CAST)
+                }
+            }
+        }
     }
 
     override fun onCastSessionUnavailable() {
+        castAvailableJob?.cancel()
         playerOption.safeEmit(PlayerOptions.LOCAL, scope)
     }
 
@@ -291,7 +312,7 @@ class ExtendedPlayer private constructor(
         super.onPlaybackStateChanged(playbackState)
 
         if (playbackState == Player.STATE_ENDED) {
-            endedListener.invoke()
+            ended.invoke()
         }
     }
 
@@ -318,9 +339,23 @@ class ExtendedPlayer private constructor(
         subtitles.safeEmit(languages, scope)
     }
 
-    fun onEnded(`do`: () -> Unit) {
-        endedListener = `do`
+    override fun onRenderedFirstFrame() {
+        super.onRenderedFirstFrame()
+
+        scope.launch(Dispatchers.IO) {
+            delay(3000)
+            while (this.isActive) {
+                withContext(Dispatchers.Main) {
+                    player?.currentPosition?.let {
+                        progress.invoke(it)
+                    }
+                }
+                delay(500)
+            }
+        }
     }
+
+
 
     fun release() {
         playerView.player = null
@@ -351,6 +386,8 @@ class ExtendedPlayer private constructor(
         private var _streamFlow: StateFlow<List<VideoStream>> = MutableStateFlow(emptyList())
         private var _castContext: CastContext? = CastContext.getSharedInstance()
         private var _position: StateFlow<Long> = MutableStateFlow(0)
+        private var _progress: (Long) -> Unit = { }
+        private var _ended: () -> Unit = { }
 
         fun castContext(castContext: CastContext?) = apply {
             _castContext = castContext
@@ -364,8 +401,16 @@ class ExtendedPlayer private constructor(
             _streamFlow = flow
         }
 
-        fun streamFlow(flow: Flow<List<VideoStream>>, initValue: List<VideoStream>) {
+        fun streamFlow(flow: Flow<List<VideoStream>>, initValue: List<VideoStream>) = apply {
             _streamFlow = flow.stateIn(scope, SharingStarted.WhileSubscribed(), initValue)
+        }
+
+        fun onProgress(listener: (Long) -> Unit) = apply {
+            _progress = listener
+        }
+
+        fun onEnded(`do`: () -> Unit) {
+            _ended = `do`
         }
 
         fun build() = ExtendedPlayer(
@@ -373,7 +418,9 @@ class ExtendedPlayer private constructor(
             context,
             scope,
             _streamFlow,
-            _position
+            _position,
+            _progress,
+            _ended
         )
     }
 }

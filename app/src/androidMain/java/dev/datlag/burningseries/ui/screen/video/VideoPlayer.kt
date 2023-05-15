@@ -46,6 +46,12 @@ fun VideoPlayer(component: VideoComponent) {
                     component.initialPosition.getValueBlocking(0)
                 )
             )
+            onProgress {
+                component.position.value = it
+            }
+            onEnded {
+                component.playNextEpisode()
+            }
         }
     }
 
@@ -81,9 +87,7 @@ fun VideoPlayer(component: VideoComponent) {
     DisposableEffect(
         AndroidView(
             factory = {
-                extendedPlayer.apply {
-                    onEnded { component.playNextEpisode() }
-                }
+                extendedPlayer
             },
             update = { player ->
                 val controls = player.controlsView

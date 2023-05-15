@@ -66,13 +66,11 @@ class MainActivity : AppCompatActivity() {
         val resources = Resources(assets)
         val stringRes = StringRes(this)
 
-        CastContext.getSharedInstance()?.let { castContext.safeEmit(it, lifecycleScope) } ?: run {
-            CastContext.getSharedInstance(this, Executors.newSingleThreadExecutor())
-                .addOnCompleteListener {
-                    val result = it.result
-                    castContext.safeEmit(result, lifecycleScope)
-                }
-        }
+        CastContext.getSharedInstance(this, Executors.newSingleThreadExecutor())
+            .addOnCompleteListener {
+                val result = it.result ?: CastContext.getSharedInstance()
+                castContext.safeEmit(result, lifecycleScope)
+            }
 
         setContent {
             val configuration = LocalConfiguration.current
@@ -103,6 +101,18 @@ class MainActivity : AppCompatActivity() {
 
         onBackPressedDispatcher.addCallback(this) {
             BackPressedListener?.invoke()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        if (castContext.value == null) {
+            CastContext.getSharedInstance(this, Executors.newSingleThreadExecutor())
+                .addOnCompleteListener {
+                    val result = it.result ?: CastContext.getSharedInstance()
+                    castContext.safeEmit(result, lifecycleScope)
+                }
         }
     }
 

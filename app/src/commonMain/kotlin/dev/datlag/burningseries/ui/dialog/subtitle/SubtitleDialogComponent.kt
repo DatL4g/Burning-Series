@@ -19,5 +19,6 @@ class SubtitleDialogComponent(
 
     override fun onConfirmSubtitle(language: Language?) {
         onSelected(language)
+        onDismissed()
     }
 }
