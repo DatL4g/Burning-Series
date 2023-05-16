@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.view.View
+import android.widget.Button
 import android.widget.FrameLayout
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
@@ -47,6 +48,7 @@ class ExtendedPlayer private constructor(
     private val initialStreams: StateFlow<List<VideoStream>>,
     private val position: StateFlow<Long>,
     private val progress: (Long) -> Unit,
+    private val length: (Long) -> Unit,
     private val ended: () -> Unit = { }
 ) : FrameLayout(context), CustomPlayer, Player.Listener, SessionAvailabilityListener {
 
@@ -93,25 +95,13 @@ class ExtendedPlayer private constructor(
 
     private val currentPlayer = combine(localPlayer.mapNotNull { it }, playerOption) { player, option ->
         when (option) {
-            PlayerOptions.UNDEFINED -> {
-                if (castPlayer?.isCastSessionAvailable == true && streamHeader.value.isEmpty()) {
-                    castPlayer
-                } else {
-                    player
-                }
-            }
+            PlayerOptions.UNDEFINED -> player
             PlayerOptions.LOCAL -> player
             PlayerOptions.CAST -> {
                 castPlayer ?: player
             }
         }
-    }.stateIn(scope, SharingStarted.WhileSubscribed(), run {
-        if (castPlayer?.isCastSessionAvailable == true && streamHeader.value.isEmpty()) {
-            castPlayer
-        } else {
-            localPlayer.getValueBlocking(null)
-        }
-    })
+    }.stateIn(scope, SharingStarted.WhileSubscribed(), localPlayer.getValueBlocking(castPlayer))
 
     private val currentMediaItemURI = combine(currentStreams, currentStreamIndex, currentSourceIndex) { list, stream, source ->
         list[stream].srcList[source]
@@ -175,20 +165,18 @@ class ExtendedPlayer private constructor(
                 withContext(Dispatchers.Main) {
                     val prevPlay = playerView.player
                     var position = this@ExtendedPlayer.position.value
-                    var playWhenReady = true
 
                     if (p != prevPlay) {
                         val state = prevPlay?.playbackState
                         if (state != Player.STATE_ENDED) {
                             position = prevPlay?.currentPosition ?: position
-                            playWhenReady = prevPlay?.playWhenReady ?: playWhenReady
                         }
                         prevPlay?.stop()
                         prevPlay?.clearMediaItems()
                     }
                     playerView.player = p.apply {
                         setMediaItem(MediaItem.fromUri(m), position)
-                        this.playWhenReady = playWhenReady
+                        this.playWhenReady = true
                         prepare()
                     }
 
@@ -231,7 +219,7 @@ class ExtendedPlayer private constructor(
         return ExoPlayer.Builder(context).apply {
             setSeekBackIncrementMs(10000)
             setSeekForwardIncrementMs(10000)
-            setPauseAtEndOfMediaItems(true)
+            setPauseAtEndOfMediaItems(false)
             setMediaSourceFactory(DefaultMediaSourceFactory(dataSource, extractorFactory))
         }.build().apply {
             addListener(this@ExtendedPlayer)
@@ -252,6 +240,9 @@ class ExtendedPlayer private constructor(
         get() = player is CastPlayer
 
     override fun play() {
+        if (!isLoading && !isPlaying) {
+            controlsView.findViewById<View>(R.id.exo_play_pause).performClick()
+        }
         player?.play()
     }
 
@@ -279,6 +270,8 @@ class ExtendedPlayer private constructor(
             streamHeader.map { it.isEmpty() }.collect { supported ->
                 if (supported) {
                     playerOption.emit(PlayerOptions.CAST)
+                } else {
+                    playerOption.emit(PlayerOptions.LOCAL)
                 }
             }
         }
@@ -296,12 +289,22 @@ class ExtendedPlayer private constructor(
             if (currentStreams.value[currentStreamIndex.value].srcList.size - 1 > currentSourceIndex.value) {
                 withContext(Dispatchers.Main) {
                     currentSourceIndex.emit(currentSourceIndex.value + 1)
+                    player?.playWhenReady = true
+                }
+                delay(100)
+                withContext(Dispatchers.Main) {
+                    play()
                 }
             } else {
                 if (currentStreams.value.size - 1 > currentStreamIndex.value) {
                     withContext(Dispatchers.Main) {
                         currentStreamIndex.emit(currentStreamIndex.value + 1)
                         currentSourceIndex.emit(0)
+                        player?.playWhenReady = true
+                    }
+                    delay(100)
+                    withContext(Dispatchers.Main) {
+                        play()
                     }
                 }
             }
@@ -331,9 +334,17 @@ class ExtendedPlayer private constructor(
                 format.language
             }
         }.flatten().toSet().map {
+            var title = Locale(it).displayLanguage
+            if (title == it) {
+                title = Locale(it.split("[-_]".toRegex()).firstOrNull() ?: it).displayName
+            }
+            if (title != it) {
+                title += " ($it)"
+            }
+
             Language(
                 code = it,
-                title = Locale(it).displayLanguage
+                title = title
             )
         }
         subtitles.safeEmit(languages, scope)
@@ -343,6 +354,11 @@ class ExtendedPlayer private constructor(
         super.onRenderedFirstFrame()
 
         scope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                player?.duration?.let {
+                    length.invoke(it)
+                }
+            }
             delay(3000)
             while (this.isActive) {
                 withContext(Dispatchers.Main) {
@@ -387,6 +403,7 @@ class ExtendedPlayer private constructor(
         private var _castContext: CastContext? = CastContext.getSharedInstance()
         private var _position: StateFlow<Long> = MutableStateFlow(0)
         private var _progress: (Long) -> Unit = { }
+        private var _length: (Long) -> Unit = { }
         private var _ended: () -> Unit = { }
 
         fun castContext(castContext: CastContext?) = apply {
@@ -409,6 +426,10 @@ class ExtendedPlayer private constructor(
             _progress = listener
         }
 
+        fun onLengthChanged(listener: (Long) -> Unit) = apply {
+            _length = listener
+        }
+
         fun onEnded(`do`: () -> Unit) {
             _ended = `do`
         }
@@ -420,6 +441,7 @@ class ExtendedPlayer private constructor(
             _streamFlow,
             _position,
             _progress,
+            _length,
             _ended
         )
     }

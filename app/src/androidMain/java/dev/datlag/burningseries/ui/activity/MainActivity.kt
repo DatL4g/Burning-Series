@@ -104,18 +104,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        if (castContext.value == null) {
-            CastContext.getSharedInstance(this, Executors.newSingleThreadExecutor())
-                .addOnCompleteListener {
-                    val result = it.result ?: CastContext.getSharedInstance()
-                    castContext.safeEmit(result, lifecycleScope)
-                }
-        }
-    }
-
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
         return (KeyEventDispatcher.invoke(event) ?: false) || super.dispatchKeyEvent(event)
     }

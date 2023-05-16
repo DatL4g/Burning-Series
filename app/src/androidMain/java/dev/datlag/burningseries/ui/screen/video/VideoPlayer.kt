@@ -49,6 +49,9 @@ fun VideoPlayer(component: VideoComponent) {
             onProgress {
                 component.position.value = it
             }
+            onLengthChanged {
+                component.length.value = it
+            }
             onEnded {
                 component.playNextEpisode()
             }
