@@ -1,3 +1,7 @@
+# !!! PLEASE READ THIS FIRST !!!
+
+### [Go Anime-Exclusive](https://github.com/DATL4G/Burning-Series/discussions/57)
+
 # Burning-Series
 
 [![Issues](https://img.shields.io/github/issues/DATL4G/Burning-Series.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/issues)
