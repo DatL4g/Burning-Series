@@ -1,0 +1,102 @@
+[versions]
+app = "5.0.0"
+aboutlibraries = "10.9.1"
+accompanist = "0.32.0"
+activity = "1.8.0"
+android = "8.1.2"
+android-core = "1.12.0"
+appcompat = "1.6.1"
+camerax = "1.4.0-alpha02"
+compose = "1.5.3"
+coroutines = "1.7.3"
+datastore = "1.0.0"
+decompose = "2.1.3-compose-experimental"
+flowredux = "1.2.0"
+grpc = "1.59.0"
+instesx = "0.1.0-alpha10"
+kamel = "0.8.2"
+kodein = "7.20.2"
+kotlin = "1.9.10"
+ksp = "1.9.10-1.0.13"
+ktor = "2.3.5"
+ktorfit = "1.9.1"
+material = "1.10.0"
+moko-resources = "0.23.0"
+multidex = "2.0.1"
+napier = "2.6.1"
+osdetector = "1.7.3"
+parcelable = "1.2.0"
+protobuf = "0.9.4"
+protoc = "3.24.4"
+serialization-json = "1.6.0"
+splashscreen = "1.0.1"
+turbine = "1.0.0"
+versions = "0.49.0"
+windowsize-multiplatform = "0.3.1"
+window-styler = "0.3.2"
+
+[libraries]
+aboutlibraries =  { group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutlibraries" }
+aboutlibraries-compose =  { group = "com.mikepenz", name = "aboutlibraries-compose", version.ref = "aboutlibraries" }
+accompanist-permission = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
+android = { group = "androidx.core", name = "core-ktx", version.ref = "android-core" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+camerax = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
+camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
+camerax-mlkit = { group = "androidx.camera", name = "camera-mlkit-vision", version.ref = "camerax" }
+camerax-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
+compose-ui-util = { group = "org.jetbrains.compose.ui", name = "ui-util", version.ref = "compose" }
+coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+datastore = { group = "androidx.datastore", name = "datastore-core", version.ref = "datastore" }
+datastore-android = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
+decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
+decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-compose-jetbrains", version.ref = "decompose" }
+flowredux = { group = "com.freeletics.flowredux", name = "flowredux", version.ref = "flowredux" }
+grpc = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
+insetsx = { group = "com.moriatsushi.insetsx", name = "insetsx", version.ref = "instesx" }
+kamel = { group = "media.kamel", name = "kamel-image", version.ref = "kamel" }
+kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }
+kodein-compose = { group = "org.kodein.di", name = "kodein-di-framework-compose", version.ref = "kodein" }
+ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-android = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-apple = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+ktor-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktorfit = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-lib", version.ref = "ktorfit" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+moko-resources-compose = { group = "dev.icerock.moko", name = "resources-compose", version.ref = "moko-resources" }
+moko-resources-generator = { group = "dev.icerock.moko", name = "resources-generator", version.ref = "moko-resources" }
+multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
+napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
+parcelable = { group = "com.arkivanov.essenty", name = "parcelable", version.ref = "parcelable" }
+protobuf = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protoc" }
+protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protoc" }
+serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization-json" }
+splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
+stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+windowsize-multiplatform = { group = "dev.chrisbanes.material3", name = "material3-window-size-class-multiplatform", version.ref = "windowsize-multiplatform" }
+window-styler = { group = "com.mayakapps.compose", name = "window-styler", version.ref = "window-styler" }
+
+[plugins]
+aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }
+android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "android" }
+android-library = { id = "com.android.library", version.ref = "android" }
+cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
+compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
+moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
+multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }
+parcelize = { id = "kotlin-parcelize", version.ref = "kotlin" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

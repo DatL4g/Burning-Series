@@ -1,6 +1,19 @@
 app/release/*
 !app/release/.gitkeep
 
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+build/
+/captures
+.externalNativeBuild
+.cxx
+iosApp/iosApp.xcworkspace/*
+iosApp/iosApp.xcodeproj/*
+!iosApp/iosApp.xcodeproj/project.pbxproj
+
 # Created by https://www.toptal.com/developers/gitignore/api/windows,linux,macos,intellij,intellij+iml,intellij+all,android,androidstudio,maven,gradle,java,kotlin,netbeans,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,linux,macos,intellij,intellij+iml,intellij+all,android,androidstudio,maven,gradle,java,kotlin,netbeans,visualstudiocode
 
