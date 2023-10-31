@@ -35,22 +35,22 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
-                implementation(compose.ui)
-                implementation(compose.animation)
-                implementation(compose.animationGraphics)
+                api(compose.runtime)
+                api(compose.foundation)
+                api(compose.material)
+                api(compose.material3)
+                api(compose.materialIconsExtended)
+                api(compose.ui)
+                api(compose.animation)
+                api(compose.animationGraphics)
 
                 api(libs.stdlib)
 
                 api(libs.decompose)
                 api(libs.decompose.compose)
-                implementation(libs.coroutines)
+                api(libs.coroutines)
                 api(libs.kodein)
-                implementation(libs.kodein.compose)
+                api(libs.kodein.compose)
 
                 implementation(libs.aboutlibraries)
                 implementation(libs.aboutlibraries.compose)
@@ -86,7 +86,11 @@ kotlin {
         val desktopMain by getting {
             dependsOn(commonMain)
 
+            dependencies {
+                api(compose.desktop.currentOs)
 
+                api(libs.coroutines.swing)
+            }
         }
         val iosX64Main by getting
         val iosArm64Main by getting

@@ -1,4 +1,4 @@
-rootProject.name = "Burning Series"
+rootProject.name = "Burning-Series"
 
 include(":app:shared")
 include(":app:android")

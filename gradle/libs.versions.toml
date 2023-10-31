@@ -6,7 +6,6 @@ activity = "1.8.0"
 android = "8.1.2"
 android-core = "1.12.0"
 appcompat = "1.6.1"
-camerax = "1.4.0-alpha02"
 compose = "1.5.3"
 coroutines = "1.7.3"
 datastore = "1.0.0"
@@ -43,13 +42,10 @@ activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
 android = { group = "androidx.core", name = "core-ktx", version.ref = "android-core" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-camerax = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
-camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
-camerax-mlkit = { group = "androidx.camera", name = "camera-mlkit-vision", version.ref = "camerax" }
-camerax-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
 compose-ui-util = { group = "org.jetbrains.compose.ui", name = "ui-util", version.ref = "compose" }
 coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 datastore = { group = "androidx.datastore", name = "datastore-core", version.ref = "datastore" }
 datastore-android = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
