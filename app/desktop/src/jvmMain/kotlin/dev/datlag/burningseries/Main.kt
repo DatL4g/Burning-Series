@@ -53,7 +53,8 @@ private fun runWindow() {
         LifecycleController(lifecycle, windowState)
 
         CompositionLocalProvider(
-            LocalLifecycleOwner provides lifecycleOwner
+            LocalLifecycleOwner provides lifecycleOwner,
+            LocalWindow provides this.window
         ) {
             App(di) {
                 root.render()

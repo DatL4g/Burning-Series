@@ -88,8 +88,9 @@ kotlin {
 
             dependencies {
                 api(compose.desktop.currentOs)
-
                 api(libs.coroutines.swing)
+                api(libs.context.menu)
+                api(libs.window.styler)
             }
         }
         val iosX64Main by getting

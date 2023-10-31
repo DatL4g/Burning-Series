@@ -42,14 +42,19 @@ fun App(
                 colors = MaterialTheme.colorScheme.toLegacyColors(systemDarkTheme),
                 shapes = MaterialTheme.shapes.toLegacyShapes()
             ) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onBackground
-                ) {
-                    content()
+                SystemProvider {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ) {
+                        content()
+                    }
                 }
             }
         }
     }
 }
+
+@Composable
+expect fun SystemProvider(content: @Composable () -> Unit)
