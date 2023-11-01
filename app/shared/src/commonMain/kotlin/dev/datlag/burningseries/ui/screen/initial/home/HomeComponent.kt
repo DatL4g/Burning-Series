@@ -14,4 +14,5 @@ interface HomeComponent : Component {
     val homeState: StateFlow<HomeState>
 
     fun retryLoadingHome(): Any?
+    fun itemClicked(config: HomeConfig)
 }

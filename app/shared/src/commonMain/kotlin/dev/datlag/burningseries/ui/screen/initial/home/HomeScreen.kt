@@ -119,7 +119,7 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
             it.href
         }) { episode ->
             EpisodeItem(episode) {
-                // episode clicked
+                component.itemClicked(HomeConfig.Series(episode))
             }
         }
         header {
@@ -136,7 +136,7 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
             it.href
         }) { series ->
             SeriesItem(series) {
-                // series clicked
+                component.itemClicked(HomeConfig.Series(series))
             }
         }
     }

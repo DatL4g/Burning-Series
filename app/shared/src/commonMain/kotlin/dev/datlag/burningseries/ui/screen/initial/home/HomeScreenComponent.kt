@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
@@ -33,7 +34,13 @@ class HomeScreenComponent(
         handleBackButton = true
     ) { config, context ->
         when (config) {
-            is HomeConfig.Series -> SeriesScreenComponent(context, di)
+            is HomeConfig.Series -> SeriesScreenComponent(
+                componentContext = context,
+                di = di,
+                initialTitle = config.title,
+                initialHref = config.href,
+                initialCoverHref = config.coverHref
+            )
         }
     }
 
@@ -44,5 +51,9 @@ class HomeScreenComponent(
 
     override fun retryLoadingHome(): Any? = ioScope().launchIO {
         homeStateMachine.dispatch(HomeAction.Retry)
+    }
+
+    override fun itemClicked(config: HomeConfig) {
+        navigation.activate(config)
     }
 }
