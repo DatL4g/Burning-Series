@@ -1,15 +1,16 @@
 package dev.datlag.burningseries
 
+import dev.datlag.burningseries.model.common.scopeCatching
 import java.awt.Toolkit
 
 object AppIO {
 
-    fun applyTitle(title: String) = runCatching {
+    fun applyTitle(title: String) = scopeCatching {
         val toolkit = Toolkit.getDefaultToolkit()
         val awtAppClassNameField = toolkit.javaClass.getDeclaredField("awtAppClassName")
         val working = try {
             awtAppClassNameField.isAccessible = true
-            awtAppClassNameField.isAccessible
+            awtAppClassNameField.canAccess(null)
         } catch (ignored: Throwable) {
             awtAppClassNameField.trySetAccessible()
         }

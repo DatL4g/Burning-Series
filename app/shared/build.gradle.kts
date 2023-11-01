@@ -83,7 +83,7 @@ kotlin {
                 api(libs.material)
                 api(libs.multidex)
                 api(libs.splashscreen)
-                api(libs.ktor.android)
+                api(libs.ktor.jvm)
             }
         }
         val desktopMain by getting {
@@ -94,6 +94,7 @@ kotlin {
                 api(libs.coroutines.swing)
                 api(libs.context.menu)
                 api(libs.window.styler)
+                api(libs.ktor.jvm)
             }
         }
         val iosX64Main by getting
@@ -104,6 +105,10 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+
+            dependencies {
+                api(libs.ktor.apple)
+            }
         }
     }
 }
@@ -126,6 +131,9 @@ android {
     buildFeatures {
         buildConfig = true
     }
+}
+dependencies {
+    implementation("io.ktor:ktor-client-okhttp-jvm:2.3.5")
 }
 
 multiplatformResources {

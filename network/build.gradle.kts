@@ -26,6 +26,9 @@ kotlin {
                 api(libs.serialization.json)
                 api(libs.coroutines)
                 api(libs.flowredux)
+                api(libs.ktsoup)
+                api(libs.ktsoup.fs)
+                api(libs.ktsoup.ktor)
             }
         }
 

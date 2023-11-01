@@ -17,10 +17,10 @@ instesx = "0.1.0-alpha10"
 kamel = "0.8.2"
 kodein = "7.20.2"
 kotlin = "1.9.10"
-ksoup = "0.2.1"
 ksp = "1.9.10-1.0.13"
 ktor = "2.3.5"
 ktorfit = "1.9.1"
+ktsoup = "0.3.0"
 material = "1.10.0"
 moko-resources = "0.23.0"
 multidex = "2.0.1"
@@ -60,15 +60,17 @@ insetsx = { group = "com.moriatsushi.insetsx", name = "insetsx", version.ref = "
 kamel = { group = "media.kamel", name = "kamel-image", version.ref = "kamel" }
 kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }
 kodein-compose = { group = "org.kodein.di", name = "kodein-di-framework-compose", version.ref = "kodein" }
-ksoup = { group = "com.mohamedrejeb.ksoup", name = "ksoup-html", version.ref = "ksoup" }
 ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
-ktor-android = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-jvm = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-apple = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
 ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktorfit = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-lib", version.ref = "ktorfit" }
 ktorfit-ksp = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-ksp", version.ref = "ktorfit" }
+ktsoup = { group = "org.drewcarlson", name = "ktsoup-core", version.ref = "ktsoup" }
+ktsoup-fs = { group = "org.drewcarlson", name = "ktsoup-fs", version.ref = "ktsoup" }
+ktsoup-ktor = { group = "org.drewcarlson", name = "ktsoup-ktor", version.ref = "ktsoup" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 moko-resources-compose = { group = "dev.icerock.moko", name = "resources-compose", version.ref = "moko-resources" }
 moko-resources-generator = { group = "dev.icerock.moko", name = "resources-generator", version.ref = "moko-resources" }
