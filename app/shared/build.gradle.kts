@@ -132,9 +132,6 @@ android {
         buildConfig = true
     }
 }
-dependencies {
-    implementation("io.ktor:ktor-client-okhttp-jvm:2.3.5")
-}
 
 multiplatformResources {
     multiplatformResourcesPackage = artifact

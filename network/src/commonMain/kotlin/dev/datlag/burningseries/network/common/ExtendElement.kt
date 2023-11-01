@@ -13,3 +13,10 @@ fun KtSoupElement.getTitle(): String {
 fun KtSoupElement.getHref(): String? {
     return this.attr("href")
 }
+
+fun KtSoupElement.getSrc(): String? {
+    return this.attr("src")?.ifBlank { null } ?: run {
+        val sources = this.querySelectorAll("source")
+        sources.firstOrNull()?.getSrc()
+    }
+}

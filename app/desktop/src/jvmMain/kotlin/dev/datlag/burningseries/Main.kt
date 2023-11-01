@@ -17,6 +17,12 @@ import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
+import io.kamel.core.config.KamelConfig
+import io.kamel.core.config.takeFrom
+import io.kamel.image.config.Default
+import io.kamel.image.config.LocalKamelConfig
+import io.kamel.image.config.resourcesFetcher
+import io.kamel.image.config.svgDecoder
 import org.kodein.di.DI
 
 fun main(vararg args: String) {
@@ -41,6 +47,10 @@ private fun runWindow() {
         componentContext = DefaultComponentContext(lifecycle),
         di = di
     )
+    val imageConfig = KamelConfig {
+        takeFrom(KamelConfig.Default)
+        resourcesFetcher()
+    }
 
     disposableSingleWindowApplication(
         state = windowState,
@@ -54,7 +64,8 @@ private fun runWindow() {
 
         CompositionLocalProvider(
             LocalLifecycleOwner provides lifecycleOwner,
-            LocalWindow provides this.window
+            LocalWindow provides this.window,
+            LocalKamelConfig provides imageConfig
         ) {
             App(di) {
                 root.render()
