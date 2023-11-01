@@ -65,6 +65,9 @@ kotlin {
                 api(libs.ktor)
                 api(libs.ktor.content.negotiation)
                 api(libs.ktor.serialization.json)
+
+                api(project(":model"))
+                api(project(":network"))
             }
         }
         val androidMain by getting {

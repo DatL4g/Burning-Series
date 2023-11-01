@@ -4,6 +4,9 @@ include(":app:shared")
 include(":app:android")
 include(":app:desktop")
 
+include(":model")
+include(":network")
+
 pluginManagement {
     repositories {
         google()
