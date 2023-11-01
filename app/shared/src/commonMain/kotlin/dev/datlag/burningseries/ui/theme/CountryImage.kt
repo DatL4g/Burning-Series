@@ -184,4 +184,26 @@ object CountryImage {
             else -> SharedRes.images.COUNTRY_UNKNOWN
         }
     }
+
+    fun getByFlag(code: String): List<ImageResource> {
+        val defaultByCode = getByCode(code)
+        return if (defaultByCode == SharedRes.images.COUNTRY_UNKNOWN) {
+            when {
+                code.equals("DES", true) -> listOf(
+                    SharedRes.images.US,
+                    SharedRes.images.DE
+                )
+                code.equals("EN", true) -> listOf(
+                    SharedRes.images.US
+                )
+                code.equals("JPS", true) -> listOf(
+                    SharedRes.images.JP,
+                    SharedRes.images.US
+                )
+                else -> listOf(defaultByCode)
+            }
+        } else {
+            listOf(defaultByCode)
+        }
+    }
 }

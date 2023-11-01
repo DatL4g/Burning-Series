@@ -4,4 +4,7 @@
     <string name="home">Home</string>
     <string name="favorites">Favorites</string>
     <string name="search">Search</string>
+    <string name="newest_episodes">Newest Episodes</string>
+    <string name="newest_series">Newest Series</string>
+    <string name="retry">Retry</string>
 </resources>

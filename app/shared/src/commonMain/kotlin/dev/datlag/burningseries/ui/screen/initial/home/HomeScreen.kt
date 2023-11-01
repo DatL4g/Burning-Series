@@ -24,7 +24,10 @@ import dev.datlag.burningseries.common.header
 import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.state.HomeState
+import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.ui.screen.initial.home.component.EpisodeItem
+import dev.datlag.burningseries.ui.screen.initial.home.component.SeriesItem
+import dev.icerock.moko.resources.compose.stringResource
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -52,7 +55,7 @@ fun HomeScreen(component: HomeComponent) {
                         component.retryLoadingHome()
                     }
                 ) {
-                    Text(text = "Retry")
+                    Text(text = stringResource(SharedRes.strings.retry))
                 }
             }
         }
@@ -107,7 +110,7 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
     ) {
         header {
             Text(
-                text = "Episodes",
+                text = stringResource(SharedRes.strings.newest_episodes),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -124,13 +127,17 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
         }
         header {
             Text(
-                text = "Series",
+                text = stringResource(SharedRes.strings.newest_series),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold
             )
         }
-        items(home.series) { series ->
-
+        items(home.series, key = {
+            it.href
+        }) { series ->
+            SeriesItem(series) {
+                // series clicked
+            }
         }
     }
 }

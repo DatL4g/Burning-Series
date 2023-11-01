@@ -11,11 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.common.bounceClick
+import dev.datlag.burningseries.common.ifTrue
+import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.ui.theme.CountryImage
@@ -26,7 +30,11 @@ import io.kamel.image.asyncPainterResource
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
-    ElevatedCard(modifier = Modifier.animateItemPlacement().height(200.dp)) {
+    ElevatedCard(
+        modifier = Modifier.animateItemPlacement().height(200.dp).bounceClick().onClick {
+            onclick()
+        }
+    ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -79,16 +87,37 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                 ) {
                     val code = remember(episode.href) { episode.flags.firstOrNull()?.bestCountryCode }
                     if (code != null) {
-                        Image(
-                            painter = painterResource(CountryImage.getByCode(code)),
-                            contentDescription = episode.flags.firstOrNull()?.title,
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(MaterialTheme.shapes.extraSmall)
-                                .border(1.dp, LocalContentColor.current, MaterialTheme.shapes.extraSmall)
-                        )
+                        val res = remember(code) { CountryImage.getByFlag(code) }
+
+                        Box(
+                            modifier = Modifier.size(36.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(res.last()),
+                                contentDescription = episode.flags.firstOrNull()?.title,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(MaterialTheme.shapes.extraSmall)
+                                    .border(1.dp, LocalContentColor.current, MaterialTheme.shapes.extraSmall)
+                                    .ifTrue(res.size >= 2) { this.align(Alignment.TopStart).alpha(0.75F) }
+                            )
+                            if (res.size >= 2) {
+                                Image(
+                                    painter = painterResource(res.first()),
+                                    contentDescription = episode.flags.firstOrNull()?.title,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clip(MaterialTheme.shapes.extraSmall)
+                                        .border(1.dp, LocalContentColor.current, MaterialTheme.shapes.extraSmall)
+                                        .align(Alignment.BottomEnd)
+                                )
+                            }
+                        }
                     }
-                    Text(text = episode.info)
+                    Text(
+                        text = episode.info
+                    )
                 }
             }
         }
