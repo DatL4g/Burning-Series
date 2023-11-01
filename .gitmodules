@@ -1,0 +1,3 @@
+[submodule "compose-collapsing-toolbar"]
+	path = compose-collapsing-toolbar
+	url = git@github.com:onebone/compose-collapsing-toolbar.git

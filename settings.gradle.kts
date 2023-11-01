@@ -7,6 +7,8 @@ include(":app:desktop")
 include(":model")
 include(":network")
 
+include(":compose-collapsing-toolbar:lib")
+
 pluginManagement {
     repositories {
         google()
