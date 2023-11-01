@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="app_name">Burning-Series</string>
+    <string name="home">Home</string>
+    <string name="favorites">Favorites</string>
+    <string name="search">Search</string>
 </resources>

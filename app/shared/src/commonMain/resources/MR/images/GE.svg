@@ -1,0 +1,25 @@
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_118:1651)">
+<rect width="300" height="300" fill="white"/>
+<rect x="300" y="300" width="300" height="300" transform="rotate(-180 300 300)" fill="white"/>
+<rect x="130" width="40" height="300" fill="#EF4B4B"/>
+<rect x="300" y="130" width="40" height="300" transform="rotate(90 300 130)" fill="#EF4B4B"/>
+<rect x="170" width="130" height="130" fill="white"/>
+<rect x="228" y="34" width="14" height="63" rx="1" fill="#EF4B4B"/>
+<rect x="267" y="59" width="13" height="64" rx="1" transform="rotate(90 267 59)" fill="#EF4B4B"/>
+<rect x="170" y="170" width="130" height="130" fill="white"/>
+<rect x="228" y="204" width="14" height="63" rx="1" fill="#EF4B4B"/>
+<rect x="267" y="229" width="13" height="64" rx="1" transform="rotate(90 267 229)" fill="#EF4B4B"/>
+<rect width="130" height="130" fill="white"/>
+<rect x="58" y="34" width="14" height="63" rx="1" fill="#EF4B4B"/>
+<rect x="97" y="59" width="13" height="64" rx="1" transform="rotate(90 97 59)" fill="#EF4B4B"/>
+<rect y="170" width="130" height="130" fill="white"/>
+<rect x="58" y="204" width="14" height="63" rx="1" fill="#EF4B4B"/>
+<rect x="97" y="229" width="13" height="64" rx="1" transform="rotate(90 97 229)" fill="#EF4B4B"/>
+</g>
+<defs>
+<clipPath id="clip0_118:1651">
+<rect width="300" height="300" fill="white"/>
+</clipPath>
+</defs>
+</svg>

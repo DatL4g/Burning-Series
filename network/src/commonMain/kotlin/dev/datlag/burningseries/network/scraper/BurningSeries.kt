@@ -104,11 +104,16 @@ data object BurningSeries {
         }
     }
 
-    private suspend fun getCover(client: HttpClient, href: String): Pair<String, Boolean> {
+    suspend fun getHome(client: HttpClient): Home? {
+        val doc = getDocument(client, String()) ?: return null
+        return getHome(client, doc)
+    }
+
+    private suspend fun getCover(client: HttpClient, href: String): Pair<String?, Boolean> {
         return getCover(getDocument(client, href))
     }
 
-    private suspend fun getCover(document: KtSoupDocument?): Pair<String, Boolean> {
+    private suspend fun getCover(document: KtSoupDocument?): Pair<String?, Boolean> {
         val allImages = document?.querySelector(".serie")?.querySelectorAll("img")
 
         val cover = (allImages?.firstOrNull {
@@ -119,16 +124,6 @@ data object BurningSeries {
             it.attr("alt").equals("AB 18", true)
         } != null
 
-        return (cover ?: String()) to isNsfw
-    }
-
-    suspend fun testSeries(client: HttpClient) {
-        val doc = getDocument(client, String())
-
-        doc?.let {
-            getHome(client, it)?.let(::println)
-        }
-
-        doc?.close()
+        return cover to isNsfw
     }
 }

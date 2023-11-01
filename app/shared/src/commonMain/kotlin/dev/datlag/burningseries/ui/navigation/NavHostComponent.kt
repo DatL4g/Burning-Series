@@ -7,7 +7,7 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
-import dev.datlag.burningseries.ui.screen.home.HomeScreenComponent
+import dev.datlag.burningseries.ui.screen.initial.InitialScreenComponent
 import org.kodein.di.DI
 
 class NavHostComponent(
@@ -27,7 +27,7 @@ class NavHostComponent(
         componentContext: ComponentContext
     ) : Component {
         return when (screenConfig) {
-            is ScreenConfig.Home -> HomeScreenComponent(
+            is ScreenConfig.Home -> InitialScreenComponent(
                 componentContext,
                 di
             )

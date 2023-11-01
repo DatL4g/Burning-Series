@@ -17,7 +17,7 @@ data class Home(
         @SerialName("infoText") val info: String = String(),
         @SerialName("infoFlags") val flags: List<Flag> = emptyList(),
         @SerialName("isNsfw") val isNsfw: Boolean = false,
-        @SerialName("cover") val coverHref: String
+        @SerialName("cover") val coverHref: String? = null
     ) {
 
         @Transient
@@ -27,16 +27,21 @@ data class Home(
         ).find(title)
 
         @Transient
-        val series: String? = seriesAndEpisodeMatch?.groupValues?.get(1)?.trim()?.dropLast(1)
+        val series: String? = seriesAndEpisodeMatch?.groupValues?.get(1)?.trim()?.dropLast(1)?.ifBlank { null }
 
         @Transient
-        val episode: String? = seriesAndEpisodeMatch?.groupValues?.get(3)
+        val episode: String? = seriesAndEpisodeMatch?.groupValues?.get(3)?.trim()?.ifBlank { null }
 
         @Serializable
         data class Flag(
             @SerialName("class") val clazz: String,
             @SerialName("title") val title: String
-        )
+        ) {
+            @Transient
+            val bestCountryCode: String? = clazz.split(" ").firstOrNull {
+                !it.equals("flag", true) && it.contains("flag", true)
+            }?.replace("flag", String(), true)?.replace("-", String(), true)
+        }
     }
 
     @Serializable
@@ -44,6 +49,6 @@ data class Home(
         @SerialName("title") val title: String,
         @SerialName("href") val href: String,
         @SerialName("isNsfw") val isNsfw: Boolean = false,
-        @SerialName("coverHref") val coverHref: String
+        @SerialName("coverHref") val coverHref: String? = null
     )
 }
