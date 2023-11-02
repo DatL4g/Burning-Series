@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.ui.screen.initial.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import dev.datlag.burningseries.LocalDarkMode
 import dev.datlag.burningseries.common.header
 import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.model.Home
@@ -27,6 +29,7 @@ import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.ui.screen.initial.home.component.EpisodeItem
 import dev.datlag.burningseries.ui.screen.initial.home.component.SeriesItem
+import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -36,20 +39,47 @@ fun HomeScreen(component: HomeComponent) {
 
     when (val currentState = homeState) {
         is HomeState.Loading -> {
-            Box(
+            Column(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Loading Home Data")
+                val painterRes = if (LocalDarkMode.current) {
+                    SharedRes.images.movie_dark
+                } else {
+                    SharedRes.images.movie_light
+                }
+                Image(
+                    modifier = Modifier.fillMaxWidth(0.7F),
+                    painter = painterResource(painterRes),
+                    contentDescription = stringResource(SharedRes.strings.loading_home)
+                )
+                Text(
+                    text = stringResource(SharedRes.strings.loading_home),
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
         is HomeState.Error -> {
             Column(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Error Loading Home Data")
+                val painterRes = if (LocalDarkMode.current) {
+                    SharedRes.images.sad_dark
+                } else {
+                    SharedRes.images.sad_light
+                }
+                Image(
+                    modifier = Modifier.fillMaxWidth(0.7F),
+                    painter = painterResource(painterRes),
+                    contentDescription = stringResource(SharedRes.strings.error_loading_home)
+                )
+                Text(
+                    text = stringResource(SharedRes.strings.error_loading_home),
+                    fontWeight = FontWeight.SemiBold
+                )
                 Button(
                     onClick = {
                         component.retryLoadingHome()

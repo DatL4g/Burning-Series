@@ -1,5 +1,7 @@
 package dev.datlag.burningseries.ui.screen.initial.series
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,9 +17,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.ui.custom.DefaultCollapsingToolbar
+import io.kamel.core.Resource
+import io.kamel.image.asyncPainterResource
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -33,6 +39,18 @@ fun SeriesScreen(component: SeriesComponent) {
 private fun CompactScreen(component: SeriesComponent) {
     DefaultCollapsingToolbar(
         expandedBody = { state ->
+            when (val resource = asyncPainterResource(component.initialCoverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
+                is Resource.Loading, is Resource.Failure -> { }
+                is Resource.Success -> {
+                    Image(
+                        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 320.dp).parallax(0.5F),
+                        painter = resource.value,
+                        contentDescription = component.initialTitle,
+                        contentScale = ContentScale.FillWidth,
+                    )
+                }
+            }
+
             Text(
                 text = component.initialTitle,
                 modifier = Modifier.road(Alignment.TopStart, Alignment.BottomStart).padding(16.dp),

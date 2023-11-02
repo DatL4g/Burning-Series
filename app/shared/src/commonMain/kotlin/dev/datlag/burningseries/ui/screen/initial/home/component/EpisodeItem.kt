@@ -41,24 +41,22 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
             Surface(
                 shape = CardDefaults.elevatedShape
             ) {
-                episode.coverHref?.let { cover ->
-                    when (val resource = asyncPainterResource(BSUtil.getBurningSeriesLink(cover))) {
-                        is Resource.Loading, is Resource.Failure -> {
-                            Box(
-                                modifier = Modifier
-                                    .aspectRatio(1F, true)
-                                    .clip(CardDefaults.elevatedShape)
-                                    .background(MaterialTheme.colorScheme.tertiaryContainer)
-                            )
-                        }
-                        is Resource.Success -> {
-                            Image(
-                                painter = resource.value,
-                                contentScale = ContentScale.FillWidth,
-                                contentDescription = episode.title,
-                                modifier = Modifier.aspectRatio(1F, true)
-                            )
-                        }
+                when (val resource = asyncPainterResource(episode.coverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
+                    is Resource.Loading, is Resource.Failure -> {
+                        Box(
+                            modifier = Modifier
+                                .aspectRatio(1F, true)
+                                .clip(CardDefaults.elevatedShape)
+                                .background(MaterialTheme.colorScheme.tertiaryContainer)
+                        )
+                    }
+                    is Resource.Success -> {
+                        Image(
+                            painter = resource.value,
+                            contentScale = ContentScale.FillWidth,
+                            contentDescription = episode.title,
+                            modifier = Modifier.aspectRatio(1F, true)
+                        )
                     }
                 }
             }

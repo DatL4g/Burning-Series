@@ -7,4 +7,6 @@
     <string name="newest_episodes">Newest Episodes</string>
     <string name="newest_series">Newest Series</string>
     <string name="retry">Retry</string>
+    <string name="loading_home">Loading newest episodes and series, please wait</string>
+    <string name="error_loading_home">Error while loading newest episodes and series</string>
 </resources>

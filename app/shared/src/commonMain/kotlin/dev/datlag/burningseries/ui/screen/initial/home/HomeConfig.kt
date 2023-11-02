@@ -14,6 +14,6 @@ sealed class HomeConfig : Parcelable {
         val coverHref: String?,
     ) : HomeConfig(), Parcelable {
         constructor(series: Home.Series) : this(series.title, series.href, series.coverHref)
-        constructor(episode: Home.Episode) : this(episode.series ?: episode.title, episode.href, episode.href)
+        constructor(episode: Home.Episode) : this(episode.series ?: episode.title, episode.href, episode.coverHref)
     }
 }

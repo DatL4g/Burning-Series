@@ -6,6 +6,7 @@ import dev.datlag.burningseries.model.state.HomeAction
 import dev.datlag.burningseries.network.scraper.BurningSeries
 import io.ktor.client.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeStateMachine(
