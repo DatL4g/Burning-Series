@@ -17,6 +17,8 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -32,22 +34,8 @@ kotlin {
             }
         }
 
-        val jvmMain by getting {
-            dependsOn(commonMain)
-        }
-
         val androidMain by getting {
-            dependsOn(jvmMain)
-        }
-
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
+            dependsOn(jvmMain.get())
         }
     }
 }

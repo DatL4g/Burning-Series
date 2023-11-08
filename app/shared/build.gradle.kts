@@ -32,6 +32,8 @@ kotlin {
         }
     }
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -71,7 +73,6 @@ kotlin {
             }
         }
         val androidMain by getting {
-            dependsOn(commonMain)
             apply(plugin = "kotlin-parcelize")
 
             dependencies {
@@ -87,27 +88,12 @@ kotlin {
             }
         }
         val desktopMain by getting {
-            dependsOn(commonMain)
-
             dependencies {
                 api(compose.desktop.currentOs)
                 api(libs.coroutines.swing)
                 api(libs.context.menu)
                 api(libs.window.styler)
                 api(libs.ktor.jvm)
-            }
-        }
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-
-            dependencies {
-                api(libs.ktor.apple)
             }
         }
     }
