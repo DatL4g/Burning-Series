@@ -11,7 +11,7 @@ fun KtSoupElement.getTitle(): String {
 }
 
 fun KtSoupElement.getHref(): String? {
-    return this.attr("href")
+    return this.attr("href")?.ifBlank { null }
 }
 
 fun KtSoupElement.getSrc(): String? {
@@ -19,4 +19,8 @@ fun KtSoupElement.getSrc(): String? {
         val sources = this.querySelectorAll("source")
         sources.firstOrNull()?.getSrc()
     }
+}
+
+fun KtSoupElement.getValue(): String? {
+    return this.attr("value")?.ifBlank { null }
 }

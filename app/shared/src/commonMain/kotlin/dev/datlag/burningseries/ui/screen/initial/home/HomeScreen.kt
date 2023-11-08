@@ -27,6 +27,8 @@ import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.ui.custom.state.ErrorState
+import dev.datlag.burningseries.ui.custom.state.LoadingState
 import dev.datlag.burningseries.ui.screen.initial.home.component.EpisodeItem
 import dev.datlag.burningseries.ui.screen.initial.home.component.SeriesItem
 import dev.icerock.moko.resources.compose.painterResource
@@ -39,54 +41,11 @@ fun HomeScreen(component: HomeComponent) {
 
     when (val currentState = homeState) {
         is HomeState.Loading -> {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val painterRes = if (LocalDarkMode.current) {
-                    SharedRes.images.movie_dark
-                } else {
-                    SharedRes.images.movie_light
-                }
-                Image(
-                    modifier = Modifier.fillMaxWidth(0.7F),
-                    painter = painterResource(painterRes),
-                    contentDescription = stringResource(SharedRes.strings.loading_home)
-                )
-                Text(
-                    text = stringResource(SharedRes.strings.loading_home),
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
+            LoadingState(SharedRes.strings.loading_home)
         }
         is HomeState.Error -> {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val painterRes = if (LocalDarkMode.current) {
-                    SharedRes.images.sad_dark
-                } else {
-                    SharedRes.images.sad_light
-                }
-                Image(
-                    modifier = Modifier.fillMaxWidth(0.7F),
-                    painter = painterResource(painterRes),
-                    contentDescription = stringResource(SharedRes.strings.error_loading_home)
-                )
-                Text(
-                    text = stringResource(SharedRes.strings.error_loading_home),
-                    fontWeight = FontWeight.SemiBold
-                )
-                Button(
-                    onClick = {
-                        component.retryLoadingHome()
-                    }
-                ) {
-                    Text(text = stringResource(SharedRes.strings.retry))
-                }
+            ErrorState(SharedRes.strings.error_loading_home) {
+                component.retryLoadingHome()
             }
         }
         is HomeState.Success -> {

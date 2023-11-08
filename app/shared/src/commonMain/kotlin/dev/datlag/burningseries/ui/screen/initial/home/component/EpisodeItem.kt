@@ -22,6 +22,7 @@ import dev.datlag.burningseries.common.ifTrue
 import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.ui.custom.CountryImage
 import dev.datlag.burningseries.ui.theme.CountryImage
 import dev.icerock.moko.resources.compose.painterResource
 import io.kamel.core.Resource
@@ -85,33 +86,11 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                 ) {
                     val code = remember(episode.href) { episode.flags.firstOrNull()?.bestCountryCode }
                     if (code != null) {
-                        val res = remember(code) { CountryImage.getByFlag(code) }
-
-                        Box(
-                            modifier = Modifier.size(36.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(res.last()),
-                                contentDescription = episode.flags.firstOrNull()?.title,
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .clip(MaterialTheme.shapes.extraSmall)
-                                    .border(1.dp, LocalContentColor.current, MaterialTheme.shapes.extraSmall)
-                                    .ifTrue(res.size >= 2) { this.align(Alignment.TopStart).alpha(0.75F) }
-                            )
-                            if (res.size >= 2) {
-                                Image(
-                                    painter = painterResource(res.first()),
-                                    contentDescription = episode.flags.firstOrNull()?.title,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clip(MaterialTheme.shapes.extraSmall)
-                                        .border(1.dp, LocalContentColor.current, MaterialTheme.shapes.extraSmall)
-                                        .align(Alignment.BottomEnd)
-                                )
-                            }
-                        }
+                        CountryImage(
+                            code = code,
+                            description = episode.flags.firstOrNull()?.title,
+                            modifier = Modifier.size(36.dp)
+                        )
                     }
                     Text(
                         text = episode.info

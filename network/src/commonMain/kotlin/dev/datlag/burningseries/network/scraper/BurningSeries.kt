@@ -2,10 +2,12 @@ package dev.datlag.burningseries.network.scraper
 
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.common.suspendCatching
 import dev.datlag.burningseries.network.common.getHref
 import dev.datlag.burningseries.network.common.getSrc
 import dev.datlag.burningseries.network.common.getTitle
+import dev.datlag.burningseries.network.common.getValue
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -107,6 +109,75 @@ data object BurningSeries {
     suspend fun getHome(client: HttpClient): Home? {
         val doc = getDocument(client, String()) ?: return null
         return getHome(client, doc)
+    }
+
+    suspend fun getSeries(client: HttpClient, href: String): Series? {
+        val doc = getDocument(client, href) ?: return null
+
+        val title = doc.querySelector(".serie")?.querySelector("h2")?.textContent() ?: String()
+        val description = doc.querySelector(".serie")?.querySelector("#sp_left > p")?.textContent() ?: String()
+
+        val seasons = doc.querySelector(".serie")?.querySelector("#seasons")?.querySelector("ul")?.querySelectorAll("li")?.mapIndexed { index, it ->
+            val seasonTitle = it.querySelector("a")?.textContent() ?: it.textContent()
+            val link = BSUtil.normalizeHref(it.querySelector("a")?.getHref() ?: it.getHref() ?: String())
+            val value = if (link.isBlank()) {
+                index
+            } else {
+                if (link.split('/').size >= 3) {
+                    link.split('/')[2].toIntOrNull() ?: index
+                } else {
+                    index
+                }
+            }
+            Series.Season(
+                value = value,
+                title = seasonTitle
+            )
+        } ?: emptyList()
+
+        val replacedTitle =
+            title.replace(Regex("(?:(\\n)*\\t)+", setOf(RegexOption.MULTILINE, RegexOption.IGNORE_CASE)), "\t")
+        val splitTitle = replacedTitle.trim().split("\t")
+        val normalizedTitle = splitTitle[0].trim()
+
+        val selectedLanguageValue = doc.querySelector(".series-language")?.querySelector("option[selected]")?.getValue()
+        var selectedLanguage: String? = null
+        val languageElements = doc.querySelector(".series-language")?.querySelectorAll("option") ?: emptyList()
+
+        val languages = languageElements.mapNotNull {
+            val value = it.getValue() ?: String()
+            val text = it.textContent()
+            val selected = it.querySelector("option[selected]")?.getValue()
+            if (!selected.isNullOrBlank() || (!selectedLanguageValue.isNullOrBlank() && selectedLanguageValue == value)) {
+                selectedLanguage = value
+            }
+            if (value.isNotBlank() && text.isNotBlank()) {
+                Series.Language(
+                    value = value,
+                    title = text
+                )
+            } else {
+                null
+            }
+        }
+
+        if (selectedLanguage.isNullOrBlank()) {
+            selectedLanguage = selectedLanguageValue
+            if (selectedLanguage.isNullOrBlank()) {
+                selectedLanguage = languages.firstOrNull()?.value ?: return null
+            }
+        }
+
+        val selectedSeason = if (splitTitle.size >= 2) splitTitle[1].trim() else seasons.firstOrNull()?.title ?: String()
+
+        return Series(
+            title = normalizedTitle.trim(),
+            description = description,
+            seasonTitle = selectedSeason.trim(),
+            seasons = seasons,
+            selectedLanguage = selectedLanguage?.trim() ?: return null,
+            languages = languages
+        )
     }
 
     private suspend fun getCover(client: HttpClient, href: String): Pair<String?, Boolean> {

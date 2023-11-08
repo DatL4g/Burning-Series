@@ -9,4 +9,9 @@
     <string name="retry">Retry</string>
     <string name="loading_home">Loading newest episodes and series, please wait</string>
     <string name="error_loading_home">Error while loading newest episodes and series</string>
+    <string name="read_more">Read More</string>
+    <string name="read_less">Read Less</string>
+    <string name="loading_series">Loading series information, please wait</string>
+    <string name="error_loading_series">Error while loading series information</string>
+    <string name="season_placeholder">Season %s</string>
 </resources>

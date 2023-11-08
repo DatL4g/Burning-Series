@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
@@ -15,11 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.launchMain
 import dev.datlag.burningseries.common.withIOContext
+import dev.datlag.burningseries.ui.custom.toolbar.*
 import kotlinx.coroutines.delay
-import me.onebone.toolbar.*
 import kotlin.math.abs
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalToolbarApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultCollapsingToolbar(
     state: CollapsingToolbarScaffoldState = rememberCollapsingToolbarScaffoldState(),
@@ -39,6 +38,7 @@ fun DefaultCollapsingToolbar(
         state = state,
         scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
         toolbarModifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 56.dp).verticalScroll(rememberScrollState()),
+        toolbarScrollable = true,
         toolbar = {
             expandedBody(state)
 

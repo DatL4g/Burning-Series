@@ -1,27 +1,35 @@
 package dev.datlag.burningseries.ui.screen.initial.series
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.model.BSUtil
+import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.state.SeriesState
+import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.ui.custom.CountryImage
 import dev.datlag.burningseries.ui.custom.DefaultCollapsingToolbar
+import dev.datlag.burningseries.ui.custom.readmore.ReadMoreText
+import dev.datlag.burningseries.ui.custom.readmore.ReadMoreTextOverflow
+import dev.datlag.burningseries.ui.custom.readmore.ToggleArea
+import dev.datlag.burningseries.ui.custom.state.ErrorState
+import dev.datlag.burningseries.ui.custom.state.LoadingState
+import dev.datlag.burningseries.ui.screen.initial.series.component.SeasonAndLanguageButtons
+import dev.icerock.moko.resources.compose.stringResource
 import io.kamel.core.Resource
 import io.kamel.image.asyncPainterResource
 import kotlin.math.abs
@@ -37,6 +45,8 @@ fun SeriesScreen(component: SeriesComponent) {
 
 @Composable
 private fun CompactScreen(component: SeriesComponent) {
+    val seriesState by component.seriesState.collectAsStateWithLifecycle()
+
     DefaultCollapsingToolbar(
         expandedBody = { state ->
             when (val resource = asyncPainterResource(component.initialCoverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
@@ -99,15 +109,103 @@ private fun CompactScreen(component: SeriesComponent) {
 
         }
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        when (val current = seriesState) {
+            is SeriesState.Loading -> {
+                LoadingState(SharedRes.strings.loading_series)
+            }
+            is SeriesState.Error -> {
+                ErrorState(SharedRes.strings.error_loading_series) {
+                    component.retryLoadingSeries()
+                }
+            }
+            is SeriesState.Success -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    item(
+                        key = {
+                            listOf(
+                                current.series.seasons,
+                                current.series.languages
+                            )
+                        }
+                    ) {
+                        SeasonAndLanguageButtons(
+                            current.series.currentSeason,
+                            current.series.currentLanguage,
+                            current.series.seasons,
+                            current.series.languages,
+                            onSeasonClick = { },
+                            onLanguageClick = { }
+                        )
+                    }
 
+                    SeriesContent(current.series)
+                }
+            }
         }
     }
 }
 
 @Composable
 private fun DefaultScreen(component: SeriesComponent) {
+    val seriesState by component.seriesState.collectAsStateWithLifecycle()
 
+    when (val current = seriesState) {
+        is SeriesState.Loading -> {
+            LoadingState(SharedRes.strings.loading_series)
+        }
+        is SeriesState.Error -> {
+            ErrorState(SharedRes.strings.error_loading_series) {
+                component.retryLoadingSeries()
+            }
+        }
+        is SeriesState.Success -> {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                item(
+                    key = {
+                        listOf(
+                            current.series.seasons,
+                            current.series.languages
+                        )
+                    }
+                ) {
+                    SeasonAndLanguageButtons(
+                        current.series.currentSeason,
+                        current.series.currentLanguage,
+                        current.series.seasons,
+                        current.series.languages,
+                        onSeasonClick = { },
+                        onLanguageClick = { }
+                    )
+                }
+
+                SeriesContent(current.series)
+            }
+        }
+    }
+}
+
+private fun LazyListScope.SeriesContent(content: Series) {
+    item(content.description) {
+        val (expanded, onExpandedChange) = rememberSaveable { mutableStateOf(false) }
+
+        ReadMoreText(
+            text = content.description,
+            expanded = expanded,
+            onExpandedChange = onExpandedChange,
+            modifier = Modifier.fillMaxWidth(),
+            readMoreText = stringResource(SharedRes.strings.read_more),
+            readMoreColor = MaterialTheme.colorScheme.primary,
+            readMoreFontWeight = FontWeight.SemiBold,
+            readMoreMaxLines = 2,
+            readMoreOverflow = ReadMoreTextOverflow.Ellipsis,
+            readLessText = stringResource(SharedRes.strings.read_less),
+            readLessColor = MaterialTheme.colorScheme.primary,
+            readLessFontWeight = FontWeight.SemiBold,
+            toggleArea = ToggleArea.More
+        )
+    }
 }

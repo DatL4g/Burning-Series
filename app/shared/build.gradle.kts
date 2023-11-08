@@ -68,7 +68,6 @@ kotlin {
 
                 api(project(":model"))
                 api(project(":network"))
-                api(project(":compose-collapsing-toolbar:lib"))
             }
         }
         val androidMain by getting {
