@@ -73,6 +73,7 @@ kotlin {
             }
         }
         val androidMain by getting {
+            dependsOn(commonMain)
             apply(plugin = "kotlin-parcelize")
 
             dependencies {
@@ -88,6 +89,8 @@ kotlin {
             }
         }
         val desktopMain by getting {
+            dependsOn(commonMain)
+
             dependencies {
                 api(compose.desktop.currentOs)
                 api(libs.coroutines.swing)
@@ -95,6 +98,10 @@ kotlin {
                 api(libs.window.styler)
                 api(libs.ktor.jvm)
             }
+        }
+
+        val iosMain by getting {
+            dependsOn(commonMain)
         }
     }
 }

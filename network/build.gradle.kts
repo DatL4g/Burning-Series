@@ -33,10 +33,6 @@ kotlin {
                 api(libs.ktsoup.ktor)
             }
         }
-
-        val androidMain by getting {
-            dependsOn(jvmMain.get())
-        }
     }
 }
 

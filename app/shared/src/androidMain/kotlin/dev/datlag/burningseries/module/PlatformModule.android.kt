@@ -1,9 +1,24 @@
 package dev.datlag.burningseries.module
 
+import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
 import org.kodein.di.DI
+import org.kodein.di.bindSingleton
 
 actual object PlatformModule {
-    actual val di: DI.Module
-        get() = TODO("Not yet implemented")
+
+    private const val NAME = "PlatformModuleAndroid"
+
+    actual val di: DI.Module = DI.Module(NAME) {
+        bindSingleton {
+            HttpClient(OkHttp) {
+                engine {
+                    config {
+                        followRedirects(true)
+                    }
+                }
+            }
+        }
+    }
 
 }
