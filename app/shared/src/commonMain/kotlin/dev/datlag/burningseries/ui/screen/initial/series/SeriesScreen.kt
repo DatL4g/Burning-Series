@@ -12,11 +12,13 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
+import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesState
@@ -162,7 +164,8 @@ private fun DefaultScreen(component: SeriesComponent) {
         }
         is SeriesState.Success -> {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(16.dp)
             ) {
                 item(
                     key = {
@@ -172,14 +175,44 @@ private fun DefaultScreen(component: SeriesComponent) {
                         )
                     }
                 ) {
-                    SeasonAndLanguageButtons(
-                        current.series.currentSeason,
-                        current.series.currentLanguage,
-                        current.series.seasons,
-                        current.series.languages,
-                        onSeasonClick = { },
-                        onLanguageClick = { }
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        when (val resource = asyncPainterResource(component.initialCoverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
+                            is Resource.Loading, is Resource.Failure -> { }
+                            is Resource.Success -> {
+                                Image(
+                                    modifier = Modifier.width(200.dp).clip(MaterialTheme.shapes.medium),
+                                    painter = resource.value,
+                                    contentDescription = component.initialTitle,
+                                    contentScale = ContentScale.FillWidth,
+                                )
+                            }
+                        }
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            Text(
+                                text = component.initialTitle,
+                                style = MaterialTheme.typography.headlineMedium,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                softWrap = true
+                            )
+
+                            SeasonAndLanguageButtons(
+                                current.series.currentSeason,
+                                current.series.currentLanguage,
+                                current.series.seasons,
+                                current.series.languages,
+                                onSeasonClick = { },
+                                onLanguageClick = { }
+                            )
+                        }
+                    }
                 }
 
                 SeriesContent(current.series)
@@ -189,13 +222,15 @@ private fun DefaultScreen(component: SeriesComponent) {
 }
 
 private fun LazyListScope.SeriesContent(content: Series) {
-    item(content.description) {
-        val (expanded, onExpandedChange) = rememberSaveable { mutableStateOf(false) }
+    item {
+        var expanded by remember { mutableStateOf(false) }
 
         ReadMoreText(
             text = content.description,
             expanded = expanded,
-            onExpandedChange = onExpandedChange,
+            onExpandedChange = {
+                expanded = it
+            },
             modifier = Modifier.fillMaxWidth(),
             readMoreText = stringResource(SharedRes.strings.read_more),
             readMoreColor = MaterialTheme.colorScheme.primary,
@@ -205,7 +240,7 @@ private fun LazyListScope.SeriesContent(content: Series) {
             readLessText = stringResource(SharedRes.strings.read_less),
             readLessColor = MaterialTheme.colorScheme.primary,
             readLessFontWeight = FontWeight.SemiBold,
-            toggleArea = ToggleArea.More
+            toggleArea = ToggleArea.All
         )
     }
 }

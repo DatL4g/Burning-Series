@@ -112,7 +112,7 @@ data object BurningSeries {
     }
 
     suspend fun getSeries(client: HttpClient, href: String): Series? {
-        val doc = getDocument(client, href) ?: return null
+        val doc = getDocument(client, BSUtil.fixSeriesHref(href)) ?: return null
 
         val title = doc.querySelector(".serie")?.querySelector("h2")?.textContent() ?: String()
         val description = doc.querySelector(".serie")?.querySelector("#sp_left > p")?.textContent() ?: String()

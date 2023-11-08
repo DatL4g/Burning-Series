@@ -30,7 +30,7 @@ data object BSUtil {
         return rebuildHrefFromData(hrefDataFromHref(normalizeHref(href)))
     }
 
-    fun hrefDataFromHref(href: String): Triple<String, String?, String?> {
+    private fun hrefDataFromHref(href: String): Triple<String, String?, String?> {
         fun getTitle(): String {
             val newHref = if (href.startsWith("series/")) {
                 href.substringAfter("series/")
@@ -84,7 +84,7 @@ data object BSUtil {
         )
     }
 
-    fun rebuildHrefFromData(hrefData: Triple<String, String?, String?>): String {
+    private fun rebuildHrefFromData(hrefData: Triple<String, String?, String?>): String {
         return if (hrefData.second != null && hrefData.third != null) {
             "serie/${hrefData.first}/${hrefData.second}/${hrefData.third}"
         } else if (hrefData.second != null) {
