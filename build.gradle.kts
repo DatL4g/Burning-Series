@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.osdetector) apply false
     alias(libs.plugins.protobuf) apply false
     alias(libs.plugins.serialization) apply false
+    alias(libs.plugins.complete.kotlin)
     alias(libs.plugins.versions)
 }
 
