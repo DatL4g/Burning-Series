@@ -32,9 +32,7 @@ fun MainViewController(): UIViewController {
     }
 
     val root = NavHostComponent(
-        componentContext = DefaultComponentContext(
-            lifecycle = lifecycleOwner.lifecycle
-        ),
+        componentContext = DefaultComponentContext(lifecycleOwner.lifecycle),
         di = di
     )
 
