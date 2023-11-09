@@ -124,14 +124,7 @@ private fun CompactScreen(component: SeriesComponent) {
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    item(
-                        key = {
-                            listOf(
-                                current.series.seasons,
-                                current.series.languages
-                            )
-                        }
-                    ) {
+                    item {
                         SeasonAndLanguageButtons(
                             current.series.currentSeason,
                             current.series.currentLanguage,
@@ -167,14 +160,7 @@ private fun DefaultScreen(component: SeriesComponent) {
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(16.dp)
             ) {
-                item(
-                    key = {
-                        listOf(
-                            current.series.seasons,
-                            current.series.languages
-                        )
-                    }
-                ) {
+                item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,

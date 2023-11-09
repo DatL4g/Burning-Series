@@ -39,7 +39,6 @@ private fun CompactScreen(
     var selectedPage by remember { mutableIntStateOf(0) }
 
     Scaffold(
-        modifier = Modifier.safeDrawingPadding(),
         bottomBar = {
             NavigationBar {
                 component.pagerItems.forEachIndexed { index, item ->
@@ -82,7 +81,6 @@ private fun MediumScreen(
     var selectedPage by remember { mutableIntStateOf(0) }
 
     Scaffold(
-        modifier = Modifier.safeDrawingPadding(),
     ) {
         Row(modifier = Modifier.padding(it)) {
             NavigationRail {
@@ -123,7 +121,6 @@ private fun ExpandedScreen(
     var selectedPage by remember { mutableIntStateOf(0) }
 
     Scaffold(
-        modifier = Modifier.safeDrawingPadding(),
     ) {
         PermanentNavigationDrawer(
             modifier = Modifier.padding(it),
