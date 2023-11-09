@@ -12,6 +12,7 @@ data class Series(
     @SerialName("selectedLanguage") val selectedLanguage: String,
     @SerialName("seasons") val seasons: List<Season>,
     @SerialName("languages") val languages: List<Language>,
+    @SerialName("episodes") val episodes: List<Episode>
 ) {
 
     val currentSeason: Season? by lazy(LazyThreadSafetyMode.NONE) {
@@ -43,5 +44,12 @@ data class Series(
     data class Language(
         @SerialName("value") val value: String,
         @SerialName("title") val title: String
+    )
+
+    @Serializable
+    data class Episode(
+        @SerialName("number") val number: String,
+        @SerialName("title") val title: String,
+        @SerialName("href") val href: String
     )
 }

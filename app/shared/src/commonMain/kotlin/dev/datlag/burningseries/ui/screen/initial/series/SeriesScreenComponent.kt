@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.screen.initial.series
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.backhandler.BackHandler
 import dev.datlag.burningseries.common.ioDispatcher
 import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.common.launchIO
@@ -21,7 +22,8 @@ class SeriesScreenComponent(
     override val di: DI,
     override val initialTitle: String,
     val initialHref: String,
-    override val initialCoverHref: String?
+    override val initialCoverHref: String?,
+    private val onGoBack: () -> Unit
 ) : SeriesComponent, ComponentContext by componentContext {
 
     private val httpClient by di.instance<HttpClient>()
@@ -35,5 +37,9 @@ class SeriesScreenComponent(
 
     override fun retryLoadingSeries(): Any? = ioScope().launchIO {
         seriesStateMachine.dispatch(SeriesAction.Retry)
+    }
+
+    override fun goBack() {
+        onGoBack()
     }
 }

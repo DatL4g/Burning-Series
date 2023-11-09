@@ -1,15 +1,13 @@
 package dev.datlag.burningseries.ui.custom
 
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.launchMain
@@ -24,7 +22,7 @@ fun DefaultCollapsingToolbar(
     state: CollapsingToolbarScaffoldState = rememberCollapsingToolbarScaffoldState(),
     expandedBody: @Composable CollapsingToolbarScope.(CollapsingToolbarScaffoldState) -> Unit,
     title: @Composable (CollapsingToolbarScaffoldState) -> Unit,
-    navigationIcon: @Composable (CollapsingToolbarScaffoldState) -> Unit = { },
+    navigationIcon: (@Composable (CollapsingToolbarScaffoldState) -> Unit)? = null,
     actions: @Composable RowScope.(CollapsingToolbarScaffoldState) -> Unit = { },
     content: @Composable CollapsingToolbarScaffoldScope.() -> Unit
 ) {
@@ -34,7 +32,7 @@ fun DefaultCollapsingToolbar(
     var expanded by remember { mutableStateOf(false) }
 
     CollapsingToolbarScaffold(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
         state = state,
         scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
         toolbarModifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 56.dp).verticalScroll(rememberScrollState()),
@@ -44,18 +42,16 @@ fun DefaultCollapsingToolbar(
 
             TopAppBar(
                 modifier = Modifier.pin(),
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = reversedProgress)
-                ),
+                backgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = reversedProgress),
+                contentColor = MaterialTheme.colorScheme.onSurface,
                 title = {
                     title(state)
                 },
+                navigationIcon = if (navigationIcon == null) null else { { navigationIcon(state) } },
                 actions = {
                     actions(state)
                 },
-                navigationIcon = {
-                    navigationIcon(state)
-                }
+                elevation = 0.dp
             )
         }
     ) {

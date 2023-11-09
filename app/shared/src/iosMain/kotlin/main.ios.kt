@@ -20,15 +20,17 @@ import io.kamel.image.config.LocalKamelConfig
 import org.kodein.di.DI
 import platform.UIKit.UIViewController
 
+private val di: DI by lazy(LazyThreadSafetyMode.NONE) {
+    DI {
+        import(NetworkModule.di)
+    }
+}
+
 fun MainViewController(): UIViewController {
     val lifecycleRegistry = LifecycleRegistry()
 
     val lifecycleOwner = object : LifecycleOwner {
         override val lifecycle: Lifecycle = lifecycleRegistry
-    }
-
-    val di = DI {
-        import(NetworkModule.di)
     }
 
     val root = NavHostComponent(

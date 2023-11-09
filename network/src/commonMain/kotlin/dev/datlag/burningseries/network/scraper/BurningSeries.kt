@@ -3,6 +3,7 @@ package dev.datlag.burningseries.network.scraper
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.common.getDigitsOrNull
 import dev.datlag.burningseries.model.common.suspendCatching
 import dev.datlag.burningseries.network.common.getHref
 import dev.datlag.burningseries.network.common.getSrc
@@ -170,13 +171,39 @@ data object BurningSeries {
 
         val selectedSeason = if (splitTitle.size >= 2) splitTitle[1].trim() else seasons.firstOrNull()?.title ?: String()
 
+        val episodesDoc = doc.querySelector(".serie")?.querySelector(".episodes")?.querySelectorAll("tr") ?: emptyList()
+        val episodeInfoList = episodesDoc.mapNotNull { episodesElement ->
+            val episodeList = episodesElement.querySelectorAll("td").mapNotNull { it.querySelector("a") }.mapNotNull { data ->
+                val text = data.querySelector("a")?.textContent() ?: String()
+                val episodeHref = BSUtil.normalizeHref(data.querySelector("a")?.getHref() ?: String())
+
+                text.trim() to episodeHref
+            }
+
+            val episodeHref = when {
+                episodeList.isEmpty() -> return@mapNotNull null
+                episodeList[0].second.isNotBlank() -> episodeList[0].second
+                episodeList.size > 1 && episodeList[1].second.isNotBlank() -> episodeList[1].second
+                else -> String()
+            }
+
+            val episodeTitle = if (episodeList.size > 1) episodeList[1].first.trim() else String()
+
+            Series.Episode(
+                number = episodeList[0].first.trim(),
+                title = episodeTitle,
+                href = episodeHref
+            )
+        }
+
         return Series(
             title = normalizedTitle.trim(),
             description = description,
             seasonTitle = selectedSeason.trim(),
             seasons = seasons,
             selectedLanguage = selectedLanguage?.trim() ?: return null,
-            languages = languages
+            languages = languages,
+            episodes = episodeInfoList
         )
     }
 

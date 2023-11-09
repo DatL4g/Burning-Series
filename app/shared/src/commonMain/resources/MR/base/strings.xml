@@ -14,4 +14,5 @@
     <string name="loading_series">Loading series information, please wait</string>
     <string name="error_loading_series">Error while loading series information</string>
     <string name="season_placeholder">Season %s</string>
+    <string name="back">Back</string>
 </resources>

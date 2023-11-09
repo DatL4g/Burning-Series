@@ -24,8 +24,10 @@ fun SeasonAndLanguageButtons(
     languages: List<Series.Language>,
     onSeasonClick: () -> Unit,
     onLanguageClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     FlowRow(
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {

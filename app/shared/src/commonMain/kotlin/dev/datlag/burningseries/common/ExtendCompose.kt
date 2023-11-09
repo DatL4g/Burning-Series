@@ -9,8 +9,10 @@ import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import dev.datlag.burningseries.ui.theme.shape.DiagonalShape
 
 inline fun Modifier.ifTrue(predicate: Boolean, builder: Modifier.() -> Modifier) = then(if (predicate) builder() else Modifier)
 inline fun Modifier.ifFalse(predicate: Boolean, builder: Modifier.() -> Modifier) = then(if (!predicate) builder() else Modifier)
@@ -59,3 +61,8 @@ fun Modifier.pressClick(maxTranslation: Float = 10F) = composed {
         }
     }
 }
+
+fun Modifier.diagonalShape(
+    angle: Float,
+    position: DiagonalShape.POSITION = DiagonalShape.POSITION.TOP
+) = this.clip(DiagonalShape(angle, position))

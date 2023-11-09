@@ -12,4 +12,6 @@ interface SeriesComponent : Component {
     val seriesState: StateFlow<SeriesState>
 
     fun retryLoadingSeries(): Any?
+
+    fun goBack()
 }
