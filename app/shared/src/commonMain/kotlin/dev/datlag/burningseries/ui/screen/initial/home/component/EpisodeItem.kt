@@ -60,7 +60,6 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                             contentDescription = episode.title,
                             modifier = Modifier.aspectRatio(1F, true)
                         )
-                        loadImageScheme(BSUtil.fixSeriesHref(episode.href), resource.value)
                     }
                 }
             }

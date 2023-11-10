@@ -51,7 +51,6 @@ fun LazyGridItemScope.SeriesItem(series: Home.Series, onClick: () -> Unit) {
                                 contentDescription = series.title,
                                 modifier = Modifier.aspectRatio(1F, true)
                             )
-                            loadImageScheme(BSUtil.fixSeriesHref(series.href), resource.value)
                         }
                     }
                 }
