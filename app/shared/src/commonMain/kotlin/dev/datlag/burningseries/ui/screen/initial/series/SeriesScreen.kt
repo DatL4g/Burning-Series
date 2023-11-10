@@ -40,7 +40,9 @@ import dev.datlag.burningseries.ui.custom.readmore.ReadMoreTextOverflow
 import dev.datlag.burningseries.ui.custom.readmore.ToggleArea
 import dev.datlag.burningseries.ui.custom.state.ErrorState
 import dev.datlag.burningseries.ui.custom.state.LoadingState
+import dev.datlag.burningseries.ui.screen.initial.series.component.DescriptionText
 import dev.datlag.burningseries.ui.screen.initial.series.component.SeasonAndLanguageButtons
+import dev.datlag.burningseries.ui.theme.CommonSchemeTheme
 import dev.datlag.burningseries.ui.theme.SchemeTheme
 import dev.datlag.burningseries.ui.theme.loadImageScheme
 import dev.datlag.burningseries.ui.theme.shape.DiagonalShape
@@ -52,10 +54,16 @@ import kotlin.math.abs
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun SeriesScreen(component: SeriesComponent) {
-    SchemeTheme(BSUtil.fixSeriesHref(component.initialHref)) {
-        when (calculateWindowSizeClass().widthSizeClass) {
-            WindowWidthSizeClass.Compact -> CompactScreen(component)
-            else -> DefaultScreen(component)
+    SchemeTheme.setCommon(BSUtil.fixSeriesHref(component.initialHref))
+    when (calculateWindowSizeClass().widthSizeClass) {
+        WindowWidthSizeClass.Compact -> CompactScreen(component)
+        else -> DefaultScreen(component)
+    }
+
+    val scope = rememberCoroutineScope()
+    DisposableEffect(scope) {
+        onDispose {
+            SchemeTheme.setCommon(null, scope)
         }
     }
 }
@@ -166,25 +174,7 @@ private fun CompactScreen(component: SeriesComponent) {
                     contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
                     item {
-                        var expanded by remember { mutableStateOf(false) }
-
-                        ReadMoreText(
-                            text = current.series.description,
-                            expanded = expanded,
-                            onExpandedChange = {
-                                expanded = it
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            readMoreText = stringResource(SharedRes.strings.read_more),
-                            readMoreColor = MaterialTheme.colorScheme.primary,
-                            readMoreFontWeight = FontWeight.SemiBold,
-                            readMoreMaxLines = 2,
-                            readMoreOverflow = ReadMoreTextOverflow.Ellipsis,
-                            readLessText = stringResource(SharedRes.strings.read_less),
-                            readLessColor = MaterialTheme.colorScheme.primary,
-                            readLessFontWeight = FontWeight.SemiBold,
-                            toggleArea = ToggleArea.All
-                        )
+                        DescriptionText(current.series.description)
                     }
 
                     item {
@@ -206,6 +196,7 @@ private fun CompactScreen(component: SeriesComponent) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DefaultScreen(component: SeriesComponent) {
     val seriesState by component.seriesState.collectAsStateWithLifecycle()
@@ -227,40 +218,58 @@ private fun DefaultScreen(component: SeriesComponent) {
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
+                        Column(
+                            modifier = Modifier.weight(1F),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            TopAppBar(
+                                title = {
+                                    Text(
+                                        text = component.initialTitle,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis,
+                                        softWrap = true
+                                    )
+                                },
+                                navigationIcon = {
+                                    IconButton(
+                                        onClick = {
+                                            component.goBack()
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowBackIosNew,
+                                            contentDescription = stringResource(SharedRes.strings.back)
+                                        )
+                                    }
+                                }
+                            )
+
+                            DescriptionText(current.series.description)
+
+                            SeasonAndLanguageButtons(
+                                selectedSeason = current.series.currentSeason,
+                                selectedLanguage = current.series.currentLanguage,
+                                seasons = current.series.seasons,
+                                languages = current.series.languages,
+                                onSeasonClick = { },
+                                onLanguageClick = { }
+                            )
+                        }
+
                         when (val resource = asyncPainterResource(component.initialCoverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
                             is Resource.Loading, is Resource.Failure -> { }
                             is Resource.Success -> {
                                 Image(
-                                    modifier = Modifier.width(200.dp).clip(MaterialTheme.shapes.medium),
+                                    modifier = Modifier.width(200.dp).clip(MaterialTheme.shapes.medium).align(Alignment.CenterVertically),
                                     painter = resource.value,
                                     contentDescription = component.initialTitle,
                                     contentScale = ContentScale.FillWidth,
                                 )
+                                loadImageScheme(BSUtil.fixSeriesHref(component.initialHref), resource.value)
                             }
-                        }
-
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            Text(
-                                text = component.initialTitle,
-                                style = MaterialTheme.typography.headlineMedium,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                softWrap = true
-                            )
-
-                            SeasonAndLanguageButtons(
-                                current.series.currentSeason,
-                                current.series.currentLanguage,
-                                current.series.seasons,
-                                current.series.languages,
-                                onSeasonClick = { },
-                                onLanguageClick = { }
-                            )
                         }
                     }
                 }

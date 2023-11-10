@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.screen.initial.series
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.backhandler.BackHandler
 import dev.datlag.burningseries.common.ioDispatcher
 import dev.datlag.burningseries.common.ioScope
@@ -29,6 +30,14 @@ class SeriesScreenComponent(
     private val httpClient by di.instance<HttpClient>()
     private val seriesStateMachine = SeriesStateMachine(httpClient, initialHref)
     override val seriesState: StateFlow<SeriesState> = seriesStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, SeriesState.Loading(initialHref))
+
+    private val backCallback = BackCallback(priority = Int.MAX_VALUE) {
+        onGoBack()
+    }
+
+    init {
+        backHandler.register(backCallback)
+    }
 
     @Composable
     override fun render() {

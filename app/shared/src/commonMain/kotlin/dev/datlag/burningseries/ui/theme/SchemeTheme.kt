@@ -21,7 +21,25 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 data object SchemeTheme {
+
+    internal val commonSchemeKey : MutableStateFlow<Any?> = MutableStateFlow(null)
     internal val itemScheme: MutableStateFlow<Map<Any, ThemeHolder?>> = MutableStateFlow(emptyMap())
+
+    @Composable
+    fun setCommon(key: Any?) {
+        LaunchedEffect(key) {
+            withIOContext {
+                setCommon(key, this)
+            }
+        }
+    }
+
+    fun setCommon(key: Any?, scope: CoroutineScope?) {
+        commonSchemeKey.value = key
+        scope?.launchIO {
+            commonSchemeKey.emit(key)
+        }
+    }
 
     fun containsScheme(key: Any): Boolean {
         return itemScheme.value[key] != null
@@ -154,6 +172,13 @@ fun SchemeTheme(key: Any?, content: @Composable () -> Unit) {
             }
         }
     }
+}
+
+@Composable
+fun CommonSchemeTheme(content: @Composable () -> Unit) {
+    val key by SchemeTheme.commonSchemeKey.collectAsStateWithLifecycle()
+
+    SchemeTheme(key, content)
 }
 
 data class ThemeHolder(

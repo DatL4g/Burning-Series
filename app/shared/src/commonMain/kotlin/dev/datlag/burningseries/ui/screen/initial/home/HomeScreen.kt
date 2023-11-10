@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +28,8 @@ import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.ui.custom.VerticalScrollbar
+import dev.datlag.burningseries.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.ui.custom.state.ErrorState
 import dev.datlag.burningseries.ui.custom.state.LoadingState
 import dev.datlag.burningseries.ui.screen.initial.home.component.EpisodeItem
@@ -91,42 +94,52 @@ private fun ExpandedView(home: Home, component: HomeComponent) {
 
 @Composable
 private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = Modifier) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(400.dp),
+    Row(
         modifier = modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
-        header {
-            Text(
-                text = stringResource(SharedRes.strings.newest_episodes),
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        items(home.episodes, key = {
-            it.href
-        }) { episode ->
-            EpisodeItem(episode) {
-                component.itemClicked(HomeConfig.Series(episode))
+        val state = rememberLazyGridState()
+
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(400.dp),
+            modifier = Modifier.weight(1F),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            state = state
+        ) {
+            header {
+                Text(
+                    modifier = Modifier.padding(top = 16.dp),
+                    text = stringResource(SharedRes.strings.newest_episodes),
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            items(home.episodes, key = {
+                it.href
+            }) { episode ->
+                EpisodeItem(episode) {
+                    component.itemClicked(HomeConfig.Series(episode))
+                }
+            }
+            header {
+                Spacer(modifier = Modifier.size(48.dp))
+            }
+            header {
+                Text(
+                    text = stringResource(SharedRes.strings.newest_series),
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            items(home.series, key = {
+                it.href
+            }) { series ->
+                SeriesItem(series) {
+                    component.itemClicked(HomeConfig.Series(series))
+                }
             }
         }
-        header {
-            Spacer(modifier = Modifier.size(48.dp))
-        }
-        header {
-            Text(
-                text = stringResource(SharedRes.strings.newest_series),
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        items(home.series, key = {
-            it.href
-        }) { series ->
-            SeriesItem(series) {
-                component.itemClicked(HomeConfig.Series(series))
-            }
-        }
+        VerticalScrollbar(rememberScrollbarAdapter(state))
     }
 }

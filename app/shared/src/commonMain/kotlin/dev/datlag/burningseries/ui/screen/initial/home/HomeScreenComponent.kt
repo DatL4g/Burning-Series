@@ -28,7 +28,7 @@ class HomeScreenComponent(
     private val navigation = SlotNavigation<HomeConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(
         source = navigation,
-        handleBackButton = true
+        handleBackButton = false
     ) { config, context ->
         when (config) {
             is HomeConfig.Series -> SeriesScreenComponent(

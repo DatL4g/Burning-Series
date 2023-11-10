@@ -2,11 +2,16 @@ package dev.datlag.burningseries.ui.navigation
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.predictiveBackAnimation
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.essenty.backhandler.BackHandlerOwner
+import dev.datlag.burningseries.common.backAnimation
 import dev.datlag.burningseries.ui.screen.initial.InitialScreenComponent
 import org.kodein.di.DI
 
@@ -38,7 +43,12 @@ class NavHostComponent(
     override fun render() {
         Children(
             stack = stack,
-            animation = stackAnimation(fade())
+            animation = backAnimation(
+                backHandler = this.backHandler,
+                onBack = {
+                    navigation.pop()
+                }
+            )
         ) {
             it.instance.render()
         }

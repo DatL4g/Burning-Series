@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.DefaultComponentContext
+import com.arkivanov.essenty.backhandler.backHandler
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.essentyLifecycle
@@ -40,7 +41,8 @@ class MainActivity : AppCompatActivity() {
 
         val root = NavHostComponent(
             componentContext = DefaultComponentContext(
-                lifecycle = lifecycleOwner.lifecycle
+                lifecycle = lifecycleOwner.lifecycle,
+                backHandler = backHandler()
             ),
             di = di
         )

@@ -11,6 +11,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import com.moriatsushi.insetsx.rememberWindowInsetsController
 import dev.datlag.burningseries.ui.theme.Colors
+import dev.datlag.burningseries.ui.theme.CommonSchemeTheme
 import dev.datlag.burningseries.ui.theme.toLegacyColors
 import dev.datlag.burningseries.ui.theme.toLegacyShapes
 import org.kodein.di.DI
@@ -43,12 +44,14 @@ fun App(
                 shapes = MaterialTheme.shapes.toLegacyShapes()
             ) {
                 SystemProvider {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
-                    ) {
-                        content()
+                    CommonSchemeTheme {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        ) {
+                            content()
+                        }
                     }
                 }
             }

@@ -3,6 +3,12 @@ package dev.datlag.burningseries.common
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.onClick
+import com.arkivanov.decompose.ExperimentalDecomposeApi
+import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.StackAnimation
+import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.predictiveBackAnimation
+import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
+import com.arkivanov.essenty.backhandler.BackHandler
 
 @OptIn(ExperimentalFoundationApi::class)
 actual fun Modifier.onClick(
@@ -18,3 +24,13 @@ actual fun Modifier.onClick(
         onClick = onClick
     )
 }
+
+@OptIn(ExperimentalDecomposeApi::class)
+actual fun <C : Any, T : Any> backAnimation(
+    backHandler: BackHandler,
+    onBack: () -> Unit
+): StackAnimation<C, T> = predictiveBackAnimation(
+    backHandler = backHandler,
+    animation = stackAnimation(fade()),
+    onBack = onBack
+)
