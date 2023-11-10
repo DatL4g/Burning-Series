@@ -139,7 +139,6 @@ data object BurningSeries {
         val replacedTitle =
             title.replace(Regex("(?:(\\n)*\\t)+", setOf(RegexOption.MULTILINE, RegexOption.IGNORE_CASE)), "\t")
         val splitTitle = replacedTitle.trim().split("\t")
-        val normalizedTitle = splitTitle[0].trim()
 
         val selectedLanguageValue = doc.querySelector(".series-language")?.querySelector("option[selected]")?.getValue()
         var selectedLanguage: String? = null
@@ -170,6 +169,7 @@ data object BurningSeries {
         }
 
         val selectedSeason = if (splitTitle.size >= 2) splitTitle[1].trim() else seasons.firstOrNull()?.title ?: String()
+        val normalizedTitle = splitTitle[0].trim().replace(selectedSeason, String()).trim()
 
         val episodesDoc = doc.querySelector(".serie")?.querySelector(".episodes")?.querySelectorAll("tr") ?: emptyList()
         val episodeInfoList = episodesDoc.mapNotNull { episodesElement ->

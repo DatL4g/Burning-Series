@@ -20,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
@@ -49,6 +51,8 @@ import dev.datlag.burningseries.ui.theme.shape.DiagonalShape
 import dev.icerock.moko.resources.compose.stringResource
 import io.kamel.core.Resource
 import io.kamel.image.asyncPainterResource
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -94,7 +98,21 @@ private fun CompactScreen(component: SeriesComponent) {
 
             Text(
                 text = title,
-                modifier = Modifier.road(Alignment.TopStart, Alignment.BottomStart).padding(16.dp),
+                modifier = Modifier.road(Alignment.TopStart, Alignment.BottomStart).padding(16.dp).background(
+                    color = Color.Black.copy(alpha = run {
+                        val alpha = state.toolbarState.progress
+                        if (alpha < 0.5F) {
+                            if (alpha < 0.3F) {
+                                0F
+                            } else {
+                                alpha
+                            }
+                        } else {
+                            0.5F
+                        }
+                    }),
+                    shape = MaterialTheme.shapes.small
+                ).padding(4.dp),
                 color = LocalContentColor.current.copy(alpha = run {
                     val alpha = state.toolbarState.progress
                     if (alpha < 0.7F) {
@@ -200,6 +218,7 @@ private fun CompactScreen(component: SeriesComponent) {
 @Composable
 private fun DefaultScreen(component: SeriesComponent) {
     val seriesState by component.seriesState.collectAsStateWithLifecycle()
+    val title = remember(seriesState) { (seriesState as? SeriesState.Success)?.series?.title ?: component.initialTitle }
 
     when (val current = seriesState) {
         is SeriesState.Loading -> {
@@ -227,7 +246,7 @@ private fun DefaultScreen(component: SeriesComponent) {
                             TopAppBar(
                                 title = {
                                     Text(
-                                        text = component.initialTitle,
+                                        text = title,
                                         maxLines = 2,
                                         overflow = TextOverflow.Ellipsis,
                                         softWrap = true
