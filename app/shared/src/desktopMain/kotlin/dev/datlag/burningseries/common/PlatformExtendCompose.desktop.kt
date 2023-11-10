@@ -3,6 +3,7 @@ package dev.datlag.burningseries.common
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.onClick
+import androidx.compose.runtime.compositionLocalOf
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.StackAnimation
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.fade
@@ -34,3 +35,5 @@ actual fun <C : Any, T : Any> backAnimation(
     animation = stackAnimation(fade()),
     onBack = onBack
 )
+
+val LocalRestartRequired = compositionLocalOf<Boolean> { false }

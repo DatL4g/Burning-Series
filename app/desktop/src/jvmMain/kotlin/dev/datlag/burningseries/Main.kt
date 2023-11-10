@@ -74,25 +74,27 @@ private fun runWindow() {
     ) {
         LifecycleController(lifecycle, windowState)
 
-        CompositionLocalProvider(
-            LocalLifecycleOwner provides lifecycleOwner,
-            LocalWindow provides this.window,
-            LocalKamelConfig provides imageConfig
-        ) {
-            App(di) {
-                PredictiveBackGestureOverlay(
-                    backDispatcher = backDispatcher,
-                    backIcon = { progress, _ ->
-                        PredictiveBackGestureIcon(
-                            imageVector = Icons.Default.ArrowBackIosNew,
-                            progress = progress,
-                            iconTintColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            backgroundColor = MaterialTheme.colorScheme.secondaryContainer
-                        )
-                    },
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    root.render()
+        InitCEF {
+            CompositionLocalProvider(
+                LocalLifecycleOwner provides lifecycleOwner,
+                LocalWindow provides this.window,
+                LocalKamelConfig provides imageConfig
+            ) {
+                App(di) {
+                    PredictiveBackGestureOverlay(
+                        backDispatcher = backDispatcher,
+                        backIcon = { progress, _ ->
+                            PredictiveBackGestureIcon(
+                                imageVector = Icons.Default.ArrowBackIosNew,
+                                progress = progress,
+                                iconTintColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+                            )
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        root.render()
+                    }
                 }
             }
         }

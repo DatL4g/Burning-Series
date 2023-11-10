@@ -6,6 +6,7 @@ activity = "1.8.0"
 android = "8.1.3"
 android-core = "1.12.0"
 appcompat = "1.6.1"
+appdirs = "1.2.2"
 compose = "1.5.10"
 complete-kotlin = "1.1.0"
 context-menu = "0.2.0"
@@ -22,6 +23,7 @@ ksp = "1.9.20-1.0.14"
 ktor = "2.3.6"
 ktorfit = "1.10.0"
 ktsoup = "0.3.0"
+lang = "3.13.0"
 material = "1.10.0"
 moko-resources = "0.23.0"
 multidex = "2.0.1"
@@ -34,6 +36,7 @@ serialization-json = "1.6.0"
 splashscreen = "1.0.1"
 turbine = "1.0.0"
 versions = "0.49.0"
+webview = "1.7.0"
 windowsize-multiplatform = "0.3.1"
 window-styler = "0.3.2"
 
@@ -45,6 +48,7 @@ activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
 android = { group = "androidx.core", name = "core-ktx", version.ref = "android-core" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+appdirs = { group = "net.harawata", name = "appdirs", version.ref = "appdirs" }
 compose-ui-util = { group = "org.jetbrains.compose.ui", name = "ui-util", version.ref = "compose" }
 context-menu = { group = "io.github.dzirbel", name = "compose-material-context-menu", version.ref = "context-menu" }
 coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -72,6 +76,7 @@ ktorfit-ksp = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-ksp", vers
 ktsoup = { group = "org.drewcarlson", name = "ktsoup-core", version.ref = "ktsoup" }
 ktsoup-fs = { group = "org.drewcarlson", name = "ktsoup-fs", version.ref = "ktsoup" }
 ktsoup-ktor = { group = "org.drewcarlson", name = "ktsoup-ktor", version.ref = "ktsoup" }
+lang = { group = "org.apache.commons", name = "commons-lang3", version.ref = "lang" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 moko-resources-compose = { group = "dev.icerock.moko", name = "resources-compose", version.ref = "moko-resources" }
 moko-resources-generator = { group = "dev.icerock.moko", name = "resources-generator", version.ref = "moko-resources" }
@@ -85,6 +90,7 @@ splashscreen = { group = "androidx.core", name = "core-splashscreen", version.re
 stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+webview = { group = "io.github.kevinnzou", name = "compose-webview-multiplatform", version.ref = "webview" }
 windowsize-multiplatform = { group = "dev.chrisbanes.material3", name = "material3-window-size-class-multiplatform", version.ref = "windowsize-multiplatform" }
 window-styler = { group = "com.mayakapps.compose", name = "window-styler", version.ref = "window-styler" }
 

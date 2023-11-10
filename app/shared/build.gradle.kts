@@ -63,6 +63,7 @@ kotlin {
 
                 api(libs.windowsize.multiplatform)
                 api(libs.insetsx)
+                api(libs.webview)
 
                 api(libs.ktor)
                 api(libs.ktor.content.negotiation)
@@ -98,6 +99,7 @@ kotlin {
                 api(libs.context.menu)
                 api(libs.window.styler)
                 api(libs.ktor.jvm)
+                api(libs.appdirs)
             }
         }
 

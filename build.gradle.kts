@@ -24,6 +24,7 @@ buildscript {
         gradlePluginPortal()
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://plugins.gradle.org/m2/") }
+        maven("https://jogamp.org/deployment/maven")
     }
 }
 
@@ -34,6 +35,7 @@ allprojects {
         gradlePluginPortal()
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://plugins.gradle.org/m2/") }
+        maven("https://jogamp.org/deployment/maven")
     }
 
     tasks.withType<KotlinCompile> {

@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.serialization)
     alias(libs.plugins.android.library)
-    id ("kotlin-parcelize") apply false
 }
 
 val artifact = VersionCatalog.artifactName("model")
@@ -26,9 +25,15 @@ kotlin {
             }
         }
 
-        val androidMain by getting {
-            dependsOn(jvmMain.get())
-            apply(plugin = "kotlin-parcelize")
+        val javaMain by creating {
+            dependsOn(commonMain)
+
+            jvmMain.get().dependsOn(this)
+            androidMain.get().dependsOn(this)
+        }
+
+        jvmMain.get().dependencies {
+            api(libs.lang)
         }
     }
 }
