@@ -3,6 +3,8 @@ package dev.datlag.burningseries.ui.screen.initial
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -80,8 +82,7 @@ private fun MediumScreen(
 ) {
     var selectedPage by remember { mutableIntStateOf(0) }
 
-    Scaffold(
-    ) {
+    Scaffold {
         Row(modifier = Modifier.padding(it)) {
             NavigationRail {
                 Spacer(modifier = Modifier.weight(1F))
@@ -120,8 +121,7 @@ private fun ExpandedScreen(
 ) {
     var selectedPage by remember { mutableIntStateOf(0) }
 
-    Scaffold(
-    ) {
+    Scaffold {
         PermanentNavigationDrawer(
             modifier = Modifier.padding(it),
             drawerContent = {

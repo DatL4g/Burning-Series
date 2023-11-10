@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.bounceClick
 import dev.datlag.burningseries.common.ifTrue
@@ -24,6 +25,7 @@ import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.ui.custom.CountryImage
 import dev.datlag.burningseries.ui.theme.CountryImage
+import dev.datlag.burningseries.ui.theme.loadImageScheme
 import dev.icerock.moko.resources.compose.painterResource
 import io.kamel.core.Resource
 import io.kamel.image.asyncPainterResource
@@ -32,7 +34,7 @@ import io.kamel.image.asyncPainterResource
 @Composable
 fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
     ElevatedCard(
-        modifier = Modifier.animateItemPlacement().height(200.dp).bounceClick().onClick {
+        modifier = Modifier.animateItemPlacement().height(150.dp).bounceClick().onClick {
             onclick()
         }
     ) {
@@ -58,6 +60,7 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                             contentDescription = episode.title,
                             modifier = Modifier.aspectRatio(1F, true)
                         )
+                        loadImageScheme(BSUtil.fixSeriesHref(episode.href), resource.value)
                     }
                 }
             }
@@ -69,18 +72,27 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                     text = episode.series ?: episode.title,
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    maxLines = 2
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    softWrap = true
                 )
                 if (episode.series != null) {
-                    Text(
-                        text = episode.episode ?: episode.title,
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        maxLines = 3
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth().weight(1F),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = episode.episode ?: episode.title,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = true
+                        )
+                    }
                 }
 
                 Row(
+                    modifier = Modifier.padding(top = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -89,7 +101,7 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                         CountryImage(
                             code = code,
                             description = episode.flags.firstOrNull()?.title,
-                            modifier = Modifier.size(36.dp)
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                     Text(

@@ -6,6 +6,7 @@ include(":app:desktop")
 
 include(":model")
 include(":network")
+include(":color")
 
 pluginManagement {
     repositories {

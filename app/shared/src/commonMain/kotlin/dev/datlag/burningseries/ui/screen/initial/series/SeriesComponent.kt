@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface SeriesComponent : Component {
 
     val initialTitle: String
+    val initialHref: String
     val initialCoverHref: String?
 
     val seriesState: StateFlow<SeriesState>

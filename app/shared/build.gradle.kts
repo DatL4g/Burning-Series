@@ -70,6 +70,7 @@ kotlin {
 
                 api(project(":model"))
                 api(project(":network"))
+                api(project(":color"))
             }
         }
         val androidMain by getting {

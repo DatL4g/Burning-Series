@@ -21,7 +21,7 @@ class SeriesScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
     override val initialTitle: String,
-    val initialHref: String,
+    override val initialHref: String,
     override val initialCoverHref: String?,
     private val onGoBack: () -> Unit
 ) : SeriesComponent, ComponentContext by componentContext {

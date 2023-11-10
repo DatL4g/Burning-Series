@@ -41,6 +41,8 @@ import dev.datlag.burningseries.ui.custom.readmore.ToggleArea
 import dev.datlag.burningseries.ui.custom.state.ErrorState
 import dev.datlag.burningseries.ui.custom.state.LoadingState
 import dev.datlag.burningseries.ui.screen.initial.series.component.SeasonAndLanguageButtons
+import dev.datlag.burningseries.ui.theme.SchemeTheme
+import dev.datlag.burningseries.ui.theme.loadImageScheme
 import dev.datlag.burningseries.ui.theme.shape.DiagonalShape
 import dev.icerock.moko.resources.compose.stringResource
 import io.kamel.core.Resource
@@ -50,15 +52,18 @@ import kotlin.math.abs
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun SeriesScreen(component: SeriesComponent) {
-    when (calculateWindowSizeClass().widthSizeClass) {
-        WindowWidthSizeClass.Compact -> CompactScreen(component)
-        else -> DefaultScreen(component)
+    SchemeTheme(BSUtil.fixSeriesHref(component.initialHref)) {
+        when (calculateWindowSizeClass().widthSizeClass) {
+            WindowWidthSizeClass.Compact -> CompactScreen(component)
+            else -> DefaultScreen(component)
+        }
     }
 }
 
 @Composable
 private fun CompactScreen(component: SeriesComponent) {
     val seriesState by component.seriesState.collectAsStateWithLifecycle()
+    val title = remember(seriesState) { (seriesState as? SeriesState.Success)?.series?.title ?: component.initialTitle }
 
     DefaultCollapsingToolbar(
         expandedBody = { state ->
@@ -75,11 +80,12 @@ private fun CompactScreen(component: SeriesComponent) {
                         contentDescription = component.initialTitle,
                         contentScale = ContentScale.FillWidth,
                     )
+                    loadImageScheme(BSUtil.fixSeriesHref(component.initialHref), resource.value)
                 }
             }
 
             Text(
-                text = component.initialTitle,
+                text = title,
                 modifier = Modifier.road(Alignment.TopStart, Alignment.BottomStart).padding(16.dp),
                 color = LocalContentColor.current.copy(alpha = run {
                     val alpha = state.toolbarState.progress
@@ -109,7 +115,7 @@ private fun CompactScreen(component: SeriesComponent) {
                 }
 
                 Text(
-                    text = component.initialTitle,
+                    text = title,
                     color = LocalContentColor.current.copy(alpha = run {
                         val alpha = reversedProgress
                         if (alpha < 0.7F) {

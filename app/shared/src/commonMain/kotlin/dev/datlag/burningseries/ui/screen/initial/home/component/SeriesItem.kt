@@ -16,6 +16,7 @@ import dev.datlag.burningseries.common.bounceClick
 import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.ui.theme.loadImageScheme
 import io.kamel.core.Resource
 import io.kamel.image.asyncPainterResource
 
@@ -23,7 +24,7 @@ import io.kamel.image.asyncPainterResource
 @Composable
 fun LazyGridItemScope.SeriesItem(series: Home.Series, onClick: () -> Unit) {
     ElevatedCard(
-        modifier = Modifier.animateItemPlacement().height(200.dp).bounceClick().onClick {
+        modifier = Modifier.animateItemPlacement().height(150.dp).bounceClick().onClick {
             onClick()
         }
     ) {
@@ -50,6 +51,7 @@ fun LazyGridItemScope.SeriesItem(series: Home.Series, onClick: () -> Unit) {
                                 contentDescription = series.title,
                                 modifier = Modifier.aspectRatio(1F, true)
                             )
+                            loadImageScheme(BSUtil.fixSeriesHref(series.href), resource.value)
                         }
                     }
                 }
