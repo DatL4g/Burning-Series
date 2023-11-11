@@ -32,6 +32,7 @@ import dev.datlag.burningseries.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.ui.custom.state.ErrorState
 import dev.datlag.burningseries.ui.custom.state.LoadingState
+import dev.datlag.burningseries.ui.screen.initial.home.component.DeviceContent
 import dev.datlag.burningseries.ui.screen.initial.home.component.EpisodeItem
 import dev.datlag.burningseries.ui.screen.initial.home.component.SeriesItem
 import dev.icerock.moko.resources.compose.painterResource
@@ -107,6 +108,7 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             state = state
         ) {
+            DeviceContent()
             header {
                 Text(
                     modifier = Modifier.padding(top = 16.dp),
