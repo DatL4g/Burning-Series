@@ -20,4 +20,6 @@
     <string name="restart">Restart</string>
     <string name="downloading">Downloading</string>
     <string name="downloading_text">Downloading required packages for your platform, please wait</string>
+    <string name="loading_search">Loading search information, please wait</string>
+    <string name="error_loading_search">Error while loading search information</string>
 </resources>

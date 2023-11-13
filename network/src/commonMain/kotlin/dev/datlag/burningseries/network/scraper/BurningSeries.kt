@@ -225,8 +225,8 @@ data object BurningSeries {
 
     suspend fun getSearch(client: HttpClient): List<Genre> {
         val doc = getDocument(client, BSUtil.SEARCH) ?: return emptyList()
-        return doc.querySelector("#seriesContainer")?.querySelectorAll(".genre")?.mapNotNull { element ->
-            val genre = element.querySelector("string")?.textContent()?.trim() ?: String()
+        return doc.getElementById("seriesContainer")?.querySelectorAll(".genre")?.mapNotNull { element ->
+            val genre = element.querySelector("strong")?.textContent()?.trim() ?: String()
 
             if (genre.isNotBlank()) {
                 Genre(

@@ -7,4 +7,6 @@ import kotlinx.coroutines.flow.StateFlow
 interface SearchComponent : Component {
 
     val searchState: StateFlow<SearchState>
+
+    fun retryLoadingSearch(): Any?
 }

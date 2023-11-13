@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import dev.datlag.burningseries.common.ioDispatcher
 import dev.datlag.burningseries.common.ioScope
+import dev.datlag.burningseries.common.launchIO
+import dev.datlag.burningseries.model.state.SearchAction
 import dev.datlag.burningseries.model.state.SearchState
 import dev.datlag.burningseries.network.state.SearchStateMachine
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,11 +20,15 @@ class SearchScreenComponent(
     override val di: DI
 ) : SearchComponent, ComponentContext by componentContext {
 
-    private val homeStateMachine: SearchStateMachine by di.instance()
-    override val searchState: StateFlow<SearchState> = homeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, SearchState.Loading)
+    private val searchStateMachine: SearchStateMachine by di.instance()
+    override val searchState: StateFlow<SearchState> = searchStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, SearchState.Loading)
 
     @Composable
     override fun render() {
         SearchScreen(this)
+    }
+
+    override fun retryLoadingSearch(): Any? = ioScope().launchIO {
+        searchStateMachine.dispatch(SearchAction.Retry)
     }
 }
