@@ -2,15 +2,21 @@ package dev.datlag.burningseries.ui.screen.initial.series
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.*
+import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.backhandler.BackHandler
+import dev.datlag.burningseries.common.defaultScope
 import dev.datlag.burningseries.common.ioDispatcher
 import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.common.launchIO
 import dev.datlag.burningseries.model.BSUtil
+import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesAction
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.network.state.SeriesStateMachine
+import dev.datlag.burningseries.ui.navigation.DialogComponent
+import dev.datlag.burningseries.ui.screen.initial.series.dialog.season.SeasonDialogComponent
 import io.ktor.client.*
 import kotlinx.coroutines.flow.*
 import org.kodein.di.DI
@@ -29,9 +35,29 @@ class SeriesScreenComponent(
     private val seriesStateMachine = SeriesStateMachine(httpClient, initialHref)
     override val seriesState: StateFlow<SeriesState> = seriesStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, SeriesState.Loading(initialHref))
 
-    override val title: StateFlow<String> = seriesState.mapNotNull { it as? SeriesState.Success }.map { it.series.title }.stateIn(ioScope(), SharingStarted.Lazily, initialTitle)
-    override val href: StateFlow<String> = seriesState.mapNotNull { it as? SeriesState.Success }.map { it.series.href }.stateIn(ioScope(), SharingStarted.Lazily, BSUtil.fixSeriesHref(initialHref))
-    override val coverHref: StateFlow<String?> = seriesState.mapNotNull { it as? SeriesState.Success }.mapNotNull { it.series.coverHref }.stateIn(ioScope(), SharingStarted.Lazily, initialCoverHref)
+    private val currentSeries = seriesState.mapNotNull { it as? SeriesState.Success }.map { it.series }.stateIn(ioScope(), SharingStarted.Lazily, null)
+    override val title: StateFlow<String> = currentSeries.mapNotNull { it?.title }.stateIn(ioScope(), SharingStarted.Lazily, initialTitle)
+    override val href: StateFlow<String> = currentSeries.mapNotNull { it?.href }.stateIn(ioScope(), SharingStarted.Lazily, BSUtil.fixSeriesHref(initialHref))
+    override val coverHref: StateFlow<String?> = currentSeries.mapNotNull { it?.coverHref }.stateIn(ioScope(), SharingStarted.Lazily, initialCoverHref)
+
+    private val dialogNavigation = SlotNavigation<DialogConfig>()
+    private val _dialog = childSlot(
+        source = dialogNavigation
+    ) { config, slotContext ->
+        when (config) {
+            is DialogConfig.Season -> SeasonDialogComponent(
+                componentContext = slotContext,
+                di = di,
+                defaultSeason = config.selected,
+                seasons = config.seasons,
+                onDismissed = dialogNavigation::dismiss,
+                onSelected = {
+                    loadNewSeason(it)
+                }
+            )
+        }
+    }
+    override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = _dialog
 
     private val backCallback = BackCallback(priority = Int.MAX_VALUE) {
         onGoBack()
@@ -52,5 +78,15 @@ class SeriesScreenComponent(
 
     override fun goBack() {
         onGoBack()
+    }
+
+    override fun showDialog(config: DialogConfig) {
+        dialogNavigation.activate(config)
+    }
+
+    private fun loadNewSeason(season: Series.Season) = ioScope().launchIO {
+        (currentSeries.value ?: currentSeries.firstOrNull())?.let { series ->
+            seriesStateMachine.dispatch(SeriesAction.Load(series.hrefBuilder(season.value)))
+        }
     }
 }

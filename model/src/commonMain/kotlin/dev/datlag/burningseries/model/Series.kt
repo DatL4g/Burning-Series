@@ -1,5 +1,7 @@
 package dev.datlag.burningseries.model
 
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import dev.datlag.burningseries.model.common.getDigitsOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -36,11 +38,28 @@ data class Series(
         }
     }
 
+    fun hrefBuilder(season: Int? = currentSeason?.value, language: String = currentLanguage?.value ?: selectedLanguage): String {
+        val hrefData = BSUtil.hrefDataFromHref(
+            BSUtil.normalizeHref(href)
+        )
+
+        return BSUtil.fixSeriesHref(
+            BSUtil.rebuildHrefFromData(
+                Triple(
+                    first = hrefData.first,
+                    second = season?.toString() ?: hrefData.second,
+                    third = language
+                )
+            )
+        )
+    }
+
+    @Parcelize
     @Serializable
     data class Season(
         @SerialName("value") val value: Int,
         @SerialName("title") val title: String
-    )
+    ) : Parcelable
 
     @Serializable
     data class Language(

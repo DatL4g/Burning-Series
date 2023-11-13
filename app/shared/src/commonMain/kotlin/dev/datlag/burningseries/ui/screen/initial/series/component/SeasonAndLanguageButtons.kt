@@ -22,8 +22,8 @@ fun SeasonAndLanguageButtons(
     selectedLanguage: Series.Language?,
     seasons: List<Series.Season>,
     languages: List<Series.Language>,
-    onSeasonClick: () -> Unit,
-    onLanguageClick: () -> Unit,
+    onSeasonClick: (Series.Season?) -> Unit,
+    onLanguageClick: (Series.Language?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     FlowRow(
@@ -34,7 +34,7 @@ fun SeasonAndLanguageButtons(
         if (selectedSeason != null) {
             Button(
                 onClick = {
-                    onSeasonClick()
+                    onSeasonClick(selectedSeason)
                 },
                 enabled = seasons.size > 1,
                 modifier = Modifier.weight(1F)
@@ -50,7 +50,7 @@ fun SeasonAndLanguageButtons(
         if (selectedLanguage != null) {
             Button(
                 onClick = {
-                    onLanguageClick()
+                    onLanguageClick(selectedLanguage)
                 },
                 enabled = languages.size > 1,
                 modifier = Modifier.weight(1F)

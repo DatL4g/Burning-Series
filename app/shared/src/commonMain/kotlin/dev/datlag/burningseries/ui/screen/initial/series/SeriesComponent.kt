@@ -1,12 +1,16 @@
 package dev.datlag.burningseries.ui.screen.initial.series
 
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.ui.navigation.Component
+import dev.datlag.burningseries.ui.navigation.DialogComponent
 import kotlinx.coroutines.flow.StateFlow
 
 interface SeriesComponent : Component {
 
     val seriesState: StateFlow<SeriesState>
+    val dialog: Value<ChildSlot<DialogConfig, DialogComponent>>
 
     val title: StateFlow<String>
     val href: StateFlow<String>
@@ -15,4 +19,6 @@ interface SeriesComponent : Component {
     fun retryLoadingSeries(): Any?
 
     fun goBack()
+
+    fun showDialog(config: DialogConfig)
 }

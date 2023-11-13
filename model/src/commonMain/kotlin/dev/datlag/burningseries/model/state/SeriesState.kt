@@ -10,4 +10,5 @@ sealed interface SeriesState {
 
 sealed interface SeriesAction {
     data object Retry : SeriesAction
+    data class Load(val href: String) : SeriesAction
 }

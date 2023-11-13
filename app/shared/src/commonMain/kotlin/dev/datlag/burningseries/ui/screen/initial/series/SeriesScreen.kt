@@ -29,6 +29,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.common.diagonalShape
 import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.common.onClick
@@ -64,6 +65,7 @@ import kotlin.math.abs
 @Composable
 fun SeriesScreen(component: SeriesComponent) {
     val href by component.href.collectAsStateWithLifecycle()
+    val dialogState by component.dialog.subscribeAsState()
 
     SchemeTheme.setCommon(href)
     when (calculateWindowSizeClass().widthSizeClass) {
@@ -77,6 +79,8 @@ fun SeriesScreen(component: SeriesComponent) {
             SchemeTheme.setCommon(null, scope)
         }
     }
+
+    dialogState.child?.instance?.render()
 }
 
 @Composable
@@ -303,7 +307,11 @@ private fun DefaultScreen(component: SeriesComponent) {
                                 selectedLanguage = current.series.currentLanguage,
                                 seasons = current.series.seasons,
                                 languages = current.series.languages,
-                                onSeasonClick = { },
+                                onSeasonClick = { season ->
+                                    season?.let {
+                                        component.showDialog(DialogConfig.Season(it, current.series.seasons))
+                                    }
+                                },
                                 onLanguageClick = { }
                             )
                         }

@@ -25,11 +25,25 @@ class SeriesStateMachine(
                         state.override { SeriesState.Error(e.message ?: String()) }
                     }
                 }
+                on<SeriesAction.Load> { action, state ->
+                    state.mutate {
+                        this.copy(href = action.href)
+                    }
+                }
             }
 
             inState<SeriesState.Error> {
                 on<SeriesAction.Retry> { _, state ->
                     state.override { SeriesState.Loading(href) }
+                }
+                on<SeriesAction.Load> { action, state ->
+                    state.override { SeriesState.Loading(action.href) }
+                }
+            }
+
+            inState<SeriesState.Success> {
+                on<SeriesAction.Load> { action, state ->
+                    state.override { SeriesState.Loading(action.href) }
                 }
             }
         }
