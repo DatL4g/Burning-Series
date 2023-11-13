@@ -8,6 +8,8 @@ import kotlinx.serialization.Serializable
 data class Series(
     @SerialName("title") val title: String,
     @SerialName("description") val description: String,
+    @SerialName("cover") val coverHref: String? = null,
+    @SerialName("href") val href: String,
     @SerialName("seasonTitle") val seasonTitle: String,
     @SerialName("selectedLanguage") val selectedLanguage: String,
     @SerialName("seasons") val seasons: List<Season>,
@@ -50,6 +52,14 @@ data class Series(
     data class Episode(
         @SerialName("number") val number: String,
         @SerialName("title") val title: String,
-        @SerialName("href") val href: String
-    )
+        @SerialName("href") val href: String,
+        @SerialName("hosters") val hosters: List<Hoster>
+    ) {
+
+        @Serializable
+        data class Hoster(
+            @SerialName("title") val title: String,
+            @SerialName("href") val href: String
+        )
+    }
 }

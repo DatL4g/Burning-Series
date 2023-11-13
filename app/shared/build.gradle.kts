@@ -60,6 +60,7 @@ kotlin {
                 api(libs.kamel)
                 api(libs.napier)
                 api(libs.moko.resources.compose)
+                api(libs.blurhash)
 
                 api(libs.windowsize.multiplatform)
                 api(libs.insetsx)

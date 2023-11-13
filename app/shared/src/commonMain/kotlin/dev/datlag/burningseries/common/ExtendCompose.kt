@@ -10,8 +10,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.DpSize
 import dev.datlag.burningseries.ui.theme.shape.DiagonalShape
 
 inline fun Modifier.ifTrue(predicate: Boolean, builder: Modifier.() -> Modifier) = then(if (predicate) builder() else Modifier)
@@ -66,3 +68,10 @@ fun Modifier.diagonalShape(
     angle: Float,
     position: DiagonalShape.POSITION = DiagonalShape.POSITION.TOP
 ) = this.clip(DiagonalShape(angle, position))
+
+fun DpSize.toSize(): Size {
+    return Size(
+        width = this.width.value,
+        height = this.height.value
+    )
+}

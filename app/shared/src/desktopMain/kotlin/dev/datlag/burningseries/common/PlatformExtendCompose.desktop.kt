@@ -4,12 +4,16 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.onClick
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.StackAnimation
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.predictiveBackAnimation
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
 import com.arkivanov.essenty.backhandler.BackHandler
+import com.vanniktech.blurhash.BlurHash
+import com.vanniktech.blurhash.BlurHash.decode as defaultDecode
 
 @OptIn(ExperimentalFoundationApi::class)
 actual fun Modifier.onClick(
@@ -37,3 +41,11 @@ actual fun <C : Any, T : Any> backAnimation(
 )
 
 val LocalRestartRequired = compositionLocalOf<Boolean> { false }
+actual fun BlurHash.decode(
+    hash: String,
+    width: Int,
+    height: Int
+): ImageBitmap? {
+    val image = defaultDecode(hash, width, height)
+    return image?.toComposeImageBitmap()
+}

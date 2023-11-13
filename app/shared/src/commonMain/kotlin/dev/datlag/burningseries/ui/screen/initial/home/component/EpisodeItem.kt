@@ -7,8 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -16,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.bounceClick
@@ -23,12 +23,14 @@ import dev.datlag.burningseries.common.ifTrue
 import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.ui.custom.AutoSizeText
 import dev.datlag.burningseries.ui.custom.CountryImage
 import dev.datlag.burningseries.ui.theme.CountryImage
 import dev.datlag.burningseries.ui.theme.loadImageScheme
 import dev.icerock.moko.resources.compose.painterResource
 import io.kamel.core.Resource
 import io.kamel.image.asyncPainterResource
+import kotlin.math.max
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -64,14 +66,13 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                 }
             }
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
                     text = episode.series ?: episode.title,
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(bottom = 4.dp),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     softWrap = true
@@ -81,17 +82,17 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                         modifier = Modifier.fillMaxWidth().weight(1F),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
+                        AutoSizeText(
                             text = episode.episode ?: episode.title,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            softWrap = true
+                            maxLines = 2,
+                            softWrap = true,
+                            maxTextSize = LocalTextStyle.current.fontSize,
+                            minTextSize = MaterialTheme.typography.labelSmall.fontSize
                         )
                     }
                 }
 
                 Row(
-                    modifier = Modifier.padding(top = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {

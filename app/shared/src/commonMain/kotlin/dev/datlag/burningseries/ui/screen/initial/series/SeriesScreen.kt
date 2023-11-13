@@ -43,6 +43,7 @@ import dev.datlag.burningseries.ui.custom.readmore.ToggleArea
 import dev.datlag.burningseries.ui.custom.state.ErrorState
 import dev.datlag.burningseries.ui.custom.state.LoadingState
 import dev.datlag.burningseries.ui.screen.initial.series.component.DescriptionText
+import dev.datlag.burningseries.ui.screen.initial.series.component.EpisodeItem
 import dev.datlag.burningseries.ui.screen.initial.series.component.SeasonAndLanguageButtons
 import dev.datlag.burningseries.ui.theme.CommonSchemeTheme
 import dev.datlag.burningseries.ui.theme.SchemeTheme
@@ -58,7 +59,9 @@ import kotlin.math.abs
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun SeriesScreen(component: SeriesComponent) {
-    SchemeTheme.setCommon(BSUtil.fixSeriesHref(component.initialHref))
+    val href by component.href.collectAsStateWithLifecycle()
+
+    SchemeTheme.setCommon(href)
     when (calculateWindowSizeClass().widthSizeClass) {
         WindowWidthSizeClass.Compact -> CompactScreen(component)
         else -> DefaultScreen(component)
@@ -75,11 +78,13 @@ fun SeriesScreen(component: SeriesComponent) {
 @Composable
 private fun CompactScreen(component: SeriesComponent) {
     val seriesState by component.seriesState.collectAsStateWithLifecycle()
-    val title = remember(seriesState) { (seriesState as? SeriesState.Success)?.series?.title ?: component.initialTitle }
+    val title by component.title.collectAsStateWithLifecycle()
+    val href by component.href.collectAsStateWithLifecycle()
+    val coverHref by component.coverHref.collectAsStateWithLifecycle()
 
     DefaultCollapsingToolbar(
         expandedBody = { state ->
-            when (val resource = asyncPainterResource(component.initialCoverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
+            when (val resource = asyncPainterResource(coverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
                 is Resource.Loading, is Resource.Failure -> { }
                 is Resource.Success -> {
                     Image(
@@ -89,10 +94,10 @@ private fun CompactScreen(component: SeriesComponent) {
                             .parallax(0.5F)
                             .diagonalShape(-10F, DiagonalShape.POSITION.BOTTOM),
                         painter = resource.value,
-                        contentDescription = component.initialTitle,
+                        contentDescription = title,
                         contentScale = ContentScale.FillWidth,
                     )
-                    loadImageScheme(BSUtil.fixSeriesHref(component.initialHref), resource.value)
+                    loadImageScheme(href, resource.value)
                 }
             }
 
@@ -218,7 +223,9 @@ private fun CompactScreen(component: SeriesComponent) {
 @Composable
 private fun DefaultScreen(component: SeriesComponent) {
     val seriesState by component.seriesState.collectAsStateWithLifecycle()
-    val title = remember(seriesState) { (seriesState as? SeriesState.Success)?.series?.title ?: component.initialTitle }
+    val title by component.title.collectAsStateWithLifecycle()
+    val href by component.href.collectAsStateWithLifecycle()
+    val coverHref by component.coverHref.collectAsStateWithLifecycle()
 
     when (val current = seriesState) {
         is SeriesState.Loading -> {
@@ -278,16 +285,16 @@ private fun DefaultScreen(component: SeriesComponent) {
                             )
                         }
 
-                        when (val resource = asyncPainterResource(component.initialCoverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
+                        when (val resource = asyncPainterResource(coverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
                             is Resource.Loading, is Resource.Failure -> { }
                             is Resource.Success -> {
                                 Image(
                                     modifier = Modifier.width(200.dp).clip(MaterialTheme.shapes.medium).align(Alignment.CenterVertically),
                                     painter = resource.value,
-                                    contentDescription = component.initialTitle,
+                                    contentDescription = title,
                                     contentScale = ContentScale.FillWidth,
                                 )
-                                loadImageScheme(BSUtil.fixSeriesHref(component.initialHref), resource.value)
+                                loadImageScheme(BSUtil.fixSeriesHref(href), resource.value)
                             }
                         }
                     }
@@ -301,19 +308,6 @@ private fun DefaultScreen(component: SeriesComponent) {
 
 private fun LazyListScope.SeriesContent(content: Series) {
     items(content.episodes) { episode ->
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = episode.number,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = episode.title,
-                maxLines = 1
-            )
-        }
+        EpisodeItem(episode)
     }
 }

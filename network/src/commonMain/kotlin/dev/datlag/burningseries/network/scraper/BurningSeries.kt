@@ -113,7 +113,8 @@ data object BurningSeries {
     }
 
     suspend fun getSeries(client: HttpClient, href: String): Series? {
-        val doc = getDocument(client, BSUtil.fixSeriesHref(href)) ?: return null
+        val docHref = BSUtil.fixSeriesHref(href)
+        val doc = getDocument(client, docHref) ?: return null
 
         val title = doc.querySelector(".serie")?.querySelector("h2")?.textContent() ?: String()
         val description = doc.querySelector(".serie")?.querySelector("#sp_left > p")?.textContent() ?: String()
@@ -189,16 +190,35 @@ data object BurningSeries {
 
             val episodeTitle = if (episodeList.size > 1) episodeList[1].first.trim() else String()
 
+            val hoster = episodeList.map { it.second }.filterNot { it.isBlank() }.toMutableSet()
+            if (hoster.contains(episodeHref)) {
+                hoster.remove(episodeHref)
+            } else if (hoster.contains(episodeHref.trim())) {
+                hoster.remove(episodeHref.trim())
+            }
+
+            val hosterList = hoster.map {
+                Series.Episode.Hoster(
+                    it.replace(episodeHref, String()).replace("/", ""),
+                    it
+                )
+            }
+
             Series.Episode(
                 number = episodeList[0].first.trim(),
                 title = episodeTitle,
-                href = episodeHref
+                href = episodeHref,
+                hosters = hosterList
             )
         }
+
+        val (cover, isNsfw) = getCover(doc)
 
         return Series(
             title = normalizedTitle.trim(),
             description = description,
+            coverHref = cover,
+            href = docHref,
             seasonTitle = selectedSeason.trim(),
             seasons = seasons,
             selectedLanguage = selectedLanguage?.trim() ?: return null,
