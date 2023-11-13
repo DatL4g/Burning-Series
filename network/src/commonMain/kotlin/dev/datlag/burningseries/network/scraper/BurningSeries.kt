@@ -116,7 +116,9 @@ data object BurningSeries {
         val docHref = BSUtil.fixSeriesHref(href)
         val doc = getDocument(client, docHref) ?: return null
 
-        val title = doc.querySelector(".serie")?.querySelector("h2")?.textContent() ?: String()
+        val titleElement = doc.querySelector(".serie")?.querySelector("h2") ?: return null
+        val titleSeason = titleElement.querySelector("small")?.textContent()?.trim()
+        val title = titleElement.textContent().replace(titleSeason ?: String(), String()).trim()
         val description = doc.querySelector(".serie")?.querySelector("#sp_left > p")?.textContent() ?: String()
 
         val seasons = doc.querySelector(".serie")?.querySelector("#seasons")?.querySelector("ul")?.querySelectorAll("li")?.mapIndexed { index, it ->
@@ -136,10 +138,6 @@ data object BurningSeries {
                 title = seasonTitle
             )
         } ?: emptyList()
-
-        val replacedTitle =
-            title.replace(Regex("(?:(\\n)*\\t)+", setOf(RegexOption.MULTILINE, RegexOption.IGNORE_CASE)), "\t")
-        val splitTitle = replacedTitle.trim().split("\t")
 
         val selectedLanguageValue = doc.querySelector(".series-language")?.querySelector("option[selected]")?.getValue()
         var selectedLanguage: String? = null
@@ -168,9 +166,6 @@ data object BurningSeries {
                 selectedLanguage = languages.firstOrNull()?.value ?: return null
             }
         }
-
-        val selectedSeason = if (splitTitle.size >= 2) splitTitle[1].trim() else seasons.firstOrNull()?.title ?: String()
-        val normalizedTitle = splitTitle[0].trim().replace(selectedSeason, String()).trim()
 
         val episodesDoc = doc.querySelector(".serie")?.querySelector(".episodes")?.querySelectorAll("tr") ?: emptyList()
         val episodeInfoList = episodesDoc.mapNotNull { episodesElement ->
@@ -215,11 +210,11 @@ data object BurningSeries {
         val (cover, isNsfw) = getCover(doc)
 
         return Series(
-            title = normalizedTitle.trim(),
+            title = title,
             description = description,
             coverHref = cover,
             href = docHref,
-            seasonTitle = selectedSeason.trim(),
+            seasonTitle = titleSeason ?: String(),
             seasons = seasons,
             selectedLanguage = selectedLanguage?.trim() ?: return null,
             languages = languages,

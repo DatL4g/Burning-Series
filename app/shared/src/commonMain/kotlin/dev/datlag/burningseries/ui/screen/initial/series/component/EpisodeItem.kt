@@ -44,17 +44,14 @@ fun EpisodeItem(content: Series.Episode) {
                 .clip(MaterialTheme.shapes.medium),
             contentAlignment = Alignment.Center
         ) {
-            var imageSize: Size by remember { mutableStateOf(DpSize(175.dp, 100.dp).toSize()) }
-            val imageBitmap: ImageBitmap? = remember(imageSize) {
-
-                BlurHash.decode(hash = blurHash, width = imageSize.width.roundToInt(), height = imageSize.height.roundToInt())
-            }
-            val modifier = Modifier.fillMaxSize().onSizeChanged {
-                imageSize = it.toSize()
+            val imageBitmap: ImageBitmap? by produceState<ImageBitmap?>(null) {
+                value = withIOContext {
+                    BlurHash.decode(hash = blurHash, width = 175.dp.value.roundToInt(), height = 100.dp.value.roundToInt())
+                }
             }
             imageBitmap?.let {
                 Image(
-                    modifier = modifier,
+                    modifier = Modifier.fillMaxSize(),
                     bitmap = it,
                     contentDescription = content.title
                 )
@@ -65,7 +62,7 @@ fun EpisodeItem(content: Series.Episode) {
                     tint = Color.White
                 )
             } ?: run {
-                Box(modifier.background(MaterialTheme.colorScheme.primaryContainer))
+                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer))
             }
         }
         Text(

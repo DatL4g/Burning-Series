@@ -15,6 +15,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +28,7 @@ import dev.datlag.burningseries.common.header
 import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.state.HomeState
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.ui.custom.rememberScrollbarAdapter
@@ -99,7 +101,10 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
         modifier = modifier.padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
-        val state = rememberLazyGridState()
+        val state = rememberLazyGridState(
+            initialFirstVisibleItemIndex = StateSaver.homeGridIndex,
+            initialFirstVisibleItemScrollOffset = StateSaver.homeGridOffset
+        )
 
         LazyVerticalGrid(
             columns = GridCells.Adaptive(400.dp),
@@ -143,5 +148,12 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
             }
         }
         VerticalScrollbar(rememberScrollbarAdapter(state))
+
+        DisposableEffect(state) {
+            onDispose {
+                StateSaver.homeGridIndex = state.firstVisibleItemIndex
+                StateSaver.homeGridOffset = state.firstVisibleItemScrollOffset
+            }
+        }
     }
 }

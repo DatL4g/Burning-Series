@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalDarkMode
 import dev.datlag.burningseries.shared.SharedRes
@@ -36,8 +37,11 @@ fun ErrorState(text: String, onRetry: () -> Unit) {
             contentDescription = text
         )
         Text(
+            modifier = Modifier.fillMaxWidth(0.85F),
             text = text,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            softWrap = true,
+            textAlign = TextAlign.Center
         )
         Button(
             onClick = {

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIos
@@ -34,6 +35,7 @@ import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesState
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.ui.custom.CountryImage
 import dev.datlag.burningseries.ui.custom.DefaultCollapsingToolbar
@@ -42,6 +44,8 @@ import dev.datlag.burningseries.ui.custom.readmore.ReadMoreTextOverflow
 import dev.datlag.burningseries.ui.custom.readmore.ToggleArea
 import dev.datlag.burningseries.ui.custom.state.ErrorState
 import dev.datlag.burningseries.ui.custom.state.LoadingState
+import dev.datlag.burningseries.ui.custom.toolbar.rememberCollapsingToolbarScaffoldState
+import dev.datlag.burningseries.ui.custom.toolbar.rememberCollapsingToolbarState
 import dev.datlag.burningseries.ui.screen.initial.series.component.DescriptionText
 import dev.datlag.burningseries.ui.screen.initial.series.component.EpisodeItem
 import dev.datlag.burningseries.ui.screen.initial.series.component.SeasonAndLanguageButtons
@@ -192,7 +196,13 @@ private fun CompactScreen(component: SeriesComponent) {
                 }
             }
             is SeriesState.Success -> {
+                val state = rememberLazyListState(
+                    initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
+                    initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
+                )
+
                 LazyColumn(
+                    state = state,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
@@ -213,6 +223,13 @@ private fun CompactScreen(component: SeriesComponent) {
                     }
 
                     SeriesContent(current.series)
+                }
+
+                DisposableEffect(state) {
+                    onDispose {
+                        StateSaver.seriesListIndex = state.firstVisibleItemIndex
+                        StateSaver.seriesListOffset = state.firstVisibleItemScrollOffset
+                    }
                 }
             }
         }
@@ -237,7 +254,13 @@ private fun DefaultScreen(component: SeriesComponent) {
             }
         }
         is SeriesState.Success -> {
+            val state = rememberLazyListState(
+                initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
+                initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
+            )
+
             LazyColumn(
+                state = state,
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(16.dp)
             ) {
@@ -302,12 +325,19 @@ private fun DefaultScreen(component: SeriesComponent) {
 
                 SeriesContent(current.series)
             }
+
+            DisposableEffect(state) {
+                onDispose {
+                    StateSaver.seriesListIndex = state.firstVisibleItemIndex
+                    StateSaver.seriesListOffset = state.firstVisibleItemScrollOffset
+                }
+            }
         }
     }
 }
 
 private fun LazyListScope.SeriesContent(content: Series) {
-    items(content.episodes) { episode ->
+    items(content.episodes, key = { it.href }) { episode ->
         EpisodeItem(episode)
     }
 }
