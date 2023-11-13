@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.network.scraper
 
 import dev.datlag.burningseries.model.BSUtil
+import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.common.getDigitsOrNull
@@ -220,6 +221,34 @@ data object BurningSeries {
             languages = languages,
             episodes = episodeInfoList
         )
+    }
+
+    suspend fun getSearch(client: HttpClient): List<Genre> {
+        val doc = getDocument(client, BSUtil.SEARCH) ?: return emptyList()
+        return doc.querySelector("#seriesContainer")?.querySelectorAll(".genre")?.mapNotNull { element ->
+            val genre = element.querySelector("string")?.textContent()?.trim() ?: String()
+
+            if (genre.isNotBlank()) {
+                Genre(
+                    title = genre,
+                    items = element.querySelectorAll("li").mapNotNull { item ->
+                        val title = item.querySelector("a")?.textContent()?.trim() ?: String()
+                        val href = BSUtil.normalizeHref(item.querySelector("a")?.getHref() ?: String())
+
+                        if (title.isNotBlank() && href.isNotBlank()) {
+                            Genre.Item(
+                                title = title,
+                                href = href
+                            )
+                        } else {
+                            null
+                        }
+                    }
+                )
+            } else {
+                null
+            }
+        } ?: emptyList()
     }
 
     private suspend fun getCover(client: HttpClient, href: String): Pair<String?, Boolean> {

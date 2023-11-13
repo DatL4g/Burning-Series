@@ -17,7 +17,9 @@ import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.network.state.HomeStateMachine
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.ui.navigation.Component
+import dev.datlag.burningseries.ui.screen.initial.favorite.FavoriteScreenComponent
 import dev.datlag.burningseries.ui.screen.initial.home.HomeScreenComponent
+import dev.datlag.burningseries.ui.screen.initial.search.SearchScreenComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import org.kodein.di.DI
@@ -52,7 +54,9 @@ class InitialScreenComponent(
         initialPages = {
             Pages(
                 items = listOf(
-                    View.Home
+                    View.Home,
+                    View.Favorite,
+                    View.Search
                 ),
                 selectedIndex = 0
             )
@@ -72,6 +76,14 @@ class InitialScreenComponent(
     ) : Component {
         return when (view) {
             is View.Home -> HomeScreenComponent(
+                componentContext,
+                di
+            )
+            is View.Favorite -> FavoriteScreenComponent(
+                componentContext,
+                di
+            )
+            is View.Search -> SearchScreenComponent(
                 componentContext,
                 di
             )

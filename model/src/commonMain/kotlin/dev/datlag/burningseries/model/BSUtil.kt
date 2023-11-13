@@ -6,6 +6,7 @@ data object BSUtil {
     const val PROTOCOL_HTTPS = "https://"
 
     const val HOST_BS_TO = "bs.to"
+    const val SEARCH = "andere-serien"
 
     val episodeNumberRegex = "[|({]\\s*Ep([.]|isode)?\\s*(\\d+)\\s*[|)}]".toRegex(RegexOption.IGNORE_CASE)
 

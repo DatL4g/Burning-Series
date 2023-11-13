@@ -8,4 +8,10 @@ sealed class View : Parcelable {
 
     @Parcelize
     data object Home : View(), Parcelable
+
+    @Parcelize
+    data object Favorite : View(), Parcelable
+
+    @Parcelize
+    data object Search : View(), Parcelable
 }

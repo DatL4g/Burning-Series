@@ -36,7 +36,8 @@ fun SeasonAndLanguageButtons(
                 onClick = {
                     onSeasonClick()
                 },
-                enabled = seasons.size > 1
+                enabled = seasons.size > 1,
+                modifier = Modifier.weight(1F)
             ) {
                 val seasonText = if (selectedSeason.title.toIntOrNull() != null) {
                     stringResource(SharedRes.strings.season_placeholder, selectedSeason.title)
@@ -51,7 +52,8 @@ fun SeasonAndLanguageButtons(
                 onClick = {
                     onLanguageClick()
                 },
-                enabled = languages.size > 1
+                enabled = languages.size > 1,
+                modifier = Modifier.weight(1F)
             ) {
                 CountryImage(
                     code = selectedLanguage.value,
