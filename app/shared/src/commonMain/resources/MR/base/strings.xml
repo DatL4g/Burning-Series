@@ -23,6 +23,7 @@
     <string name="loading_search">Loading search information, please wait</string>
     <string name="error_loading_search">Error while loading search information</string>
     <string name="select_season">Select Season</string>
+    <string name="select_language">Select Language</string>
     <string name="confirm">Confirm</string>
     <string name="close">Close</string>
 </resources>

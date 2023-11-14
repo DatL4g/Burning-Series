@@ -16,6 +16,7 @@ import dev.datlag.burningseries.model.state.SeriesAction
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.network.state.SeriesStateMachine
 import dev.datlag.burningseries.ui.navigation.DialogComponent
+import dev.datlag.burningseries.ui.screen.initial.series.dialog.language.LanguageDialogComponent
 import dev.datlag.burningseries.ui.screen.initial.series.dialog.season.SeasonDialogComponent
 import io.ktor.client.*
 import kotlinx.coroutines.flow.*
@@ -54,6 +55,16 @@ class SeriesScreenComponent(
                 onSelected = {
                     loadNewSeason(it)
                 }
+            ) as DialogComponent
+            is DialogConfig.Language -> LanguageDialogComponent(
+                componentContext = slotContext,
+                di = di,
+                defaultLanguage = config.selected,
+                languages = config.languages,
+                onDismissed = dialogNavigation::dismiss,
+                onSelected = {
+                    loadNewLanguage(it)
+                }
             )
         }
     }
@@ -87,6 +98,12 @@ class SeriesScreenComponent(
     private fun loadNewSeason(season: Series.Season) = ioScope().launchIO {
         (currentSeries.value ?: currentSeries.firstOrNull())?.let { series ->
             seriesStateMachine.dispatch(SeriesAction.Load(series.hrefBuilder(season.value)))
+        }
+    }
+
+    private fun loadNewLanguage(language: Series.Language) = ioScope().launchIO {
+        (currentSeries.value ?: currentSeries.firstOrNull())?.let { series ->
+            seriesStateMachine.dispatch(SeriesAction.Load(series.hrefBuilder(language = language.value)))
         }
     }
 }

@@ -12,4 +12,10 @@ sealed class DialogConfig : Parcelable {
         val selected: Series.Season,
         val seasons: List<Series.Season>
     ) : DialogConfig()
+
+    @Parcelize
+    data class Language(
+        val selected: Series.Language,
+        val languages: List<Series.Language>
+    ) : DialogConfig()
 }

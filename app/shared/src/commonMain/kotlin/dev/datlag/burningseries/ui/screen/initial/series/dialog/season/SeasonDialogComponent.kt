@@ -25,6 +25,6 @@ class SeasonDialogComponent(
 
     override fun onConfirm(season: Series.Season) {
         onSelected(season)
-        onDismissed()
+        dismiss()
     }
 }

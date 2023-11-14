@@ -226,7 +226,11 @@ private fun CompactScreen(component: SeriesComponent) {
                                     component.showDialog(DialogConfig.Season(it, current.series.seasons))
                                 }
                             },
-                            onLanguageClick = { }
+                            onLanguageClick = { language ->
+                                language?.let {
+                                    component.showDialog(DialogConfig.Language(it, current.series.languages))
+                                }
+                            }
                         )
                     }
 
@@ -316,7 +320,11 @@ private fun DefaultScreen(component: SeriesComponent) {
                                         component.showDialog(DialogConfig.Season(it, current.series.seasons))
                                     }
                                 },
-                                onLanguageClick = { }
+                                onLanguageClick = { language ->
+                                    language?.let {
+                                        component.showDialog(DialogConfig.Language(it, current.series.languages))
+                                    }
+                                }
                             )
                         }
 
