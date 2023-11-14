@@ -31,6 +31,10 @@ data object BSUtil {
         return rebuildHrefFromData(hrefDataFromHref(normalizeHref(href)))
     }
 
+    fun commonSeriesHref(href: String): String {
+        return rebuildHrefFromData(hrefDataFromHref(fixSeriesHref(href)).copy(second = null, third = null))
+    }
+
     fun hrefDataFromHref(href: String): Triple<String, String?, String?> {
         fun getTitle(): String {
             val newHref = if (href.startsWith("series/")) {

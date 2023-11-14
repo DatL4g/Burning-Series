@@ -67,7 +67,7 @@ fun SeriesScreen(component: SeriesComponent) {
     val href by component.href.collectAsStateWithLifecycle()
     val dialogState by component.dialog.subscribeAsState()
 
-    SchemeTheme.setCommon(href)
+    SchemeTheme.setCommon(BSUtil.commonSeriesHref(href))
     when (calculateWindowSizeClass().widthSizeClass) {
         WindowWidthSizeClass.Compact -> CompactScreen(component)
         else -> DefaultScreen(component)
@@ -105,7 +105,7 @@ private fun CompactScreen(component: SeriesComponent) {
                         contentDescription = title,
                         contentScale = ContentScale.FillWidth,
                     )
-                    loadImageScheme(href, resource.value)
+                    loadImageScheme(BSUtil.commonSeriesHref(href), resource.value)
                 }
             }
 
@@ -337,7 +337,7 @@ private fun DefaultScreen(component: SeriesComponent) {
                                     contentDescription = title,
                                     contentScale = ContentScale.FillWidth,
                                 )
-                                loadImageScheme(BSUtil.fixSeriesHref(href), resource.value)
+                                loadImageScheme(BSUtil.commonSeriesHref(href), resource.value)
                             }
                         }
                     }
