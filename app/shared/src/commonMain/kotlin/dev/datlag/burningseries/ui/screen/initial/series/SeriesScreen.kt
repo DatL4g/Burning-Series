@@ -221,7 +221,11 @@ private fun CompactScreen(component: SeriesComponent) {
                             selectedLanguage = current.series.currentLanguage,
                             seasons = current.series.seasons,
                             languages = current.series.languages,
-                            onSeasonClick = { },
+                            onSeasonClick = { season ->
+                                season?.let {
+                                    component.showDialog(DialogConfig.Season(it, current.series.seasons))
+                                }
+                            },
                             onLanguageClick = { }
                         )
                     }

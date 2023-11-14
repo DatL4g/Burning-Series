@@ -61,11 +61,12 @@ data class Series(
         @SerialName("title") val title: String
     ) : Parcelable
 
+    @Parcelize
     @Serializable
     data class Language(
         @SerialName("value") val value: String,
         @SerialName("title") val title: String
-    )
+    ) : Parcelable
 
     @Serializable
     data class Episode(
