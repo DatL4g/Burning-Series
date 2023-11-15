@@ -5,7 +5,8 @@ import dev.datlag.burningseries.model.Series
 sealed interface EpisodeState {
     data object Waiting : EpisodeState
     data class Loading(val episode: Series.Episode) : EpisodeState
-    data class Success(val results: Collection<String>) : EpisodeState
+    data class SuccessHoster(val results: Collection<String>) : EpisodeState
+    data class SuccessStream(val results: Collection<String>) : EpisodeState
     data class Error(val msg: String) : EpisodeState
 }
 

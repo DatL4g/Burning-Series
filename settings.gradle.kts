@@ -1,6 +1,7 @@
 rootProject.name = "Burning-Series"
 
 include(":app:shared")
+include(":app:shared:sekret")
 include(":app:android")
 include(":app:desktop")
 

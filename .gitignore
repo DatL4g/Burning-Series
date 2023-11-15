@@ -1,7 +1,13 @@
 app/release/*
 !app/release/.gitkeep
 
-app/sekret.properties
+app/shared/sekret.properties
+app/desktop/mongodb-realm
+app/shared/sekret/src
+
+*.so
+*.dll
+*.dylib
 
 *.iml
 .gradle

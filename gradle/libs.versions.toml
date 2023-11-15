@@ -35,6 +35,7 @@ parcelable = "1.2.0"
 protobuf = "0.9.4"
 protoc = "3.24.4"
 realm = "1.11.0"
+sekret = "0.1.0"
 serialization-json = "1.6.0"
 splashscreen = "1.0.1"
 sqldelight = "2.0.0"
@@ -122,6 +123,7 @@ osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }
 parcelize = { id = "kotlin-parcelize", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
 realm = { id = "io.realm.kotlin", version.ref = "realm" }
+sekret = { id = "dev.datlag.sekret", version.ref = "sekret" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

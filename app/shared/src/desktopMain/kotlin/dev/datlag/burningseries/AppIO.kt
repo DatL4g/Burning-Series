@@ -1,6 +1,7 @@
 package dev.datlag.burningseries
 
 import dev.datlag.burningseries.model.common.*
+import dev.datlag.sekret.NativeLoader
 import net.harawata.appdirs.AppDirsFactory
 import org.apache.commons.lang3.SystemUtils
 import java.awt.Toolkit

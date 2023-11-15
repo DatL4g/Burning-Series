@@ -100,12 +100,6 @@ class SeriesScreenComponent(
 
     init {
         backHandler.register(backCallback)
-
-        ioScope().launchIO {
-            episodeStateMachine.state.collect {
-                println(it)
-            }
-        }
     }
 
     @Composable

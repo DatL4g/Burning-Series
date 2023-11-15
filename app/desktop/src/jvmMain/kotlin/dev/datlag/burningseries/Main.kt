@@ -17,10 +17,12 @@ import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import dev.datlag.burningseries.common.lifecycle.LocalLifecycleOwner
+import dev.datlag.burningseries.model.common.systemProperty
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.ui.navigation.NavHostComponent
 import dev.datlag.burningseries.window.disposableSingleWindowApplication
+import dev.datlag.sekret.NativeLoader
 import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
 import io.github.aakira.napier.DebugAntilog
@@ -32,6 +34,7 @@ import io.kamel.image.config.LocalKamelConfig
 import io.kamel.image.config.resourcesFetcher
 import io.kamel.image.config.svgDecoder
 import org.kodein.di.DI
+import java.io.File
 
 fun main(vararg args: String) {
     runWindow()
@@ -63,6 +66,8 @@ private fun runWindow() {
         takeFrom(KamelConfig.Default)
         resourcesFetcher()
     }
+
+    NativeLoader.loadLibrary("sekret", systemProperty("compose.application.resources.dir")?.let { File(it) })
 
     disposableSingleWindowApplication(
         state = windowState,
