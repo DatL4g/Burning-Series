@@ -13,14 +13,32 @@ actual fun VerticalScrollbar(adapter: ScrollbarAdapter, modifier: Modifier) { }
 actual fun rememberScrollbarAdapter(
     scrollState: LazyGridState,
 ): ScrollbarAdapter = remember {
-    DEFAULT_SCROLLBAR_ADAPTER
+    object : ScrollbarAdapter {
+        override val scrollOffset: Double
+            get() = 0.0
+        override val contentSize: Double
+            get() = 0.0
+        override val viewportSize: Double
+            get() = 0.0
+
+        override suspend fun scrollTo(scrollOffset: Double) { }
+    }
 }
 
 @Composable
 actual fun rememberScrollbarAdapter(
     scrollState: LazyListState
 ): ScrollbarAdapter = remember {
-    DEFAULT_SCROLLBAR_ADAPTER
+    object : ScrollbarAdapter {
+        override val scrollOffset: Double
+            get() = 0.0
+        override val contentSize: Double
+            get() = 0.0
+        override val viewportSize: Double
+            get() = 0.0
+
+        override suspend fun scrollTo(scrollOffset: Double) { }
+    }
 }
 
 actual interface ScrollbarAdapter {
@@ -29,13 +47,3 @@ actual interface ScrollbarAdapter {
     actual val viewportSize: Double
     actual suspend fun scrollTo(scrollOffset: Double)
 }
-
-private val DEFAULT_SCROLLBAR_ADAPTER = object : ScrollbarAdapter {
-    override val scrollOffset: Double
-        get() = 0.0
-    override val contentSize: Double
-        get() = 0.0
-    override val viewportSize: Double
-        get() = 0.0
-
-    override suspend fun scrollTo(scrollOffset: Double) { }

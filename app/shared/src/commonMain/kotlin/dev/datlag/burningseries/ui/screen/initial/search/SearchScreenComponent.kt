@@ -2,16 +2,19 @@ package dev.datlag.burningseries.ui.screen.initial.search
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.*
+import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.common.ioDispatcher
 import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.common.launchIO
-import dev.datlag.burningseries.common.runBlockingIO
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.common.safeSubList
 import dev.datlag.burningseries.model.state.SearchAction
 import dev.datlag.burningseries.model.state.SearchState
 import dev.datlag.burningseries.network.state.SearchStateMachine
+import dev.datlag.burningseries.ui.navigation.Component
+import dev.datlag.burningseries.ui.screen.initial.series.SeriesScreenComponent
 import kotlinx.coroutines.flow.*
 import org.kodein.di.DI
 import org.kodein.di.instance
@@ -56,6 +59,23 @@ class SearchScreenComponent(
         }
     }.stateIn(ioScope(), SharingStarted.Lazily, emptyList())
 
+    private val navigation = SlotNavigation<SearchConfig>()
+    override val child: Value<ChildSlot<*, Component>> = childSlot(
+        source = navigation,
+        handleBackButton = false
+    ) { config, context ->
+        when (config) {
+            is SearchConfig.Series -> SeriesScreenComponent(
+                componentContext = context,
+                di = di,
+                initialTitle = config.title,
+                initialHref = config.href,
+                initialCoverHref = null,
+                onGoBack = navigation::dismiss
+            )
+        }
+    }
+
     @Composable
     override fun render() {
         SearchScreen(this)
@@ -71,5 +91,9 @@ class SearchScreenComponent(
 
     override fun searchQuery(text: String) {
         searchQuery.value = text.trim()
+    }
+
+    override fun itemClicked(config: SearchConfig) {
+        navigation.activate(config)
     }
 }
