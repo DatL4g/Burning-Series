@@ -1,11 +1,11 @@
 plugins {
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.serialization)
     alias(libs.plugins.android.library)
-    id ("kotlin-parcelize") apply false
+    alias(libs.plugins.sqldelight)
 }
 
-val artifact = VersionCatalog.artifactName("model")
+val artifact = VersionCatalog.artifactName("database")
+
 group = artifact
 
 kotlin {
@@ -20,26 +20,20 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(libs.parcelable)
-                api(libs.serialization.json)
-                api(libs.coroutines)
-                api(libs.datetime)
+                api(libs.sqldelight.coroutines)
             }
         }
 
-        val javaMain by creating {
-            dependsOn(commonMain)
-
-            jvmMain.get().dependsOn(this)
-            androidMain.get().dependsOn(this)
-        }
-
-        androidMain.get().apply {
-            apply(plugin = "kotlin-parcelize")
+        androidMain.get().dependencies {
+            implementation(libs.sqldelight.android)
         }
 
         jvmMain.get().dependencies {
-            api(libs.lang)
+            implementation(libs.sqldelight.jvm)
+        }
+
+        iosMain.get().dependencies {
+            implementation(libs.sqldelight.native)
         }
     }
 }
@@ -65,5 +59,14 @@ android {
         resources.pickFirsts.add("**/*")
         resources.pickFirsts.add("*")
         resources.excludes.add("META-INF/versions/9/previous-compilation-data.bin")
+    }
+}
+
+sqldelight {
+    databases {
+        create("BurningSeries") {
+            packageName.set(artifact)
+            srcDirs("src/commonMain/bs")
+        }
     }
 }

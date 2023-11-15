@@ -13,6 +13,7 @@ complete-kotlin = "1.1.0"
 context-menu = "0.2.0"
 coroutines = "1.7.3"
 datastore = "1.0.0"
+datetime = "0.4.1"
 decompose = "2.1.4-compose-experimental"
 flowredux = "1.2.0"
 grpc = "1.59.0"
@@ -35,6 +36,7 @@ protobuf = "0.9.4"
 protoc = "3.24.4"
 serialization-json = "1.6.0"
 splashscreen = "1.0.1"
+sqldelight = "2.0.0"
 turbine = "1.0.0"
 versions = "0.49.0"
 webview = "1.7.0"
@@ -59,6 +61,7 @@ coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 datastore = { group = "androidx.datastore", name = "datastore-core", version.ref = "datastore" }
 datastore-android = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
+datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "datetime" }
 decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
 decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-compose-jetbrains", version.ref = "decompose" }
 flowredux = { group = "com.freeletics.flowredux", name = "flowredux", version.ref = "flowredux" }
@@ -90,6 +93,10 @@ protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protoc
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization-json" }
 splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+sqldelight-coroutines = { group = "app.cash.sqldelight", name = "coroutines-extensions", version.ref = "sqldelight" }
+sqldelight-android = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
+sqldelight-jvm = { group = "app.cash.sqldelight", name = "sqlite-driver", version.ref = "sqldelight" }
+sqldelight-native = { group = "app.cash.sqldelight", name = "native-driver", version.ref = "sqldelight" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 webview = { group = "io.github.kevinnzou", name = "compose-webview-multiplatform", version.ref = "webview" }
@@ -112,4 +119,5 @@ osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }
 parcelize = { id = "kotlin-parcelize", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

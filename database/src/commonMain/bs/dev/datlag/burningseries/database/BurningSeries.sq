@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS Series(
+    hrefPrimary TEXT NOT NULL PRIMARY KEY,
+    href TEXT NOT NULL,
+    title TEXT NOT NULL,
+    coverHref TEXT,
+    favoriteSince INTEGER NOT NULL
+);
+
+insertSeries:
+INSERT OR REPLACE INTO Series(hrefPrimary, href, title, coverHref, favoriteSince) VALUES (?, ?, ?, ?, ?);
+
+favoriteSeries:
+SELECT * FROM Series WHERE favoriteSince > 0 ORDER BY favoriteSince DESC;
+
+seriesByHref:
+SELECT * FROM Series WHERE hrefPrimary = :href OR hrefPrimary LIKE :href;
+
+updateSeriesFavoriteSince {
+    UPDATE Series SET favoriteSince = :since WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
+
+    INSERT OR IGNORE INTO Series (hrefPrimary, href, title, coverHref, favoriteSince) VALUES (:hrefPrimary, :href, :title, :coverHref, :since);
+}

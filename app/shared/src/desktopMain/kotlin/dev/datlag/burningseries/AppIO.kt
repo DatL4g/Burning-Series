@@ -25,6 +25,41 @@ object AppIO {
         working
     }.getOrNull() ?: false
 
+    fun getFileInConfigDir(name: String): File {
+        val parentFile = File(dirs.getUserConfigDir(APP_NAME, null, null))
+        var returnFile = File(parentFile, name)
+        if (returnFile.existsRWSafely()
+            || (returnFile.parentFile ?: parentFile).existsRWSafely()
+            || (returnFile.parentFile ?: parentFile).mkdirsSafely()) {
+            return returnFile
+        } else if (SystemUtils.IS_OS_LINUX) {
+            val configDir = File(homeDirectory(), ".config/$APP_NAME").apply {
+                mkdirsSafely()
+            }
+            returnFile = File(configDir, name)
+            return returnFile
+        }
+        return returnFile
+    }
+
+    fun getFileInUserDataDir(name: String): File {
+        val parentFile = File(dirs.getUserDataDir(APP_NAME, null, null))
+        var returnFile = File(parentFile, name)
+
+        if (returnFile.existsRWSafely()
+            || (returnFile.parentFile ?: parentFile).existsRWSafely()
+            || (returnFile.parentFile ?: parentFile).mkdirsSafely()) {
+            return returnFile
+        } else if (SystemUtils.IS_OS_LINUX) {
+            val dataDir = File(homeDirectory(), ".local/share/$APP_NAME").apply {
+                mkdirsSafely()
+            }
+            returnFile = File(dataDir, name)
+            return returnFile
+        }
+        return returnFile
+    }
+
     fun getFileInSiteDataDir(name: String): File {
         val parentFile = File(dirs.getSiteDataDir(APP_NAME, null, null))
         var returnFile = File(parentFile, name)

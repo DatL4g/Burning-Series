@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.module
 
+import dev.datlag.burningseries.database.DriverFactory
 import io.ktor.client.*
 import io.ktor.client.engine.darwin.*
 import org.kodein.di.DI
@@ -18,6 +19,9 @@ actual object PlatformModule {
                     }
                 }
             }
+        }
+        bindSingleton {
+            DriverFactory()
         }
     }
 

@@ -11,6 +11,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -66,10 +68,10 @@ import kotlin.math.abs
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun SeriesScreen(component: SeriesComponent) {
-    val href by component.href.collectAsStateWithLifecycle()
+    val href by component.commonHref.collectAsStateWithLifecycle()
     val dialogState by component.dialog.subscribeAsState()
 
-    SchemeTheme.setCommon(BSUtil.commonSeriesHref(href))
+    SchemeTheme.setCommon(href)
     when (calculateWindowSizeClass().widthSizeClass) {
         WindowWidthSizeClass.Compact -> CompactScreen(component)
         else -> DefaultScreen(component)
@@ -91,6 +93,7 @@ private fun CompactScreen(component: SeriesComponent) {
     val title by component.title.collectAsStateWithLifecycle()
     val href by component.href.collectAsStateWithLifecycle()
     val coverHref by component.coverHref.collectAsStateWithLifecycle()
+    val commonHref by component.commonHref.collectAsStateWithLifecycle()
 
     DefaultCollapsingToolbar(
         expandedBody = { state ->
@@ -107,7 +110,7 @@ private fun CompactScreen(component: SeriesComponent) {
                         contentDescription = title,
                         contentScale = ContentScale.FillWidth,
                     )
-                    loadImageScheme(BSUtil.commonSeriesHref(href), resource.value)
+                    loadImageScheme(commonHref, resource.value)
                 }
             }
 
@@ -190,6 +193,25 @@ private fun CompactScreen(component: SeriesComponent) {
                     contentDescription = stringResource(SharedRes.strings.back)
                 )
             }
+        },
+        actions = { state ->
+            val isFavorite by component.isFavorite.collectAsStateWithLifecycle()
+
+            IconButton(
+                onClick = {
+                    component.toggleFavorite()
+                },
+                modifier = Modifier.background(
+                    color = if (state.toolbarState.progress == 1F) Color.Black.copy(alpha = 0.5F) else Color.Black.copy(alpha = state.toolbarState.progress / 10F),
+                    shape = CircleShape
+                )
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = stringResource(SharedRes.strings.favorite),
+                    tint = if (isFavorite) Color.Red else LocalContentColor.current
+                )
+            }
         }
     ) {
         when (val current = seriesState) {
@@ -262,6 +284,7 @@ private fun DefaultScreen(component: SeriesComponent) {
     val title by component.title.collectAsStateWithLifecycle()
     val href by component.href.collectAsStateWithLifecycle()
     val coverHref by component.coverHref.collectAsStateWithLifecycle()
+    val commonHref by component.commonHref.collectAsStateWithLifecycle()
 
     when (val current = seriesState) {
         is SeriesState.Loading -> {
@@ -316,6 +339,21 @@ private fun DefaultScreen(component: SeriesComponent) {
                                                 contentDescription = stringResource(SharedRes.strings.back)
                                             )
                                         }
+                                    },
+                                    actions = {
+                                        val isFavorite by component.isFavorite.collectAsStateWithLifecycle()
+
+                                        IconButton(
+                                            onClick = {
+                                                component.toggleFavorite()
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                                contentDescription = stringResource(SharedRes.strings.favorite),
+                                                tint = if (isFavorite) Color.Red else LocalContentColor.current
+                                            )
+                                        }
                                     }
                                 )
 
@@ -348,7 +386,7 @@ private fun DefaultScreen(component: SeriesComponent) {
                                         contentDescription = title,
                                         contentScale = ContentScale.FillWidth,
                                     )
-                                    loadImageScheme(BSUtil.commonSeriesHref(href), resource.value)
+                                    loadImageScheme(commonHref, resource.value)
                                 }
                             }
                         }

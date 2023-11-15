@@ -1,6 +1,9 @@
 package dev.datlag.burningseries.ui.screen.initial.series
 
 import androidx.compose.runtime.Composable
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOneNotNull
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
@@ -10,6 +13,7 @@ import dev.datlag.burningseries.common.defaultScope
 import dev.datlag.burningseries.common.ioDispatcher
 import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.common.launchIO
+import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesAction
@@ -20,6 +24,7 @@ import dev.datlag.burningseries.ui.screen.initial.series.dialog.language.Languag
 import dev.datlag.burningseries.ui.screen.initial.series.dialog.season.SeasonDialogComponent
 import io.ktor.client.*
 import kotlinx.coroutines.flow.*
+import kotlinx.datetime.Clock
 import org.kodein.di.DI
 import org.kodein.di.instance
 
@@ -39,7 +44,22 @@ class SeriesScreenComponent(
     private val currentSeries = seriesState.mapNotNull { it as? SeriesState.Success }.map { it.series }.stateIn(ioScope(), SharingStarted.Lazily, null)
     override val title: StateFlow<String> = currentSeries.mapNotNull { it?.title }.stateIn(ioScope(), SharingStarted.Lazily, initialTitle)
     override val href: StateFlow<String> = currentSeries.mapNotNull { it?.href }.stateIn(ioScope(), SharingStarted.Lazily, BSUtil.fixSeriesHref(initialHref))
+    override val commonHref: StateFlow<String> = href.map { BSUtil.commonSeriesHref(it) }.stateIn(ioScope(), SharingStarted.Lazily, BSUtil.commonSeriesHref(initialHref))
     override val coverHref: StateFlow<String?> = currentSeries.mapNotNull { it?.coverHref }.stateIn(ioScope(), SharingStarted.Lazily, initialCoverHref)
+
+    private val database: BurningSeries by di.instance()
+    override val isFavorite: StateFlow<Boolean> = commonHref.transform {
+        return@transform emitAll(
+            database
+                .burningSeriesQueries
+                .seriesByHref(it)
+                .asFlow()
+                .mapToOneOrNull(ioDispatcher())
+                .map { s ->
+                    s != null && s.favoriteSince > 0
+                }
+        )
+    }.stateIn(ioScope(), SharingStarted.Lazily, false)
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     private val _dialog = childSlot(
@@ -93,6 +113,16 @@ class SeriesScreenComponent(
 
     override fun showDialog(config: DialogConfig) {
         dialogNavigation.activate(config)
+    }
+
+    override fun toggleFavorite() = ioScope().launchIO {
+        database.burningSeriesQueries.updateSeriesFavoriteSince(
+            since = if (isFavorite.value) 0L else Clock.System.now().epochSeconds,
+            hrefPrimary = commonHref.value,
+            href = href.value,
+            title = title.value,
+            coverHref = coverHref.value
+        )
     }
 
     private fun loadNewSeason(season: Series.Season) = ioScope().launchIO {

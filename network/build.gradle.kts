@@ -50,6 +50,14 @@ android {
         sourceCompatibility = CompileOptions.sourceCompatibility
         targetCompatibility = CompileOptions.targetCompatibility
     }
+    packaging {
+        resources.merges.add("META-INF/LICENSE")
+        resources.merges.add("META-INF/DEPENDENCIES")
+        resources.pickFirsts.add("**")
+        resources.pickFirsts.add("**/*")
+        resources.pickFirsts.add("*")
+        resources.excludes.add("META-INF/versions/9/previous-compilation-data.bin")
+    }
 }
 
 dependencies {

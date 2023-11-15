@@ -73,6 +73,7 @@ kotlin {
                 api(project(":model"))
                 api(project(":network"))
                 api(project(":color"))
+                api(project(":database"))
             }
         }
         val androidMain by getting {
@@ -127,6 +128,14 @@ android {
     }
     buildFeatures {
         buildConfig = true
+    }
+    packaging {
+        resources.merges.add("META-INF/LICENSE")
+        resources.merges.add("META-INF/DEPENDENCIES")
+        resources.pickFirsts.add("**")
+        resources.pickFirsts.add("**/*")
+        resources.pickFirsts.add("*")
+        resources.excludes.add("META-INF/versions/9/previous-compilation-data.bin")
     }
 }
 
