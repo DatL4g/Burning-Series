@@ -3,6 +3,7 @@ package dev.datlag.burningseries.common
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
@@ -15,6 +16,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.DpSize
 import dev.datlag.burningseries.ui.theme.shape.DiagonalShape
+import kotlin.math.max
 
 inline fun Modifier.ifTrue(predicate: Boolean, builder: Modifier.() -> Modifier) = then(if (predicate) builder() else Modifier)
 inline fun Modifier.ifFalse(predicate: Boolean, builder: Modifier.() -> Modifier) = then(if (!predicate) builder() else Modifier)
@@ -74,4 +76,26 @@ fun DpSize.toSize(): Size {
         width = this.width.value,
         height = this.height.value
     )
+}
+
+@Composable
+fun LazyListState.OnBottomReached(enabled: Boolean = true, buffer: Int = 0, block: () -> Unit) {
+    if (enabled) {
+        val maxBuffer = max(0, buffer)
+
+        val shouldCallBlock = remember {
+            derivedStateOf {
+                val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull() ?: return@derivedStateOf true
+                lastVisibleItem.index == layoutInfo.totalItemsCount - 1 - maxBuffer
+            }
+        }
+
+        LaunchedEffect(shouldCallBlock) {
+            snapshotFlow { shouldCallBlock.value }.collect {
+                if (it) {
+                    block()
+                }
+            }
+        }
+    }
 }

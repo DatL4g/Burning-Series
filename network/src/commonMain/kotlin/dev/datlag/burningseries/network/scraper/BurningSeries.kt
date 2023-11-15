@@ -233,12 +233,12 @@ data object BurningSeries {
                     title = genre,
                     items = element.querySelectorAll("li").mapNotNull { item ->
                         val title = item.querySelector("a")?.textContent()?.trim() ?: String()
-                        val href = BSUtil.normalizeHref(item.querySelector("a")?.getHref() ?: String())
+                        val href = BSUtil.normalizeHref(item.querySelector("a")?.getHref()?.trim() ?: String())
 
                         if (title.isNotBlank() && href.isNotBlank()) {
                             Genre.Item(
-                                title = title,
-                                href = href
+                                title = title.trim(),
+                                href = href.trim()
                             )
                         } else {
                             null
@@ -252,7 +252,7 @@ data object BurningSeries {
     }
 
     private suspend fun getCover(client: HttpClient, href: String): Pair<String?, Boolean> {
-        return getCover(getDocument(client, href))
+        return getCover(getDocument(client, BSUtil.commonSeriesHref(href)))
     }
 
     private suspend fun getCover(document: KtSoupDocument?): Pair<String?, Boolean> {

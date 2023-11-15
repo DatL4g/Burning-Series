@@ -210,11 +210,16 @@ private fun CompactScreen(component: SeriesComponent) {
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
-                    item {
+                    item(key = current.series.description) {
                         DescriptionText(current.series.description)
                     }
 
-                    item {
+                    item(key = listOf(
+                        current.series.currentSeason,
+                        current.series.currentLanguage,
+                        current.series.seasons,
+                        current.series.languages
+                    )) {
                         SeasonAndLanguageButtons(
                             modifier = Modifier.padding(vertical = 16.dp),
                             selectedSeason = current.series.currentSeason,
