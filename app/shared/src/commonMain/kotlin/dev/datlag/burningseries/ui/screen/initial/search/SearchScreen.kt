@@ -24,7 +24,6 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.common.OnBottomReached
 import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.common.onClick
-import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.state.SearchState
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.ui.custom.VerticalScrollbar
@@ -109,7 +108,7 @@ private fun MainView(component: SearchComponent, modifier: Modifier = Modifier) 
             genres.forEach { genre ->
                 item {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().animateItemPlacement(),
                         text = genre.title,
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
@@ -120,7 +119,7 @@ private fun MainView(component: SearchComponent, modifier: Modifier = Modifier) 
                     Text(
                         modifier = Modifier.fillMaxWidth().onClick {
                             component.itemClicked(SearchConfig.Series(it))
-                        }.padding(12.dp),
+                        }.padding(12.dp).animateItemPlacement(),
                         text = it.title,
                         softWrap = true,
                         overflow = TextOverflow.Ellipsis
@@ -130,7 +129,7 @@ private fun MainView(component: SearchComponent, modifier: Modifier = Modifier) 
             if (canLoadMore) {
                 item(key = canLoadMore) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        modifier = Modifier.fillMaxWidth().padding(16.dp).animateItemPlacement(),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {

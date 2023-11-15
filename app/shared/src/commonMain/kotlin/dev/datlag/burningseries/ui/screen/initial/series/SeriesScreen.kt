@@ -40,9 +40,11 @@ import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.ui.custom.CountryImage
 import dev.datlag.burningseries.ui.custom.DefaultCollapsingToolbar
+import dev.datlag.burningseries.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.ui.custom.readmore.ReadMoreText
 import dev.datlag.burningseries.ui.custom.readmore.ReadMoreTextOverflow
 import dev.datlag.burningseries.ui.custom.readmore.ToggleArea
+import dev.datlag.burningseries.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.ui.custom.state.ErrorState
 import dev.datlag.burningseries.ui.custom.state.LoadingState
 import dev.datlag.burningseries.ui.custom.toolbar.rememberCollapsingToolbarScaffoldState
@@ -271,90 +273,96 @@ private fun DefaultScreen(component: SeriesComponent) {
             }
         }
         is SeriesState.Success -> {
-            val state = rememberLazyListState(
-                initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
-                initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
-            )
-
-            LazyColumn(
-                state = state,
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.weight(1F),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                val state = rememberLazyListState(
+                    initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
+                    initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
+                )
+
+                LazyColumn(
+                    state = state,
+                    modifier = Modifier.weight(1F),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            TopAppBar(
-                                title = {
-                                    Text(
-                                        text = title,
-                                        maxLines = 2,
-                                        overflow = TextOverflow.Ellipsis,
-                                        softWrap = true
-                                    )
-                                },
-                                navigationIcon = {
-                                    IconButton(
-                                        onClick = {
-                                            component.goBack()
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.ArrowBackIosNew,
-                                            contentDescription = stringResource(SharedRes.strings.back)
+                            Column(
+                                modifier = Modifier.weight(1F),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                TopAppBar(
+                                    title = {
+                                        Text(
+                                            text = title,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis,
+                                            softWrap = true
                                         )
+                                    },
+                                    navigationIcon = {
+                                        IconButton(
+                                            onClick = {
+                                                component.goBack()
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.ArrowBackIosNew,
+                                                contentDescription = stringResource(SharedRes.strings.back)
+                                            )
+                                        }
                                     }
-                                }
-                            )
-
-                            DescriptionText(current.series.description)
-
-                            SeasonAndLanguageButtons(
-                                selectedSeason = current.series.currentSeason,
-                                selectedLanguage = current.series.currentLanguage,
-                                seasons = current.series.seasons,
-                                languages = current.series.languages,
-                                onSeasonClick = { season ->
-                                    season?.let {
-                                        component.showDialog(DialogConfig.Season(it, current.series.seasons))
-                                    }
-                                },
-                                onLanguageClick = { language ->
-                                    language?.let {
-                                        component.showDialog(DialogConfig.Language(it, current.series.languages))
-                                    }
-                                }
-                            )
-                        }
-
-                        when (val resource = asyncPainterResource(coverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
-                            is Resource.Loading, is Resource.Failure -> { }
-                            is Resource.Success -> {
-                                Image(
-                                    modifier = Modifier.width(200.dp).clip(MaterialTheme.shapes.medium).align(Alignment.CenterVertically),
-                                    painter = resource.value,
-                                    contentDescription = title,
-                                    contentScale = ContentScale.FillWidth,
                                 )
-                                loadImageScheme(BSUtil.commonSeriesHref(href), resource.value)
+
+                                DescriptionText(current.series.description)
+
+                                SeasonAndLanguageButtons(
+                                    selectedSeason = current.series.currentSeason,
+                                    selectedLanguage = current.series.currentLanguage,
+                                    seasons = current.series.seasons,
+                                    languages = current.series.languages,
+                                    onSeasonClick = { season ->
+                                        season?.let {
+                                            component.showDialog(DialogConfig.Season(it, current.series.seasons))
+                                        }
+                                    },
+                                    onLanguageClick = { language ->
+                                        language?.let {
+                                            component.showDialog(DialogConfig.Language(it, current.series.languages))
+                                        }
+                                    }
+                                )
+                            }
+
+                            when (val resource = asyncPainterResource(coverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
+                                is Resource.Loading, is Resource.Failure -> { }
+                                is Resource.Success -> {
+                                    Image(
+                                        modifier = Modifier.width(200.dp).clip(MaterialTheme.shapes.medium).align(Alignment.CenterVertically),
+                                        painter = resource.value,
+                                        contentDescription = title,
+                                        contentScale = ContentScale.FillWidth,
+                                    )
+                                    loadImageScheme(BSUtil.commonSeriesHref(href), resource.value)
+                                }
                             }
                         }
                     }
+
+                    SeriesContent(current.series)
                 }
+                VerticalScrollbar(rememberScrollbarAdapter(state))
 
-                SeriesContent(current.series)
-            }
-
-            DisposableEffect(state) {
-                onDispose {
-                    StateSaver.seriesListIndex = state.firstVisibleItemIndex
-                    StateSaver.seriesListOffset = state.firstVisibleItemScrollOffset
+                DisposableEffect(state) {
+                    onDispose {
+                        StateSaver.seriesListIndex = state.firstVisibleItemIndex
+                        StateSaver.seriesListOffset = state.firstVisibleItemScrollOffset
+                    }
                 }
             }
         }
