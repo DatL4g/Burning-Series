@@ -4,7 +4,7 @@ package dev.datlag.burningseries
 actual fun getPackageName(): String {
     val clazz = AppIO::class
 
-    return clazz.java.packageName.ifBlank { null } ?: run {
+    return (clazz.java.packageName.ifBlank { null } ?: run {
         var cutPackage = (clazz.qualifiedName ?: clazz.java.canonicalName).substringBeforeLast(clazz.simpleName ?: clazz.java.simpleName)
 
         if (cutPackage.startsWith('.')) {
@@ -15,5 +15,5 @@ actual fun getPackageName(): String {
         }
 
         cutPackage
-    }
+    }).trim()
 }

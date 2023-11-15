@@ -79,7 +79,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("dev.datlag.sekret:sekret:0.1.0")
+                api(libs.sekret)
             }
         }
         val jniNativeMain by creating {

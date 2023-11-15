@@ -19,7 +19,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import dev.datlag.burningseries.common.lifecycle.LocalLifecycleOwner
 import dev.datlag.burningseries.model.common.systemProperty
 import dev.datlag.burningseries.module.NetworkModule
-import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.ui.navigation.NavHostComponent
 import dev.datlag.burningseries.window.disposableSingleWindowApplication
 import dev.datlag.sekret.NativeLoader

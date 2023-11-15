@@ -15,7 +15,7 @@ import dev.datlag.burningseries.common.LocalRestartRequired
 import dev.datlag.burningseries.common.header
 import dev.datlag.burningseries.other.CEFState
 import dev.datlag.burningseries.other.LocalCEFInitialization
-import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.window.ApplicationDisposer
 import dev.icerock.moko.resources.compose.stringResource
 

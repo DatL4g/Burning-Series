@@ -145,7 +145,7 @@ aboutLibraries {
 }
 
 val createNativeLib = tasks.create("createNativeLib") {
-    dependsOn("sekret:assemble")
+    dependsOn(tasks.generateSekret, "sekret:assemble")
 
     fun getBinPath(target: String): String? {
         val buildDir = project("sekret").layout.buildDirectory.asFile.get()
@@ -158,97 +158,99 @@ val createNativeLib = tasks.create("createNativeLib") {
         }
     }
 
-    val androidArm32 = getBinPath("androidNativeArm32")
-    val androidArm64 = getBinPath("androidNativeArm64")
-    val androidX64 = getBinPath("androidNativeX64")
-    val androidX86 = getBinPath("androidNativeX86")
+    doLast {
+        val androidArm32 = getBinPath("androidNativeArm32")
+        val androidArm64 = getBinPath("androidNativeArm64")
+        val androidX64 = getBinPath("androidNativeX64")
+        val androidX86 = getBinPath("androidNativeX86")
 
-    if (androidArm32 != null) {
-        copy {
-            from(androidArm32) {
-                exclude("*.h")
-                exclude("*.def")
+        if (androidArm32 != null) {
+            copy {
+                from(androidArm32) {
+                    exclude("*.h")
+                    exclude("*.def")
+                }
+                into("../android/src/androidMain/jniLibs/armeabi-v7a")
             }
-            into("../android/src/androidMain/jniLibs/armeabi-v7a")
         }
-    }
-    if (androidArm64 != null) {
-        copy {
-            from(androidArm64) {
-                exclude("*.h")
-                exclude("*.def")
+        if (androidArm64 != null) {
+            copy {
+                from(androidArm64) {
+                    exclude("*.h")
+                    exclude("*.def")
+                }
+                into("../android/src/androidMain/jniLibs/arm64-v8a")
             }
-            into("../android/src/androidMain/jniLibs/arm64-v8a")
         }
-    }
-    if (androidX64 != null) {
-        copy {
-            from(androidX64) {
-                exclude("*.h")
-                exclude("*.def")
+        if (androidX64 != null) {
+            copy {
+                from(androidX64) {
+                    exclude("*.h")
+                    exclude("*.def")
+                }
+                into("../android/src/androidMain/jniLibs/x86_64")
             }
-            into("../android/src/androidMain/jniLibs/x86_64")
         }
-    }
-    if (androidX86 != null) {
-        copy {
-            from(androidX86) {
-                exclude("*.h")
-                exclude("*.def")
+        if (androidX86 != null) {
+            copy {
+                from(androidX86) {
+                    exclude("*.h")
+                    exclude("*.def")
+                }
+                into("../android/src/androidMain/jniLibs/x86")
             }
-            into("../android/src/androidMain/jniLibs/x86")
         }
-    }
 
-    val linuxArm64 = getBinPath("linuxArm64")
-    val linuxX64 = getBinPath("linuxX64")
-    val mingwX64 = getBinPath("mingwX64")
-    val macosArm64 = getBinPath("macosArm64")
-    val macosX64 = getBinPath("macosX64")
+        val linuxArm64 = getBinPath("linuxArm64")
+        val linuxX64 = getBinPath("linuxX64")
+        val mingwX64 = getBinPath("mingwX64")
+        val macosArm64 = getBinPath("macosArm64")
+        val macosX64 = getBinPath("macosX64")
 
-    if (linuxArm64 != null) {
-        copy {
-            from(linuxArm64) {
-                exclude("*.h")
-                exclude("*.def")
+        if (linuxArm64 != null) {
+            copy {
+                from(linuxArm64) {
+                    exclude("*.h")
+                    exclude("*.def")
+                }
+                into("../desktop/resources/linux-arm64")
             }
-            into("../desktop/resources/linux-arm64")
         }
-    }
-    if (linuxX64 != null) {
-        copy {
-            from(linuxX64) {
-                exclude("*.h")
-                exclude("*.def")
+        if (linuxX64 != null) {
+            copy {
+                from(linuxX64) {
+                    exclude("*.h")
+                    exclude("*.def")
+                }
+                into("../desktop/resources/linux-x64")
             }
-            into("../desktop/resources/linux-x64")
         }
-    }
-    if (mingwX64 != null) {
-        copy {
-            from(mingwX64) {
-                exclude("*.h")
-                exclude("*.def")
+        if (mingwX64 != null) {
+            copy {
+                from(mingwX64) {
+                    exclude("*.h")
+                    exclude("*.def")
+                }
+                into("../desktop/resources/windows")
             }
-            into("../desktop/resources/windows")
         }
-    }
-    if (macosArm64 != null) {
-        copy {
-            from(macosArm64) {
-                exclude("*.h")
-                exclude("*.def")
+        if (macosArm64 != null) {
+            copy {
+                from(macosArm64) {
+                    exclude("*.h")
+                    exclude("*.def")
+                }
+                into("../desktop/resources/macos-arm64")
             }
-            into("../desktop/resources/macos-arm64")
         }
-    }
-    if (macosX64 != null) {
-        copy {
-            from(macosX64) {
-                exclude("*.h")
-                exclude("*.def")
+        if (macosX64 != null) {
+            copy {
+                from(macosX64) {
+                    exclude("*.h")
+                    exclude("*.def")
+                }
+                into("../desktop/resources/macos-x64")
             }
-            into("../desktop/resources/macos-x64")
         }
     }
 }
