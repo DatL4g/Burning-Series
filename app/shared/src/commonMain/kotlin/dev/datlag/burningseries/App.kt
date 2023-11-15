@@ -11,7 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import com.moriatsushi.insetsx.rememberWindowInsetsController
-import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.ui.theme.*
 import dev.icerock.moko.resources.compose.fontFamilyResource
 import org.kodein.di.DI

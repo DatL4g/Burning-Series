@@ -1,5 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.gradle.jvm.toolchain.internal.JavaToolchain
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain
 
 plugins {
     alias(libs.plugins.android) apply false
@@ -41,7 +43,7 @@ allprojects {
         maven("https://jogamp.org/deployment/maven")
     }
 
-    tasks.withType<KotlinCompile> {
+    tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions.jvmTarget = CompileOptions.jvmTarget
     }
 }

@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.ui.custom.CountryImage
 import dev.datlag.burningseries.ui.theme.MaterialSymbols
 import dev.icerock.moko.resources.compose.stringResource

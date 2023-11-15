@@ -18,6 +18,8 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    jvmToolchain(CompileOptions.jvmTargetVersion)
+
     applyDefaultHierarchyTemplate()
 
     sourceSets {

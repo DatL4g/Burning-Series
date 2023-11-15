@@ -15,7 +15,7 @@ import dev.datlag.burningseries.common.launchIO
 import dev.datlag.burningseries.model.state.HomeAction
 import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.network.state.HomeStateMachine
-import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.ui.navigation.Component
 import dev.datlag.burningseries.ui.screen.initial.favorite.FavoriteScreenComponent
 import dev.datlag.burningseries.ui.screen.initial.home.HomeScreenComponent

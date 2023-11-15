@@ -25,7 +25,7 @@ import dev.datlag.burningseries.common.OnBottomReached
 import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.common.onClick
 import dev.datlag.burningseries.model.state.SearchState
-import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.ui.custom.state.ErrorState

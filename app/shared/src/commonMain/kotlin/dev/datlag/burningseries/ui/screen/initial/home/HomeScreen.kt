@@ -29,7 +29,7 @@ import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.other.StateSaver
-import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.ui.custom.state.ErrorState

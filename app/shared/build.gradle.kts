@@ -13,18 +13,20 @@ plugins {
     alias(libs.plugins.sekret)
 }
 
-val artifact = VersionCatalog.artifactName("shared")
+val artifact = VersionCatalog.artifactName()
 
 group = artifact
 version = appVersion
 
 sekret {
-    packageName = "dev.datlag.burningseries"
+    packageName = artifact
 }
 
 kotlin {
     androidTarget()
     jvm("desktop")
+
+    jvmToolchain(CompileOptions.jvmTargetVersion)
 
     applyDefaultHierarchyTemplate()
 

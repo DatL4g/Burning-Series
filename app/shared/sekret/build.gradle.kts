@@ -72,6 +72,8 @@ kotlin {
         }
     }
 
+    jvmToolchain(CompileOptions.jvmTargetVersion)
+
     applyDefaultHierarchyTemplate()
 
     sourceSets {

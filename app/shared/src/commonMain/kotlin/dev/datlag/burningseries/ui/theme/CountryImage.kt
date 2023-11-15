@@ -1,6 +1,6 @@
 package dev.datlag.burningseries.ui.theme
 
-import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.SharedRes
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.getImageByFileName
 

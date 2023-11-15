@@ -39,7 +39,7 @@ import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.other.StateSaver
-import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.ui.custom.CountryImage
 import dev.datlag.burningseries.ui.custom.DefaultCollapsingToolbar
 import dev.datlag.burningseries.ui.custom.VerticalScrollbar

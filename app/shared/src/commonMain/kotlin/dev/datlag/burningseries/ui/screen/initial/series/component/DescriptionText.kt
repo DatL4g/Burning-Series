@@ -5,7 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.ui.custom.readmore.ReadMoreText
 import dev.datlag.burningseries.ui.custom.readmore.ReadMoreTextOverflow
 import dev.datlag.burningseries.ui.custom.readmore.ToggleArea
