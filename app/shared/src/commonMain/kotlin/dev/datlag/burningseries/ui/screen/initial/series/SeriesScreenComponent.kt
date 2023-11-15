@@ -59,7 +59,7 @@ class SeriesScreenComponent(
                     s != null && s.favoriteSince > 0
                 }
         )
-    }.stateIn(ioScope(), SharingStarted.Lazily, false)
+    }.stateIn(ioScope(), SharingStarted.Lazily, database.burningSeriesQueries.seriesByHref(commonHref.value).executeAsOneOrNull()?.favoriteSince?.let { it > 0 } ?: false)
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     private val _dialog = childSlot(

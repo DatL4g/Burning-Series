@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -14,17 +15,49 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.bounceClick
 import dev.datlag.burningseries.common.onClick
+import dev.datlag.burningseries.database.Series as DBSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
-import dev.datlag.burningseries.ui.theme.loadImageScheme
 import io.kamel.core.Resource
 import io.kamel.image.asyncPainterResource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LazyGridItemScope.SeriesItem(series: Home.Series, onClick: () -> Unit) {
+fun LazyGridItemScope.SeriesItem(series: Home.Series, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    SeriesItem(
+        title = series.title,
+        coverHref = series.coverHref,
+        modifier = modifier.animateItemPlacement(),
+        onClick = onClick
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun LazyGridItemScope.SeriesItem(series: DBSeries, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    SeriesItem(
+        title = series.title,
+        coverHref = series.coverHref,
+        modifier = modifier.animateItemPlacement(),
+        onClick = onClick
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun LazyItemScope.SeriesItem(series: DBSeries, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    SeriesItem(
+        title = series.title,
+        coverHref = series.coverHref,
+        modifier = modifier.animateItemPlacement(),
+        onClick = onClick
+    )
+}
+
+@Composable
+private fun SeriesItem(title: String, coverHref: String?, modifier: Modifier = Modifier, onClick: () -> Unit) {
     ElevatedCard(
-        modifier = Modifier.animateItemPlacement().height(150.dp).bounceClick().onClick {
+        modifier = modifier.height(150.dp).bounceClick().onClick {
             onClick()
         }
     ) {
@@ -34,7 +67,7 @@ fun LazyGridItemScope.SeriesItem(series: Home.Series, onClick: () -> Unit) {
             Surface(
                 shape = CardDefaults.elevatedShape
             ) {
-                series.coverHref?.let { cover ->
+                coverHref?.let { cover ->
                     when (val resource = asyncPainterResource(BSUtil.getBurningSeriesLink(cover))) {
                         is Resource.Loading, is Resource.Failure -> {
                             Box(
@@ -48,7 +81,7 @@ fun LazyGridItemScope.SeriesItem(series: Home.Series, onClick: () -> Unit) {
                             Image(
                                 painter = resource.value,
                                 contentScale = ContentScale.FillWidth,
-                                contentDescription = series.title,
+                                contentDescription = title,
                                 modifier = Modifier.aspectRatio(1F, true)
                             )
                         }
@@ -60,7 +93,7 @@ fun LazyGridItemScope.SeriesItem(series: Home.Series, onClick: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = series.title,
+                    text = title,
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = 8.dp),
