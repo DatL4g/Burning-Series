@@ -18,7 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.PixelMap
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
@@ -67,12 +70,13 @@ fun EpisodeItem(content: Series.Episode, onClick: () -> Unit) {
             )
         }
         Text(
-            text = content.number,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text(
-            text = content.title,
-            maxLines = 1
+            text = buildAnnotatedString {
+                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                    append(content.episodeNumber)
+                }
+                appendLine()
+                append(content.episodeTitle)
+            }
         )
     }
 }

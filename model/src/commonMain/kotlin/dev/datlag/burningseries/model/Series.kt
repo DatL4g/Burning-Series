@@ -85,6 +85,9 @@ data class Series(
         @SerialName("hosters") val hosters: List<Hoster>
     ) {
 
+        val episodeNumber: String = BSUtil.episodeNumberRegex.find(title)?.groupValues?.lastOrNull() ?: number
+        val episodeTitle: String = BSUtil.episodeNumberRegex.replaceFirst(title, String()).trim().ifBlank { title }
+
         @Serializable
         data class Hoster(
             @SerialName("title") val title: String,
