@@ -13,32 +13,41 @@ data class Series(
     @SerialName("cover") val coverHref: String? = null,
     @SerialName("href") val href: String,
     @SerialName("seasonTitle") val seasonTitle: String,
-    @SerialName("selectedLanguage") val selectedLanguage: String,
+    @SerialName("selectedLanguage") val selectedLanguage: String?,
     @SerialName("seasons") val seasons: List<Season>,
     @SerialName("languages") val languages: List<Language>,
     @SerialName("episodes") val episodes: List<Episode>
 ) {
 
-    val currentSeason: Season? by lazy(LazyThreadSafetyMode.NONE) {
-        seasons.find {
+    val currentSeason: Season? by lazy {
+        seasons.firstOrNull {
             it.title.equals(seasonTitle, true)
-                    || it.title.trim().equals(seasonTitle.trim(), true)
-                    || it.title.equals(seasonTitle.toIntOrNull()?.toString(), true)
-                    || it.title.toIntOrNull()?.toString().equals(seasonTitle.toIntOrNull()?.toString(), true)
-                    || it.title.equals(seasonTitle.getDigitsOrNull(), true)
-                    || it.title.getDigitsOrNull().equals(seasonTitle, true)
-                    || it.title.getDigitsOrNull().equals(seasonTitle.getDigitsOrNull(), true)
+        } ?: seasons.firstOrNull {
+            it.title.trim().equals(seasonTitle.trim(), true)
+        } ?: seasons.firstOrNull {
+            it.title.equals(seasonTitle.toIntOrNull()?.toString(), true)
+        } ?: seasons.firstOrNull {
+            val titleInt = it.title.toIntOrNull()
+            val seasonInt = seasonTitle.toIntOrNull()
+
+            titleInt != null && seasonInt != null && titleInt == seasonInt
+        } ?: seasons.firstOrNull {
+            it.title.equals(seasonTitle.getDigitsOrNull(), true)
+        } ?: seasons.firstOrNull {
+            it.title.getDigitsOrNull().equals(seasonTitle, true)
+        } ?: seasons.firstOrNull {
+            it.title.getDigitsOrNull().equals(seasonTitle.getDigitsOrNull(), true)
         }
     }
 
-    val currentLanguage: Language? by lazy(LazyThreadSafetyMode.NONE) {
+    val currentLanguage: Language? by lazy {
         languages.find {
             it.value.equals(selectedLanguage, true)
-                    || it.value.trim().equals(selectedLanguage.trim(), true)
+                    || it.value.trim().equals(selectedLanguage?.trim(), true)
         }
     }
 
-    fun hrefBuilder(season: Int? = currentSeason?.value, language: String = currentLanguage?.value ?: selectedLanguage): String {
+    fun hrefBuilder(season: Int? = currentSeason?.value, language: String? = currentLanguage?.value ?: selectedLanguage): String {
         val hrefData = BSUtil.hrefDataFromHref(
             BSUtil.normalizeHref(href)
         )
@@ -48,7 +57,7 @@ data class Series(
                 Triple(
                     first = hrefData.first,
                     second = season?.toString() ?: hrefData.second,
-                    third = language
+                    third = language ?: hrefData.third
                 )
             )
         )

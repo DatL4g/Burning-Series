@@ -164,13 +164,13 @@ data object BurningSeries {
         if (selectedLanguage.isNullOrBlank()) {
             selectedLanguage = selectedLanguageValue
             if (selectedLanguage.isNullOrBlank()) {
-                selectedLanguage = languages.firstOrNull()?.value ?: return null
+                selectedLanguage = languages.firstOrNull()?.value
             }
         }
 
         val episodesDoc = doc.querySelector(".serie")?.querySelector(".episodes")?.querySelectorAll("tr") ?: emptyList()
         val episodeInfoList = episodesDoc.mapNotNull { episodesElement ->
-            val episodeList = episodesElement.querySelectorAll("td").mapNotNull { it.querySelector("a") }.mapNotNull { data ->
+            val episodeList = episodesElement.querySelectorAll("td").mapNotNull { it.querySelector("a") }.map { data ->
                 val text = data.querySelector("a")?.textContent() ?: String()
                 val episodeHref = BSUtil.normalizeHref(data.querySelector("a")?.getHref() ?: String())
 
@@ -217,7 +217,7 @@ data object BurningSeries {
             href = docHref,
             seasonTitle = titleSeason ?: String(),
             seasons = seasons,
-            selectedLanguage = selectedLanguage?.trim() ?: return null,
+            selectedLanguage = selectedLanguage?.trim(),
             languages = languages,
             episodes = episodeInfoList
         )
