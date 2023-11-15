@@ -34,6 +34,7 @@ osdetector = "1.7.3"
 parcelable = "1.2.0"
 protobuf = "0.9.4"
 protoc = "3.24.4"
+realm = "1.11.0"
 serialization-json = "1.6.0"
 splashscreen = "1.0.1"
 sqldelight = "2.0.0"
@@ -90,6 +91,8 @@ napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 parcelable = { group = "com.arkivanov.essenty", name = "parcelable", version.ref = "parcelable" }
 protobuf = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protoc" }
 protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protoc" }
+realm = { group = "io.realm.kotlin", name = "library-base", version.ref = "realm" }
+realm-sync = { group = "io.realm.kotlin", name = "library-sync", version.ref = "realm" }
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization-json" }
 splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -118,6 +121,7 @@ multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotl
 osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }
 parcelize = { id = "kotlin-parcelize", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
+realm = { id = "io.realm.kotlin", version.ref = "realm" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

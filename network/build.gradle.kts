@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.android.library)
     alias(libs.plugins.ktorfit) apply false
+    alias(libs.plugins.realm)
 }
 
 val artifact = VersionCatalog.artifactName("network")
@@ -31,6 +32,8 @@ kotlin {
                 api(libs.ktsoup)
                 api(libs.ktsoup.fs)
                 api(libs.ktsoup.ktor)
+                api(libs.realm)
+                api(libs.realm.sync)
             }
         }
     }

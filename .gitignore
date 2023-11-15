@@ -1,6 +1,8 @@
 app/release/*
 !app/release/.gitkeep
 
+app/sekret.properties
+
 *.iml
 .gradle
 /local.properties

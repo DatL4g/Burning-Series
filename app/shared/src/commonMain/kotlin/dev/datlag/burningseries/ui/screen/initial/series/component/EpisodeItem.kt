@@ -29,13 +29,13 @@ import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 @Composable
-fun EpisodeItem(content: Series.Episode) {
+fun EpisodeItem(content: Series.Episode, onClick: () -> Unit) {
     val blurHash = remember(content.href) { BlurHash.random() }
     val enabled = content.hosters.isNotEmpty()
 
     Row(
         modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth().height(100.dp).onClick(enabled) {
-            // ToDo("play episode")
+            onClick()
         }.ifTrue(enabled) { bounceClick(0.95F) }.ifFalse(enabled) { alpha(0.5F) },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically

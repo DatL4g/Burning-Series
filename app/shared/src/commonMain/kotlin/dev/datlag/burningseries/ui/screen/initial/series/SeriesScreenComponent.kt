@@ -16,8 +16,10 @@ import dev.datlag.burningseries.common.launchIO
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.state.EpisodeAction
 import dev.datlag.burningseries.model.state.SeriesAction
 import dev.datlag.burningseries.model.state.SeriesState
+import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.SeriesStateMachine
 import dev.datlag.burningseries.ui.navigation.DialogComponent
 import dev.datlag.burningseries.ui.screen.initial.series.dialog.language.LanguageDialogComponent
@@ -61,6 +63,8 @@ class SeriesScreenComponent(
         )
     }.stateIn(ioScope(), SharingStarted.Lazily, database.burningSeriesQueries.seriesByHref(commonHref.value).executeAsOneOrNull()?.favoriteSince?.let { it > 0 } ?: false)
 
+    private val episodeStateMachine by di.instance<EpisodeStateMachine>()
+
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     private val _dialog = childSlot(
         source = dialogNavigation
@@ -96,6 +100,12 @@ class SeriesScreenComponent(
 
     init {
         backHandler.register(backCallback)
+
+        ioScope().launchIO {
+            episodeStateMachine.state.collect {
+                println(it)
+            }
+        }
     }
 
     @Composable
@@ -123,6 +133,10 @@ class SeriesScreenComponent(
             title = title.value,
             coverHref = coverHref.value
         )
+    }
+
+    override fun itemClicked(episode: Series.Episode): Any? = ioScope().launchIO {
+        episodeStateMachine.dispatch(EpisodeAction.Load(episode))
     }
 
     private fun loadNewSeason(season: Series.Season) = ioScope().launchIO {

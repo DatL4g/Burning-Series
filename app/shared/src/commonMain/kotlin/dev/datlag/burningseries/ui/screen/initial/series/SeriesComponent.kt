@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.screen.initial.series
 
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
+import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.ui.navigation.Component
 import dev.datlag.burningseries.ui.navigation.DialogComponent
@@ -26,4 +27,5 @@ interface SeriesComponent : Component {
     fun showDialog(config: DialogConfig)
 
     fun toggleFavorite(): Any?
+    fun itemClicked(episode: Series.Episode): Any?
 }

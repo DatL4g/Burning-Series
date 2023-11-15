@@ -263,7 +263,9 @@ private fun CompactScreen(component: SeriesComponent) {
                         )
                     }
 
-                    SeriesContent(current.series)
+                    SeriesContent(current.series) {
+                        component.itemClicked(it)
+                    }
                 }
 
                 DisposableEffect(state) {
@@ -392,7 +394,9 @@ private fun DefaultScreen(component: SeriesComponent) {
                         }
                     }
 
-                    SeriesContent(current.series)
+                    SeriesContent(current.series) {
+                        component.itemClicked(it)
+                    }
                 }
                 VerticalScrollbar(rememberScrollbarAdapter(state))
 
@@ -407,8 +411,10 @@ private fun DefaultScreen(component: SeriesComponent) {
     }
 }
 
-private fun LazyListScope.SeriesContent(content: Series) {
+private fun LazyListScope.SeriesContent(content: Series, onEpisodeClick: (Series.Episode) -> Unit) {
     items(content.episodes, key = { it.href }) { episode ->
-        EpisodeItem(episode)
+        EpisodeItem(episode) {
+            onEpisodeClick(episode)
+        }
     }
 }
