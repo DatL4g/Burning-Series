@@ -6,4 +6,6 @@ data object StateSaver {
 
     var seriesListIndex: Int = 0
     var seriesListOffset: Int = 0
+
+    var sekretLibraryLoaded: Boolean = false
 }

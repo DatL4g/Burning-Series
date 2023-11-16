@@ -9,16 +9,14 @@ import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.HomeStateMachine
 import dev.datlag.burningseries.network.state.SearchStateMachine
+import dev.datlag.burningseries.other.StateSaver
 import io.ktor.client.*
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.AppConfiguration
 import io.realm.kotlin.mongodb.Credentials
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import org.kodein.di.DI
-import org.kodein.di.bindEagerSingleton
-import org.kodein.di.bindSingleton
-import org.kodein.di.instance
+import org.kodein.di.*
 
 object NetworkModule {
 
@@ -50,11 +48,13 @@ object NetworkModule {
         bindSingleton {
             SearchStateMachine(instance())
         }
-        bindEagerSingleton {
-            App.create(Sekret().mongoApplication(getPackageName())!!)
+        if (StateSaver.sekretLibraryLoaded) {
+            bindEagerSingleton {
+                App.create(Sekret().mongoApplication(getPackageName())!!)
+            }
         }
         bindEagerSingleton {
-            EpisodeStateMachine(instance(), instance())
+            EpisodeStateMachine(instance(), instanceOrNull())
         }
     }
 }

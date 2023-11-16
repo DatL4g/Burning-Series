@@ -2,6 +2,7 @@ package dev.datlag.burningseries
 
 import androidx.multidex.MultiDexApplication
 import dev.datlag.burningseries.module.NetworkModule
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.sekret.NativeLoader
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
@@ -27,6 +28,6 @@ class App : MultiDexApplication(), DIAware {
         if (BuildConfig.DEBUG) {
             Napier.base(DebugAntilog())
         }
-        NativeLoader.loadLibrary("sekret")
+        StateSaver.sekretLibraryLoaded = NativeLoader.loadLibrary("sekret")
     }
 }

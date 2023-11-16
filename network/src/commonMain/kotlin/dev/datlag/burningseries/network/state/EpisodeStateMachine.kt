@@ -20,7 +20,7 @@ import org.mongodb.kbson.BsonDocument
 @OptIn(ExperimentalCoroutinesApi::class)
 class EpisodeStateMachine(
     private val jsonBase: JsonBase,
-    private val app: App
+    private val app: App?
 ) : FlowReduxStateMachine<EpisodeState, EpisodeAction>(initialState = EpisodeState.Waiting) {
 
     private var user: User? = null
@@ -31,7 +31,7 @@ class EpisodeStateMachine(
                 onEnterEffect {
                     if (user == null) {
                         try {
-                            user = app.login(Credentials.anonymous())
+                            user = app?.login(Credentials.anonymous())
                         } catch (ignored: Throwable) { }
                     }
                 }
