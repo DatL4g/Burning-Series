@@ -18,6 +18,7 @@ decompose = "2.1.4-compose-experimental"
 flowredux = "1.2.0"
 grpc = "1.59.0"
 instesx = "0.1.0-alpha10"
+jsunpacker = "1.0.2"
 kamel = "0.8.3"
 kodein = "7.20.2"
 kotlin = "1.9.20"
@@ -69,6 +70,7 @@ decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-comp
 flowredux = { group = "com.freeletics.flowredux", name = "flowredux", version.ref = "flowredux" }
 grpc = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
 insetsx = { group = "com.moriatsushi.insetsx", name = "insetsx", version.ref = "instesx" }
+jsunpacker = { group = "dev.datlag.jsunpacker", name = "jsunpacker", version.ref = "jsunpacker" }
 kamel = { group = "media.kamel", name = "kamel-image", version.ref = "kamel" }
 kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }
 kodein-compose = { group = "org.kodein.di", name = "kodein-di-framework-compose", version.ref = "kodein" }

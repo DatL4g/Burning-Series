@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.toSize
 import com.vanniktech.blurhash.BlurHash
 import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.ui.theme.TopLeftBottomRightRoundedShape
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
@@ -69,18 +70,23 @@ fun EpisodeItem(content: Series.Episode, isLoading: Boolean, onClick: () -> Unit
                 contentDescription = content.title,
                 tint = Color.White
             )
+            Text(
+                modifier = Modifier.clip(TopLeftBottomRightRoundedShape(
+                    baseShape = MaterialTheme.shapes.medium,
+                    otherSideRounding = 0.dp
+                )).background(Color.White).align(Alignment.BottomEnd).padding(4.dp),
+                text = content.episodeNumber,
+                color = Color.Black,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1
+            )
             if (isLoading) {
                 CircularProgressIndicator()
             }
         }
         Text(
-            text = buildAnnotatedString {
-                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                    append(content.episodeNumber)
-                }
-                appendLine()
-                append(content.episodeTitle)
-            }
+            text = content.episodeTitle,
+            maxLines = 3
         )
     }
 }

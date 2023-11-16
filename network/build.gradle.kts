@@ -36,6 +36,7 @@ kotlin {
                 api(libs.ktsoup.ktor)
                 api(libs.realm)
                 api(libs.realm.sync)
+                implementation(libs.jsunpacker)
             }
         }
     }

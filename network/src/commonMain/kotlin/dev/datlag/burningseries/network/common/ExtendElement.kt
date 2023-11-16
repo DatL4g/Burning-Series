@@ -21,6 +21,13 @@ fun KtSoupElement.getSrc(): String? {
     }
 }
 
+fun KtSoupElement.getSources(): Set<String> {
+    return setOfNotNull(
+        this.attr("src"),
+        *this.querySelectorAll("source").map { it.getSources() }.flatten().toTypedArray()
+    )
+}
+
 fun KtSoupElement.getValue(): String? {
     return this.attr("value")?.ifBlank { null }
 }

@@ -416,6 +416,10 @@ private fun LazyListScope.SeriesContent(content: Series, episodeState: EpisodeSt
     val loadingEpisode = when (val current = episodeState) {
         is EpisodeState.Loading -> current.episode.href
         is EpisodeState.SuccessHoster -> current.episode.href
+        is EpisodeState.SuccessStream -> {
+            println(current.results)
+            null
+        }
         else -> null
     }
 

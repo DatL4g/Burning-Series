@@ -23,7 +23,6 @@ object NetworkModule {
     private const val TAG_KTORFIT_JSONBASE = "JsonBaseKtorfit"
     const val NAME = "NetworkModule"
 
-    @OptIn(DelicateCoroutinesApi::class)
     val di = DI.Module(NAME) {
         import(DatabaseModule.di)
 
@@ -54,7 +53,7 @@ object NetworkModule {
             }
         }
         bindEagerSingleton {
-            EpisodeStateMachine(instance(), instanceOrNull())
+            EpisodeStateMachine(instance(), instance(), instanceOrNull())
         }
     }
 }

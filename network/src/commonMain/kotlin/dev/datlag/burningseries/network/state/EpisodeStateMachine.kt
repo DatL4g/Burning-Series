@@ -6,6 +6,8 @@ import dev.datlag.burningseries.model.common.setFrom
 import dev.datlag.burningseries.model.state.EpisodeAction
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.network.JsonBase
+import dev.datlag.burningseries.network.scraper.Video
+import io.ktor.client.*
 import io.realm.kotlin.annotations.ExperimentalRealmSerializerApi
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.Credentials
@@ -19,11 +21,13 @@ import org.mongodb.kbson.BsonDocument
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EpisodeStateMachine(
+    private val client: HttpClient,
     private val jsonBase: JsonBase,
     private val app: App?
 ) : FlowReduxStateMachine<EpisodeState, EpisodeAction>(initialState = EpisodeState.Waiting) {
 
     private var user: User? = null
+    private val hosterMap: MutableMap<String, List<String>> = mutableMapOf()
 
     init {
         spec {
@@ -42,7 +46,9 @@ class EpisodeStateMachine(
 
             inState<EpisodeState.Loading> {
                 onEnter { state ->
+                    val episodeHref = state.snapshot.episode.href
                     val hosterHref = state.snapshot.episode.hosters.map { it.href }
+
                     val jsonBaseResults = coroutineScope {
                         hosterHref.map { async {
                             try {
@@ -57,13 +63,18 @@ class EpisodeStateMachine(
                             }
                         } }.awaitAll().filterNotNull()
                     }
-                    val mongoDBResults = coroutineScope {
-                        try {
-                            val doc = user!!.functions.call<BsonDocument>("query", hosterHref.toTypedArray())
-                            doc.getArray("result").values.map { it.asDocument().getString("url").value }
-                        } catch (ignored: Throwable) {
-                            emptyList()
+                    val memoryHoster = hosterMap[episodeHref] ?: emptyList()
+                    val mongoDBResults = memoryHoster.ifEmpty {
+                        val newList = coroutineScope {
+                            try {
+                                val doc = user!!.functions.call<BsonDocument>("query", hosterHref.toTypedArray())
+                                doc.getArray("result").values.map { it.asDocument().getString("url").value }
+                            } catch (ignored: Throwable) {
+                                emptyList()
+                            }
                         }
+                        hosterMap[episodeHref] = newList
+                        newList
                     }
 
                     if (jsonBaseResults.isNotEmpty() || mongoDBResults.isNotEmpty()) {
@@ -75,7 +86,7 @@ class EpisodeStateMachine(
                             )
                         ) }
                     } else {
-                        state.override { EpisodeState.Error(String()) }
+                        state.override { EpisodeState.ErrorHoster }
                     }
                 }
             }
@@ -83,11 +94,33 @@ class EpisodeStateMachine(
             inState<EpisodeState.SuccessHoster> {
                 onEnter { state ->
                     val urls = state.snapshot.results
-                    state.noChange()
+                    val streams = coroutineScope {
+                        urls.map { async {
+                            Video.loadVideos(client, it)
+                        } }.awaitAll()
+                    }.filterNotNull()
+
+                    if (streams.isEmpty()) {
+                        state.override { EpisodeState.ErrorStream }
+                    } else {
+                        state.override { EpisodeState.SuccessStream(streams) }
+                    }
                 }
             }
 
-            inState<EpisodeState.Error> {
+            inState<EpisodeState.SuccessStream> {
+                on<EpisodeAction.Load> { action, state ->
+                    state.override { EpisodeState.Loading(action.episode) }
+                }
+            }
+
+            inState<EpisodeState.ErrorHoster> {
+                on<EpisodeAction.Load> { action, state ->
+                    state.override { EpisodeState.Loading(action.episode) }
+                }
+            }
+
+            inState<EpisodeState.ErrorStream> {
                 on<EpisodeAction.Load> { action, state ->
                     state.override { EpisodeState.Loading(action.episode) }
                 }
