@@ -40,6 +40,7 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.SharedRes
+import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.ui.custom.CountryImage
 import dev.datlag.burningseries.ui.custom.DefaultCollapsingToolbar
 import dev.datlag.burningseries.ui.custom.VerticalScrollbar
@@ -91,7 +92,6 @@ fun SeriesScreen(component: SeriesComponent) {
 private fun CompactScreen(component: SeriesComponent) {
     val seriesState by component.seriesState.collectAsStateWithLifecycle()
     val title by component.title.collectAsStateWithLifecycle()
-    val href by component.href.collectAsStateWithLifecycle()
     val coverHref by component.coverHref.collectAsStateWithLifecycle()
     val commonHref by component.commonHref.collectAsStateWithLifecycle()
 
@@ -224,6 +224,7 @@ private fun CompactScreen(component: SeriesComponent) {
                 }
             }
             is SeriesState.Success -> {
+                val episodeState by component.episodeState.collectAsStateWithLifecycle()
                 val state = rememberLazyListState(
                     initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
                     initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
@@ -263,7 +264,7 @@ private fun CompactScreen(component: SeriesComponent) {
                         )
                     }
 
-                    SeriesContent(current.series) {
+                    SeriesContent(current.series, episodeState) {
                         component.itemClicked(it)
                     }
                 }
@@ -284,7 +285,6 @@ private fun CompactScreen(component: SeriesComponent) {
 private fun DefaultScreen(component: SeriesComponent) {
     val seriesState by component.seriesState.collectAsStateWithLifecycle()
     val title by component.title.collectAsStateWithLifecycle()
-    val href by component.href.collectAsStateWithLifecycle()
     val coverHref by component.coverHref.collectAsStateWithLifecycle()
     val commonHref by component.commonHref.collectAsStateWithLifecycle()
 
@@ -302,6 +302,7 @@ private fun DefaultScreen(component: SeriesComponent) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
+                val episodeState by component.episodeState.collectAsStateWithLifecycle()
                 val state = rememberLazyListState(
                     initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
                     initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
@@ -394,7 +395,7 @@ private fun DefaultScreen(component: SeriesComponent) {
                         }
                     }
 
-                    SeriesContent(current.series) {
+                    SeriesContent(current.series, episodeState) {
                         component.itemClicked(it)
                     }
                 }
@@ -411,9 +412,15 @@ private fun DefaultScreen(component: SeriesComponent) {
     }
 }
 
-private fun LazyListScope.SeriesContent(content: Series, onEpisodeClick: (Series.Episode) -> Unit) {
+private fun LazyListScope.SeriesContent(content: Series, episodeState: EpisodeState, onEpisodeClick: (Series.Episode) -> Unit) {
+    val loadingEpisode = when (val current = episodeState) {
+        is EpisodeState.Loading -> current.episode.href
+        is EpisodeState.SuccessHoster -> current.episode.href
+        else -> null
+    }
+
     items(content.episodes, key = { it.href }) { episode ->
-        EpisodeItem(episode) {
+        EpisodeItem(episode, loadingEpisode.equals(episode.href, true)) {
             onEpisodeClick(episode)
         }
     }

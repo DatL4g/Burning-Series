@@ -46,6 +46,8 @@ private fun runWindow() {
     AppIO.applyTitle(appTitle)
     Napier.base(DebugAntilog())
 
+    NativeLoader.loadLibrary("sekret", systemProperty("compose.application.resources.dir")?.let { File(it) })
+
     val windowState = WindowState()
     val lifecycle = LifecycleRegistry()
     val lifecycleOwner = object : LifecycleOwner {
@@ -66,8 +68,6 @@ private fun runWindow() {
         takeFrom(KamelConfig.Default)
         resourcesFetcher()
     }
-
-    NativeLoader.loadLibrary("sekret", systemProperty("compose.application.resources.dir")?.let { File(it) })
 
     disposableSingleWindowApplication(
         state = windowState,

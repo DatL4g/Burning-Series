@@ -11,12 +11,14 @@ import org.kodein.di.bindSingleton
 
 class App : MultiDexApplication(), DIAware {
 
-    override val di: DI = DI {
-        bindSingleton {
-            applicationContext
-        }
+    override val di: DI by lazy {
+        DI {
+            bindSingleton {
+                applicationContext
+            }
 
-        import(NetworkModule.di)
+            import(NetworkModule.di)
+        }
     }
 
     override fun onCreate() {

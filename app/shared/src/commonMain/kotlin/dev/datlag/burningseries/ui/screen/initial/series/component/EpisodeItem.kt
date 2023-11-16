@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayCircleFilled
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,7 +33,7 @@ import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 @Composable
-fun EpisodeItem(content: Series.Episode, onClick: () -> Unit) {
+fun EpisodeItem(content: Series.Episode, isLoading: Boolean, onClick: () -> Unit) {
     val blurHash = remember(content.href) { BlurHash.random() }
     val enabled = content.hosters.isNotEmpty()
 
@@ -68,6 +69,9 @@ fun EpisodeItem(content: Series.Episode, onClick: () -> Unit) {
                 contentDescription = content.title,
                 tint = Color.White
             )
+            if (isLoading) {
+                CircularProgressIndicator()
+            }
         }
         Text(
             text = buildAnnotatedString {

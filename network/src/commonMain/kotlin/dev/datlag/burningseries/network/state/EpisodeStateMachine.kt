@@ -67,10 +67,13 @@ class EpisodeStateMachine(
                     }
 
                     if (jsonBaseResults.isNotEmpty() || mongoDBResults.isNotEmpty()) {
-                        state.override { EpisodeState.SuccessHoster(setFrom(
-                            jsonBaseResults,
-                            mongoDBResults
-                        )) }
+                        state.override { EpisodeState.SuccessHoster(
+                            episode = state.snapshot.episode,
+                            results = setFrom(
+                                jsonBaseResults,
+                                mongoDBResults
+                            )
+                        ) }
                     } else {
                         state.override { EpisodeState.Error(String()) }
                     }

@@ -17,6 +17,7 @@ import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.EpisodeAction
+import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.model.state.SeriesAction
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
@@ -64,6 +65,7 @@ class SeriesScreenComponent(
     }.stateIn(ioScope(), SharingStarted.Lazily, database.burningSeriesQueries.seriesByHref(commonHref.value).executeAsOneOrNull()?.favoriteSince?.let { it > 0 } ?: false)
 
     private val episodeStateMachine by di.instance<EpisodeStateMachine>()
+    override val episodeState: StateFlow<EpisodeState> = episodeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, EpisodeState.Waiting)
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     private val _dialog = childSlot(

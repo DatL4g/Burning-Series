@@ -3,7 +3,7 @@ package dev.datlag.burningseries.module
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.ktorfitBuilder
 import dev.datlag.burningseries.Sekret
-import dev.datlag.burningseries.common.launchIO
+import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.getPackageName
 import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
@@ -16,6 +16,7 @@ import io.realm.kotlin.mongodb.Credentials
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import org.kodein.di.DI
+import org.kodein.di.bindEagerSingleton
 import org.kodein.di.bindSingleton
 import org.kodein.di.instance
 
@@ -49,10 +50,10 @@ object NetworkModule {
         bindSingleton {
             SearchStateMachine(instance())
         }
-        bindSingleton {
+        bindEagerSingleton {
             App.create(Sekret().mongoApplication(getPackageName())!!)
         }
-        bindSingleton {
+        bindEagerSingleton {
             EpisodeStateMachine(instance(), instance())
         }
     }
