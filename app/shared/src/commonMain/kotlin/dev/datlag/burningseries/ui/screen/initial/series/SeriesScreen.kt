@@ -71,11 +71,17 @@ import kotlin.math.abs
 fun SeriesScreen(component: SeriesComponent) {
     val href by component.commonHref.collectAsStateWithLifecycle()
     val dialogState by component.dialog.subscribeAsState()
+    val childState by component.child.subscribeAsState()
 
     SchemeTheme.setCommon(href)
-    when (calculateWindowSizeClass().widthSizeClass) {
-        WindowWidthSizeClass.Compact -> CompactScreen(component)
-        else -> DefaultScreen(component)
+
+    childState.child?.also { (_, instance) ->
+        instance.render()
+    } ?: run {
+        when (calculateWindowSizeClass().widthSizeClass) {
+            WindowWidthSizeClass.Compact -> CompactScreen(component)
+            else -> DefaultScreen(component)
+        }
     }
 
     val scope = rememberCoroutineScope()
@@ -224,7 +230,7 @@ private fun CompactScreen(component: SeriesComponent) {
                 }
             }
             is SeriesState.Success -> {
-                val episodeState by component.episodeState.collectAsStateWithLifecycle()
+                val loadingEpisode by component.loadingEpisodeHref.collectAsStateWithLifecycle()
                 val state = rememberLazyListState(
                     initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
                     initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
@@ -264,7 +270,7 @@ private fun CompactScreen(component: SeriesComponent) {
                         )
                     }
 
-                    SeriesContent(current.series, episodeState) {
+                    SeriesContent(current.series, loadingEpisode) {
                         component.itemClicked(it)
                     }
                 }
@@ -302,7 +308,7 @@ private fun DefaultScreen(component: SeriesComponent) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                val episodeState by component.episodeState.collectAsStateWithLifecycle()
+                val loadingEpisode by component.loadingEpisodeHref.collectAsStateWithLifecycle()
                 val state = rememberLazyListState(
                     initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
                     initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
@@ -395,7 +401,7 @@ private fun DefaultScreen(component: SeriesComponent) {
                         }
                     }
 
-                    SeriesContent(current.series, episodeState) {
+                    SeriesContent(current.series, loadingEpisode) {
                         component.itemClicked(it)
                     }
                 }
@@ -412,17 +418,7 @@ private fun DefaultScreen(component: SeriesComponent) {
     }
 }
 
-private fun LazyListScope.SeriesContent(content: Series, episodeState: EpisodeState, onEpisodeClick: (Series.Episode) -> Unit) {
-    val loadingEpisode = when (val current = episodeState) {
-        is EpisodeState.Loading -> current.episode.href
-        is EpisodeState.SuccessHoster -> current.episode.href
-        is EpisodeState.SuccessStream -> {
-            println(current.results)
-            null
-        }
-        else -> null
-    }
-
+private fun LazyListScope.SeriesContent(content: Series, loadingEpisode: String?, onEpisodeClick: (Series.Episode) -> Unit) {
     items(content.episodes, key = { it.href }) { episode ->
         EpisodeItem(episode, loadingEpisode.equals(episode.href, true)) {
             onEpisodeClick(episode)

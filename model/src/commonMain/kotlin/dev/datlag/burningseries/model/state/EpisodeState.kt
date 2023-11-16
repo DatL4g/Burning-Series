@@ -8,8 +8,8 @@ sealed interface EpisodeState {
     data class Loading(val episode: Series.Episode) : EpisodeState
     data class SuccessHoster(val episode: Series.Episode, val results: Collection<String>) : EpisodeState
     data class SuccessStream(val results: Collection<Stream>) : EpisodeState
-    data object ErrorHoster : EpisodeState
-    data object ErrorStream : EpisodeState
+    data class ErrorHoster(val episode: Series.Episode) : EpisodeState
+    data class ErrorStream(val episode: Series.Episode) : EpisodeState
 }
 
 sealed interface EpisodeAction {

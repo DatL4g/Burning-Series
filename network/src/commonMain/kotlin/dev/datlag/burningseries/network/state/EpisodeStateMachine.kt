@@ -86,7 +86,7 @@ class EpisodeStateMachine(
                             )
                         ) }
                     } else {
-                        state.override { EpisodeState.ErrorHoster }
+                        state.override { EpisodeState.ErrorHoster(state.snapshot.episode) }
                     }
                 }
             }
@@ -101,7 +101,7 @@ class EpisodeStateMachine(
                     }.filterNotNull()
 
                     if (streams.isEmpty()) {
-                        state.override { EpisodeState.ErrorStream }
+                        state.override { EpisodeState.ErrorStream(state.snapshot.episode) }
                     } else {
                         state.override { EpisodeState.SuccessStream(streams) }
                     }

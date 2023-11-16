@@ -18,4 +18,9 @@ sealed class DialogConfig : Parcelable {
         val selected: Series.Language,
         val languages: List<Series.Language>
     ) : DialogConfig()
+
+    @Parcelize
+    data class StreamUnavailable(
+        val episode: Series.Episode
+    ) : DialogConfig()
 }

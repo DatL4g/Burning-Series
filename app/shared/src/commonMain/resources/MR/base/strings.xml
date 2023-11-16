@@ -28,4 +28,10 @@
     <string name="confirm">Confirm</string>
     <string name="close">Close</string>
     <string name="clear">Clear</string>
+    <string name="stream_unavailable_title">Stream unavailable</string>
+    <string name="stream_unavailable_text">There is no stream available, you can activate them now in this app or use using the browser extension on your PC.</string>
+    <string name="activate">Activate</string>
+    <string name="activate_hint">Activate episodes by loading them once</string>
+    <string name="later">Later</string>
+    <string name="browser_initializing">Browser initializing, please wait</string>
 </resources>

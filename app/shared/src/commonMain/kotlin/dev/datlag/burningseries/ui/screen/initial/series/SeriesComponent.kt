@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 interface SeriesComponent : Component {
 
     val seriesState: StateFlow<SeriesState>
-    val episodeState: StateFlow<EpisodeState>
+
+    val child: Value<ChildSlot<*, Component>>
     val dialog: Value<ChildSlot<DialogConfig, DialogComponent>>
 
     val title: StateFlow<String>
@@ -21,6 +22,8 @@ interface SeriesComponent : Component {
     val commonHref: StateFlow<String>
     val coverHref: StateFlow<String?>
     val isFavorite: StateFlow<Boolean>
+
+    val loadingEpisodeHref: StateFlow<String?>
 
     fun retryLoadingSeries(): Any?
 

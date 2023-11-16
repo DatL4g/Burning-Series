@@ -2,17 +2,12 @@ package dev.datlag.burningseries.ui.screen.initial.series
 
 import androidx.compose.runtime.Composable
 import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToOneNotNull
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
-import com.arkivanov.essenty.backhandler.BackHandler
-import dev.datlag.burningseries.common.defaultScope
-import dev.datlag.burningseries.common.ioDispatcher
-import dev.datlag.burningseries.common.ioScope
-import dev.datlag.burningseries.common.launchIO
+import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
@@ -22,9 +17,13 @@ import dev.datlag.burningseries.model.state.SeriesAction
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.SeriesStateMachine
+import dev.datlag.burningseries.ui.navigation.Component
 import dev.datlag.burningseries.ui.navigation.DialogComponent
+import dev.datlag.burningseries.ui.screen.initial.series.activate.ActivateScreenComponent
 import dev.datlag.burningseries.ui.screen.initial.series.dialog.language.LanguageDialogComponent
 import dev.datlag.burningseries.ui.screen.initial.series.dialog.season.SeasonDialogComponent
+import dev.datlag.burningseries.ui.screen.initial.series.dialog.unavailable.UnavailableDialog
+import dev.datlag.burningseries.ui.screen.initial.series.dialog.unavailable.UnavailableDialogComponent
 import io.ktor.client.*
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
@@ -65,10 +64,29 @@ class SeriesScreenComponent(
     }.stateIn(ioScope(), SharingStarted.Lazily, database.burningSeriesQueries.seriesByHref(commonHref.value).executeAsOneOrNull()?.favoriteSince?.let { it > 0 } ?: false)
 
     private val episodeStateMachine by di.instance<EpisodeStateMachine>()
-    override val episodeState: StateFlow<EpisodeState> = episodeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, EpisodeState.Waiting)
+    private val episodeState: StateFlow<EpisodeState> = episodeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, EpisodeState.Waiting)
+    override val loadingEpisodeHref: StateFlow<String?> = episodeState.map {
+        (it as? EpisodeState.Loading)?.episode?.href ?: (it as? EpisodeState.SuccessHoster)?.episode?.href
+    }.stateIn(ioScope(), SharingStarted.Lazily, null)
+
+    private val navigation = SlotNavigation<SeriesConfig>()
+    override val child: Value<ChildSlot<*, Component>> = childSlot(
+        source = navigation,
+        handleBackButton = false
+    ) { config, context ->
+        when (config) {
+            is SeriesConfig.Activate -> ActivateScreenComponent(
+                componentContext = context,
+                di = di,
+                episode = config.episode,
+                onGoBack = navigation::dismiss
+            )
+        }
+    }
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     private val _dialog = childSlot(
+        key = "DialogChildSlot",
         source = dialogNavigation
     ) { config, slotContext ->
         when (config) {
@@ -92,16 +110,48 @@ class SeriesScreenComponent(
                     loadNewLanguage(it)
                 }
             )
+            is DialogConfig.StreamUnavailable -> UnavailableDialogComponent(
+                componentContext = slotContext,
+                di = di,
+                episode = config.episode,
+                onDismissed = dialogNavigation::dismiss,
+                onActivate = {
+                    navigation.activate(SeriesConfig.Activate(it))
+                }
+            )
         }
     }
     override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = _dialog
 
-    private val backCallback = BackCallback(priority = Int.MAX_VALUE) {
+    private val backCallback = BackCallback {
         onGoBack()
     }
 
     init {
         backHandler.register(backCallback)
+
+        ioScope().launchIO {
+            episodeState.collect { state ->
+                when (state) {
+                    is EpisodeState.SuccessStream -> {
+                        // ToDo("navigate to video player")
+                    }
+                    is EpisodeState.ErrorHoster, is EpisodeState.ErrorStream -> {
+                        val episode = (state as? EpisodeState.ErrorHoster)?.episode
+                            ?: (state as? EpisodeState.ErrorStream)?.episode
+
+                        if (episode != null) {
+                            withMainContext {
+                                showDialog(
+                                    DialogConfig.StreamUnavailable(episode)
+                                )
+                            }
+                        }
+                    }
+                    else -> { }
+                }
+            }
+        }
     }
 
     @Composable
