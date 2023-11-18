@@ -5,11 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FirestoreQueryResponse(
-    @SerialName("document") val document: Document
-) {
-
-    @Serializable
-    data class Document(
-        @SerialName("fields") val fields: Map<String, FirestoreQuery.Value>
-    )
-}
+    @SerialName("document") val document: FirestoreDocument
+)

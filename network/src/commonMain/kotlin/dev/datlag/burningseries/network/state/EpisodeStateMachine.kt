@@ -37,22 +37,19 @@ class EpisodeStateMachine(
     private val firestoreApi: Firestore?
 ) : FlowReduxStateMachine<EpisodeState, EpisodeAction>(initialState = EpisodeState.Waiting) {
 
-    private var mongoUser: User? = null
     private val mongoHosterMap: MutableMap<String, List<String>> = mutableMapOf()
-
-    private var firebaseUser: FirebaseUser? = null
 
     init {
         spec {
             inState<EpisodeState.Waiting> {
                 onEnterEffect {
-                    if (mongoUser == null) {
-                        mongoUser = suspendCatching {
+                    if (StateSaver.mongoUser == null) {
+                        StateSaver.mongoUser = suspendCatching {
                             app?.login(Credentials.anonymous())
                         }.getOrNull()
                     }
-                    if (firebaseUser == null) {
-                        firebaseUser = suspendCatching {
+                    if (StateSaver.firebaseUser == null) {
+                        StateSaver.firebaseUser = suspendCatching {
                             Firebase.auth.signInAnonymously().user
                         }.getOrNull()
                     }
@@ -67,47 +64,56 @@ class EpisodeStateMachine(
                     val episodeHref = state.snapshot.episode.href
                     val hosterHref = state.snapshot.episode.hosters.map { it.href }
 
-                    val jsonBaseResults = coroutineScope {
-                        hosterHref.map { async {
-                            try {
-                                val entry = jsonBase.burningSeriesCaptcha(MD5.hexString(it))
-                                if (!entry.broken) {
-                                    entry.url
+                    val allResults = coroutineScope {
+                        val jsonBaseResults = async {
+                            hosterHref.map { async {
+                                try {
+                                    val entry = jsonBase.burningSeriesCaptcha(MD5.hexString(it))
+                                    if (!entry.broken) {
+                                        entry.url
+                                    } else {
+                                        null
+                                    }
+                                } catch (ignored: Throwable) {
+                                    null
+                                }
+                            } }.awaitAll().filterNotNull()
+                        }
+
+                        val mongoHoster = mongoHosterMap[episodeHref] ?: emptyList()
+                        val mongoDBResults = async {
+                            mongoHoster.ifEmpty {
+                                val newList = suspendCatching {
+                                    val doc = StateSaver.mongoUser!!.functions.call<BsonDocument>("query", hosterHref.toTypedArray())
+                                    doc.getArray("result").values.map { it.asDocument().getString("url").value }
+                                }.getOrNull() ?: emptyList()
+
+                                mongoHosterMap[episodeHref] = newList
+                                newList
+                            }
+                        }
+
+                        val firebaseResults = async {
+                            suspendCatching {
+                                if (firestore != null && firestoreApi != null) {
+                                    FireStore.getStreams(firestore, firestoreApi, hosterHref)
                                 } else {
                                     null
                                 }
-                            } catch (ignored: Throwable) {
-                                null
-                            }
-                        } }.awaitAll().filterNotNull()
-                    }
-                    val mongoHoster = mongoHosterMap[episodeHref] ?: emptyList()
-                    val mongoDBResults = mongoHoster.ifEmpty {
-                        val newList = suspendCatching {
-                            val doc = mongoUser!!.functions.call<BsonDocument>("query", hosterHref.toTypedArray())
-                            doc.getArray("result").values.map { it.asDocument().getString("url").value }
-                        }.getOrNull() ?: emptyList()
-
-                        mongoHosterMap[episodeHref] = newList
-                        newList
-                    }
-
-                    val firebaseResults = suspendCatching {
-                        if (firestore != null && firestoreApi != null) {
-                            FireStore.getStreams(firestore, firestoreApi, hosterHref)
-                        } else {
-                            null
+                            }.getOrNull() ?: emptyList()
                         }
-                    }.getOrNull() ?: emptyList()
 
-                    if (jsonBaseResults.isNotEmpty() || mongoDBResults.isNotEmpty()) {
+                        return@coroutineScope setFrom(
+                            jsonBaseResults.await(),
+                            mongoDBResults.await(),
+                            firebaseResults.await()
+                        )
+                    }
+
+                    if (allResults.isNotEmpty()) {
                         state.override { EpisodeState.SuccessHoster(
                             episode = state.snapshot.episode,
-                            results = setFrom(
-                                jsonBaseResults,
-                                mongoDBResults,
-                                firebaseResults
-                            )
+                            results = allResults
                         ) }
                     } else {
                         state.override { EpisodeState.ErrorHoster(state.snapshot.episode) }

@@ -6,6 +6,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@OptIn(ExperimentalSerializationApi::class)
 data class FirestoreQuery(
     @SerialName("structuredQuery") val structuredQuery: StructuredQuery
 ) {

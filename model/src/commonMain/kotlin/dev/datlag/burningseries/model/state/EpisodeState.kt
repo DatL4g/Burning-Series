@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.model.state
 
+import dev.datlag.burningseries.model.HosterScraping
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
 

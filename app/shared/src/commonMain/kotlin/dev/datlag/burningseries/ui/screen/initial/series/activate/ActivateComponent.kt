@@ -9,4 +9,5 @@ interface ActivateComponent : Component {
     val scrapingJs: String
 
     fun back()
+    fun onScraped(data: String)
 }

@@ -1,9 +1,7 @@
 package dev.datlag.burningseries.network
 
-import de.jensklingenberg.ktorfit.http.Body
-import de.jensklingenberg.ktorfit.http.Headers
-import de.jensklingenberg.ktorfit.http.POST
-import de.jensklingenberg.ktorfit.http.Path
+import de.jensklingenberg.ktorfit.http.*
+import dev.datlag.burningseries.model.FirestoreDocument
 import dev.datlag.burningseries.model.FirestoreQuery
 import dev.datlag.burningseries.model.FirestoreQueryResponse
 import io.ktor.client.statement.*
@@ -17,4 +15,18 @@ interface Firestore {
     )
     @POST("databases/(default)/documents:runQuery")
     suspend fun query(@Body request: FirestoreQuery): List<FirestoreQueryResponse>
+
+    @Headers(
+        "Content-Type: application/json",
+        "Accept: application/json"
+    )
+    @PATCH("databases/(default)/documents/{collection}")
+    suspend fun patch(@Header("Authorization") token: String, @Path("collection") collection: String, @Body request: FirestoreDocument): HttpResponse
+
+    @Headers(
+        "Content-Type: application/json",
+        "Accept: application/json"
+    )
+    @POST("databases/(default)/documents/{collection}")
+    suspend fun create(@Header("Authorization") token: String, @Path("collection") collection: String, @Body request: FirestoreDocument): HttpResponse
 }

@@ -7,19 +7,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
-import com.multiplatform.webview.web.rememberWebViewNavigator
-import com.multiplatform.webview.web.rememberWebViewState
 import dev.icerock.moko.resources.compose.stringResource
 import dev.datlag.burningseries.SharedRes
-import dev.datlag.burningseries.common.withIOContext
-import dev.datlag.burningseries.common.withMainContext
 import dev.datlag.burningseries.model.BSUtil
-import dev.datlag.burningseries.ui.custom.PlatformWebView
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
+import dev.datlag.burningseries.ui.screen.initial.series.activate.component.WebView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,10 +38,13 @@ fun ActivateScreen(component: ActivateComponent) {
         }
     ) {
         Box(modifier = Modifier.padding(it)) {
-            val state = rememberWebViewState(url = BSUtil.getBurningSeriesLink(component.episode.href))
-            val navigator = rememberWebViewNavigator()
-
-            PlatformWebView(state, navigator, Modifier.fillMaxSize())
+            WebView(
+                url = BSUtil.getBurningSeriesLink(component.episode.href),
+                scrapingJs = component.scrapingJs,
+                modifier = Modifier.fillMaxSize()
+            ) { data ->
+                component.onScraped(data)
+            }
         }
     }
 }

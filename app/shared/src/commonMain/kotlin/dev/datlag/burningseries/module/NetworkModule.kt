@@ -8,6 +8,7 @@ import dev.datlag.burningseries.network.Firestore
 import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.HomeStateMachine
+import dev.datlag.burningseries.network.state.SaveStateMachine
 import dev.datlag.burningseries.network.state.SearchStateMachine
 import dev.datlag.burningseries.other.StateSaver
 import io.ktor.client.*
@@ -61,6 +62,9 @@ object NetworkModule {
         }
         bindEagerSingleton {
             EpisodeStateMachine(instance(), instance(), instanceOrNull(), instanceOrNull(), instanceOrNull())
+        }
+        bindEagerSingleton {
+            SaveStateMachine(instance(), instance(), instanceOrNull(), instanceOrNull(), instanceOrNull())
         }
     }
 }
