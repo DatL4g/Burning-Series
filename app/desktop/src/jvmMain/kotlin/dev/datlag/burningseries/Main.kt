@@ -16,6 +16,7 @@ import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import com.google.firebase.FirebasePlatform
 import dev.datlag.burningseries.common.lifecycle.LocalLifecycleOwner
 import dev.datlag.burningseries.model.common.systemProperty
 import dev.datlag.burningseries.module.NetworkModule
@@ -48,6 +49,14 @@ private fun runWindow() {
     Napier.base(DebugAntilog())
 
     StateSaver.sekretLibraryLoaded = NativeLoader.loadLibrary("sekret", systemProperty("compose.application.resources.dir")?.let { File(it) })
+
+    FirebasePlatform.initializeFirebasePlatform(object : FirebasePlatform() {
+        val storage = mutableMapOf<String, String>()
+        override fun store(key: String, value: String) = storage.set(key, value)
+        override fun retrieve(key: String) = storage[key]
+        override fun clear(key: String) { storage.remove(key) }
+        override fun log(msg: String) = println(msg)
+    })
 
     val windowState = WindowState()
     val lifecycle = LifecycleRegistry()

@@ -9,6 +9,14 @@ class MixDrop : Manipulation {
         return "(?://|\\.)(mixdro?p\\.(?:c[ho]|to|sx|bz|gl|club))/(?:f|e)/(\\w+)".toRegex().containsMatchIn(url)
     }
 
+    override fun changeUrl(url: String): String {
+        return if (url.contains("/f/")) {
+            url.replace("/f/", "/e/")
+        } else {
+            url
+        }
+    }
+
     override fun change(initialList: Collection<String>, doc: KtSoupDocument): List<String> {
         val mixDropResult = JsUnpacker.unpack(doc.querySelectorAll("script").map { it.html() }).flatMap {
             "wurl=\\s*\"(.*?)\"".toRegex().findAll(it).toList().mapNotNull { result ->

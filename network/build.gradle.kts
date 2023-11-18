@@ -37,6 +37,8 @@ kotlin {
                 api(libs.realm)
                 api(libs.realm.sync)
                 implementation(libs.jsunpacker)
+                api(libs.firebase.auth)
+                api(libs.firebase.store)
             }
         }
     }

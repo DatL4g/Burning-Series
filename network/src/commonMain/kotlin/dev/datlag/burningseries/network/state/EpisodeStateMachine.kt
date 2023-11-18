@@ -3,12 +3,20 @@ package dev.datlag.burningseries.network.state
 import com.freeletics.flowredux.dsl.FlowReduxStateMachine
 import dev.datlag.burningseries.model.algorithm.MD5
 import dev.datlag.burningseries.model.common.setFrom
+import dev.datlag.burningseries.model.common.suspendCatching
 import dev.datlag.burningseries.model.state.EpisodeAction
 import dev.datlag.burningseries.model.state.EpisodeState
+import dev.datlag.burningseries.network.Firestore
 import dev.datlag.burningseries.network.JsonBase
+import dev.datlag.burningseries.network.firebase.FireStore
 import dev.datlag.burningseries.network.scraper.Video
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.FirebaseUser
+import dev.gitlive.firebase.auth.auth
+import dev.gitlive.firebase.firestore.FirebaseFirestore
+import dev.gitlive.firebase.firestore.firestore
+import dev.gitlive.firebase.firestore.where
 import io.ktor.client.*
-import io.realm.kotlin.annotations.ExperimentalRealmSerializerApi
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.User
@@ -17,26 +25,36 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.serialization.json.JsonPrimitive
 import org.mongodb.kbson.BsonDocument
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EpisodeStateMachine(
     private val client: HttpClient,
     private val jsonBase: JsonBase,
-    private val app: App?
+    private val app: App?,
+    private val firestore: FirebaseFirestore?,
+    private val firestoreApi: Firestore?
 ) : FlowReduxStateMachine<EpisodeState, EpisodeAction>(initialState = EpisodeState.Waiting) {
 
-    private var user: User? = null
-    private val hosterMap: MutableMap<String, List<String>> = mutableMapOf()
+    private var mongoUser: User? = null
+    private val mongoHosterMap: MutableMap<String, List<String>> = mutableMapOf()
+
+    private var firebaseUser: FirebaseUser? = null
 
     init {
         spec {
             inState<EpisodeState.Waiting> {
                 onEnterEffect {
-                    if (user == null) {
-                        try {
-                            user = app?.login(Credentials.anonymous())
-                        } catch (ignored: Throwable) { }
+                    if (mongoUser == null) {
+                        mongoUser = suspendCatching {
+                            app?.login(Credentials.anonymous())
+                        }.getOrNull()
+                    }
+                    if (firebaseUser == null) {
+                        firebaseUser = suspendCatching {
+                            Firebase.auth.signInAnonymously().user
+                        }.getOrNull()
                     }
                 }
                 on<EpisodeAction.Load> { action, state ->
@@ -63,26 +81,32 @@ class EpisodeStateMachine(
                             }
                         } }.awaitAll().filterNotNull()
                     }
-                    val memoryHoster = hosterMap[episodeHref] ?: emptyList()
-                    val mongoDBResults = memoryHoster.ifEmpty {
-                        val newList = coroutineScope {
-                            try {
-                                val doc = user!!.functions.call<BsonDocument>("query", hosterHref.toTypedArray())
-                                doc.getArray("result").values.map { it.asDocument().getString("url").value }
-                            } catch (ignored: Throwable) {
-                                emptyList()
-                            }
-                        }
-                        hosterMap[episodeHref] = newList
+                    val mongoHoster = mongoHosterMap[episodeHref] ?: emptyList()
+                    val mongoDBResults = mongoHoster.ifEmpty {
+                        val newList = suspendCatching {
+                            val doc = mongoUser!!.functions.call<BsonDocument>("query", hosterHref.toTypedArray())
+                            doc.getArray("result").values.map { it.asDocument().getString("url").value }
+                        }.getOrNull() ?: emptyList()
+
+                        mongoHosterMap[episodeHref] = newList
                         newList
                     }
+
+                    val firebaseResults = suspendCatching {
+                        if (firestore != null && firestoreApi != null) {
+                            FireStore.getStreams(firestore, firestoreApi, hosterHref)
+                        } else {
+                            null
+                        }
+                    }.getOrNull() ?: emptyList()
 
                     if (jsonBaseResults.isNotEmpty() || mongoDBResults.isNotEmpty()) {
                         state.override { EpisodeState.SuccessHoster(
                             episode = state.snapshot.episode,
                             results = setFrom(
                                 jsonBaseResults,
-                                mongoDBResults
+                                mongoDBResults,
+                                firebaseResults
                             )
                         ) }
                     } else {

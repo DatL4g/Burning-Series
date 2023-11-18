@@ -15,6 +15,7 @@ coroutines = "1.7.3"
 datastore = "1.0.0"
 datetime = "0.4.1"
 decompose = "2.1.4-compose-experimental"
+firebase = "1.10.4"
 flowredux = "1.2.0"
 grpc = "1.59.0"
 instesx = "0.1.0-alpha10"
@@ -62,11 +63,14 @@ coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core"
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+coroutines-js = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-js", version.ref = "coroutines" }
 datastore = { group = "androidx.datastore", name = "datastore-core", version.ref = "datastore" }
 datastore-android = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
 datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "datetime" }
 decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
 decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-compose-jetbrains", version.ref = "decompose" }
+firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "firebase" }
+firebase-store = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "firebase" }
 flowredux = { group = "com.freeletics.flowredux", name = "flowredux", version.ref = "flowredux" }
 grpc = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
 insetsx = { group = "com.moriatsushi.insetsx", name = "insetsx", version.ref = "instesx" }

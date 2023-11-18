@@ -3,8 +3,8 @@ package dev.datlag.burningseries.module
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.ktorfitBuilder
 import dev.datlag.burningseries.Sekret
-import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.getPackageName
+import dev.datlag.burningseries.network.Firestore
 import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.HomeStateMachine
@@ -12,15 +12,12 @@ import dev.datlag.burningseries.network.state.SearchStateMachine
 import dev.datlag.burningseries.other.StateSaver
 import io.ktor.client.*
 import io.realm.kotlin.mongodb.App
-import io.realm.kotlin.mongodb.AppConfiguration
-import io.realm.kotlin.mongodb.Credentials
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import org.kodein.di.*
 
 object NetworkModule {
 
     private const val TAG_KTORFIT_JSONBASE = "JsonBaseKtorfit"
+    private const val TAG_KTORFIT_FIRESTORE = "FirestoreKtorfit"
     const val NAME = "NetworkModule"
 
     val di = DI.Module(NAME) {
@@ -51,9 +48,19 @@ object NetworkModule {
             bindEagerSingleton {
                 App.create(Sekret().mongoApplication(getPackageName())!!)
             }
+            bindEagerSingleton(TAG_KTORFIT_FIRESTORE) {
+                val builder = instance<Ktorfit.Builder>()
+                builder.build {
+                    baseUrl("https://firestore.googleapis.com/v1/projects/${Sekret().firebaseProject(getPackageName())!!}/")
+                }
+            }
+            bindEagerSingleton {
+                val firestoreKtor: Ktorfit = instance(TAG_KTORFIT_FIRESTORE)
+                firestoreKtor.create<Firestore>()
+            }
         }
         bindEagerSingleton {
-            EpisodeStateMachine(instance(), instance(), instanceOrNull())
+            EpisodeStateMachine(instance(), instance(), instanceOrNull(), instanceOrNull(), instanceOrNull())
         }
     }
 }
