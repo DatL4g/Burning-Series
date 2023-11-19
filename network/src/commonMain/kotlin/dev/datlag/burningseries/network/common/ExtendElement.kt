@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.network.common
 
+import dev.datlag.burningseries.model.common.scopeCatching
 import ktsoup.KtSoupElement
 
 fun KtSoupElement.hasAttr(key: String): Boolean {
@@ -24,7 +25,9 @@ fun KtSoupElement.getSrc(): String? {
 fun KtSoupElement.getSources(): Set<String> {
     return setOfNotNull(
         this.attr("src"),
-        *this.querySelectorAll("source").map { it.getSources() }.flatten().toTypedArray()
+        *(scopeCatching {
+            this.querySelectorAll("source").map { it.getSources() }.flatten().toTypedArray()
+        }.getOrNull() ?: emptyArray())
     )
 }
 

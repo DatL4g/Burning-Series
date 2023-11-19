@@ -77,7 +77,7 @@ class SaveStateMachine(
                             }.getOrNull() ?: false
                         }
 
-                        return@coroutineScope listOf(jsonBaseSaved.await(), mongoSaved.await(), firebaseSaved.await()).any { it }
+                        return@coroutineScope jsonBaseSaved.await() || mongoSaved.await() || firebaseSaved.await()
                     }
 
                     val stream = Video.loadVideos(client, state.snapshot.data.url)

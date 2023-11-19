@@ -2,12 +2,17 @@ package dev.datlag.burningseries.ui.screen.initial.series.activate
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.model.Series
 import org.kodein.di.DI
 import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.common.launchIO
+import dev.datlag.burningseries.common.withMainContext
 import dev.datlag.burningseries.model.HosterScraping
 import dev.datlag.burningseries.model.common.scopeCatching
 import dev.datlag.burningseries.model.state.EpisodeAction
@@ -16,6 +21,10 @@ import dev.datlag.burningseries.model.state.SaveAction
 import dev.datlag.burningseries.model.state.SaveState
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.SaveStateMachine
+import dev.datlag.burningseries.ui.navigation.DialogComponent
+import dev.datlag.burningseries.ui.screen.initial.series.activate.component.DialogConfig
+import dev.datlag.burningseries.ui.screen.initial.series.activate.dialog.error.ErrorDialogComponent
+import dev.datlag.burningseries.ui.screen.initial.series.activate.dialog.success.SuccessDialogComponent
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
@@ -34,6 +43,25 @@ class ActivateScreenComponent(
     private val json by di.instance<Json>()
     private val savedData: MutableSet<String> = mutableSetOf()
 
+    private val dialogNavigation = SlotNavigation<DialogConfig>()
+    override val dialog = childSlot(
+        source = dialogNavigation
+    ) { config, slotContext ->
+        when (config) {
+            is DialogConfig.Success -> SuccessDialogComponent(
+                componentContext = slotContext,
+                di = di,
+                stream = config.stream,
+                onDismissed = dialogNavigation::dismiss
+            ) as DialogComponent
+            is DialogConfig.Error -> ErrorDialogComponent(
+                componentContext = slotContext,
+                di = di,
+                onDismissed = dialogNavigation::dismiss
+            )
+        }
+    }
+
     private val backCallback = BackCallback {
         onGoBack()
     }
@@ -43,11 +71,14 @@ class ActivateScreenComponent(
 
         ioScope().launchIO {
             saveState.collect { state ->
-                when (val current = state) {
-                    is SaveState.Saving -> {
-                        println("Saving data: ${current.data}")
+                if (state is SaveState.Success) {
+                    withMainContext {
+                        dialogNavigation.activate(DialogConfig.Success(state.stream))
                     }
-                    else -> { }
+                } else if (state is SaveState.Error) {
+                    withMainContext {
+                        dialogNavigation.activate(DialogConfig.Error)
+                    }
                 }
             }
         }

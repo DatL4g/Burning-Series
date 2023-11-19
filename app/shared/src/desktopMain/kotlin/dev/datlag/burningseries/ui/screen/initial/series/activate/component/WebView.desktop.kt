@@ -1,12 +1,17 @@
 package dev.datlag.burningseries.ui.screen.initial.series.activate.component
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.awt.SwingPanel
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.multiplatform.webview.web.WebContent
 import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.common.withIOContext
@@ -30,7 +35,7 @@ actual fun WebView(url: String, scrapingJs: String, modifier: Modifier, onScrape
             factory = {
                 browser.uiComponent
             },
-            modifier = modifier
+            modifier = modifier.padding(8.dp)
         )
 
         LaunchedEffect(browser) {

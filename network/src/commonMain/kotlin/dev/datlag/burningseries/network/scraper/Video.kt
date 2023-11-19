@@ -116,9 +116,13 @@ data object Video {
             }
         }
 
-        return (manipulator.flatMap {
-            it.change(initialList, doc)
-        }) to (manipulator.map { it.headers(url) }.flatMap { it.entries }.associate { it.key to it.value })
+        var newList = initialList
+
+        manipulator.forEach {
+            newList = it.change(newList, doc)
+        }
+
+        return newList.toList() to (manipulator.map { it.headers(url) }.flatMap { it.entries }.associate { it.key to it.value })
     }
 
     internal fun baseUrl(url: String): String {

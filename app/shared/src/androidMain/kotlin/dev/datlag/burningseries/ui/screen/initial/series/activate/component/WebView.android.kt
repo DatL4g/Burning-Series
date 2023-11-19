@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.ui.screen.initial.series.activate.component
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier

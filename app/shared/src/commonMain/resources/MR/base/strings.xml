@@ -34,4 +34,9 @@
     <string name="activate_hint">Activate episodes by loading them once</string>
     <string name="later">Later</string>
     <string name="browser_initializing">Browser initializing, please wait</string>
+    <string name="activate_success_title">Successfully activated hoster</string>
+    <string name="activate_success_text">You can go back now or continue browsing and activate some more.</string>
+    <string name="activate_error_title">Error activating hoster</string>
+    <string name="activate_error_text">Could not activate hoster, please try again later.</string>
+    <string name="watch">Watch</string>
 </resources>
