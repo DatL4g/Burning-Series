@@ -63,7 +63,7 @@ actual fun VideoScreen(component: VideoComponent) {
 
     var streamIndex by remember(streamList) { mutableIntStateOf(0) }
     var sourceIndex by remember(streamIndex) { mutableIntStateOf(0) }
-    val headers = remember(streamIndex, sourceIndex) {
+    val headers = remember(streamIndex) {
         streamList[streamIndex].headers
     }
     val mediaItem = remember(streamList, streamIndex, sourceIndex) {

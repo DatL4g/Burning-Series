@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.ui.navigation.Component
 import dev.icerock.moko.resources.StringResource
+import kotlinx.coroutines.flow.StateFlow
 
 interface InitialComponent : Component {
 
@@ -13,6 +14,8 @@ interface InitialComponent : Component {
 
     @OptIn(ExperimentalDecomposeApi::class)
     val pages: Value<ChildPages<*, Component>>
+
+    val scrollEnabled: StateFlow<Boolean>
 
     fun selectPage(index: Int)
 

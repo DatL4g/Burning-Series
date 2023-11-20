@@ -21,7 +21,8 @@ import org.kodein.di.instance
 class HomeScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val watchVideo: (Collection<Stream>) -> Unit
+    private val watchVideo: (Collection<Stream>) -> Unit,
+    private val scrollEnabled: (Boolean) -> Unit
 ) : HomeComponent, ComponentContext by componentContext {
 
     private val homeStateMachine: HomeStateMachine by di.instance()
@@ -39,7 +40,9 @@ class HomeScreenComponent(
                 initialTitle = config.title,
                 initialHref = config.href,
                 initialCoverHref = config.coverHref,
-                onGoBack = navigation::dismiss,
+                onGoBack = {
+                    navigation.dismiss(scrollEnabled)
+                },
                 watchVideo = { watchVideo(it) }
             )
         }
@@ -55,6 +58,8 @@ class HomeScreenComponent(
     }
 
     override fun itemClicked(config: HomeConfig) {
-        navigation.activate(config)
+        navigation.activate(config) {
+            scrollEnabled(false)
+        }
     }
 }

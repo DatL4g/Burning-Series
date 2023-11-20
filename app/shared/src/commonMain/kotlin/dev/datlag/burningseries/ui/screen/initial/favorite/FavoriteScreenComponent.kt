@@ -23,7 +23,8 @@ import org.kodein.di.instance
 class FavoriteScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val watchVideo: (Collection<Stream>) -> Unit
+    private val watchVideo: (Collection<Stream>) -> Unit,
+    private val scrollEnabled: (Boolean) -> Unit
 ) : FavoriteComponent, ComponentContext by componentContext {
 
     private val database: BurningSeries by di.instance()
@@ -64,7 +65,9 @@ class FavoriteScreenComponent(
                 initialTitle = config.title,
                 initialHref = config.href,
                 initialCoverHref = config.coverHref,
-                onGoBack = navigation::dismiss,
+                onGoBack = {
+                    navigation.dismiss(scrollEnabled)
+                },
                 watchVideo = { watchVideo(it) }
             )
         }
@@ -76,7 +79,9 @@ class FavoriteScreenComponent(
     }
 
     override fun itemClicked(config: FavoriteConfig) {
-        navigation.activate(config)
+        navigation.activate(config) {
+            scrollEnabled(false)
+        }
     }
 
     override fun searchQuery(text: String) {

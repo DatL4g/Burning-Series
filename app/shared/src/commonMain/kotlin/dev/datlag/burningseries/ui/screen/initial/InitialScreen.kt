@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.screen.initial
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -16,6 +17,7 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.pages.Pages
 import com.moriatsushi.insetsx.ExperimentalSoftwareKeyboardApi
 import com.moriatsushi.insetsx.safeDrawingPadding
+import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.ui.custom.ExpandedPages
 import dev.icerock.moko.resources.compose.stringResource
 
@@ -62,10 +64,21 @@ private fun CompactScreen(
         }
     ) {
         Box(modifier = Modifier.padding(it)) {
+            val scrollEnabled by component.scrollEnabled.collectAsStateWithLifecycle()
+
             Pages(
                 pages = component.pages,
                 onPageSelected = { index ->
                     component.selectPage(index)
+                },
+                pager = { modifier, state, key, pageContent ->
+                    HorizontalPager(
+                        modifier = modifier,
+                        state = state,
+                        key = key,
+                        pageContent = pageContent,
+                        userScrollEnabled = scrollEnabled
+                    )
                 }
             ) { index, page ->
                 selectedPage = index

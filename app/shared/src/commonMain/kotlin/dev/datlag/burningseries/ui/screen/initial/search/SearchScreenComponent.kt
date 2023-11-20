@@ -23,7 +23,8 @@ import org.kodein.di.instance
 class SearchScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val watchVideo: (Collection<Stream>) -> Unit
+    private val watchVideo: (Collection<Stream>) -> Unit,
+    private val scrollEnabled: (Boolean) -> Unit
 ) : SearchComponent, ComponentContext by componentContext {
 
     private val searchStateMachine: SearchStateMachine by di.instance()
@@ -73,7 +74,9 @@ class SearchScreenComponent(
                 initialTitle = config.title,
                 initialHref = config.href,
                 initialCoverHref = null,
-                onGoBack = navigation::dismiss,
+                onGoBack = {
+                    navigation.dismiss(scrollEnabled)
+                },
                 watchVideo = { watchVideo(it) }
             )
         }
@@ -97,6 +100,8 @@ class SearchScreenComponent(
     }
 
     override fun itemClicked(config: SearchConfig) {
-        navigation.activate(config)
+        navigation.activate(config) {
+            scrollEnabled(false)
+        }
     }
 }
