@@ -47,7 +47,6 @@ fun ActivateScreen(component: ActivateComponent) {
             dialogState.child?.instance?.render()
             WebView(
                 url = BSUtil.getBurningSeriesLink(component.episode.href),
-                scrapingJs = component.scrapingJs,
                 modifier = Modifier.fillMaxSize(),
                 onScraped = { data ->
                     component.onScraped(data)

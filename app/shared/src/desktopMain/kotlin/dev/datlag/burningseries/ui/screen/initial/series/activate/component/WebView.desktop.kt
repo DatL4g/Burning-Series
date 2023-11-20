@@ -24,12 +24,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 @Composable
-actual fun WebView(url: String, scrapingJs: String, modifier: Modifier, onScraped: (String) -> Unit) {
+actual fun WebView(url: String, modifier: Modifier, onScraped: (String) -> Unit) {
     val cefInitState by LocalCEFInitialization.current
 
     if (cefInitState is CEFState.INITIALIZED) {
         val client = remember { KCEF.newClientBlocking() }
         val browser = remember { client.createBrowser(url) }
+        val scrapingJs = SharedRes.assets.scrape_hoster.readText()
+
         SwingPanel(
             background = MaterialTheme.colorScheme.background,
             factory = {

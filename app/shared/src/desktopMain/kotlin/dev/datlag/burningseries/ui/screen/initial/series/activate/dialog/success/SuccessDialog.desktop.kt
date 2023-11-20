@@ -41,7 +41,7 @@ actual fun SuccessDialog(component: SuccessComponent) {
             if (component.stream != null) {
                 Button(
                     onClick = {
-
+                        component.watch(component.stream!!)
                     }
                 ) {
                     Text(text = stringResource(SharedRes.strings.watch))

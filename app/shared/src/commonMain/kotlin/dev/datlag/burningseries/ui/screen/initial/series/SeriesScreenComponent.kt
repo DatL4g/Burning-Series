@@ -11,6 +11,7 @@ import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.state.EpisodeAction
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.model.state.SeriesAction
@@ -36,7 +37,8 @@ class SeriesScreenComponent(
     private val initialTitle: String,
     private val initialHref: String,
     private val initialCoverHref: String?,
-    private val onGoBack: () -> Unit
+    private val onGoBack: () -> Unit,
+    private val watchVideo: (Collection<Stream>) -> Unit
 ) : SeriesComponent, ComponentContext by componentContext {
 
     private val httpClient by di.instance<HttpClient>()
@@ -79,7 +81,8 @@ class SeriesScreenComponent(
                 componentContext = context,
                 di = di,
                 episode = config.episode,
-                onGoBack = navigation::dismiss
+                onGoBack = navigation::dismiss,
+                watchVideo = { watchVideo(listOf(it)) }
             )
         }
     }
@@ -134,11 +137,12 @@ class SeriesScreenComponent(
             episodeState.collect { state ->
                 when (state) {
                     is EpisodeState.SuccessStream -> {
-                        // ToDo("navigate to video player")
+                        withMainContext {
+                            watchVideo(state.results)
+                        }
                     }
                     is EpisodeState.ErrorHoster, is EpisodeState.ErrorStream -> {
-                        val episode = (state as? EpisodeState.ErrorHoster)?.episode
-                            ?: (state as? EpisodeState.ErrorStream)?.episode
+                        val episode = (state as? EpisodeState.EpisodeHolder)?.episode
 
                         if (episode != null) {
                             withMainContext {

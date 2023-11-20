@@ -8,6 +8,12 @@ fun systemProperty(key: String): String? = scopeCatching {
     }
 }.getOrNull()
 
+fun systemProperty(key: String, value: String): String? = scopeCatching {
+    System.setProperty(key, value).ifEmpty {
+        null
+    }
+}.getOrNull()
+
 fun systemEnv(key: String): String? = scopeCatching {
     System.getenv(key).ifEmpty {
         null

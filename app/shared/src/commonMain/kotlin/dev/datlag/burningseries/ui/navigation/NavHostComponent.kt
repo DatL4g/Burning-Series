@@ -10,9 +10,11 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stac
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.essenty.backhandler.BackHandlerOwner
 import dev.datlag.burningseries.common.backAnimation
 import dev.datlag.burningseries.ui.screen.initial.InitialScreenComponent
+import dev.datlag.burningseries.ui.screen.video.VideoScreenComponent
 import org.kodein.di.DI
 
 class NavHostComponent(
@@ -33,8 +35,17 @@ class NavHostComponent(
     ) : Component {
         return when (screenConfig) {
             is ScreenConfig.Home -> InitialScreenComponent(
-                componentContext,
-                di
+                componentContext = componentContext,
+                di = di,
+                watchVideo = {
+                    navigation.push(ScreenConfig.Video(it.toList()))
+                }
+            )
+            is ScreenConfig.Video -> VideoScreenComponent(
+                componentContext = componentContext,
+                di = di,
+                initialStreams = screenConfig.streams,
+                onBack = navigation::pop
             )
         }
     }

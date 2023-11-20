@@ -8,6 +8,7 @@ android-core = "1.12.0"
 appcompat = "1.6.1"
 appdirs = "1.2.2"
 blurhash = "0.1.0"
+cast = "21.3.0"
 compose = "1.5.10"
 complete-kotlin = "1.1.0"
 context-menu = "0.2.0"
@@ -29,6 +30,7 @@ ktorfit = "1.10.1"
 ktsoup = "0.3.0"
 lang = "3.13.0"
 material = "1.10.0"
+media3 = "1.1.1"
 moko-resources = "0.23.0"
 multidex = "2.0.1"
 napier = "2.6.1"
@@ -43,6 +45,7 @@ splashscreen = "1.0.1"
 sqldelight = "2.0.0"
 turbine = "1.0.0"
 versions = "0.49.0"
+vlcj = "4.8.2"
 webview = "1.7.2"
 windowsize-multiplatform = "0.3.1"
 window-styler = "0.3.2"
@@ -50,13 +53,15 @@ window-styler = "0.3.2"
 [libraries]
 aboutlibraries =  { group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutlibraries" }
 aboutlibraries-compose =  { group = "com.mikepenz", name = "aboutlibraries-compose", version.ref = "aboutlibraries" }
-accompanist-permission = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+accompanist-uicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
 android = { group = "androidx.core", name = "core-ktx", version.ref = "android-core" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 appdirs = { group = "net.harawata", name = "appdirs", version.ref = "appdirs" }
 blurhash = { group = "com.vanniktech", name = "blurhash", version.ref = "blurhash" }
+cast = { group = "com.google.android.gms", name = "play-services-cast", version.ref = "cast" }
+cast-framework = { group = "com.google.android.gms", name = "play-services-cast-framework", version.ref = "cast" }
 compose-ui-util = { group = "org.jetbrains.compose.ui", name = "ui-util", version.ref = "compose" }
 context-menu = { group = "io.github.dzirbel", name = "compose-material-context-menu", version.ref = "context-menu" }
 coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -91,6 +96,14 @@ ktsoup-fs = { group = "org.drewcarlson", name = "ktsoup-fs", version.ref = "ktso
 ktsoup-ktor = { group = "org.drewcarlson", name = "ktsoup-ktor", version.ref = "ktsoup" }
 lang = { group = "org.apache.commons", name = "commons-lang3", version.ref = "lang" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+media3 = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
+media3-dash = { group = "androidx.media3", name = "media3-exoplayer-dash", version.ref = "media3" }
+media3-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "media3" }
+media3-rtsp = { group = "androidx.media3", name = "media3-exoplayer-rtsp", version.ref = "media3" }
+media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
+media3-smooth = { group = "androidx.media3", name = "media3-exoplayer-smoothstreaming", version.ref = "media3" }
+media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
+media3-cast = { group = "androidx.media3", name = "media3-cast", version.ref = "media3" }
 moko-resources-compose = { group = "dev.icerock.moko", name = "resources-compose", version.ref = "moko-resources" }
 moko-resources-generator = { group = "dev.icerock.moko", name = "resources-generator", version.ref = "moko-resources" }
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
@@ -110,6 +123,7 @@ sqldelight-jvm = { group = "app.cash.sqldelight", name = "sqlite-driver", versio
 sqldelight-native = { group = "app.cash.sqldelight", name = "native-driver", version.ref = "sqldelight" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+vlcj = { group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
 webview = { group = "io.github.kevinnzou", name = "compose-webview-multiplatform", version.ref = "webview" }
 windowsize-multiplatform = { group = "dev.chrisbanes.material3", name = "material3-window-size-class-multiplatform", version.ref = "windowsize-multiplatform" }
 window-styler = { group = "com.mayakapps.compose", name = "window-styler", version.ref = "window-styler" }

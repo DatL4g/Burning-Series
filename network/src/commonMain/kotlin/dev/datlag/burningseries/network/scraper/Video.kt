@@ -61,7 +61,7 @@ data object Video {
         return if (streams.isEmpty()) {
             null
         } else {
-            Stream(streams, headers)
+            Stream(streams.toSet().toList(), headers)
         }
     }
 
@@ -107,7 +107,7 @@ data object Video {
         url: String,
         initialList: Collection<String>,
         doc: KtSoupDocument
-    ): Pair<List<String>, Map<String, String>> {
+    ): Pair<Collection<String>, Map<String, String>> {
         val manipulator = MANIPULATION_LIST.mapNotNull {
             if (it.match(url)) {
                 it
@@ -116,13 +116,9 @@ data object Video {
             }
         }
 
-        var newList = initialList
-
-        manipulator.forEach {
-            newList = it.change(newList, doc)
-        }
-
-        return newList.toList() to (manipulator.map { it.headers(url) }.flatMap { it.entries }.associate { it.key to it.value })
+        return (manipulator.fold(initialList) { list, it ->
+            it.change(list, doc)
+        }) to (manipulator.map { it.headers(url) }.flatMap { it.entries }.associate { it.key to it.value })
     }
 
     internal fun baseUrl(url: String): String {

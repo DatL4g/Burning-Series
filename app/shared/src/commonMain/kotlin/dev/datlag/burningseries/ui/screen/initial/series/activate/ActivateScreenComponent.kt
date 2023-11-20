@@ -14,6 +14,7 @@ import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.common.launchIO
 import dev.datlag.burningseries.common.withMainContext
 import dev.datlag.burningseries.model.HosterScraping
+import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.common.scopeCatching
 import dev.datlag.burningseries.model.state.EpisodeAction
 import dev.datlag.burningseries.model.state.EpisodeState
@@ -34,10 +35,10 @@ class ActivateScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
     override val episode: Series.Episode,
-    private val onGoBack: () -> Unit
+    private val onGoBack: () -> Unit,
+    private val watchVideo: (Stream) -> Unit
 ) : ActivateComponent, ComponentContext by componentContext {
 
-    override val scrapingJs: String = SharedRes.assets.scrape_hoster.readText()
     private val saveStateMachine by di.instance<SaveStateMachine>()
     private val saveState = saveStateMachine.state.stateIn(ioScope(), SharingStarted.Lazily, SaveState.Waiting)
     private val json by di.instance<Json>()
@@ -52,7 +53,8 @@ class ActivateScreenComponent(
                 componentContext = slotContext,
                 di = di,
                 stream = config.stream,
-                onDismissed = dialogNavigation::dismiss
+                onDismissed = dialogNavigation::dismiss,
+                watchVideo = { watchVideo(it) }
             ) as DialogComponent
             is DialogConfig.Error -> ErrorDialogComponent(
                 componentContext = slotContext,

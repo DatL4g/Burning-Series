@@ -16,6 +16,8 @@ import dev.datlag.burningseries.model.state.HomeAction
 import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.network.state.HomeStateMachine
 import dev.datlag.burningseries.SharedRes
+import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.ui.navigation.Component
 import dev.datlag.burningseries.ui.screen.initial.favorite.FavoriteScreenComponent
 import dev.datlag.burningseries.ui.screen.initial.home.HomeScreenComponent
@@ -27,7 +29,8 @@ import org.kodein.di.instance
 
 class InitialScreenComponent(
     componentContext: ComponentContext,
-    override val di: DI
+    override val di: DI,
+    private val watchVideo: (Collection<Stream>) -> Unit
 ) : InitialComponent, ComponentContext by componentContext {
 
     override val pagerItems: List<InitialComponent.PagerItem> = listOf(
@@ -76,16 +79,19 @@ class InitialScreenComponent(
     ) : Component {
         return when (view) {
             is View.Home -> HomeScreenComponent(
-                componentContext,
-                di
+                componentContext = componentContext,
+                di = di,
+                watchVideo = { watchVideo(it) }
             )
             is View.Favorite -> FavoriteScreenComponent(
-                componentContext,
-                di
+                componentContext = componentContext,
+                di = di,
+                watchVideo = { watchVideo(it) }
             )
             is View.Search -> SearchScreenComponent(
-                componentContext,
-                di
+                componentContext = componentContext,
+                di = di,
+                watchVideo = { watchVideo(it) }
             )
         }
     }

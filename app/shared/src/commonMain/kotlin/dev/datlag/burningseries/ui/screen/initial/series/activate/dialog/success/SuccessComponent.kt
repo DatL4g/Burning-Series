@@ -6,4 +6,6 @@ import dev.datlag.burningseries.ui.navigation.DialogComponent
 interface SuccessComponent : DialogComponent {
 
     val stream: Stream?
+
+    fun watch(stream: Stream)
 }

@@ -87,6 +87,17 @@ kotlin {
                 api(libs.multidex)
                 api(libs.splashscreen)
                 api(libs.ktor.jvm)
+                api(libs.media3)
+                api(libs.media3.dash)
+                api(libs.media3.hls)
+                api(libs.media3.rtsp)
+                api(libs.media3.session)
+                api(libs.media3.smooth)
+                api(libs.media3.ui)
+                api(libs.media3.cast)
+                api(libs.cast)
+                api(libs.cast.framework)
+                api(libs.accompanist.uicontroller)
             }
         }
         val desktopMain by getting {
@@ -99,6 +110,7 @@ kotlin {
                 api(libs.window.styler)
                 api(libs.ktor.jvm)
                 api(libs.appdirs)
+                api(libs.vlcj)
             }
         }
     }

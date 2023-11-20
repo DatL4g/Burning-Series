@@ -8,6 +8,7 @@ import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.common.ioDispatcher
 import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.common.launchIO
+import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.state.HomeAction
 import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.network.state.HomeStateMachine
@@ -19,7 +20,8 @@ import org.kodein.di.instance
 
 class HomeScreenComponent(
     componentContext: ComponentContext,
-    override val di: DI
+    override val di: DI,
+    private val watchVideo: (Collection<Stream>) -> Unit
 ) : HomeComponent, ComponentContext by componentContext {
 
     private val homeStateMachine: HomeStateMachine by di.instance()
@@ -37,7 +39,8 @@ class HomeScreenComponent(
                 initialTitle = config.title,
                 initialHref = config.href,
                 initialCoverHref = config.coverHref,
-                onGoBack = navigation::dismiss
+                onGoBack = navigation::dismiss,
+                watchVideo = { watchVideo(it) }
             )
         }
     }

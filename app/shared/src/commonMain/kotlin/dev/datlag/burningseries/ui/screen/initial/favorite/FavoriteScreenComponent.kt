@@ -10,6 +10,7 @@ import dev.datlag.burningseries.common.ioDispatcher
 import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.database.Series
+import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.common.safeSubList
 import dev.datlag.burningseries.ui.navigation.Component
@@ -21,7 +22,8 @@ import org.kodein.di.instance
 
 class FavoriteScreenComponent(
     componentContext: ComponentContext,
-    override val di: DI
+    override val di: DI,
+    private val watchVideo: (Collection<Stream>) -> Unit
 ) : FavoriteComponent, ComponentContext by componentContext {
 
     private val database: BurningSeries by di.instance()
@@ -62,7 +64,8 @@ class FavoriteScreenComponent(
                 initialTitle = config.title,
                 initialHref = config.href,
                 initialCoverHref = config.coverHref,
-                onGoBack = navigation::dismiss
+                onGoBack = navigation::dismiss,
+                watchVideo = { watchVideo(it) }
             )
         }
     }

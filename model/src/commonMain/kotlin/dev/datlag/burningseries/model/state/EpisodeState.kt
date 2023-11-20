@@ -6,11 +6,15 @@ import dev.datlag.burningseries.model.Stream
 
 sealed interface EpisodeState {
     data object Waiting : EpisodeState
-    data class Loading(val episode: Series.Episode) : EpisodeState
-    data class SuccessHoster(val episode: Series.Episode, val results: Collection<String>) : EpisodeState
+    data class Loading(override val episode: Series.Episode) : EpisodeState, EpisodeHolder
+    data class SuccessHoster(override val episode: Series.Episode, val results: Collection<String>) : EpisodeState, EpisodeHolder
     data class SuccessStream(val results: Collection<Stream>) : EpisodeState
-    data class ErrorHoster(val episode: Series.Episode) : EpisodeState
-    data class ErrorStream(val episode: Series.Episode) : EpisodeState
+    data class ErrorHoster(override val episode: Series.Episode) : EpisodeState, EpisodeHolder
+    data class ErrorStream(override val episode: Series.Episode) : EpisodeState, EpisodeHolder
+
+    interface EpisodeHolder {
+        val episode: Series.Episode
+    }
 }
 
 sealed interface EpisodeAction {
