@@ -10,6 +10,7 @@ import dev.datlag.burningseries.common.ioDispatcher
 import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.database.Series
+import dev.datlag.burningseries.model.Series as ModelSeries
 import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.common.safeSubList
@@ -23,7 +24,7 @@ import org.kodein.di.instance
 class FavoriteScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val watchVideo: (Collection<Stream>) -> Unit,
+    private val watchVideo: (String, ModelSeries, ModelSeries.Episode, Collection<Stream>) -> Unit,
     private val scrollEnabled: (Boolean) -> Unit
 ) : FavoriteComponent, ComponentContext by componentContext {
 
@@ -68,7 +69,9 @@ class FavoriteScreenComponent(
                 onGoBack = {
                     navigation.dismiss(scrollEnabled)
                 },
-                watchVideo = { watchVideo(it) }
+                watchVideo = { schemeKey, series, episode, stream ->
+                    watchVideo(schemeKey, series, episode, stream)
+                }
             )
         }
     }

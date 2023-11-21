@@ -5,6 +5,7 @@ import dev.datlag.burningseries.ui.navigation.DialogComponent
 
 interface UnavailableComponent : DialogComponent {
 
+    val series: Series
     val episode: Series.Episode
 
     fun activate()

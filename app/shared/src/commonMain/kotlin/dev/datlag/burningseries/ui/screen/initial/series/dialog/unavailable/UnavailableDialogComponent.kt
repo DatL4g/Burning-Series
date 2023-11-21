@@ -8,9 +8,10 @@ import org.kodein.di.DI
 class UnavailableDialogComponent(
     componentContext: ComponentContext,
     override val di: DI,
+    override val series: Series,
     override val episode: Series.Episode,
     private val onDismissed: () -> Unit,
-    private val onActivate: (Series.Episode) -> Unit
+    private val onActivate: (Series, Series.Episode) -> Unit
 ) : UnavailableComponent, ComponentContext by componentContext {
 
     @Composable
@@ -23,7 +24,7 @@ class UnavailableDialogComponent(
     }
 
     override fun activate() {
-        onActivate(episode)
+        onActivate(series, episode)
         dismiss()
     }
 }

@@ -21,6 +21,7 @@ sealed class DialogConfig : Parcelable {
 
     @Parcelize
     data class StreamUnavailable(
+        val series: Series,
         val episode: Series.Episode
     ) : DialogConfig()
 }

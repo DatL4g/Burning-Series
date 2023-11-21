@@ -5,6 +5,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +49,12 @@ import dev.datlag.burningseries.ui.PIPModeListener
 import dev.datlag.burningseries.R
 import dev.datlag.burningseries.common.findActivity
 import dev.datlag.burningseries.common.findWindow
+import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
+import dev.datlag.burningseries.common.withIOContext
+import dev.datlag.burningseries.common.withMainContext
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import java.util.Locale
 
 val LocalCastContext = compositionLocalOf<CastContext?> { null }
@@ -132,6 +138,14 @@ actual fun VideoScreen(component: VideoComponent) {
 
             subtitles = languages
         }
+
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            super.onPlaybackStateChanged(playbackState)
+
+            if (playbackState == Player.STATE_ENDED) {
+                component.ended()
+            }
+        }
     } }
 
     val castPlayer = remember(castContext) {
@@ -209,6 +223,16 @@ actual fun VideoScreen(component: VideoComponent) {
         }
         usingPlayer.setMediaItem(media)
         usingPlayer.prepare()
+
+        withIOContext {
+            do {
+                delay(3000)
+                withMainContext {
+                    component.lengthUpdate(usingPlayer.duration)
+                    component.progressUpdate(usingPlayer.currentPosition)
+                }
+            } while (isActive)
+        }
     }
 
     LaunchedEffect(usingPlayer, subtitles, selectedLanguage) {
@@ -227,6 +251,7 @@ actual fun VideoScreen(component: VideoComponent) {
     }
 
     val progressColor = MaterialTheme.colorScheme.primary.toArgb()
+    val episode by component.episode.collectAsStateWithLifecycle()
 
     AndroidView(
         modifier = Modifier.fillMaxSize().background(Color.Black),
@@ -273,12 +298,14 @@ actual fun VideoScreen(component: VideoComponent) {
         update = { view ->
             val playerView = view.findViewById<PlayerView>(R.id.player)
             val controls = playerView.findViewById<View>(R.id.exoplayer_controls)
+            val title = controls.findViewById<TextView>(R.id.title)
             val mediaRouteButton = controls.findViewById<MediaRouteButton>(R.id.cast_button)
             val subtitleButton = controls.findViewById<ImageButton>(R.id.subtitle)
             val progress = controls.findViewById<DefaultTimeBar>(R.id.exo_progress)
 
             playerView.player = usingPlayer
 
+            title.text = episode.episodeTitle
             mediaRouteButton.isEnabled = headers.isEmpty()
 
             if (subtitles.isNotEmpty()) {

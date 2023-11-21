@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.PlayCircleFilled
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -28,15 +29,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.vanniktech.blurhash.BlurHash
 import dev.datlag.burningseries.common.*
+import dev.datlag.burningseries.database.Episode
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.ui.theme.TopLeftBottomRightRoundedShape
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 @Composable
-fun EpisodeItem(content: Series.Episode, isLoading: Boolean, onClick: () -> Unit) {
+fun EpisodeItem(content: Series.Episode, dbEpisode: Episode?, isLoading: Boolean, onClick: () -> Unit) {
     val blurHash = remember(content.href) { BlurHash.random() }
     val enabled = content.hosters.isNotEmpty()
+    val isFinished = remember(dbEpisode) {
+        val length = dbEpisode?.length ?: 0L
+        val progress = dbEpisode?.progress ?: 0L
+
+        if (length != 0L || progress != 0L) {
+            Napier.e("Length: $length")
+            Napier.e("Progress: $progress")
+        }
+
+        if (length > 0L && progress > 0L) {
+            (progress.toDouble() / length.toDouble() * 100.0).toFloat() >= 85F
+        } else {
+            false
+        }
+    }
 
     Row(
         modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth().height(100.dp).onClick(enabled) {
@@ -65,11 +83,19 @@ fun EpisodeItem(content: Series.Episode, isLoading: Boolean, onClick: () -> Unit
                 )
             } ?: Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer))
             Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.5F)))
-            Icon(
-                imageVector = Icons.Default.PlayCircleFilled,
-                contentDescription = content.title,
-                tint = Color.White
-            )
+            if (isFinished) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = content.title,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.PlayCircleFilled,
+                    contentDescription = content.title,
+                    tint = Color.White
+                )
+            }
             Text(
                 modifier = Modifier.clip(TopLeftBottomRightRoundedShape(
                     baseShape = MaterialTheme.shapes.medium,

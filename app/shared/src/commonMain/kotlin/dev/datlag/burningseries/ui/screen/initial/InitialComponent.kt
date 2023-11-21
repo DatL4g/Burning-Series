@@ -15,7 +15,9 @@ interface InitialComponent : Component {
     @OptIn(ExperimentalDecomposeApi::class)
     val pages: Value<ChildPages<*, Component>>
 
-    val scrollEnabled: StateFlow<Boolean>
+    val homeScrollEnabled: StateFlow<Boolean>
+    val favoriteScrollEnabled: StateFlow<Boolean>
+    val searchScrollEnabled: StateFlow<Boolean>
 
     fun selectPage(index: Int)
 

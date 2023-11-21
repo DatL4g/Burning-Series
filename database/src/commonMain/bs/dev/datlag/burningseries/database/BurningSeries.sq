@@ -6,8 +6,21 @@ CREATE TABLE IF NOT EXISTS Series(
     favoriteSince INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS Episode(
+    href TEXT NOT NULL PRIMARY KEY,
+    number TEXT NOT NULL,
+    title TEXT NOT NULL,
+    length INTEGER NOT NULL,
+    progress INTEGER NOT NULL,
+    seriesHref TEXT NOT NULL,
+    FOREIGN KEY (seriesHref) REFERENCES Series(hrefPrimary) ON DELETE  NO ACTION
+);
+
 insertSeries:
 INSERT OR REPLACE INTO Series(hrefPrimary, href, title, coverHref, favoriteSince) VALUES (?, ?, ?, ?, ?);
+
+insertSeriesOrIgnore:
+INSERT OR IGNORE INTO Series(hrefPrimary, href, title, coverHref, favoriteSince) VALUES (?, ?, ?, ?, ?);
 
 favoriteSeries:
 SELECT * FROM Series WHERE favoriteSince > 0 ORDER BY favoriteSince DESC;
@@ -20,3 +33,21 @@ updateSeriesFavoriteSince {
 
     INSERT OR IGNORE INTO Series (hrefPrimary, href, title, coverHref, favoriteSince) VALUES (:hrefPrimary, :href, :title, :coverHref, :since);
 }
+
+insertEpisode:
+INSERT OR IGNORE INTO Episode(href, number, title, length, progress, seriesHref) VALUES (?, ?, ?, ?, ?, ?);
+
+updateEpisodeLength {
+    UPDATE Episode SET length = :length WHERE href = :href OR href LIKE :href;
+
+    INSERT OR IGNORE INTO Episode (href, number, title, length, progress, seriesHref) VALUES (:href, :number, :title, :length, :progress, :seriesHref);
+}
+
+updateEpisodeProgress {
+    UPDATE Episode SET progress = :progress WHERE href = :href OR href LIKE :href;
+
+    INSERT OR IGNORE INTO Episode (href, number, title, length, progress, seriesHref) VALUES (:href, :number, :title, :length, :progress, :seriesHref);
+}
+
+selectEpisodesBySeriesHref:
+SELECT * FROM Episode WHERE seriesHref = :href OR seriesHref LIKE :href;

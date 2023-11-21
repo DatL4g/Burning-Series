@@ -8,6 +8,7 @@ import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.common.ioDispatcher
 import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.common.launchIO
+import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.state.HomeAction
 import dev.datlag.burningseries.model.state.HomeState
@@ -21,7 +22,7 @@ import org.kodein.di.instance
 class HomeScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val watchVideo: (Collection<Stream>) -> Unit,
+    private val watchVideo: (String, Series, Series.Episode, Collection<Stream>) -> Unit,
     private val scrollEnabled: (Boolean) -> Unit
 ) : HomeComponent, ComponentContext by componentContext {
 
@@ -43,7 +44,9 @@ class HomeScreenComponent(
                 onGoBack = {
                     navigation.dismiss(scrollEnabled)
                 },
-                watchVideo = { watchVideo(it) }
+                watchVideo = { schemeKey, series, episode, stream ->
+                    watchVideo(schemeKey, series, episode, stream)
+                }
             )
         }
     }

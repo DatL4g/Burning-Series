@@ -30,7 +30,7 @@ import org.kodein.di.instance
 class InitialScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val watchVideo: (Collection<Stream>) -> Unit
+    private val watchVideo: (String, Series, Series.Episode, Collection<Stream>) -> Unit
 ) : InitialComponent, ComponentContext by componentContext {
 
     override val pagerItems: List<InitialComponent.PagerItem> = listOf(
@@ -68,13 +68,9 @@ class InitialScreenComponent(
         createChild(config, context)
     }
 
-    private val homeScrollEnabled = MutableStateFlow(true)
-    private val favoriteScrollEnabled = MutableStateFlow(true)
-    private val searchScrollEnabled = MutableStateFlow(true)
-
-    override val scrollEnabled: StateFlow<Boolean> = combine(homeScrollEnabled, favoriteScrollEnabled, searchScrollEnabled) { t1, t2, t3 ->
-        t1 && t2 && t3
-    }.stateIn(ioScope(), SharingStarted.Lazily, homeScrollEnabled.value && favoriteScrollEnabled.value && searchScrollEnabled.value)
+    override val homeScrollEnabled = MutableStateFlow(true)
+    override val favoriteScrollEnabled = MutableStateFlow(true)
+    override val searchScrollEnabled = MutableStateFlow(true)
 
     @Composable
     override fun render() {
@@ -89,19 +85,25 @@ class InitialScreenComponent(
             is View.Home -> HomeScreenComponent(
                 componentContext = componentContext,
                 di = di,
-                watchVideo = { watchVideo(it) },
+                watchVideo = { schemeKey, series, episode, stream ->
+                    watchVideo(schemeKey, series, episode, stream)
+                },
                 scrollEnabled = { homeScrollEnabled.value = it }
             )
             is View.Favorite -> FavoriteScreenComponent(
                 componentContext = componentContext,
                 di = di,
-                watchVideo = { watchVideo(it) },
+                watchVideo = { schemeKey, series, episode, stream ->
+                    watchVideo(schemeKey, series, episode, stream)
+                },
                 scrollEnabled = { favoriteScrollEnabled.value = it }
             )
             is View.Search -> SearchScreenComponent(
                 componentContext = componentContext,
                 di = di,
-                watchVideo = { watchVideo(it) },
+                watchVideo = { schemeKey, series, episode, stream ->
+                    watchVideo(schemeKey, series, episode, stream)
+                },
                 scrollEnabled = { searchScrollEnabled.value = it }
             )
         }

@@ -6,6 +6,7 @@ import dev.datlag.burningseries.model.common.getDigitsOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Parcelize
 @Serializable
 data class Series(
     @SerialName("title") val title: String,
@@ -17,7 +18,7 @@ data class Series(
     @SerialName("seasons") val seasons: List<Season>,
     @SerialName("languages") val languages: List<Language>,
     @SerialName("episodes") val episodes: List<Episode>
-) {
+) : Parcelable {
 
     val currentSeason: Season? by lazy {
         seasons.firstOrNull {

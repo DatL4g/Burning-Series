@@ -8,6 +8,7 @@ import dev.datlag.burningseries.common.ioDispatcher
 import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.common.launchIO
 import dev.datlag.burningseries.model.Genre
+import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.common.safeSubList
@@ -23,7 +24,7 @@ import org.kodein.di.instance
 class SearchScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val watchVideo: (Collection<Stream>) -> Unit,
+    private val watchVideo: (String, Series, Series.Episode, Collection<Stream>) -> Unit,
     private val scrollEnabled: (Boolean) -> Unit
 ) : SearchComponent, ComponentContext by componentContext {
 
@@ -77,7 +78,9 @@ class SearchScreenComponent(
                 onGoBack = {
                     navigation.dismiss(scrollEnabled)
                 },
-                watchVideo = { watchVideo(it) }
+                watchVideo = { schemeKey, series, episode, stream ->
+                    watchVideo(schemeKey, series, episode, stream)
+                }
             )
         }
     }

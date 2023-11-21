@@ -9,6 +9,7 @@ sealed class SeriesConfig : Parcelable {
 
     @Parcelize
     data class Activate(
+        val series: Series,
         val episode: Series.Episode
     ) : SeriesConfig(), Parcelable
 }

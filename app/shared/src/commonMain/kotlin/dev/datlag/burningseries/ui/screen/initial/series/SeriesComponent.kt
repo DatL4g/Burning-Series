@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.screen.initial.series
 
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
+import dev.datlag.burningseries.database.Episode
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.model.state.SeriesState
@@ -24,6 +25,8 @@ interface SeriesComponent : Component {
     val isFavorite: StateFlow<Boolean>
 
     val loadingEpisodeHref: StateFlow<String?>
+
+    val dbEpisodes: StateFlow<List<Episode>>
 
     fun retryLoadingSeries(): Any?
 

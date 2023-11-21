@@ -8,7 +8,7 @@ sealed interface EpisodeState {
     data object Waiting : EpisodeState
     data class Loading(override val episode: Series.Episode) : EpisodeState, EpisodeHolder
     data class SuccessHoster(override val episode: Series.Episode, val results: Collection<String>) : EpisodeState, EpisodeHolder
-    data class SuccessStream(val results: Collection<Stream>) : EpisodeState
+    data class SuccessStream(override val episode: Series.Episode, val results: Collection<Stream>) : EpisodeState, EpisodeHolder
     data class ErrorHoster(override val episode: Series.Episode) : EpisodeState, EpisodeHolder
     data class ErrorStream(override val episode: Series.Episode) : EpisodeState, EpisodeHolder
 

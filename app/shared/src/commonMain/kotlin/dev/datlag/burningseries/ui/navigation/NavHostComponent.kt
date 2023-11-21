@@ -37,13 +37,23 @@ class NavHostComponent(
             is ScreenConfig.Home -> InitialScreenComponent(
                 componentContext = componentContext,
                 di = di,
-                watchVideo = {
-                    navigation.push(ScreenConfig.Video(it.toList()))
+                watchVideo = { schemeKey, series, episode, stream ->
+                    navigation.push(
+                        ScreenConfig.Video(
+                            schemeKey,
+                            series,
+                            episode,
+                            stream.toList()
+                        )
+                    )
                 }
             )
             is ScreenConfig.Video -> VideoScreenComponent(
                 componentContext = componentContext,
                 di = di,
+                schemeKey = screenConfig.schemeKey,
+                series = screenConfig.series,
+                initialEpisode = screenConfig.episode,
                 initialStreams = screenConfig.streams,
                 onBack = navigation::pop
             )

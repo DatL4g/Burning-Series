@@ -23,6 +23,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(libs.sqldelight.coroutines)
+                api(project(":model"))
             }
         }
 

@@ -133,7 +133,7 @@ class EpisodeStateMachine(
                     if (streams.isEmpty()) {
                         state.override { EpisodeState.ErrorStream(state.snapshot.episode) }
                     } else {
-                        state.override { EpisodeState.SuccessStream(streams) }
+                        state.override { EpisodeState.SuccessStream(state.snapshot.episode, streams) }
                     }
                 }
             }

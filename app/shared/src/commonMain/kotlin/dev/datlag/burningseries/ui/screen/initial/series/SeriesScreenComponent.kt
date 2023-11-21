@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.screen.initial.series
 
 import androidx.compose.runtime.Composable
 import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
@@ -26,6 +27,7 @@ import dev.datlag.burningseries.ui.screen.initial.series.dialog.season.SeasonDia
 import dev.datlag.burningseries.ui.screen.initial.series.dialog.unavailable.UnavailableDialog
 import dev.datlag.burningseries.ui.screen.initial.series.dialog.unavailable.UnavailableDialogComponent
 import io.ktor.client.*
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
 import org.kodein.di.DI
@@ -38,7 +40,7 @@ class SeriesScreenComponent(
     private val initialHref: String,
     private val initialCoverHref: String?,
     private val onGoBack: () -> Unit,
-    private val watchVideo: (Collection<Stream>) -> Unit
+    private val watchVideo: (String, Series, Series.Episode, Collection<Stream>) -> Unit
 ) : SeriesComponent, ComponentContext by componentContext {
 
     private val httpClient by di.instance<HttpClient>()
@@ -71,6 +73,12 @@ class SeriesScreenComponent(
         (it as? EpisodeState.Loading)?.episode?.href ?: (it as? EpisodeState.SuccessHoster)?.episode?.href
     }.stateIn(ioScope(), SharingStarted.Lazily, null)
 
+    override val dbEpisodes = commonHref.transform {
+        return@transform emitAll(database.burningSeriesQueries.selectEpisodesBySeriesHref(it).asFlow().mapToList(
+            currentCoroutineContext()
+        ))
+    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, database.burningSeriesQueries.selectEpisodesBySeriesHref(commonHref.value).executeAsList())
+
     private val navigation = SlotNavigation<SeriesConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(
         source = navigation,
@@ -82,7 +90,7 @@ class SeriesScreenComponent(
                 di = di,
                 episode = config.episode,
                 onGoBack = navigation::dismiss,
-                watchVideo = { watchVideo(listOf(it)) }
+                watchVideo = { watchVideo(commonHref.value, config.series, config.episode, listOf(it)) }
             )
         }
     }
@@ -116,10 +124,11 @@ class SeriesScreenComponent(
             is DialogConfig.StreamUnavailable -> UnavailableDialogComponent(
                 componentContext = slotContext,
                 di = di,
+                series = config.series,
                 episode = config.episode,
                 onDismissed = dialogNavigation::dismiss,
-                onActivate = {
-                    navigation.activate(SeriesConfig.Activate(it))
+                onActivate = { series, episode ->
+                    navigation.activate(SeriesConfig.Activate(series, episode))
                 }
             )
         }
@@ -136,18 +145,24 @@ class SeriesScreenComponent(
         ioScope().launchIO {
             episodeState.collect { state ->
                 when (state) {
+                    is EpisodeState.SuccessHoster -> {
+                        saveSeriesAndEpisodeToDB()
+                    }
                     is EpisodeState.SuccessStream -> {
+                        val series = currentSeries.value ?: currentSeries.first() ?: currentSeries.value!!
+
                         withMainContext {
-                            watchVideo(state.results)
+                            watchVideo(commonHref.value, series, state.episode, state.results)
                         }
                     }
                     is EpisodeState.ErrorHoster, is EpisodeState.ErrorStream -> {
                         val episode = (state as? EpisodeState.EpisodeHolder)?.episode
+                        val series = currentSeries.value ?: currentSeries.first() ?: currentSeries.value!!
 
                         if (episode != null) {
                             withMainContext {
                                 showDialog(
-                                    DialogConfig.StreamUnavailable(episode)
+                                    DialogConfig.StreamUnavailable(series, episode)
                                 )
                             }
                         }
@@ -176,6 +191,8 @@ class SeriesScreenComponent(
     }
 
     override fun toggleFavorite() = ioScope().launchIO {
+        saveSeriesAndEpisodeToDB()
+
         database.burningSeriesQueries.updateSeriesFavoriteSince(
             since = if (isFavorite.value) 0L else Clock.System.now().epochSeconds,
             hrefPrimary = commonHref.value,
@@ -183,6 +200,29 @@ class SeriesScreenComponent(
             title = title.value,
             coverHref = coverHref.value
         )
+    }
+
+    private suspend fun saveSeriesAndEpisodeToDB() {
+        database.burningSeriesQueries.insertSeriesOrIgnore(
+            hrefPrimary = commonHref.value,
+            href = href.value,
+            title = title.value,
+            coverHref = coverHref.value,
+            favoriteSince = if (isFavorite.value) 0L else Clock.System.now().epochSeconds
+        )
+
+        database.burningSeriesQueries.transaction {
+            currentSeries.value?.episodes?.forEach { episode ->
+                database.burningSeriesQueries.insertEpisode(
+                    href = episode.href,
+                    number = episode.number,
+                    title = episode.title,
+                    length = 0L,
+                    progress = 0L,
+                    seriesHref = commonHref.value
+                )
+            }
+        }
     }
 
     override fun itemClicked(episode: Series.Episode): Any? = ioScope().launchIO {

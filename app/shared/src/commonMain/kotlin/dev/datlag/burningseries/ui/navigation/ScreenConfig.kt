@@ -12,5 +12,10 @@ sealed class ScreenConfig : Parcelable {
     data object Home : ScreenConfig(), Parcelable
 
     @Parcelize
-    data class Video(val streams: List<Stream>) : ScreenConfig(), Parcelable
+    data class Video(
+        val schemeKey: String,
+        val series: Series,
+        val episode: Series.Episode,
+        val streams: List<Stream>
+    ) : ScreenConfig(), Parcelable
 }

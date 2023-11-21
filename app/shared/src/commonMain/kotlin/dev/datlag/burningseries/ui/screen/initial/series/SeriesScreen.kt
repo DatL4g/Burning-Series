@@ -40,6 +40,7 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.SharedRes
+import dev.datlag.burningseries.database.Episode
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.ui.custom.CountryImage
 import dev.datlag.burningseries.ui.custom.DefaultCollapsingToolbar
@@ -235,6 +236,7 @@ private fun CompactScreen(component: SeriesComponent) {
                     initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
                     initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
                 )
+                val dbEpisodes by component.dbEpisodes.collectAsStateWithLifecycle()
 
                 LazyColumn(
                     state = state,
@@ -270,7 +272,7 @@ private fun CompactScreen(component: SeriesComponent) {
                         )
                     }
 
-                    SeriesContent(current.series, loadingEpisode) {
+                    SeriesContent(current.series, dbEpisodes, loadingEpisode) {
                         component.itemClicked(it)
                     }
                 }
@@ -313,6 +315,7 @@ private fun DefaultScreen(component: SeriesComponent) {
                     initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
                     initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
                 )
+                val dbEpisodes by component.dbEpisodes.collectAsStateWithLifecycle()
 
                 LazyColumn(
                     state = state,
@@ -401,7 +404,7 @@ private fun DefaultScreen(component: SeriesComponent) {
                         }
                     }
 
-                    SeriesContent(current.series, loadingEpisode) {
+                    SeriesContent(current.series, dbEpisodes, loadingEpisode) {
                         component.itemClicked(it)
                     }
                 }
@@ -418,9 +421,13 @@ private fun DefaultScreen(component: SeriesComponent) {
     }
 }
 
-private fun LazyListScope.SeriesContent(content: Series, loadingEpisode: String?, onEpisodeClick: (Series.Episode) -> Unit) {
+private fun LazyListScope.SeriesContent(content: Series, dbEpisodes: List<Episode>, loadingEpisode: String?, onEpisodeClick: (Series.Episode) -> Unit) {
     items(content.episodes, key = { it.href }) { episode ->
-        EpisodeItem(episode, loadingEpisode.equals(episode.href, true)) {
+        val dbEpisode = remember(dbEpisodes, episode.href) {
+            dbEpisodes.firstOrNull { it.href == episode.href } ?: dbEpisodes.firstOrNull { it.href.equals(episode.href, true) }
+        }
+
+        EpisodeItem(episode, dbEpisode, loadingEpisode.equals(episode.href, true)) {
             onEpisodeClick(episode)
         }
     }
