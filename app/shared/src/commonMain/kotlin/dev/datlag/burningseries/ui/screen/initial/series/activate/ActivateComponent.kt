@@ -10,6 +10,7 @@ import dev.datlag.burningseries.ui.screen.initial.series.activate.component.Dial
 
 interface ActivateComponent : Component {
 
+    val onDeviceReachable: Boolean
     val episode: Series.Episode
 
     val dialog: Value<ChildSlot<DialogConfig, DialogComponent>>

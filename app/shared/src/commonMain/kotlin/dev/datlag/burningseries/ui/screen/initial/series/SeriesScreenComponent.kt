@@ -64,7 +64,9 @@ class SeriesScreenComponent(
     )
     override val seriesState: StateFlow<SeriesState> = seriesStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, SeriesState.Loading(initialHref))
 
-    private val currentSeries = seriesState.mapNotNull { it as? SeriesState.Success }.map { it.series }.stateIn(ioScope(), SharingStarted.Lazily, null)
+    private val successState = seriesState.mapNotNull { it as? SeriesState.Success }
+    private val currentSeries = successState.map { it.series }.stateIn(ioScope(), SharingStarted.Lazily, null)
+    private val onDeviceReachable = successState.map { it.onDeviceReachable }.stateIn(ioScope(), SharingStarted.Eagerly, true)
     override val title: StateFlow<String> = currentSeries.mapNotNull { it?.title }.stateIn(ioScope(), SharingStarted.Lazily, initialTitle)
     override val href: StateFlow<String> = currentSeries.mapNotNull { it?.href }.stateIn(ioScope(), SharingStarted.Lazily, BSUtil.fixSeriesHref(initialHref))
     override val commonHref: StateFlow<String> = href.map { BSUtil.commonSeriesHref(it) }.stateIn(ioScope(), SharingStarted.Lazily, BSUtil.commonSeriesHref(initialHref))
@@ -105,6 +107,7 @@ class SeriesScreenComponent(
             is SeriesConfig.Activate -> ActivateScreenComponent(
                 componentContext = context,
                 di = di,
+                onDeviceReachable = onDeviceReachable.value,
                 episode = config.episode,
                 onGoBack = navigation::dismiss,
                 watchVideo = { watchVideo(commonHref.value, config.series, config.episode, listOf(it)) }

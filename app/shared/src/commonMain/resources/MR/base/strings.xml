@@ -46,4 +46,5 @@
     <string name="fullscreen">Fullscreen</string>
     <string name="exit_fullscreen">Exit Fullscreen</string>
     <string name="episode_progress">%s - %s</string>
+    <string name="activate_unreachable">Unable to activate with your current network as the website is unreachable.</string>
 </resources>

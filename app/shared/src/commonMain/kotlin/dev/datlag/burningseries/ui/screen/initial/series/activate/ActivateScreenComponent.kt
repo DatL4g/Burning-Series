@@ -34,6 +34,7 @@ import org.kodein.di.instance
 class ActivateScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
+    override val onDeviceReachable: Boolean,
     override val episode: Series.Episode,
     private val onGoBack: () -> Unit,
     private val watchVideo: (Stream) -> Unit

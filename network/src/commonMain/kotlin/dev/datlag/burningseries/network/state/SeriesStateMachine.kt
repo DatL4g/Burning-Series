@@ -28,13 +28,15 @@ class SeriesStateMachine(
             inState<SeriesState.Loading> {
                 onEnter { state ->
                     try {
+                        var onDeviceReachable: Boolean = true
                         val result = BurningSeries.getSeries(client, state.snapshot.href) ?: run {
+                            onDeviceReachable = false
                             wrapAPIKey?.let {
                                 val wrapResult = wrapAPI.getBurningSeries(it, BSUtil.fixSeriesHref(state.snapshot.href))
                                 json.decodeFromJsonElement<Series>(wrapResult.data)
                             }
                         }!!
-                        state.override { SeriesState.Success(result) }
+                        state.override { SeriesState.Success(result, onDeviceReachable) }
                     } catch (e: Throwable) {
                         state.override { SeriesState.Error(e.message ?: String()) }
                     }

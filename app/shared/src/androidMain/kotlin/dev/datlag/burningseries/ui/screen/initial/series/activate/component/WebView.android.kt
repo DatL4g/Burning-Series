@@ -17,7 +17,7 @@ import kotlinx.coroutines.isActive
 actual fun WebView(url: String, modifier: Modifier, onScraped: (String) -> Unit) {
     val state = rememberWebViewState(url)
     val navigator = rememberWebViewNavigator()
-    val scrapingJs = SharedRes.assets.scrape_hoster.readText(LocalContext.current)
+    val scrapingJs = SharedRes.assets.scrape_hoster_android.readText(LocalContext.current)
 
     com.multiplatform.webview.web.WebView(
         state = state,

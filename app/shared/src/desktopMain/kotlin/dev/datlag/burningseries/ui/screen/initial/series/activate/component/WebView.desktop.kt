@@ -30,7 +30,7 @@ actual fun WebView(url: String, modifier: Modifier, onScraped: (String) -> Unit)
     if (cefInitState is CEFState.INITIALIZED) {
         val client = remember { KCEF.newClientBlocking() }
         val browser = remember { client.createBrowser(url) }
-        val scrapingJs = SharedRes.assets.scrape_hoster.readText()
+        val scrapingJs = SharedRes.assets.scrape_hoster_cef.readText()
 
         SwingPanel(
             background = MaterialTheme.colorScheme.background,
