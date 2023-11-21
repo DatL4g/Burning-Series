@@ -1,11 +1,22 @@
 package dev.datlag.burningseries
 
+import androidx.compose.ui.awt.ComposeWindow
+import androidx.compose.ui.res.useResource
+import dev.datlag.burningseries.common.launchIO
+import dev.datlag.burningseries.common.withMainContext
 import dev.datlag.burningseries.model.common.*
 import dev.datlag.sekret.NativeLoader
+import dev.icerock.moko.resources.AssetResource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import net.harawata.appdirs.AppDirsFactory
 import org.apache.commons.lang3.SystemUtils
+import java.awt.Image
 import java.awt.Toolkit
 import java.io.File
+import java.io.InputStream
+import javax.swing.ImageIcon
 
 object AppIO {
 
@@ -25,6 +36,42 @@ object AppIO {
         awtAppClassNameField.set(toolkit, title)
         working
     }.getOrNull() ?: false
+
+    fun loadAppIcon(
+        window: ComposeWindow,
+        scope: CoroutineScope,
+        vararg assets: AssetResource
+    ) = scope.launchIO {
+        val appIcons = assets.map { async {
+            getAppImage(it)
+        } }.awaitAll().filterNotNull()
+
+        withMainContext {
+            window.iconImages = appIcons
+        }
+    }
+
+    private suspend fun getAppImage(asset: AssetResource): Image? = suspendCatching {
+        (getResourceAsInputStream(asset.filePath)
+            ?: getResourceAsInputStream(asset.originalPath)
+            ?: asset.resourcesClassLoader.getResourceAsStream(asset.filePath)
+        )?.use {
+            ImageIcon(it.readBytes()).image
+        }
+    }.getOrNull()
+
+    private fun getResourceAsInputStream(location: String): InputStream? {
+        val classLoader = AppIO::class.java.classLoader ?: this::class.java.classLoader
+        return scopeCatching {
+            classLoader?.getResourceAsStream(location)
+        }.getOrNull() ?: scopeCatching {
+            AppIO::class.java.getResourceAsStream(location)
+        }.getOrNull() ?: scopeCatching {
+            this::class.java.getResourceAsStream(location)
+        }.getOrNull() ?: scopeCatching {
+            useResource(location) { it }
+        }.getOrNull()
+    }
 
     fun getFileInConfigDir(name: String): File {
         val parentFile = File(dirs.getUserConfigDir(APP_NAME, null, null))

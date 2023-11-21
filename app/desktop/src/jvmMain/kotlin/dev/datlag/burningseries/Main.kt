@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.WindowState
 import com.arkivanov.decompose.DefaultComponentContext
@@ -88,6 +89,30 @@ private fun runWindow() {
         exitProcessOnExit = true
     ) {
         LifecycleController(lifecycle, windowState)
+
+        AppIO.loadAppIcon(
+            this.window,
+            rememberCoroutineScope(),
+            SharedRes.assets.icns.launcher,
+            SharedRes.assets.ico.launcher_128,
+            SharedRes.assets.ico.launcher_96,
+            SharedRes.assets.ico.launcher_64,
+            SharedRes.assets.ico.launcher_48,
+            SharedRes.assets.ico.launcher_32,
+            SharedRes.assets.ico.launcher_16,
+            SharedRes.assets.png.launcher_128,
+            SharedRes.assets.png.launcher_96,
+            SharedRes.assets.png.launcher_64,
+            SharedRes.assets.png.launcher_48,
+            SharedRes.assets.png.launcher_32,
+            SharedRes.assets.png.launcher_16,
+            SharedRes.assets.svg.launcher_128,
+            SharedRes.assets.svg.launcher_96,
+            SharedRes.assets.svg.launcher_64,
+            SharedRes.assets.svg.launcher_48,
+            SharedRes.assets.svg.launcher_32,
+            SharedRes.assets.svg.launcher_16,
+        )
 
         InitCEF {
             CompositionLocalProvider(
