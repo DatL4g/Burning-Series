@@ -8,8 +8,10 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
+import dev.datlag.burningseries.Sekret
 import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.database.BurningSeries
+import dev.datlag.burningseries.getPackageName
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
@@ -17,8 +19,10 @@ import dev.datlag.burningseries.model.state.EpisodeAction
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.model.state.SeriesAction
 import dev.datlag.burningseries.model.state.SeriesState
+import dev.datlag.burningseries.network.WrapAPI
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.SeriesStateMachine
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.navigation.Component
 import dev.datlag.burningseries.ui.navigation.DialogComponent
 import dev.datlag.burningseries.ui.screen.initial.series.activate.ActivateScreenComponent
@@ -26,10 +30,12 @@ import dev.datlag.burningseries.ui.screen.initial.series.dialog.language.Languag
 import dev.datlag.burningseries.ui.screen.initial.series.dialog.season.SeasonDialogComponent
 import dev.datlag.burningseries.ui.screen.initial.series.dialog.unavailable.UnavailableDialog
 import dev.datlag.burningseries.ui.screen.initial.series.dialog.unavailable.UnavailableDialogComponent
+import io.github.aakira.napier.Napier
 import io.ktor.client.*
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
+import kotlinx.serialization.json.Json
 import org.kodein.di.DI
 import org.kodein.di.instance
 
@@ -44,7 +50,18 @@ class SeriesScreenComponent(
 ) : SeriesComponent, ComponentContext by componentContext {
 
     private val httpClient by di.instance<HttpClient>()
-    private val seriesStateMachine = SeriesStateMachine(httpClient, initialHref)
+    private val json by di.instance<Json>()
+    private val wrapAPI by di.instance<WrapAPI>()
+
+    private val seriesStateMachine = SeriesStateMachine(
+        client = httpClient,
+        href = initialHref,
+        json = json,
+        wrapAPI = wrapAPI,
+        wrapAPIKey = if (StateSaver.sekretLibraryLoaded) {
+            Sekret().wrapApi(getPackageName())
+        } else { null },
+    )
     override val seriesState: StateFlow<SeriesState> = seriesStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, SeriesState.Loading(initialHref))
 
     private val currentSeries = seriesState.mapNotNull { it as? SeriesState.Success }.map { it.series }.stateIn(ioScope(), SharingStarted.Lazily, null)

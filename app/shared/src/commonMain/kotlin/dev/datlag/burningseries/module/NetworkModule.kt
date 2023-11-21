@@ -6,6 +6,7 @@ import dev.datlag.burningseries.Sekret
 import dev.datlag.burningseries.getPackageName
 import dev.datlag.burningseries.network.Firestore
 import dev.datlag.burningseries.network.JsonBase
+import dev.datlag.burningseries.network.WrapAPI
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.HomeStateMachine
 import dev.datlag.burningseries.network.state.SaveStateMachine
@@ -18,6 +19,7 @@ import org.kodein.di.*
 object NetworkModule {
 
     private const val TAG_KTORFIT_JSONBASE = "JsonBaseKtorfit"
+    private const val TAG_KTORFIT_WRAPAPI = "WrapAPIKtorfit"
     private const val TAG_KTORFIT_FIRESTORE = "FirestoreKtorfit"
     const val NAME = "NetworkModule"
 
@@ -39,8 +41,25 @@ object NetworkModule {
             val jsonBaseKtor: Ktorfit = instance(TAG_KTORFIT_JSONBASE)
             jsonBaseKtor.create<JsonBase>()
         }
+        bindSingleton(TAG_KTORFIT_WRAPAPI) {
+            val builder = instance<Ktorfit.Builder>()
+            builder.build {
+                baseUrl("https://wrapapi.com/use/")
+            }
+        }
         bindSingleton {
-            HomeStateMachine(instance())
+            val wrapApiKtor: Ktorfit = instance(TAG_KTORFIT_WRAPAPI)
+            wrapApiKtor.create<WrapAPI>()
+        }
+        bindSingleton {
+            HomeStateMachine(
+                client = instance(),
+                json = instance(),
+                wrapApi = instance(),
+                wrapApiKey = if (StateSaver.sekretLibraryLoaded) {
+                    Sekret().wrapApi(getPackageName())
+                } else { null }
+            )
         }
         bindSingleton {
             SearchStateMachine(instance())
