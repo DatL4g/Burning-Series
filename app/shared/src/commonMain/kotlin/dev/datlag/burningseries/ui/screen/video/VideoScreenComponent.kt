@@ -1,6 +1,8 @@
 package dev.datlag.burningseries.ui.screen.video
 
 import androidx.compose.runtime.Composable
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.common.ioScope
@@ -12,6 +14,7 @@ import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.ui.theme.SchemeTheme
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import org.kodein.di.DI
@@ -32,6 +35,15 @@ class VideoScreenComponent(
     override val episode: StateFlow<Series.Episode> = episodeStateMachine.state.mapNotNull { it as? EpisodeState.EpisodeHolder }.map { it.episode }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialEpisode)
 
     private val database by di.instance<BurningSeries>()
+    private val dbEpisode = episode.transform {
+        return@transform emitAll(database.burningSeriesQueries.selectEpisodeByHref(it.href).asFlow().mapToOneOrNull(
+            currentCoroutineContext()
+        ))
+    }.stateIn(ioScope(), SharingStarted.Lazily, database.burningSeriesQueries.selectEpisodeByHref(episode.value.href).executeAsOneOrNull())
+
+    override val startingPos: StateFlow<Long> = dbEpisode.transform {
+        return@transform emit(it?.progress ?: 0L)
+    }.stateIn(ioScope(), SharingStarted.Lazily, dbEpisode.value?.progress ?: 0L)
 
     private val backPressCounter = MutableStateFlow(0)
 

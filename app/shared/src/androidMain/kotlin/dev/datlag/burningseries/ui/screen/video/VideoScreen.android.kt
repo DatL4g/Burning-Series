@@ -75,6 +75,7 @@ actual fun VideoScreen(component: VideoComponent) {
     val mediaItem = remember(streamList, streamIndex, sourceIndex) {
         MediaItem.fromUri(streamList[streamIndex].list[sourceIndex])
     }
+    val startingPos by component.startingPos.collectAsStateWithLifecycle()
 
     val castState by remember(castContext) { mutableStateOf(castContext?.castState) }
     val casting by remember(castState) { mutableStateOf(castState == CastState.CONNECTED || castState == CastState.CONNECTING) }
@@ -221,7 +222,7 @@ actual fun VideoScreen(component: VideoComponent) {
         } else {
             mediaItem
         }
-        usingPlayer.setMediaItem(media)
+        usingPlayer.setMediaItem(media, startingPos)
         usingPlayer.prepare()
 
         withIOContext {

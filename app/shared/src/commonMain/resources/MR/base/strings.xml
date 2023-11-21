@@ -44,4 +44,6 @@
     <string name="pause">Pause</string>
     <string name="play">Play</string>
     <string name="fullscreen">Fullscreen</string>
+    <string name="exit_fullscreen">Exit Fullscreen</string>
+    <string name="episode_progress">%s - %s</string>
 </resources>

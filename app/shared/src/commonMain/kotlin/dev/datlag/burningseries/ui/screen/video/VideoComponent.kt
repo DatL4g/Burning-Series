@@ -11,6 +11,8 @@ interface VideoComponent : Component {
     val episode: StateFlow<Series.Episode>
     val streams: List<Stream>
 
+    val startingPos: StateFlow<Long>
+
     fun back()
     fun ended()
     fun lengthUpdate(millis: Long)

@@ -49,5 +49,8 @@ updateEpisodeProgress {
     INSERT OR IGNORE INTO Episode (href, number, title, length, progress, seriesHref) VALUES (:href, :number, :title, :length, :progress, :seriesHref);
 }
 
+selectEpisodeByHref:
+SELECT * FROM Episode WHERE href = :href OR href LIKE :href;
+
 selectEpisodesBySeriesHref:
 SELECT * FROM Episode WHERE seriesHref = :href OR seriesHref LIKE :href;

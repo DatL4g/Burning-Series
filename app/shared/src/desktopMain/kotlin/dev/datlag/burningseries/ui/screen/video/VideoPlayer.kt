@@ -1,14 +1,12 @@
 package dev.datlag.burningseries.ui.screen.video
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.graphics.Color
+import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import org.apache.commons.lang3.SystemUtils
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery
 import uk.co.caprica.vlcj.player.base.MediaPlayer
@@ -25,7 +23,7 @@ fun VideoPlayer(
     val foundVlc = NativeDiscovery().discover()
 
     if (foundVlc) {
-        val mediaPlayer = remember {
+        val mediaPlayerComponent = remember {
             if (SystemUtils.IS_OS_MAC) {
                 CallbackMediaPlayerComponent()
             } else {
@@ -40,7 +38,7 @@ fun VideoPlayer(
                 background = Color.Black,
                 modifier = Modifier.fillMaxSize(),
                 factory = {
-                    mediaPlayer
+                    mediaPlayerComponent
                 }
             )
         }
@@ -53,6 +51,7 @@ fun VideoPlayer(
         val headers = remember(streamIndex) {
             streamList[streamIndex].headers
         }
+        val startingPos by component.startingPos.collectAsStateWithLifecycle()
 
         val isPlaying = remember { mutableStateOf(false) }
         val length = remember { mutableLongStateOf(0) }
@@ -100,46 +99,52 @@ fun VideoPlayer(
 
                 isPlaying.value = false
             }
+
+            override fun opening(mediaPlayer: MediaPlayer?) {
+                super.opening(mediaPlayer)
+
+                (mediaPlayer ?: mediaPlayerComponent.mediaPlayer())?.controls()?.setTime(startingPos)
+            }
         } }
 
-        LaunchedEffect(mediaPlayer, eventListener) {
-            mediaPlayer.mediaPlayer()?.events()?.addMediaPlayerEventListener(eventListener)
+        LaunchedEffect(mediaPlayerComponent, eventListener) {
+            mediaPlayerComponent.mediaPlayer()?.events()?.addMediaPlayerEventListener(eventListener)
         }
 
         SideEffect {
-            applyHeaders(headers, mediaPlayer.mediaPlayer())
-            mediaPlayer.mediaPlayer()?.media()?.play(url)
+            applyHeaders(headers, mediaPlayerComponent.mediaPlayer())
+            mediaPlayerComponent.mediaPlayer()?.media()?.play(url)
         }
 
-        DisposableEffect(mediaPlayer) {
+        DisposableEffect(mediaPlayerComponent) {
             onDispose {
-                mediaPlayer.mediaPlayer()?.release()
+                mediaPlayerComponent.mediaPlayer()?.release()
             }
         }
 
-        return remember(mediaPlayer) { object : dev.datlag.burningseries.ui.screen.video.MediaPlayer {
+        return remember(mediaPlayerComponent) { object : dev.datlag.burningseries.ui.screen.video.MediaPlayer {
             override val isPlaying: MutableState<Boolean> = isPlaying
             override val length: MutableLongState = length
             override val time: MutableLongState = time
 
             override fun play() {
-                mediaPlayer.mediaPlayer()?.controls()?.play()
+                mediaPlayerComponent.mediaPlayer()?.controls()?.play()
             }
 
             override fun pause() {
-                mediaPlayer.mediaPlayer()?.controls()?.pause()
+                mediaPlayerComponent.mediaPlayer()?.controls()?.pause()
             }
 
             override fun rewind() {
-                mediaPlayer.mediaPlayer()?.controls()?.skipTime(-10000)
+                mediaPlayerComponent.mediaPlayer()?.controls()?.skipTime(-10000)
             }
 
             override fun forward() {
-                mediaPlayer.mediaPlayer()?.controls()?.skipTime(10000)
+                mediaPlayerComponent.mediaPlayer()?.controls()?.skipTime(10000)
             }
 
             override fun seekTo(millis: Long) {
-                mediaPlayer.mediaPlayer()?.controls()?.setTime(millis)
+                mediaPlayerComponent.mediaPlayer()?.controls()?.setTime(millis)
             }
         } }
     }

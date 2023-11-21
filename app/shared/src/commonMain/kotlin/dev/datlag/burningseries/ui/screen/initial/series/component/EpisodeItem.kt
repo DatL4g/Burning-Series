@@ -23,6 +23,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -32,18 +33,24 @@ import dev.datlag.burningseries.common.*
 import dev.datlag.burningseries.database.Episode
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.ui.theme.TopLeftBottomRightRoundedShape
+import dev.icerock.moko.resources.compose.stringResource
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
+import dev.datlag.burningseries.SharedRes
 
 @Composable
 fun EpisodeItem(content: Series.Episode, dbEpisode: Episode?, isLoading: Boolean, onClick: () -> Unit) {
     val blurHash = remember(content.href) { BlurHash.random() }
     val enabled = content.hosters.isNotEmpty()
-    val isFinished = remember(dbEpisode) {
-        val length = dbEpisode?.length ?: 0L
-        val progress = dbEpisode?.progress ?: 0L
 
+    val length = remember(dbEpisode) {
+        dbEpisode?.length ?: 0L
+    }
+    val progress = remember(dbEpisode) {
+        dbEpisode?.progress ?: 0L
+    }
+    val isFinished = remember(length, progress) {
         if (length != 0L || progress != 0L) {
             Napier.e("Length: $length")
             Napier.e("Progress: $progress")
@@ -110,9 +117,24 @@ fun EpisodeItem(content: Series.Episode, dbEpisode: Episode?, isLoading: Boolean
                 CircularProgressIndicator()
             }
         }
-        Text(
-            text = content.episodeTitle,
-            maxLines = 3
-        )
+        Column(
+            modifier = Modifier.fillMaxHeight().weight(1F)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxWidth().weight(1F),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(
+                    text = content.episodeTitle,
+                    maxLines = 3
+                )
+            }
+            if (length != 0L && progress != 0L) {
+                Text(
+                    text = stringResource(SharedRes.strings.episode_progress, progress.toDuration(), length.toDuration()),
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        }
     }
 }

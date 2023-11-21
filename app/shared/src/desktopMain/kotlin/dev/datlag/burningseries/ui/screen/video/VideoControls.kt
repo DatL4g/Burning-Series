@@ -9,10 +9,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPlacement
 import dev.datlag.burningseries.LocalWindow
 import dev.datlag.burningseries.SharedRes
+import dev.datlag.burningseries.common.toDuration
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -29,7 +31,7 @@ fun VideoControls(
             derivedStateOf { mediaPlayer.length.value }
         }
         val window = LocalWindow.current
-        val originalPlacement = remember(window) { window.placement }
+        var originalPlacement = remember(window) { window.placement }
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -83,6 +85,11 @@ fun VideoControls(
                     tint = Color.White
                 )
             }
+            Text(
+                text = time.toDuration(),
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
             Slider(
                 modifier = Modifier.weight(1F),
                 value = time.toDouble().toFloat(),
@@ -95,6 +102,11 @@ fun VideoControls(
                     activeTrackColor = MaterialTheme.colorScheme.primary,
                     inactiveTrackColor = Color.White.copy(alpha = 0.2F)
                 )
+            )
+            Text(
+                text = length.toDuration(),
+                textAlign = TextAlign.Center,
+                color = Color.White
             )
             if (window.placement == WindowPlacement.Fullscreen) {
                 IconButton(
@@ -111,6 +123,7 @@ fun VideoControls(
             } else {
                 IconButton(
                     onClick = {
+                        originalPlacement = window.placement
                         window.placement = WindowPlacement.Fullscreen
                     }
                 ) {
