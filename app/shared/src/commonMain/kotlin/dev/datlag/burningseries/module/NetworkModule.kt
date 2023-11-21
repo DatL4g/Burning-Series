@@ -60,7 +60,7 @@ object NetworkModule {
                 firestoreKtor.create<Firestore>()
             }
         }
-        bindEagerSingleton {
+        bindProvider {
             EpisodeStateMachine(instance(), instance(), instanceOrNull(), instanceOrNull(), instanceOrNull())
         }
         bindEagerSingleton {

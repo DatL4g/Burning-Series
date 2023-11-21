@@ -37,8 +37,6 @@ class EpisodeStateMachine(
     private val firestoreApi: Firestore?
 ) : FlowReduxStateMachine<EpisodeState, EpisodeAction>(initialState = EpisodeState.Waiting) {
 
-    private val mongoHosterMap: MutableMap<String, List<String>> = mutableMapOf()
-
     init {
         spec {
             inState<EpisodeState.Waiting> {
@@ -80,7 +78,7 @@ class EpisodeStateMachine(
                             } }.awaitAll().filterNotNull()
                         }
 
-                        val mongoHoster = mongoHosterMap[episodeHref] ?: emptyList()
+                        val mongoHoster = StateSaver.mongoHosterMap[episodeHref] ?: emptyList()
                         val mongoDBResults = async {
                             mongoHoster.ifEmpty {
                                 val newList = suspendCatching {
@@ -88,7 +86,7 @@ class EpisodeStateMachine(
                                     doc.getArray("result").values.map { it.asDocument().getString("url").value }
                                 }.getOrNull() ?: emptyList()
 
-                                mongoHosterMap[episodeHref] = newList
+                                StateSaver.mongoHosterMap[episodeHref] = newList
                                 newList
                             }
                         }

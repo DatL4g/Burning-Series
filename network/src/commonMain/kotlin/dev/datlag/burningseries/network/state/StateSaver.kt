@@ -7,4 +7,6 @@ internal data object StateSaver {
 
     var mongoUser: User? = null
     var firebaseUser: FirebaseUser? = null
+
+    val mongoHosterMap: MutableMap<String, List<String>> = mutableMapOf()
 }

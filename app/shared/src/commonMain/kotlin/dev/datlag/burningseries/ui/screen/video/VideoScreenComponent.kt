@@ -9,11 +9,11 @@ import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
+import dev.datlag.burningseries.model.state.EpisodeState
+import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.ui.theme.SchemeTheme
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import org.kodein.di.DI
 import org.kodein.di.instance
 
@@ -28,7 +28,8 @@ class VideoScreenComponent(
 ) : VideoComponent, ComponentContext by componentContext {
 
     override val streams: List<Stream> = initialStreams.sortedBy { it.headers.size }
-    override val episode: StateFlow<Series.Episode> = MutableStateFlow(initialEpisode)
+    private val episodeStateMachine by di.instance<EpisodeStateMachine>()
+    override val episode: StateFlow<Series.Episode> = episodeStateMachine.state.mapNotNull { it as? EpisodeState.EpisodeHolder }.map { it.episode }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialEpisode)
 
     private val database by di.instance<BurningSeries>()
 

@@ -39,4 +39,9 @@
     <string name="activate_error_title">Error activating hoster</string>
     <string name="activate_error_text">Could not activate hoster, please try again later.</string>
     <string name="watch">Watch</string>
+    <string name="rewind">Rewind</string>
+    <string name="forward">Forward</string>
+    <string name="pause">Pause</string>
+    <string name="play">Play</string>
+    <string name="fullscreen">Fullscreen</string>
 </resources>
