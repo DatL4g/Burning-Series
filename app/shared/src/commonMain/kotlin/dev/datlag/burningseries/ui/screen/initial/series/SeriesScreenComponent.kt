@@ -238,6 +238,14 @@ class SeriesScreenComponent(
                     progress = 0L,
                     seriesHref = commonHref.value
                 )
+
+                episode.hosters.forEach { hoster ->
+                    database.burningSeriesQueries.insertHoster(
+                        href = hoster.href,
+                        title = hoster.title,
+                        episodeHref = episode.href
+                    )
+                }
             }
         }
     }

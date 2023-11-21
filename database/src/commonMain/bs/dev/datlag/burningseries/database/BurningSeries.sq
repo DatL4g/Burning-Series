@@ -13,7 +13,14 @@ CREATE TABLE IF NOT EXISTS Episode(
     length INTEGER NOT NULL,
     progress INTEGER NOT NULL,
     seriesHref TEXT NOT NULL,
-    FOREIGN KEY (seriesHref) REFERENCES Series(hrefPrimary) ON DELETE  NO ACTION
+    FOREIGN KEY (seriesHref) REFERENCES Series(hrefPrimary) ON DELETE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS Hoster(
+    href TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    episodeHref TEXT NOT NULL,
+    FOREIGN KEY (episodeHref) REFERENCES Episode(href) ON DELETE CASCADE
 );
 
 insertSeries:
@@ -54,3 +61,9 @@ SELECT * FROM Episode WHERE href = :href OR href LIKE :href;
 
 selectEpisodesBySeriesHref:
 SELECT * FROM Episode WHERE seriesHref = :href OR seriesHref LIKE :href;
+
+insertHoster:
+INSERT OR IGNORE INTO Hoster (href, title, episodeHref) VALUES (?, ?, ?);
+
+selectHosterByEpisodeHref:
+SELECT * FROM Hoster WHERE episodeHref = :href OR episodeHref LIKE :href;
