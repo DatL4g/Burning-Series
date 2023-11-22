@@ -60,7 +60,6 @@ kotlin {
 
                 api(libs.windowsize.multiplatform)
                 api(libs.insetsx)
-                api(libs.webview)
 
                 api(libs.ktor)
                 api(libs.ktor.content.negotiation)
@@ -98,6 +97,7 @@ kotlin {
                 api(libs.cast)
                 api(libs.cast.framework)
                 api(libs.accompanist.uicontroller)
+                api(libs.webview.android)
             }
         }
         val desktopMain by getting {
@@ -111,6 +111,7 @@ kotlin {
                 api(libs.ktor.jvm)
                 api(libs.appdirs)
                 api(libs.vlcj)
+                api(libs.webview.desktop)
             }
         }
     }

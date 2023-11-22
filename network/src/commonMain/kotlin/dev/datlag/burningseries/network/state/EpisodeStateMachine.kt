@@ -11,21 +11,16 @@ import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.firebase.FireStore
 import dev.datlag.burningseries.network.scraper.Video
 import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.FirebaseFirestore
-import dev.gitlive.firebase.firestore.firestore
-import dev.gitlive.firebase.firestore.where
 import io.ktor.client.*
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.Credentials
-import io.realm.kotlin.mongodb.User
 import io.realm.kotlin.mongodb.ext.call
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.serialization.json.JsonPrimitive
 import org.mongodb.kbson.BsonDocument
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -41,13 +36,13 @@ class EpisodeStateMachine(
         spec {
             inState<EpisodeState.Waiting> {
                 onEnterEffect {
-                    if (StateSaver.mongoUser == null) {
-                        StateSaver.mongoUser = suspendCatching {
+                    if (NetworkStateSaver.mongoUser == null) {
+                        NetworkStateSaver.mongoUser = suspendCatching {
                             app?.login(Credentials.anonymous())
                         }.getOrNull()
                     }
-                    if (StateSaver.firebaseUser == null) {
-                        StateSaver.firebaseUser = suspendCatching {
+                    if (NetworkStateSaver.firebaseUser == null) {
+                        NetworkStateSaver.firebaseUser = suspendCatching {
                             Firebase.auth.signInAnonymously().user
                         }.getOrNull()
                     }
@@ -78,15 +73,15 @@ class EpisodeStateMachine(
                             } }.awaitAll().filterNotNull()
                         }
 
-                        val mongoHoster = StateSaver.mongoHosterMap[episodeHref] ?: emptyList()
+                        val mongoHoster = NetworkStateSaver.mongoHosterMap[episodeHref] ?: emptyList()
                         val mongoDBResults = async {
                             mongoHoster.ifEmpty {
                                 val newList = suspendCatching {
-                                    val doc = StateSaver.mongoUser!!.functions.call<BsonDocument>("query", hosterHref.toTypedArray())
+                                    val doc = NetworkStateSaver.mongoUser!!.functions.call<BsonDocument>("query", hosterHref.toTypedArray())
                                     doc.getArray("result").values.map { it.asDocument().getString("url").value }
                                 }.getOrNull() ?: emptyList()
 
-                                StateSaver.mongoHosterMap[episodeHref] = newList
+                                NetworkStateSaver.mongoHosterMap[episodeHref] = newList
                                 newList
                             }
                         }

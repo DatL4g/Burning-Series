@@ -22,6 +22,7 @@ import dev.datlag.burningseries.common.lifecycle.LocalLifecycleOwner
 import dev.datlag.burningseries.model.common.systemProperty
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.SharedRes
+import dev.datlag.burningseries.network.state.NetworkStateSaver
 import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.navigation.NavHostComponent
 import dev.datlag.burningseries.window.disposableSingleWindowApplication
@@ -36,19 +37,11 @@ import io.kamel.image.config.Default
 import io.kamel.image.config.LocalKamelConfig
 import io.kamel.image.config.resourcesFetcher
 import io.kamel.image.config.svgDecoder
+import kotlinx.coroutines.runBlocking
 import org.kodein.di.DI
 import java.io.File
 
 fun main(vararg args: String) {
-    runWindow()
-}
-
-@OptIn(ExperimentalDecomposeApi::class)
-private fun runWindow() {
-    val appTitle = StringDesc.Resource(SharedRes.strings.app_name).localized()
-    AppIO.applyTitle(appTitle)
-    Napier.base(DebugAntilog())
-
     StateSaver.sekretLibraryLoaded = NativeLoader.loadLibrary("sekret", systemProperty("compose.application.resources.dir")?.let { File(it) })
 
     FirebasePlatform.initializeFirebasePlatform(object : FirebasePlatform() {
@@ -59,15 +52,35 @@ private fun runWindow() {
         override fun log(msg: String) = println(msg)
     })
 
+    val di = DI {
+        import(NetworkModule.di)
+    }
+
+    Runtime.getRuntime().addShutdownHook(Thread {
+        runBlocking {
+            NetworkStateSaver.firebaseUser?.delete()
+        }
+    })
+
+    runWindow(di)
+
+    runBlocking {
+        NetworkStateSaver.firebaseUser?.delete()
+    }
+}
+
+@OptIn(ExperimentalDecomposeApi::class)
+private fun runWindow(di: DI) {
+    val appTitle = StringDesc.Resource(SharedRes.strings.app_name).localized()
+    AppIO.applyTitle(appTitle)
+    Napier.base(DebugAntilog())
+
     val windowState = WindowState()
     val lifecycle = LifecycleRegistry()
     val lifecycleOwner = object : LifecycleOwner {
         override val lifecycle: Lifecycle = lifecycle
     }
     val backDispatcher = BackDispatcher()
-    val di = DI {
-        import(NetworkModule.di)
-    }
     val root = NavHostComponent(
         componentContext = DefaultComponentContext(
             lifecycle,

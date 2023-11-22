@@ -3,7 +3,7 @@ package dev.datlag.burningseries.network.state
 import dev.gitlive.firebase.auth.FirebaseUser
 import io.realm.kotlin.mongodb.User
 
-internal data object StateSaver {
+data object NetworkStateSaver {
 
     var mongoUser: User? = null
     var firebaseUser: FirebaseUser? = null

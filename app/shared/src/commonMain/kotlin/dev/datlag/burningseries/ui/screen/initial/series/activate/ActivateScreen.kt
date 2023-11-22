@@ -3,15 +3,18 @@ package dev.datlag.burningseries.ui.screen.initial.series.activate
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.icerock.moko.resources.compose.stringResource
 import dev.datlag.burningseries.SharedRes
+import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.ui.custom.state.UnreachableState
 import dev.datlag.burningseries.ui.screen.initial.series.activate.component.WebView
@@ -35,6 +38,21 @@ fun ActivateScreen(component: ActivateComponent) {
                             imageVector = Icons.Default.ArrowBackIosNew,
                             contentDescription = stringResource(SharedRes.strings.back)
                         )
+                    }
+                },
+                actions = {
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        val isSaving by component.isSaving.collectAsStateWithLifecycle()
+
+                        if (isSaving) {
+                            Icon(
+                                imageVector = Icons.Default.Save,
+                                contentDescription = stringResource(SharedRes.strings.saving)
+                            )
+                            CircularProgressIndicator()
+                        }
                     }
                 }
             )

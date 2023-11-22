@@ -22,6 +22,7 @@ import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import com.google.android.gms.cast.framework.CastContext
 import dev.datlag.burningseries.common.lifecycle.LocalLifecycleOwner
 import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
+import dev.datlag.burningseries.network.state.NetworkStateSaver
 import dev.datlag.burningseries.ui.KeyEventDispatcher
 import dev.datlag.burningseries.ui.PIPActions
 import dev.datlag.burningseries.ui.PIPEventDispatcher
@@ -35,6 +36,8 @@ import io.kamel.image.config.LocalKamelConfig
 import io.kamel.image.config.resourcesFetcher
 import io.kamel.image.config.resourcesIdMapper
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
+import org.kodein.di.instance
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {

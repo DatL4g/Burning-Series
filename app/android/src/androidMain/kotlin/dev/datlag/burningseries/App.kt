@@ -5,10 +5,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.multidex.MultiDexApplication
 import dev.datlag.burningseries.model.common.systemProperty
 import dev.datlag.burningseries.module.NetworkModule
+import dev.datlag.burningseries.network.state.NetworkStateSaver
 import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.sekret.NativeLoader
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.runBlocking
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.bindSingleton
@@ -41,6 +43,9 @@ class App : MultiDexApplication(), DIAware, DefaultLifecycleObserver {
         super.onDestroy(owner)
         defaultAllowRestrictedHeaders?.ifBlank { null }?.let {
             systemProperty("sun.net.http.allowRestrictedHeaders", it)
+        }
+        runBlocking {
+            NetworkStateSaver.firebaseUser?.delete()
         }
     }
 }

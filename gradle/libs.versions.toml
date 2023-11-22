@@ -22,6 +22,7 @@ grpc = "1.59.0"
 instesx = "0.1.0-alpha10"
 jsunpacker = "1.0.2"
 kamel = "0.8.3"
+kcef = "2023.10.13"
 kodein = "7.21.0"
 kotlin = "1.9.20"
 ksp = "1.9.20-1.0.14"
@@ -46,7 +47,6 @@ sqldelight = "2.0.0"
 turbine = "1.0.0"
 versions = "0.50.0"
 vlcj = "4.8.2"
-webview = "1.7.2"
 windowsize-multiplatform = "0.3.1"
 window-styler = "0.3.2"
 
@@ -124,7 +124,8 @@ sqldelight-native = { group = "app.cash.sqldelight", name = "native-driver", ver
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 vlcj = { group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
-webview = { group = "io.github.kevinnzou", name = "compose-webview-multiplatform", version.ref = "webview" }
+webview-android = { group = "com.google.accompanist", name = "accompanist-webview", version.ref = "accompanist" }
+webview-desktop = { group = "dev.datlag", name = "kcef", version.ref = "kcef" }
 windowsize-multiplatform = { group = "dev.chrisbanes.material3", name = "material3-window-size-class-multiplatform", version.ref = "windowsize-multiplatform" }
 window-styler = { group = "com.mayakapps.compose", name = "window-styler", version.ref = "window-styler" }
 

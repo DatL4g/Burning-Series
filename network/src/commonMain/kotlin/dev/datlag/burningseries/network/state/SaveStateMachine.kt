@@ -34,13 +34,13 @@ class SaveStateMachine(
         spec {
             inState<SaveState.Waiting> {
                 onEnterEffect {
-                    if (StateSaver.mongoUser == null) {
-                        StateSaver.mongoUser = suspendCatching {
+                    if (NetworkStateSaver.mongoUser == null) {
+                        NetworkStateSaver.mongoUser = suspendCatching {
                             app?.login(Credentials.anonymous())
                         }.getOrNull()
                     }
-                    if (StateSaver.firebaseUser == null) {
-                        StateSaver.firebaseUser = suspendCatching {
+                    if (NetworkStateSaver.firebaseUser == null) {
+                        NetworkStateSaver.firebaseUser = suspendCatching {
                             Firebase.auth.signInAnonymously().user
                         }.getOrNull()
                     }
@@ -62,14 +62,14 @@ class SaveStateMachine(
 
                         val mongoSaved = async {
                             suspendCatching {
-                                StateSaver.mongoUser!!.functions.call<RealmAny>("add", state.snapshot.data.href, state.snapshot.data.url)
+                                NetworkStateSaver.mongoUser!!.functions.call<RealmAny>("add", state.snapshot.data.href, state.snapshot.data.url)
                             }.getOrNull() != null
                         }
 
                         val firebaseSaved = async {
                             suspendCatching {
                                 FireStore.addStream(
-                                    firebaseUser = StateSaver.firebaseUser,
+                                    firebaseUser = NetworkStateSaver.firebaseUser,
                                     firestore = firestore,
                                     firestoreApi = firestoreApi,
                                     data = state.snapshot.data.firestore

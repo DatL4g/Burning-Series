@@ -27,6 +27,7 @@ import dev.datlag.burningseries.ui.screen.initial.series.activate.component.Dial
 import dev.datlag.burningseries.ui.screen.initial.series.activate.dialog.error.ErrorDialogComponent
 import dev.datlag.burningseries.ui.screen.initial.series.activate.dialog.success.SuccessDialogComponent
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
 import org.kodein.di.instance
@@ -44,6 +45,8 @@ class ActivateScreenComponent(
     private val saveState = saveStateMachine.state.stateIn(ioScope(), SharingStarted.Lazily, SaveState.Waiting)
     private val json by di.instance<Json>()
     private val savedData: MutableSet<String> = mutableSetOf()
+
+    override val isSaving = saveState.map { it is SaveState.Saving }.stateIn(ioScope(), SharingStarted.Lazily, saveState.value is SaveState.Saving)
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     override val dialog = childSlot(
