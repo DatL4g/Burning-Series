@@ -3,6 +3,9 @@ package dev.datlag.burningseries.module
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.ktorfitBuilder
 import dev.datlag.burningseries.Sekret
+import dev.datlag.burningseries.database.BurningSeries
+import dev.datlag.burningseries.database.common.toGenres
+import dev.datlag.burningseries.database.common.toSearchItems
 import dev.datlag.burningseries.getPackageName
 import dev.datlag.burningseries.network.Firestore
 import dev.datlag.burningseries.network.JsonBase
@@ -12,6 +15,7 @@ import dev.datlag.burningseries.network.state.HomeStateMachine
 import dev.datlag.burningseries.network.state.SaveStateMachine
 import dev.datlag.burningseries.network.state.SearchStateMachine
 import dev.datlag.burningseries.other.StateSaver
+import io.github.aakira.napier.Napier
 import io.ktor.client.*
 import io.realm.kotlin.mongodb.App
 import org.kodein.di.*
@@ -62,7 +66,28 @@ object NetworkModule {
             )
         }
         bindSingleton {
-            SearchStateMachine(instance())
+            val database = instance<BurningSeries>()
+
+            SearchStateMachine(
+                client = instance(),
+                json = instance(),
+                wrapApi = instance(),
+                wrapApiKey = if (StateSaver.sekretLibraryLoaded) {
+                    Sekret().wrapApi(getPackageName())
+                } else { null },
+                saveToDB = {
+                    database.burningSeriesQueries.transaction {
+                        it.genres.forEach { genre ->
+                            genre.toSearchItems().forEach { item ->
+                                database.burningSeriesQueries.insertSearchItem(item)
+                            }
+                        }
+                    }
+                },
+                loadFromDB = {
+                    database.burningSeriesQueries.selectAllSearchItems().executeAsList().toGenres()
+                }
+            )
         }
         if (StateSaver.sekretLibraryLoaded) {
             bindEagerSingleton {

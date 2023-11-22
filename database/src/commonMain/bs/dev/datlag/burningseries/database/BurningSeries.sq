@@ -23,6 +23,12 @@ CREATE TABLE IF NOT EXISTS Hoster(
     FOREIGN KEY (episodeHref) REFERENCES Episode(href) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS SearchItem(
+    href TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    genre TEXT NOT NULL
+);
+
 insertSeries:
 INSERT OR REPLACE INTO Series(hrefPrimary, href, title, coverHref, favoriteSince) VALUES (?, ?, ?, ?, ?);
 
@@ -67,3 +73,9 @@ INSERT OR IGNORE INTO Hoster (href, title, episodeHref) VALUES (?, ?, ?);
 
 selectHosterByEpisodeHref:
 SELECT * FROM Hoster WHERE episodeHref = :href OR episodeHref LIKE :href;
+
+insertSearchItem:
+INSERT OR IGNORE INTO SearchItem (href, title, genre) VALUES ?;
+
+selectAllSearchItems:
+SELECT * FROM SearchItem;

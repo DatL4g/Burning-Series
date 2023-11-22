@@ -51,11 +51,6 @@ fun EpisodeItem(content: Series.Episode, dbEpisode: Episode?, isLoading: Boolean
         dbEpisode?.progress ?: 0L
     }
     val isFinished = remember(length, progress) {
-        if (length != 0L || progress != 0L) {
-            Napier.e("Length: $length")
-            Napier.e("Progress: $progress")
-        }
-
         if (length > 0L && progress > 0L) {
             (progress.toDouble() / length.toDouble() * 100.0).toFloat() >= 85F
         } else {

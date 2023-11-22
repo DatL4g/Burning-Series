@@ -12,4 +12,7 @@ interface WrapAPI {
 
     @GET("DatLag/burning-series/series/latest")
     suspend fun getBurningSeries(@Query("wrapAPIKey") apiKey: String, @Query("href") href: String): WrapAPIResponse
+
+    @GET("DatLag/burning-series/search/latest")
+    suspend fun getBurningSeriesSearch(@Query("wrapAPIKey") apiKey: String): WrapAPIResponse
 }
