@@ -58,7 +58,7 @@ fun SeasonAndLanguageButtons(
                 CountryImage(
                     code = selectedLanguage.value,
                     description = selectedLanguage.title,
-                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                    iconSize = ButtonDefaults.IconSize
                 )
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = selectedLanguage.title)

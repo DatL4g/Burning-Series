@@ -1,4 +1,4 @@
-package dev.datlag.burningseries.ui.screen.initial.series.dialog.language
+package dev.datlag.burningseries.ui.screen.video.dialog.subtitle
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -6,7 +6,8 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.SubtitlesOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,13 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.compose.stringResource
 import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.ui.custom.CountryImage
-import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
-fun LanguageDialog(component: LanguageComponent) {
-    var selectedItem by remember { mutableStateOf(component.defaultLanguage) }
+fun SubtitleDialog(component: SubtitleComponent) {
+    var selectedItem by remember { mutableStateOf(component.initialChosen) }
 
     AlertDialog(
         onDismissRequest = {
@@ -28,7 +29,7 @@ fun LanguageDialog(component: LanguageComponent) {
         },
         title = {
             Text(
-                text = stringResource(SharedRes.strings.select_language),
+                text = stringResource(SharedRes.strings.select_subtitle),
                 style = MaterialTheme.typography.headlineMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -40,7 +41,31 @@ fun LanguageDialog(component: LanguageComponent) {
                 modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                component.languages.forEach {
+                Row(
+                    modifier = Modifier.selectable(
+                        selected = selectedItem == null,
+                        role = Role.RadioButton,
+                        onClick = { selectedItem = null }
+                    ).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selectedItem == null,
+                        onClick = null
+                    )
+                    Icon(
+                        imageVector = Icons.Default.SubtitlesOff,
+                        contentDescription = stringResource(SharedRes.strings.subtitles_off),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Text(
+                        text = stringResource(SharedRes.strings.subtitles_off),
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = true
+                    )
+                }
+                component.list.forEach {
                     val selected = selectedItem == it
                     Row(
                         modifier = Modifier.selectable(
@@ -56,7 +81,7 @@ fun LanguageDialog(component: LanguageComponent) {
                             onClick = null
                         )
                         CountryImage(
-                            code = it.value,
+                            code = it.code,
                             description = it.title,
                             iconSize = 24.dp
                         )
@@ -72,8 +97,8 @@ fun LanguageDialog(component: LanguageComponent) {
         confirmButton = {
             Button(
                 onClick = {
-                    if (component.defaultLanguage != selectedItem) {
-                        component.onConfirm(selectedItem)
+                    if (component.initialChosen != selectedItem) {
+                        component.choose(selectedItem)
                     } else {
                         component.dismiss()
                     }
@@ -100,7 +125,7 @@ fun LanguageDialog(component: LanguageComponent) {
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Default.Clear,
+                    imageVector = Icons.Default.Close,
                     contentDescription = stringResource(SharedRes.strings.close),
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )

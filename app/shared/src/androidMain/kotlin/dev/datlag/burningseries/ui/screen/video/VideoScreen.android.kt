@@ -33,6 +33,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.ui.DefaultTimeBar
 import androidx.media3.ui.PlayerView
 import androidx.mediarouter.app.MediaRouteButton
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -52,6 +53,7 @@ import dev.datlag.burningseries.common.findWindow
 import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.common.withIOContext
 import dev.datlag.burningseries.common.withMainContext
+import dev.datlag.burningseries.model.common.scopeCatching
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -64,13 +66,14 @@ val LocalCastContext = compositionLocalOf<CastContext?> { null }
 actual fun VideoScreen(component: VideoComponent) {
     val context = LocalContext.current
     val castContext = LocalCastContext.current
+    val dialogState by component.dialog.subscribeAsState()
 
     val streamList = remember { component.streams }
 
     var streamIndex by remember(streamList) { mutableIntStateOf(0) }
     var sourceIndex by remember(streamIndex) { mutableIntStateOf(0) }
-    val headers = remember(streamIndex) {
-        streamList[streamIndex].headers
+    val headers by remember(streamIndex) {
+        mutableStateOf(streamList[streamIndex].headers)
     }
     val mediaItem = remember(streamList, streamIndex, sourceIndex) {
         MediaItem.fromUri(streamList[streamIndex].list[sourceIndex])
@@ -94,8 +97,43 @@ actual fun VideoScreen(component: VideoComponent) {
         }
     } }
 
-    var subtitles = remember { emptyList<Language>() }
-    var selectedLanguage by remember { mutableStateOf<Language?>(null) }
+    var subtitles by remember { mutableStateOf(emptyList<VideoComponent.Subtitle>()) }
+    val selectedLanguage by component.selectedSubtitle.collectAsStateWithLifecycle()
+
+    fun updateSubtitles(tracks: Tracks) {
+        val languages = tracks.groups.mapNotNull { group ->
+            if (group.type != C.TRACK_TYPE_TEXT) {
+                return@mapNotNull null
+            }
+
+            val formats = (0 until group.length).map { index ->
+                group.getTrackFormat(index)
+            }
+            formats.mapNotNull { format ->
+                format.language
+            }
+        }.flatten().toSet().mapNotNull {
+            var title = Locale(it).displayLanguage
+            if (title == it) {
+                val code = it.split("[-_]".toRegex()).firstOrNull() ?: it
+                title = scopeCatching {
+                    Locale.Builder().setLanguage(code).build()
+                }.getOrNull()?.displayName ?: scopeCatching {
+                    Locale.forLanguageTag(code)
+                }.getOrNull()?.displayName ?: return@mapNotNull null
+            }
+            if (title != it) {
+                title += " ($it)"
+            }
+
+            VideoComponent.Subtitle(
+                code = it,
+                title = title
+            )
+        }
+
+        subtitles = languages
+    }
 
     val playListener = remember { object : Player.Listener {
         override fun onPlayerError(error: PlaybackException) {
@@ -111,33 +149,7 @@ actual fun VideoScreen(component: VideoComponent) {
         override fun onTracksChanged(tracks: Tracks) {
             super.onTracksChanged(tracks)
 
-            val languages = tracks.groups.mapNotNull { group ->
-                if (group.type != C.TRACK_TYPE_TEXT) {
-                    return@mapNotNull null
-                }
-
-                val formats = (0 until group.length).map { index ->
-                    group.getTrackFormat(index)
-                }
-                formats.mapNotNull { format ->
-                    format.language
-                }
-            }.flatten().toSet().map {
-                var title = Locale(it).displayLanguage
-                if (title == it) {
-                    title = Locale(it.split("[-_]".toRegex()).firstOrNull() ?: it).displayName
-                }
-                if (title != it) {
-                    title += " ($it)"
-                }
-
-                Language(
-                    code = it,
-                    title = title
-                )
-            }
-
-            subtitles = languages
+            updateSubtitles(tracks)
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -225,6 +237,8 @@ actual fun VideoScreen(component: VideoComponent) {
         usingPlayer.setMediaItem(media, startingPos)
         usingPlayer.prepare()
 
+        updateSubtitles(usingPlayer.currentTracks)
+
         withIOContext {
             do {
                 delay(3000)
@@ -280,6 +294,7 @@ actual fun VideoScreen(component: VideoComponent) {
 
             subtitleButton.setOnClickListener {
                 playerView.player?.pause()
+                component.selectSubtitle(subtitles)
             }
 
             KeyEventDispatcher = { event ->
@@ -332,6 +347,8 @@ actual fun VideoScreen(component: VideoComponent) {
             PIPActions = { null }
         }
     }
+
+    dialogState.child?.instance?.render()
 }
 
 @Composable
@@ -352,9 +369,3 @@ private fun RequireFullScreen() {
         }
     }
 }
-
-@Parcelize
-data class Language(
-    val code: String,
-    val title: String
-) : Parcelable

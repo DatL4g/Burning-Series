@@ -101,7 +101,7 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                         CountryImage(
                             code = code,
                             description = episode.flags.firstOrNull()?.title,
-                            modifier = Modifier.size(24.dp)
+                            iconSize = 24.dp
                         )
                     }
                     Text(

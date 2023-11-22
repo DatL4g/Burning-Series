@@ -1,12 +1,25 @@
 package dev.datlag.burningseries.ui.theme
 
 import dev.datlag.burningseries.SharedRes
+import dev.datlag.burningseries.model.common.scopeCatching
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.getImageByFileName
+import java.util.Locale
 
 object CountryImage {
 
-    fun getByCode(code: String): ImageResource {
+    fun getByCode(defaultCode: String, applyLocale: Boolean = true): ImageResource {
+        val code = if (applyLocale) {
+            val bestCode = defaultCode.split("[-_]".toRegex()).firstOrNull() ?: defaultCode
+            scopeCatching {
+                Locale.Builder().setLanguage(bestCode).build()
+            }.getOrNull()?.country ?: scopeCatching {
+                Locale.forLanguageTag(bestCode)
+            }.getOrNull()?.country ?: defaultCode
+        } else {
+            defaultCode
+        }
+
         return when {
             code.equals("AE", true) -> SharedRes.images.AE
             code.equals("AF", true) -> SharedRes.images.AF
@@ -181,7 +194,7 @@ object CountryImage {
 
             code.equals("YE", true) -> SharedRes.images.YE
 
-            else -> SharedRes.images.COUNTRY_UNKNOWN
+            else -> if (applyLocale) getByCode(defaultCode, false) else SharedRes.images.COUNTRY_UNKNOWN
         }
     }
 

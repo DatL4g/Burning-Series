@@ -48,4 +48,6 @@
     <string name="episode_progress">%s - %s</string>
     <string name="activate_unreachable">Unable to activate with your current network as the website is unreachable.</string>
     <string name="saving">Saving</string>
+    <string name="select_subtitle">Select Subtitle</string>
+    <string name="subtitles_off">Subtitles off</string>
 </resources>

@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.*
+import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.common.ioScope
 import dev.datlag.burningseries.common.launchIO
@@ -13,6 +15,8 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
+import dev.datlag.burningseries.ui.navigation.DialogComponent
+import dev.datlag.burningseries.ui.screen.video.dialog.subtitle.SubtitleDialogComponent
 import dev.datlag.burningseries.ui.theme.SchemeTheme
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -41,12 +45,31 @@ class VideoScreenComponent(
         ))
     }.stateIn(ioScope(), SharingStarted.Lazily, database.burningSeriesQueries.selectEpisodeByHref(episode.value.href).executeAsOneOrNull())
 
+    override val selectedSubtitle = MutableStateFlow<VideoComponent.Subtitle?>(null)
+
     override val startingPos: StateFlow<Long> = dbEpisode.transform {
         return@transform emit(it?.progress ?: 0L)
     }.stateIn(ioScope(), SharingStarted.Lazily, dbEpisode.value?.progress ?: 0L)
 
-    private val backPressCounter = MutableStateFlow(0)
+    private val dialogNavigation = SlotNavigation<DialogConfig>()
+    override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = childSlot(
+        source = dialogNavigation
+    ) { config, slotContext ->
+        when (config) {
+            is DialogConfig.Subtitle -> SubtitleDialogComponent(
+                componentContext = slotContext,
+                di = di,
+                initialChosen = selectedSubtitle.value,
+                list = config.list,
+                onDismiss = dialogNavigation::dismiss,
+                onChosen = {
+                    selectedSubtitle.value = it
+                }
+            )
+        }
+    }
 
+    private val backPressCounter = MutableStateFlow(0)
     private val backCallback = BackCallback {
         if (backPressCounter.value >= 1) {
             back()
@@ -107,5 +130,9 @@ class VideoScreenComponent(
             length = 0L,
             seriesHref = BSUtil.commonSeriesHref(series.href)
         )
+    }
+
+    override fun selectSubtitle(subtitles: List<VideoComponent.Subtitle>) {
+        dialogNavigation.activate(DialogConfig.Subtitle(subtitles))
     }
 }

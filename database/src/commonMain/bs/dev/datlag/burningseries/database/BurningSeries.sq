@@ -41,6 +41,9 @@ SELECT * FROM Series WHERE favoriteSince > 0 ORDER BY favoriteSince DESC;
 seriesByHref:
 SELECT * FROM Series WHERE hrefPrimary = :href OR hrefPrimary LIKE :href;
 
+seriesUpdateHrefByCommonHref:
+UPDATE Series SET href = :href WHERE hrefPrimary = :commonHref OR hrefPrimary LIKE :commonHref;
+
 updateSeriesFavoriteSince {
     UPDATE Series SET favoriteSince = :since WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
 

@@ -69,7 +69,11 @@ class SeriesScreenComponent(
     private val onDeviceReachable = successState.map { it.onDeviceReachable }.stateIn(ioScope(), SharingStarted.Eagerly, true)
     override val title: StateFlow<String> = currentSeries.mapNotNull { it?.title }.stateIn(ioScope(), SharingStarted.Lazily, initialTitle)
     override val href: StateFlow<String> = currentSeries.mapNotNull { it?.href }.stateIn(ioScope(), SharingStarted.Lazily, BSUtil.fixSeriesHref(initialHref))
-    override val commonHref: StateFlow<String> = href.map { BSUtil.commonSeriesHref(it) }.stateIn(ioScope(), SharingStarted.Lazily, BSUtil.commonSeriesHref(initialHref))
+    override val commonHref: StateFlow<String> = href.map {
+        val commonized = BSUtil.commonSeriesHref(it)
+        database.burningSeriesQueries.seriesUpdateHrefByCommonHref(it, commonized)
+        commonized
+    }.stateIn(ioScope(), SharingStarted.Lazily, BSUtil.commonSeriesHref(initialHref))
     override val coverHref: StateFlow<String?> = currentSeries.mapNotNull { it?.coverHref }.stateIn(ioScope(), SharingStarted.Lazily, initialCoverHref)
 
     private val database: BurningSeries by di.instance()
