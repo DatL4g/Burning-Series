@@ -98,6 +98,7 @@ kotlin {
                 api(libs.cast.framework)
                 api(libs.accompanist.uicontroller)
                 api(libs.webview.android)
+                api(libs.permission)
             }
         }
         val desktopMain by getting {

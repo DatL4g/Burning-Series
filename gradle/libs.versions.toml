@@ -29,7 +29,7 @@ ksp = "1.9.20-1.0.14"
 ktor = "2.3.6"
 ktorfit = "1.10.1"
 ktsoup = "0.3.0"
-lang = "3.13.0"
+lang = "3.14.0"
 material = "1.10.0"
 media3 = "1.2.0"
 moko-resources = "0.23.0"
@@ -109,6 +109,7 @@ moko-resources-generator = { group = "dev.icerock.moko", name = "resources-gener
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 parcelable = { group = "com.arkivanov.essenty", name = "parcelable", version.ref = "parcelable" }
+permission = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 protobuf = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protoc" }
 protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protoc" }
 realm = { group = "io.realm.kotlin", name = "library-base", version.ref = "realm" }

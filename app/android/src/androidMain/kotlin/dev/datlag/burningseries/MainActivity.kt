@@ -1,17 +1,21 @@
 package dev.datlag.burningseries
 
 import android.app.PictureInPictureParams
+import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Rational
 import android.view.KeyEvent
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.DefaultComponentContext
@@ -19,16 +23,18 @@ import com.arkivanov.essenty.backhandler.backHandler
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.essentyLifecycle
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.cast.framework.CastContext
 import dev.datlag.burningseries.common.lifecycle.LocalLifecycleOwner
 import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.network.state.NetworkStateSaver
-import dev.datlag.burningseries.ui.KeyEventDispatcher
-import dev.datlag.burningseries.ui.PIPActions
-import dev.datlag.burningseries.ui.PIPEventDispatcher
-import dev.datlag.burningseries.ui.PIPModeListener
+import dev.datlag.burningseries.ui.*
+import dev.datlag.burningseries.ui.custom.Permission
 import dev.datlag.burningseries.ui.navigation.NavHostComponent
 import dev.datlag.burningseries.ui.screen.video.LocalCastContext
+import dev.icerock.moko.resources.compose.stringResource
+import io.github.aakira.napier.Napier
 import io.kamel.core.config.KamelConfig
 import io.kamel.core.config.takeFrom
 import io.kamel.image.config.Default
@@ -44,6 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     private var castContext: MutableStateFlow<CastContext?> = MutableStateFlow(null)
 
+    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             this.setTheme(R.style.AppTheme)
@@ -78,6 +85,7 @@ class MainActivity : AppCompatActivity() {
             val result = it.result ?: CastContext.getSharedInstance()
             castContext.value = result
         }
+        SmallIcon = R.drawable.ic_launcher_foreground
 
         setContent {
             CompositionLocalProvider(
@@ -91,6 +99,44 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     App(di) {
                         root.render()
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            var showDialog by remember { mutableStateOf(true) }
+                            var showDialogAgain by remember { mutableStateOf(true) }
+
+                            Permission(
+                                permission = android.Manifest.permission.POST_NOTIFICATIONS,
+                                onGranted = {
+                                    NotificationPermission = true
+                                },
+                                onShowInfo = {
+                                    if (showDialog && showDialogAgain) {
+                                        val text = if (it.status.shouldShowRationale) {
+                                            SharedRes.strings.permission_notification_rational
+                                        } else {
+                                            SharedRes.strings.permission_notification
+                                        }
+
+                                        NotificationDialog(
+                                            text = stringResource(text),
+                                            onConfirm = {
+                                                it.launchPermissionRequest()
+                                            },
+                                            onDismiss = { force ->
+                                                showDialog = false
+                                                showDialogAgain = !force
+                                            }
+                                        )
+                                    }
+                                },
+                                onDeniedForever = {
+                                    showDialog = false
+                                    showDialogAgain = false
+                                }
+                            )
+                        } else {
+                            NotificationPermission = true
+                        }
                     }
                 }
             }

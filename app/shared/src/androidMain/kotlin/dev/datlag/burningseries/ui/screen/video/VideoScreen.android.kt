@@ -1,5 +1,15 @@
 package dev.datlag.burningseries.ui.screen.video
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationManager
+import android.content.pm.PackageManager
+import android.content.res.Resources.Theme
+import android.graphics.drawable.Icon
+import android.media.session.MediaSession.Token
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.MediaSessionCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -16,6 +26,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationChannelCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.res.ResourcesCompat.ThemeCompat
 import androidx.core.view.LayoutInflaterCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.media3.cast.CastPlayer
@@ -43,17 +57,16 @@ import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastState
-import dev.datlag.burningseries.ui.KeyEventDispatcher
-import dev.datlag.burningseries.ui.PIPActions
-import dev.datlag.burningseries.ui.PIPEventDispatcher
-import dev.datlag.burningseries.ui.PIPModeListener
 import dev.datlag.burningseries.R
+import dev.datlag.burningseries.SharedRes
 import dev.datlag.burningseries.common.findActivity
 import dev.datlag.burningseries.common.findWindow
 import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.common.withIOContext
 import dev.datlag.burningseries.common.withMainContext
 import dev.datlag.burningseries.model.common.scopeCatching
+import dev.datlag.burningseries.ui.*
+import dev.icerock.moko.resources.compose.stringResource
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -216,6 +229,47 @@ actual fun VideoScreen(component: VideoComponent) {
     DisposableEffect(session) {
         onDispose {
             session.release()
+        }
+    }
+
+    val mediaStyle = remember(session) {
+        Notification.MediaStyle().setMediaSession(session.sessionCompatToken.token as Token)
+    }
+    val channelName = stringResource(SharedRes.strings.channel_videoplayer_title)
+    val channelText = stringResource(SharedRes.strings.channel_videoplayer_text)
+    val channel = remember(channelName, channelText) {
+        NotificationChannelCompat.Builder("Cast", NotificationManager.IMPORTANCE_HIGH)
+            .setName(channelName)
+            .setDescription(channelText)
+            .build()
+    }
+
+    LaunchedEffect(channel) {
+        NotificationManagerCompat.from(context).createNotificationChannel(channel)
+    }
+
+    val notification = remember(mediaStyle, channel) {
+        (100..200).random() to Notification.Builder(context, channel.id)
+            .setStyle(mediaStyle)
+            .setSmallIcon(SmallIcon)
+            .build()
+    }
+
+    LaunchedEffect(notification) {
+        if (!NotificationPermission) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                NotificationPermission = true
+            }
+        }
+
+        if (NotificationPermission) {
+            NotificationManagerCompat.from(context).notify(notification.first, notification.second)
+        }
+    }
+
+    DisposableEffect(notification) {
+        onDispose {
+            NotificationManagerCompat.from(context).cancel(notification.first)
         }
     }
 

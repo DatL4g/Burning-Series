@@ -45,6 +45,11 @@
         <meta-data
                 android:name="instantapps.clients.allowed"
                 android:value="true"/>
+
+        <receiver
+                android:name="androidx.mediarouter.media.MediaTransferReceiver"
+                android:exported="true">
+        </receiver>
     </application>
 
 </manifest>
