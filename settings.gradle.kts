@@ -10,6 +10,8 @@ include(":network")
 include(":color")
 include(":database")
 
+include(":extension")
+
 pluginManagement {
     repositories {
         google()

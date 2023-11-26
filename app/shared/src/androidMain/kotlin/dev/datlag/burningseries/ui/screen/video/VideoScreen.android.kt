@@ -96,7 +96,7 @@ actual fun VideoScreen(component: VideoComponent) {
     val castState by remember(castContext) { mutableStateOf(castContext?.castState) }
     val casting by remember(castState) { mutableStateOf(castState == CastState.CONNECTED || castState == CastState.CONNECTING) }
     var cast by remember(casting) { mutableStateOf(casting) }
-    val useCastPlayer by remember(headers, cast) { mutableStateOf(headers.isEmpty() && cast) }
+    val useCastPlayer = remember(headers, cast) { headers.isEmpty() && cast }
 
     val sessionListener = remember { object : SessionAvailabilityListener {
         override fun onCastSessionAvailable() {

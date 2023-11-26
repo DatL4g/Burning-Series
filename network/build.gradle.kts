@@ -17,6 +17,11 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+    js(IR) {
+        browser()
+        nodejs()
+        binaries.executable()
+    }
 
     jvmToolchain(CompileOptions.jvmTargetVersion)
 
@@ -34,13 +39,23 @@ kotlin {
                 api(libs.ktsoup)
                 api(libs.ktsoup.fs)
                 api(libs.ktsoup.ktor)
-                api(libs.realm)
-                api(libs.realm.sync)
                 implementation(libs.jsunpacker)
                 api(libs.firebase.auth)
                 api(libs.firebase.store)
             }
         }
+
+        val realmCompatible by creating {
+            dependsOn(commonMain)
+            dependencies {
+                api(libs.realm)
+                api(libs.realm.sync)
+            }
+        }
+
+        jvmMain.get().dependsOn(realmCompatible)
+        androidMain.get().dependsOn(realmCompatible)
+        nativeMain.get().dependsOn(realmCompatible)
     }
 }
 
@@ -75,4 +90,5 @@ dependencies {
     add("kspIosX64", libs.ktorfit.ksp)
     add("kspIosArm64", libs.ktorfit.ksp)
     add("kspIosSimulatorArm64", libs.ktorfit.ksp)
+    add("kspJs", libs.ktorfit.ksp)
 }

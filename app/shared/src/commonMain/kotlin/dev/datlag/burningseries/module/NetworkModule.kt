@@ -10,6 +10,7 @@ import dev.datlag.burningseries.getPackageName
 import dev.datlag.burningseries.network.Firestore
 import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.WrapAPI
+import dev.datlag.burningseries.network.realm.RealmLoader
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.HomeStateMachine
 import dev.datlag.burningseries.network.state.SaveStateMachine
@@ -104,8 +105,11 @@ object NetworkModule {
                 firestoreKtor.create<Firestore>()
             }
         }
+        bindEagerSingleton {
+            RealmLoader(instanceOrNull())
+        }
         bindProvider {
-            EpisodeStateMachine(instance(), instance(), instanceOrNull(), instanceOrNull(), instanceOrNull())
+            EpisodeStateMachine(instance(), instance(), instance(), instanceOrNull(), instanceOrNull())
         }
         bindEagerSingleton {
             SaveStateMachine(instance(), instance(), instanceOrNull(), instanceOrNull(), instanceOrNull())

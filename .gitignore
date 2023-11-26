@@ -1,6 +1,7 @@
 app/release/*
 !app/release/.gitkeep
 
+sekret.properties
 app/shared/sekret.properties
 app/desktop/mongodb-realm
 app/shared/sekret/src

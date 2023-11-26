@@ -93,7 +93,11 @@ fun SeriesScreen(component: SeriesComponent) {
     }
 
     dialogState.child?.instance?.render()
+    EnterSeriesScreen()
 }
+
+@Composable
+expect fun EnterSeriesScreen()
 
 @Composable
 private fun CompactScreen(component: SeriesComponent) {

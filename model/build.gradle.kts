@@ -14,6 +14,11 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+    js(IR) {
+        browser()
+        nodejs()
+        binaries.executable()
+    }
 
     jvmToolchain(CompileOptions.jvmTargetVersion)
 
@@ -42,6 +47,10 @@ kotlin {
 
         jvmMain.get().dependencies {
             api(libs.lang)
+        }
+
+        jsMain.get().dependencies {
+            api(libs.coroutines.js)
         }
     }
 }

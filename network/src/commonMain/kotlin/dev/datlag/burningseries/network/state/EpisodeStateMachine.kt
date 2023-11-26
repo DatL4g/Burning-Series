@@ -9,25 +9,22 @@ import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.network.Firestore
 import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.firebase.FireStore
+import dev.datlag.burningseries.network.realm.RealmLoader
 import dev.datlag.burningseries.network.scraper.Video
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import io.ktor.client.*
-import io.realm.kotlin.mongodb.App
-import io.realm.kotlin.mongodb.Credentials
-import io.realm.kotlin.mongodb.ext.call
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import org.mongodb.kbson.BsonDocument
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EpisodeStateMachine(
     private val client: HttpClient,
     private val jsonBase: JsonBase,
-    private val app: App?,
+    private val realmLoader: RealmLoader,
     private val firestore: FirebaseFirestore?,
     private val firestoreApi: Firestore?
 ) : FlowReduxStateMachine<EpisodeState, EpisodeAction>(initialState = EpisodeState.Waiting) {
@@ -36,11 +33,7 @@ class EpisodeStateMachine(
         spec {
             inState<EpisodeState.Waiting> {
                 onEnterEffect {
-                    if (NetworkStateSaver.mongoUser == null) {
-                        NetworkStateSaver.mongoUser = suspendCatching {
-                            app?.login(Credentials.anonymous())
-                        }.getOrNull()
-                    }
+                    realmLoader.login()
                     if (NetworkStateSaver.firebaseUser == null) {
                         NetworkStateSaver.firebaseUser = suspendCatching {
                             Firebase.auth.signInAnonymously().user
@@ -76,11 +69,7 @@ class EpisodeStateMachine(
                         val mongoHoster = NetworkStateSaver.mongoHosterMap[episodeHref] ?: emptyList()
                         val mongoDBResults = async {
                             mongoHoster.ifEmpty {
-                                val newList = suspendCatching {
-                                    val doc = NetworkStateSaver.mongoUser!!.functions.call<BsonDocument>("query", hosterHref.toTypedArray())
-                                    doc.getArray("result").values.map { it.asDocument().getString("url").value }
-                                }.getOrNull() ?: emptyList()
-
+                                val newList = realmLoader.loadEpisodes(hosterHref)
                                 NetworkStateSaver.mongoHosterMap[episodeHref] = newList
                                 newList
                             }

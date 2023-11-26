@@ -20,6 +20,7 @@ version = appVersion
 
 sekret {
     packageName = artifact
+    propertiesFile = rootDir.canonicalPath
 }
 
 kotlin {
