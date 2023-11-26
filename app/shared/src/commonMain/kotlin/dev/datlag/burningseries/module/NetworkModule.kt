@@ -112,7 +112,7 @@ object NetworkModule {
             EpisodeStateMachine(instance(), instance(), instance(), instanceOrNull(), instanceOrNull())
         }
         bindEagerSingleton {
-            SaveStateMachine(instance(), instance(), instanceOrNull(), instanceOrNull(), instanceOrNull())
+            SaveStateMachine(instance(), instance(), instance(), instanceOrNull(), instanceOrNull())
         }
     }
 }

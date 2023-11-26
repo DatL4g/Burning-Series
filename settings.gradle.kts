@@ -10,7 +10,11 @@ include(":network")
 include(":color")
 include(":database")
 
-include(":extension")
+include(
+    ":extension",
+    ":extension:base",
+    ":extension:content",
+)
 
 pluginManagement {
     repositories {

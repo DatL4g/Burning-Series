@@ -7,4 +7,8 @@ actual object RealmLoader {
         return emptyList()
     }
 
+    actual suspend fun saveEpisode(href: String, url: String): Boolean {
+        return false
+    }
+
 }
