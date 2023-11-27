@@ -1,14 +1,20 @@
 plugins {
-  alias(libs.plugins.multiplatform)
+    alias(libs.plugins.multiplatform)
 }
 kotlin {
-  js(IR)
-  applyDefaultHierarchyTemplate()
-  sourceSets {
-    val commonMain by getting {
-      dependencies {
-        api("dev.datlag.sekret:sekret:0.2.0")
-      }
+    js(IR) {
+      binaries.executable()
+      browser()
+      nodejs()
     }
-  }
+
+    applyDefaultHierarchyTemplate()
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                api(libs.sekret)
+            }
+        }
+    }
 }

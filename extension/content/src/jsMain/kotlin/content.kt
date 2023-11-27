@@ -36,12 +36,59 @@ fun main() {
 
         if (document.getElementsByClassName("episodes").length <= 0) {
             checkEpisode(href)
+        } else {
+            checkSeason(href)
+        }
+    }
+}
+
+private fun checkSeason(docHref: String) {
+    fun checkHoster(hoster: Element) {
+        hoster.getAttribute("href")?.let { href ->
+            entryExists(href) { exists ->
+                if (exists) {
+                    val (background, content) = getThemeColor(docHref, href)
+                    val style = buildString {
+                        append("background-color: ${background.asHexColor()};")
+                        append("color: ${content.asHexColor()};")
+                        append("border: 3px solid ${background.asHexColor()};")
+                        append("border-radius: 3px;")
+                    }
+                    hoster.setAttribute("style", style)
+                }
+            }
+        }
+    }
+
+    val episodes = document.getElementsByClassName("episodes")[0]?.getElementsByTagName("tr")
+    episodes.forEachNotNull { episode ->
+        val hosters = episode.getElementsByTagName("td")[2]?.getElementsByTagName("a")
+        hosters.forEachNotNull { hoster ->
+            checkHoster(hoster)
         }
     }
 }
 
 @OptIn(ExperimentalStdlibApi::class)
 private fun checkEpisode(docHref: String) {
+    fun hosterApplyTheme(hoster: Element, href: String) {
+        val (background, content) = getThemeColor(docHref, href)
+        hoster.setAttribute("style", "background-color: ${background.asHexColor()}; color: ${content.asHexColor()}")
+    }
+
+    fun checkHoster(hoster: Element) {
+        if (hoster.hasClass("active")) {
+            return
+        }
+        hoster.getElementsByTagName("a")[0]?.getAttribute("href")?.let { href ->
+            entryExists(href) { exists ->
+                if (exists) {
+                    hosterApplyTheme(hoster, href)
+                }
+            }
+        }
+    }
+
     fun observeActivation(hoster: Element) {
         if (!hoster.hasClass("active")) {
             return
@@ -70,19 +117,7 @@ private fun checkEpisode(docHref: String) {
                         if (!url.isNullOrEmpty() && !href.isNullOrEmpty()) {
                             entrySave(href!!, url!!) { saved ->
                                 if (saved) {
-                                    val isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
-                                    val (fallbackBackground, fallbackContent) = if (isDarkMode) {
-                                        0xFF00497f.toInt() to 0xFFd2e4ff.toInt()
-                                    } else {
-                                        0xFFd2e4ff.toInt() to 0xFF001c37.toInt()
-                                    }
-                                    val scheme = themes[docHref]?.getScheme() ?: themes[href]?.getScheme()
-                                    val (background, content) = run {
-                                        (scheme?.primaryContainer ?: fallbackBackground) to (scheme?.onPrimaryContainer ?: fallbackContent)
-                                    }
-
-
-                                    hoster.setAttribute("style", "background-color: ${background.asHexColor()}; color: ${content.asHexColor()}")
+                                    hosterApplyTheme(hoster, href)
                                 }
                             }
                         }
@@ -108,6 +143,7 @@ private fun checkEpisode(docHref: String) {
     hosterArea.forEachNotNull { area ->
         val hosters = area.getElementsByTagName("li")
         hosters.forEachNotNull { hoster ->
+            checkHoster(hoster)
             observeActivation(hoster)
         }
     }
@@ -125,6 +161,28 @@ private fun entrySave(href: String, url: String, callback: (Boolean) -> Unit) {
     ).collect {
         callback((it as? Boolean) ?: false)
     }
+}
+
+private fun entryExists(href: String, callback: (Boolean) -> Unit) {
+    browser.runtime.sendMessage(
+        message = json.encodeToString(ExtensionMessage(
+            set = false,
+            href = href
+        ))
+    ).collect {
+        callback((it as? Boolean) ?: false)
+    }
+}
+
+private fun getThemeColor(docHref: String, href: String): Pair<Int, Int> {
+    val isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+    val (fallbackBackground, fallbackContent) = if (isDarkMode) {
+        0xFF00497f.toInt() to 0xFFd2e4ff.toInt()
+    } else {
+        0xFFd2e4ff.toInt() to 0xFF001c37.toInt()
+    }
+    val scheme = themes[docHref]?.getScheme() ?: themes[href]?.getScheme()
+    return (scheme?.primaryContainer ?: fallbackBackground) to (scheme?.onPrimaryContainer ?: fallbackContent)
 }
 
 private fun Theme.getScheme(): Scheme {

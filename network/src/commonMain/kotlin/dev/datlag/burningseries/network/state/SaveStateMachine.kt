@@ -40,7 +40,7 @@ class SaveStateMachine(
                 }
 
                 on<SaveAction.Save> { action, state ->
-                    state.override { SaveState.Saving(action.data) }
+                    state.override { SaveState.Saving(action.data, action.loadStream) }
                 }
             }
 
@@ -71,7 +71,11 @@ class SaveStateMachine(
                         return@coroutineScope jsonBaseSaved.await() || mongoSaved.await() || firebaseSaved.await()
                     }
 
-                    val stream = Video.loadVideos(client, state.snapshot.data.url)
+                    val stream = if (state.snapshot.loadStream) {
+                        Video.loadVideos(client, state.snapshot.data.url)
+                    } else {
+                        null
+                    }
 
                     if (anySuccess) {
                         state.override { SaveState.Success(stream) }
@@ -83,13 +87,13 @@ class SaveStateMachine(
 
             inState<SaveState.Success> {
                 on<SaveAction.Save> { action, state ->
-                    state.override { SaveState.Saving(action.data) }
+                    state.override { SaveState.Saving(action.data, action.loadStream) }
                 }
             }
 
             inState<SaveState.Error> {
                 on<SaveAction.Save> { action, state ->
-                    state.override { SaveState.Saving(action.data) }
+                    state.override { SaveState.Saving(action.data, action.loadStream) }
                 }
             }
         }

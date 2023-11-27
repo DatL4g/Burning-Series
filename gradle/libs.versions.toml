@@ -40,7 +40,7 @@ parcelable = "1.2.0"
 protobuf = "0.9.4"
 protoc = "3.24.4"
 realm = "1.12.0"
-sekret = "0.2.0"
+sekret = "0.2.1"
 serialization-json = "1.6.0"
 splashscreen = "1.0.1"
 sqldelight = "2.0.0"
@@ -87,6 +87,7 @@ ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-jvm = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-apple = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktor-js = { group = "io.ktor", name = "ktor-client-js", version.ref = "ktor" }
 ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktorfit = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-lib", version.ref = "ktorfit" }

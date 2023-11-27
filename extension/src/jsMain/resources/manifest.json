@@ -6,8 +6,7 @@
   "version": "0.0.0",
 
   "action": {
-    "default_icon": "icons/launcher_128.png",
-    "default_popup": "popup.html"
+    "default_icon": "icons/launcher_128.png"
   },
 
   "icons": {

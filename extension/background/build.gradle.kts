@@ -30,6 +30,15 @@ kotlin {
             implementation(parent?.project("base") ?: rootProject.project("extension:base"))
             implementation(rootProject.project("model"))
             implementation(rootProject.project("network"))
+
+            implementation(libs.ktor)
+            implementation(libs.ktor.js)
+            implementation(libs.ktor.content.negotiation)
+            implementation(libs.ktor.serialization.json)
         }
     }
+}
+
+tasks.build {
+    dependsOn(tasks.generateSekret)
 }

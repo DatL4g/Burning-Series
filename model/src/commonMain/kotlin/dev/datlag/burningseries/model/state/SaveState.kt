@@ -5,11 +5,11 @@ import dev.datlag.burningseries.model.Stream
 
 sealed interface SaveState {
     data object Waiting : SaveState
-    data class Saving(val data: HosterScraping) : SaveState
+    data class Saving(val data: HosterScraping, val loadStream: Boolean) : SaveState
     data class Success(val stream: Stream?) : SaveState
     data object Error : SaveState
 }
 
 sealed interface SaveAction {
-    data class Save(val data: HosterScraping) : SaveAction
+    data class Save(val data: HosterScraping, val loadStream: Boolean = true) : SaveAction
 }
