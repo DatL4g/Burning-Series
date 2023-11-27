@@ -14,6 +14,8 @@ include(
     ":extension",
     ":extension:base",
     ":extension:content",
+    ":extension:background",
+    ":extension:background:sekret",
 )
 
 pluginManagement {
