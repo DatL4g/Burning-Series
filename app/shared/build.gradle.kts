@@ -55,7 +55,6 @@ kotlin {
                 implementation(libs.aboutlibraries.compose)
 
                 api(libs.kamel)
-                api(libs.napier)
                 api(libs.moko.resources.compose)
                 api(libs.blurhash)
 

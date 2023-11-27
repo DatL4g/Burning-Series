@@ -6,7 +6,7 @@ import dev.datlag.burningseries.model.common.setFrom
 import dev.datlag.burningseries.model.common.suspendCatching
 import dev.datlag.burningseries.network.common.getSources
 import dev.datlag.burningseries.network.scraper.hoster.MixDrop
-import dev.datlag.burningseries.network.scraper.hoster.StreamTape
+import dev.datlag.burningseries.network.scraper.hoster.Streamtape
 import dev.datlag.jsunpacker.JsUnpacker
 import io.ktor.client.*
 import io.ktor.http.*
@@ -19,7 +19,7 @@ data object Video {
 
     private val MANIPULATION_LIST = setOf(
         MixDrop(),
-        StreamTape()
+        Streamtape()
     )
 
     suspend fun loadVideos(client: HttpClient, url: String): Stream? {

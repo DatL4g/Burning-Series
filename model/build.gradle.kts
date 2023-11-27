@@ -31,6 +31,7 @@ kotlin {
                 api(libs.serialization.json)
                 api(libs.coroutines)
                 api(libs.datetime)
+                api(libs.napier)
             }
         }
 

@@ -2,9 +2,10 @@ package dev.datlag.burningseries.network.scraper.hoster
 
 import dev.datlag.burningseries.model.common.listFrom
 import dev.datlag.burningseries.network.scraper.Video
+import io.github.aakira.napier.Napier
 import ktsoup.KtSoupDocument
 
-class StreamTape : Manipulation {
+class Streamtape : Manipulation {
     override fun match(url: String): Boolean {
         return "(?://|\\.)(s(?:tr)?(?:eam|have)?(?:ta?p?e?|cloud|adblock(?:plus|er))\\.(?:com|cloud|net|pe|site|link|cc|online|fun|cash|to|xyz))/(?:e|v)/([0-9a-zA-Z]+)".toRegex().containsMatchIn(url)
     }
@@ -33,17 +34,23 @@ class StreamTape : Manipulation {
 
         val srcUrl = buildString {
             parts.forEach { part ->
-                val p1 = "\"([^\"]*)".toRegex().find(part)?.groupValues?.get(1)
-                var p2 = 0
+                val partValues = "[\"']?(\\S+)[\"']\\S*\\s*\\([\"'](\\S+)[\"']".toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE)).find(part)?.groupValues
+                Napier.e(partValues.toString())
+                val p1 = partValues?.get(1)
+                val p2 = partValues?.get(2)
+                var p3 = 0
                 if (part.contains("substring")) {
-                    "substring\\((\\d+)".toRegex(RegexOption.IGNORE_CASE).findAll(part).forEach { result ->
+                    "substring\\((\\d+)".toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE)).findAll(part).forEach { result ->
                         result.groupValues.getOrNull(1)?.trim()?.toIntOrNull()?.let {
-                            p2 += it
+                            p3 += it
                         }
                     }
                 }
                 p1?.let {
-                    append(it.substring(p2))
+                    append(it)
+                }
+                p2?.let {
+                    append(it.substring(p3))
                 }
             }
             append("&stream=1")
