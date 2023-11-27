@@ -16,4 +16,10 @@ kotlin {
             }
         }
     }
+
+    sourceSets {
+        dependencies {
+
+        }
+    }
 }

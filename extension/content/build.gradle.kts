@@ -21,6 +21,7 @@ kotlin {
         jsMain.get().dependencies {
             implementation(parent?.project("base") ?: rootProject.project("extension:base"))
             implementation(rootProject.project("model"))
+            implementation(rootProject.project("color"))
         }
     }
 }
