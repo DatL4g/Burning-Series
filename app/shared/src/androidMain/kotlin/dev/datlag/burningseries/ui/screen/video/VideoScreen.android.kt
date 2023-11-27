@@ -96,13 +96,11 @@ actual fun VideoScreen(component: VideoComponent) {
     val castState by remember(castContext) { mutableStateOf(castContext?.castState) }
     val casting by remember(castState) { mutableStateOf(castState == CastState.CONNECTED || castState == CastState.CONNECTING) }
     var cast by remember(casting) { mutableStateOf(casting) }
-    val useCastPlayer = remember(headers, cast) { headers.isEmpty() && cast }
+    val useCastPlayer = remember(cast) { cast }
 
     val sessionListener = remember { object : SessionAvailabilityListener {
         override fun onCastSessionAvailable() {
-            if (headers.isEmpty()) {
-                cast = true
-            }
+            cast = true
         }
 
         override fun onCastSessionUnavailable() {
@@ -238,7 +236,7 @@ actual fun VideoScreen(component: VideoComponent) {
     val channelName = stringResource(SharedRes.strings.channel_videoplayer_title)
     val channelText = stringResource(SharedRes.strings.channel_videoplayer_text)
     val channel = remember(channelName, channelText) {
-        NotificationChannelCompat.Builder("Cast", NotificationManager.IMPORTANCE_HIGH)
+        NotificationChannelCompat.Builder("Cast", NotificationManager.IMPORTANCE_LOW)
             .setName(channelName)
             .setDescription(channelText)
             .build()
@@ -346,6 +344,10 @@ actual fun VideoScreen(component: VideoComponent) {
                 mediaRouteButton
             )
 
+            mediaRouteButton.setOnClickListener {
+                usingPlayer.pause()
+            }
+
             subtitleButton.setOnClickListener {
                 playerView.player?.pause()
                 component.selectSubtitle(subtitles)
@@ -369,14 +371,12 @@ actual fun VideoScreen(component: VideoComponent) {
             val playerView = view.findViewById<PlayerView>(R.id.player)
             val controls = playerView.findViewById<View>(R.id.exoplayer_controls)
             val title = controls.findViewById<TextView>(R.id.title)
-            val mediaRouteButton = controls.findViewById<MediaRouteButton>(R.id.cast_button)
             val subtitleButton = controls.findViewById<ImageButton>(R.id.subtitle)
             val progress = controls.findViewById<DefaultTimeBar>(R.id.exo_progress)
 
             playerView.player = usingPlayer
 
             title.text = episode.episodeTitle
-            mediaRouteButton.isEnabled = headers.isEmpty()
 
             if (subtitles.isNotEmpty()) {
                 subtitleButton.visibility = View.VISIBLE
