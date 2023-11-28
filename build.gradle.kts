@@ -1,5 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.gradle.jvm.toolchain.internal.JavaToolchain
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
+import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain
 
@@ -46,6 +48,10 @@ allprojects {
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions.jvmTarget = CompileOptions.jvmTarget
     }
+}
+
+plugins.withType<YarnPlugin> {
+    yarn.yarnLockAutoReplace = true
 }
 
 tasks.withType<DependencyUpdatesTask> {
