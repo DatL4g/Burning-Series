@@ -13,7 +13,7 @@ plugins {
     alias(libs.plugins.sekret)
 }
 
-val artifact = VersionCatalog.artifactName()
+val artifact = VersionCatalog.artifactName("shared")
 
 group = artifact
 version = appVersion

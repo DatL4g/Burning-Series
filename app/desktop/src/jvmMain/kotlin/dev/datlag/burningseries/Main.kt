@@ -18,14 +18,16 @@ import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.google.firebase.FirebasePlatform
-import dev.datlag.burningseries.common.lifecycle.LocalLifecycleOwner
+import dev.datlag.burningseries.shared.common.lifecycle.LocalLifecycleOwner
 import dev.datlag.burningseries.model.common.systemProperty
-import dev.datlag.burningseries.module.NetworkModule
-import dev.datlag.burningseries.SharedRes
+import dev.datlag.burningseries.shared.module.NetworkModule
 import dev.datlag.burningseries.network.state.NetworkStateSaver
-import dev.datlag.burningseries.other.StateSaver
-import dev.datlag.burningseries.ui.navigation.NavHostComponent
-import dev.datlag.burningseries.window.disposableSingleWindowApplication
+import dev.datlag.burningseries.shared.App
+import dev.datlag.burningseries.shared.AppIO
+import dev.datlag.burningseries.shared.LocalWindow
+import dev.datlag.burningseries.shared.other.StateSaver
+import dev.datlag.burningseries.shared.ui.navigation.NavHostComponent
+import dev.datlag.burningseries.shared.window.disposableSingleWindowApplication
 import dev.datlag.sekret.NativeLoader
 import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
@@ -36,10 +38,10 @@ import io.kamel.core.config.takeFrom
 import io.kamel.image.config.Default
 import io.kamel.image.config.LocalKamelConfig
 import io.kamel.image.config.resourcesFetcher
-import io.kamel.image.config.svgDecoder
 import kotlinx.coroutines.runBlocking
 import org.kodein.di.DI
 import java.io.File
+import dev.datlag.burningseries.shared.SharedRes
 
 fun main(vararg args: String) {
     StateSaver.sekretLibraryLoaded = NativeLoader.loadLibrary("sekret", systemProperty("compose.application.resources.dir")?.let { File(it) })

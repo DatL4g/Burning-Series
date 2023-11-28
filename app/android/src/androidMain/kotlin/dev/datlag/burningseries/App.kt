@@ -4,9 +4,9 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.multidex.MultiDexApplication
 import dev.datlag.burningseries.model.common.systemProperty
-import dev.datlag.burningseries.module.NetworkModule
+import dev.datlag.burningseries.shared.module.NetworkModule
 import dev.datlag.burningseries.network.state.NetworkStateSaver
-import dev.datlag.burningseries.other.StateSaver
+import dev.datlag.burningseries.shared.other.StateSaver
 import dev.datlag.sekret.NativeLoader
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier

@@ -17,6 +17,9 @@ datastore = "1.0.0"
 datetime = "0.4.1"
 decompose = "2.1.4-compose-experimental"
 firebase = "1.10.4"
+firebase-android = "20.4.2"
+firebase-android-auth = "22.3.0"
+firebase-android-firestore = "24.9.1"
 flowredux = "1.2.0"
 grpc = "1.59.0"
 instesx = "0.1.0-alpha10"
@@ -76,6 +79,9 @@ decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref
 decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-compose-jetbrains", version.ref = "decompose" }
 firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "firebase" }
 firebase-store = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "firebase" }
+firebase-android = { group = "com.google.firebase", name = "firebase-common", version.ref = "firebase-android" }
+firebase-android-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebase-android-auth" }
+firebase-android-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebase-android-firestore" }
 flowredux = { group = "com.freeletics.flowredux", name = "flowredux", version.ref = "flowredux" }
 grpc = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
 insetsx = { group = "com.moriatsushi.insetsx", name = "insetsx", version.ref = "instesx" }

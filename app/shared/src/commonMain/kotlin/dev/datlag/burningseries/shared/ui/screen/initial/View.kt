@@ -1,0 +1,17 @@
+package dev.datlag.burningseries.shared.ui.screen.initial
+
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
+
+@Parcelize
+sealed class View : Parcelable {
+
+    @Parcelize
+    data object Home : View(), Parcelable
+
+    @Parcelize
+    data object Favorite : View(), Parcelable
+
+    @Parcelize
+    data object Search : View(), Parcelable
+}

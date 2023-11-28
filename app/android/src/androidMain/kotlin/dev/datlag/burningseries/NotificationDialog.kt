@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
 import dev.icerock.moko.resources.compose.stringResource
+import dev.datlag.burningseries.shared.SharedRes
 
 @Composable
 fun NotificationDialog(text: String, onConfirm: () -> Unit, onDismiss: (Boolean) -> Unit) {

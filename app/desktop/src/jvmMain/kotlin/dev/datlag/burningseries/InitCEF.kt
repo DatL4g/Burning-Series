@@ -1,11 +1,12 @@
 package dev.datlag.burningseries
 
 import androidx.compose.runtime.*
-import dev.datlag.burningseries.common.LocalRestartRequired
-import dev.datlag.burningseries.common.withIOContext
-import dev.datlag.burningseries.other.CEFState
-import dev.datlag.burningseries.other.LocalCEFInitialization
-import dev.datlag.burningseries.window.ApplicationDisposer
+import dev.datlag.burningseries.shared.AppIO
+import dev.datlag.burningseries.shared.common.LocalRestartRequired
+import dev.datlag.burningseries.shared.common.withIOContext
+import dev.datlag.burningseries.shared.other.CEFState
+import dev.datlag.burningseries.shared.other.LocalCEFInitialization
+import dev.datlag.burningseries.shared.window.ApplicationDisposer
 import dev.datlag.kcef.KCEF
 import dev.datlag.kcef.KCEFBuilder
 import java.io.File

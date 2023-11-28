@@ -1,21 +1,16 @@
 package dev.datlag.burningseries
 
+import android.Manifest
 import android.app.PictureInPictureParams
-import android.content.Intent
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Rational
 import android.view.KeyEvent
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.DefaultComponentContext
@@ -26,15 +21,14 @@ import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.cast.framework.CastContext
-import dev.datlag.burningseries.common.lifecycle.LocalLifecycleOwner
-import dev.datlag.burningseries.common.lifecycle.collectAsStateWithLifecycle
-import dev.datlag.burningseries.network.state.NetworkStateSaver
-import dev.datlag.burningseries.ui.*
-import dev.datlag.burningseries.ui.custom.Permission
-import dev.datlag.burningseries.ui.navigation.NavHostComponent
-import dev.datlag.burningseries.ui.screen.video.LocalCastContext
+import dev.datlag.burningseries.shared.common.lifecycle.LocalLifecycleOwner
+import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
+import dev.datlag.burningseries.shared.App
+import dev.datlag.burningseries.shared.ui.*
+import dev.datlag.burningseries.shared.ui.custom.Permission
+import dev.datlag.burningseries.shared.ui.navigation.NavHostComponent
+import dev.datlag.burningseries.shared.ui.screen.video.LocalCastContext
 import dev.icerock.moko.resources.compose.stringResource
-import io.github.aakira.napier.Napier
 import io.kamel.core.config.KamelConfig
 import io.kamel.core.config.takeFrom
 import io.kamel.image.config.Default
@@ -42,9 +36,8 @@ import io.kamel.image.config.LocalKamelConfig
 import io.kamel.image.config.resourcesFetcher
 import io.kamel.image.config.resourcesIdMapper
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
-import org.kodein.di.instance
 import java.util.concurrent.Executors
+import dev.datlag.burningseries.shared.SharedRes
 
 class MainActivity : AppCompatActivity() {
 
@@ -105,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                             var showDialogAgain by remember { mutableStateOf(true) }
 
                             Permission(
-                                permission = android.Manifest.permission.POST_NOTIFICATIONS,
+                                permission = Manifest.permission.POST_NOTIFICATIONS,
                                 onGranted = {
                                     NotificationPermission = true
                                 },

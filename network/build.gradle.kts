@@ -53,8 +53,16 @@ kotlin {
             }
         }
 
+        val androidMain by getting {
+            dependsOn(realmCompatible)
+            dependencies {
+                api(libs.firebase.android)
+                api(libs.firebase.android.auth)
+                api(libs.firebase.android.firestore)
+            }
+        }
+
         jvmMain.get().dependsOn(realmCompatible)
-        androidMain.get().dependsOn(realmCompatible)
         nativeMain.get().dependsOn(realmCompatible)
     }
 }
