@@ -2,8 +2,8 @@ package dev.datlag.burningseries.shared.ui.custom
 
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Text
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,7 +70,7 @@ fun ExpandableText(
     modifier: Modifier = Modifier,
     expandedMaxLines: Int = Int.MAX_VALUE,
     toggle: @Composable (() -> Unit)? = null,
-    color: Color = LocalContentColor.current,
+    color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,
@@ -128,7 +128,7 @@ fun ExpandableText(
     modifier: Modifier = Modifier,
     expandedMaxLines: Int = Int.MAX_VALUE,
     toggle: @Composable (() -> Unit)? = null,
-    color: Color = LocalContentColor.current,
+    color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,

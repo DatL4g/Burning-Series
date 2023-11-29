@@ -27,7 +27,7 @@ fun <T> List<T>.safeSubList(from: Int, to: Int): List<T> {
     val safeFrom = max(min(from, lastIndex), 0)
     return this.subList(
         safeFrom,
-        max(safeFrom, min(to, lastIndex))
+        max(safeFrom, min(to, size))
     )
 }
 

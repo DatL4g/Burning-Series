@@ -17,6 +17,10 @@ import dev.datlag.burningseries.model.state.SearchState
 import dev.datlag.burningseries.network.state.SearchStateMachine
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.series.SeriesScreenComponent
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.*
 import org.kodein.di.DI
 import org.kodein.di.instance
@@ -50,16 +54,20 @@ class SearchScreenComponent(
         if (t2.isBlank()) {
             emptyList()
         } else {
-            t1.map {
-                when {
-                    it.title.equals(t2, true) -> it to 1.0
-                    it.title.startsWith(t2, true) -> it to 0.95
-                    it.title.contains(t2, true) -> it to 0.9
-                    else -> it to JaroWinkler.distance(it.title, t2)
-                }
-            }.filter {
-                it.second > 0.85
-            }.sortedByDescending { it.second }.map { it.first }.safeSubList(0, 10)
+            coroutineScope {
+                t1.map {
+                    async {
+                        when {
+                            it.title.trim().equals(t2.trim(), true) -> it to 1.0
+                            it.title.trim().startsWith(t2.trim(), true) -> it to 0.95
+                            it.title.trim().contains(t2.trim(), true) -> it to 0.9
+                            else -> it to JaroWinkler.distance(it.title.trim(), t2.trim())
+                        }
+                    }
+                }.awaitAll().filter {
+                    it.second > 0.85
+                }.sortedByDescending { it.second }.map { it.first }.safeSubList(0, 10)
+            }
         }
     }.stateIn(ioScope(), SharingStarted.Lazily, emptyList())
 
