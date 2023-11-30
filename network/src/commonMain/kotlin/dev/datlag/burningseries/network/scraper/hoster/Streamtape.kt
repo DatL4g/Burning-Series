@@ -35,7 +35,6 @@ class Streamtape : Manipulation {
         val srcUrl = buildString {
             parts.forEach { part ->
                 val partValues = "[\"']?(\\S+)[\"']\\S*\\s*\\([\"'](\\S+)[\"']".toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE)).find(part)?.groupValues
-                Napier.e(partValues.toString())
                 val p1 = partValues?.get(1)
                 val p2 = partValues?.get(2)
                 var p3 = 0

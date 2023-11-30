@@ -38,11 +38,11 @@ class ActivateScreenComponent(
 ) : ActivateComponent, ComponentContext by componentContext {
 
     private val saveStateMachine by di.instance<SaveStateMachine>()
-    private val saveState = saveStateMachine.state.stateIn(ioScope(), SharingStarted.Lazily, SaveState.Waiting)
+    private val saveState = saveStateMachine.state.stateIn(ioScope(), SharingStarted.WhileSubscribed(), SaveState.Waiting)
     private val json by di.instance<Json>()
     private val savedData: MutableSet<String> = mutableSetOf()
 
-    override val isSaving = saveState.map { it is SaveState.Saving }.stateIn(ioScope(), SharingStarted.Lazily, saveState.value is SaveState.Saving)
+    override val isSaving = saveState.map { it is SaveState.Saving }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), saveState.value is SaveState.Saving)
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     override val dialog = childSlot(

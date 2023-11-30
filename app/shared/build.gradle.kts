@@ -99,6 +99,7 @@ kotlin {
                 api(libs.accompanist.uicontroller)
                 api(libs.webview.android)
                 api(libs.permission)
+                api(libs.nanoid)
             }
         }
         val desktopMain by getting {

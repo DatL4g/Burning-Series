@@ -43,13 +43,13 @@ class VideoScreenComponent(
         return@transform emitAll(database.burningSeriesQueries.selectEpisodeByHref(it.href).asFlow().mapToOneOrNull(
             currentCoroutineContext()
         ))
-    }.stateIn(ioScope(), SharingStarted.Lazily, database.burningSeriesQueries.selectEpisodeByHref(episode.value.href).executeAsOneOrNull())
+    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), database.burningSeriesQueries.selectEpisodeByHref(episode.value.href).executeAsOneOrNull())
 
     override val selectedSubtitle = MutableStateFlow<VideoComponent.Subtitle?>(null)
 
     override val startingPos: StateFlow<Long> = dbEpisode.transform {
         return@transform emit(it?.progress ?: 0L)
-    }.stateIn(ioScope(), SharingStarted.Lazily, dbEpisode.value?.progress ?: 0L)
+    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), dbEpisode.value?.progress ?: 0L)
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = childSlot(

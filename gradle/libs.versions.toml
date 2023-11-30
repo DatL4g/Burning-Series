@@ -37,6 +37,7 @@ material = "1.10.0"
 media3 = "1.2.0"
 moko-resources = "0.23.0"
 multidex = "2.0.1"
+nanoid = "1.0.1"
 napier = "2.6.1"
 osdetector = "1.7.3"
 parcelable = "1.2.0"
@@ -114,6 +115,7 @@ media3-cast = { group = "androidx.media3", name = "media3-cast", version.ref = "
 moko-resources-compose = { group = "dev.icerock.moko", name = "resources-compose", version.ref = "moko-resources" }
 moko-resources-generator = { group = "dev.icerock.moko", name = "resources-generator", version.ref = "moko-resources" }
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
+nanoid = { group = "dev.datlag.nanoid", name = "nanoid", version.ref = "nanoid" }
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 parcelable = { group = "com.arkivanov.essenty", name = "parcelable", version.ref = "parcelable" }
 permission = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }

@@ -170,7 +170,7 @@ data object BurningSeries {
 
         val episodesDoc = doc.querySelector(".serie")?.querySelector(".episodes")?.querySelectorAll("tr") ?: emptyList()
         val episodeInfoList = episodesDoc.mapNotNull { episodesElement ->
-            val episodeList = episodesElement.querySelectorAll("td").mapNotNull { it.querySelector("a") }.map { data ->
+            val episodeList = episodesElement.querySelectorAll("td").flatMap { it.querySelectorAll("a") }.map { data ->
                 val text = data.querySelector("a")?.textContent() ?: String()
                 val episodeHref = BSUtil.normalizeHref(data.querySelector("a")?.getHref() ?: String())
 

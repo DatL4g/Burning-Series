@@ -64,19 +64,19 @@ class SeriesScreenComponent(
             Sekret().wrapApi(getPackageName())
         } else { null },
     )
-    override val seriesState: StateFlow<SeriesState> = seriesStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, SeriesState.Loading(initialHref))
+    override val seriesState: StateFlow<SeriesState> = seriesStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), SeriesState.Loading(initialHref))
 
     private val successState = seriesState.mapNotNull { it as? SeriesState.Success }
-    private val currentSeries = successState.map { it.series }.stateIn(ioScope(), SharingStarted.Lazily, null)
+    private val currentSeries = successState.map { it.series }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
     private val onDeviceReachable = successState.map { it.onDeviceReachable }.stateIn(ioScope(), SharingStarted.Eagerly, true)
-    override val title: StateFlow<String> = currentSeries.mapNotNull { it?.title }.stateIn(ioScope(), SharingStarted.Lazily, initialTitle)
-    override val href: StateFlow<String> = currentSeries.mapNotNull { it?.href }.stateIn(ioScope(), SharingStarted.Lazily, BSUtil.fixSeriesHref(initialHref))
+    override val title: StateFlow<String> = currentSeries.mapNotNull { it?.title }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialTitle)
+    override val href: StateFlow<String> = currentSeries.mapNotNull { it?.href }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), BSUtil.fixSeriesHref(initialHref))
     override val commonHref: StateFlow<String> = href.map {
         val commonized = BSUtil.commonSeriesHref(it)
         database.burningSeriesQueries.seriesUpdateHrefByCommonHref(it, commonized)
         commonized
-    }.stateIn(ioScope(), SharingStarted.Lazily, BSUtil.commonSeriesHref(initialHref))
-    override val coverHref: StateFlow<String?> = currentSeries.mapNotNull { it?.coverHref }.stateIn(ioScope(), SharingStarted.Lazily, initialCoverHref)
+    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), BSUtil.commonSeriesHref(initialHref))
+    override val coverHref: StateFlow<String?> = currentSeries.mapNotNull { it?.coverHref }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialCoverHref)
 
     private val database: BurningSeries by di.instance()
     override val isFavorite: StateFlow<Boolean> = commonHref.transform {
@@ -90,19 +90,19 @@ class SeriesScreenComponent(
                     s != null && s.favoriteSince > 0
                 }
         )
-    }.stateIn(ioScope(), SharingStarted.Lazily, database.burningSeriesQueries.seriesByHref(commonHref.value).executeAsOneOrNull()?.favoriteSince?.let { it > 0 } ?: false)
+    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), database.burningSeriesQueries.seriesByHref(commonHref.value).executeAsOneOrNull()?.favoriteSince?.let { it > 0 } ?: false)
 
     private val episodeStateMachine by di.instance<EpisodeStateMachine>()
-    private val episodeState: StateFlow<EpisodeState> = episodeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, EpisodeState.Waiting)
+    private val episodeState: StateFlow<EpisodeState> = episodeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), EpisodeState.Waiting)
     override val loadingEpisodeHref: StateFlow<String?> = episodeState.map {
         (it as? EpisodeState.Loading)?.episode?.href ?: (it as? EpisodeState.SuccessHoster)?.episode?.href
-    }.stateIn(ioScope(), SharingStarted.Lazily, null)
+    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
 
     override val dbEpisodes = commonHref.transform {
         return@transform emitAll(database.burningSeriesQueries.selectEpisodesBySeriesHref(it).asFlow().mapToList(
             currentCoroutineContext()
         ))
-    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, database.burningSeriesQueries.selectEpisodesBySeriesHref(commonHref.value).executeAsList())
+    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), database.burningSeriesQueries.selectEpisodesBySeriesHref(commonHref.value).executeAsList())
 
     private val navigation = SlotNavigation<SeriesConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(

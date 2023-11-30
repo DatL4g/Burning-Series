@@ -26,7 +26,7 @@ class HomeScreenComponent(
 ) : HomeComponent, ComponentContext by componentContext {
 
     private val homeStateMachine: HomeStateMachine by di.instance()
-    override val homeState: StateFlow<HomeState> = homeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, HomeState.Loading)
+    override val homeState: StateFlow<HomeState> = homeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), HomeState.Loading)
 
     private val navigation = SlotNavigation<HomeConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(

@@ -33,20 +33,20 @@ class SearchScreenComponent(
 ) : SearchComponent, ComponentContext by componentContext {
 
     private val searchStateMachine: SearchStateMachine by di.instance()
-    override val searchState: StateFlow<SearchState> = searchStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Lazily, SearchState.Loading)
+    override val searchState: StateFlow<SearchState> = searchStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), SearchState.Loading)
 
-    private val allGenres = searchState.mapNotNull { it as SearchState.Success }.map { it.genres }.stateIn(ioScope(), SharingStarted.Lazily, emptyList())
+    private val allGenres = searchState.mapNotNull { it as SearchState.Success }.map { it.genres }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), emptyList())
     private val allItems = allGenres.map { it.flatMap { g -> g.items } }
     private val maxGenres = allGenres.map { it.size }
     private val loadedGenres = MutableStateFlow(1)
 
     override val genres: StateFlow<List<Genre>> = combine(allGenres, loadedGenres) { t1, t2 ->
         t1.safeSubList(0, t2)
-    }.stateIn(ioScope(), SharingStarted.Lazily, emptyList())
+    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), emptyList())
 
     override val canLoadMoreGenres: StateFlow<Boolean> = combine(loadedGenres, maxGenres) { t1, t2 ->
         t1 < t2
-    }.stateIn(ioScope(), SharingStarted.Lazily, allGenres.value.size > loadedGenres.value)
+    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), allGenres.value.size > loadedGenres.value)
 
 
     private val searchQuery: MutableStateFlow<String> = MutableStateFlow(String())
@@ -69,7 +69,7 @@ class SearchScreenComponent(
                 }.sortedByDescending { it.second }.map { it.first }.safeSubList(0, 10)
             }
         }
-    }.stateIn(ioScope(), SharingStarted.Lazily, emptyList())
+    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), emptyList())
 
     private val navigation = SlotNavigation<SearchConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(

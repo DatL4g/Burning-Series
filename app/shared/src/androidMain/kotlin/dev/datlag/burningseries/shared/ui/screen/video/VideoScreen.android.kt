@@ -52,12 +52,15 @@ import dev.datlag.burningseries.shared.common.withIOContext
 import dev.datlag.burningseries.shared.common.withMainContext
 import dev.datlag.burningseries.model.common.scopeCatching
 import dev.datlag.burningseries.shared.ui.*
+import dev.datlag.nanoid.NanoIdUtils
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import java.util.Locale
+import kotlin.random.Random
 
 val LocalCastContext = compositionLocalOf<CastContext?> { null }
+val PseudoRandom = Random(12345) // pseudo random as secure random is not needed
 
 @Composable
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -205,8 +208,17 @@ actual fun VideoScreen(component: VideoComponent) {
         }
     }
 
-    val session = remember(localPlayer) {
-        MediaSession.Builder(context, localPlayer).build()
+    val usingPlayer = remember(castPlayer, localPlayer, useCastPlayer) {
+        if (useCastPlayer) {
+            castPlayer ?: localPlayer
+        } else {
+            localPlayer
+        }
+    }
+
+    val session = remember(usingPlayer) {
+        val nanoId = NanoIdUtils.randomNanoId(random = PseudoRandom)
+        MediaSession.Builder(context, usingPlayer).setId(nanoId).build()
     }
 
     DisposableEffect(session) {
@@ -253,14 +265,6 @@ actual fun VideoScreen(component: VideoComponent) {
     DisposableEffect(notification) {
         onDispose {
             NotificationManagerCompat.from(context).cancel(notification.first)
-        }
-    }
-
-    val usingPlayer = remember(castPlayer, localPlayer, useCastPlayer) {
-        if (useCastPlayer) {
-            castPlayer ?: localPlayer
-        } else {
-            localPlayer
         }
     }
 
