@@ -174,7 +174,6 @@ actual fun VideoScreen(component: VideoComponent) {
     val castPlayer = remember(castContext) {
         if (castContext != null) {
             CastPlayer(castContext)
-            CastPlayer(castContext)
         } else {
             null
         }
