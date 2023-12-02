@@ -1,5 +1,7 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series.activate.dialog.error
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -31,13 +33,27 @@ actual fun ErrorDialog(component: ErrorComponent) {
             text = stringResource(SharedRes.strings.activate_error_text),
             modifier = Modifier.padding(8.dp)
         )
-        Button(
-            onClick = {
-                component.dismiss()
-            },
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(8.dp).align(Alignment.End)
         ) {
-            Text(text = stringResource(SharedRes.strings.close))
+            if (component.stream != null) {
+                Button(
+                    onClick = {
+                        component.watch(component.stream!!)
+                    }
+                ) {
+                    Text(text = stringResource(SharedRes.strings.watch))
+                }
+            }
+            Button(
+                onClick = {
+                    component.dismiss()
+                }
+            ) {
+                Text(text = stringResource(SharedRes.strings.close))
+            }
         }
     }
 }

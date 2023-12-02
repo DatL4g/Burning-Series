@@ -7,7 +7,7 @@ sealed interface SaveState {
     data object Waiting : SaveState
     data class Saving(val data: HosterScraping, val loadStream: Boolean) : SaveState
     data class Success(val stream: Stream?) : SaveState
-    data object Error : SaveState
+    data class Error(val stream: Stream?) : SaveState
 }
 
 sealed interface SaveAction {

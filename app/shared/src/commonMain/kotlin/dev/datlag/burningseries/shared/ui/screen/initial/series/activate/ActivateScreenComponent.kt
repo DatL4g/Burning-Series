@@ -59,7 +59,9 @@ class ActivateScreenComponent(
             is DialogConfig.Error -> ErrorDialogComponent(
                 componentContext = slotContext,
                 di = di,
-                onDismissed = dialogNavigation::dismiss
+                stream = config.stream,
+                onDismissed = dialogNavigation::dismiss,
+                watchVideo = { watchVideo(it) }
             )
         }
     }
@@ -79,7 +81,7 @@ class ActivateScreenComponent(
                     }
                 } else if (state is SaveState.Error) {
                     withMainContext {
-                        dialogNavigation.activate(DialogConfig.Error)
+                        dialogNavigation.activate(DialogConfig.Error(state.stream))
                     }
                 }
             }

@@ -36,6 +36,19 @@ actual fun ErrorDialog(component: ErrorComponent) {
             ) {
                 Text(text = stringResource(SharedRes.strings.close))
             }
+        },
+        dismissButton = if (component.stream != null) {
+            {
+                Button(
+                    onClick = {
+                        component.watch(component.stream!!)
+                    }
+                ) {
+                    Text(text = stringResource(SharedRes.strings.watch))
+                }
+            }
+        } else {
+            null
         }
     )
 }

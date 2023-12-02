@@ -11,5 +11,5 @@ sealed class DialogConfig : Parcelable {
     data class Success(val stream: Stream?) : DialogConfig(), Parcelable
 
     @Parcelize
-    data object Error : DialogConfig(), Parcelable
+    data class Error(val stream: Stream?) : DialogConfig(), Parcelable
 }

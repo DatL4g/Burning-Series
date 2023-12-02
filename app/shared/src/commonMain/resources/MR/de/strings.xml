@@ -29,7 +29,7 @@
     <string name="close">Schließen</string>
     <string name="clear">Löschen</string>
     <string name="stream_unavailable_title">Stream nicht verfügbar</string>
-    <string name="stream_unavailable_text">Kein Stream verfügbar, du kannst welche jetzt in der App aktivieren oder die Browser-Extension auf dem PC verwenden.</string>
+    <string name="stream_unavailable_text">Kein Stream verfügbar, du kannst jetzt welche in der App aktivieren oder die Browser-Extension auf dem PC verwenden.</string>
     <string name="activate">Aktivieren</string>
     <string name="activate_hint">Aktiviere Episoden, indem du sie einmal lädst</string>
     <string name="later">Später</string>

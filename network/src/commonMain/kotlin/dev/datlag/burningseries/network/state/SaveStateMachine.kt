@@ -80,7 +80,7 @@ class SaveStateMachine(
                     if (anySuccess) {
                         state.override { SaveState.Success(stream) }
                     } else {
-                        state.override { SaveState.Error }
+                        state.override { SaveState.Error(stream) }
                     }
                 }
             }
