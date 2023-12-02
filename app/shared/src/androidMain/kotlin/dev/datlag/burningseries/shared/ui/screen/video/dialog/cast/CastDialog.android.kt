@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -167,7 +168,7 @@ private fun DeviceInfo(device: Device, onClick: () -> Unit, onConnected: () -> U
     }
 
     Row(
-        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp).onClick { onClick() },
+        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp).clip(MaterialTheme.shapes.small).onClick { onClick() },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -16,6 +16,7 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -117,7 +118,7 @@ private fun MainView(component: SearchComponent, modifier: Modifier = Modifier) 
                 }
                 items(genre.items) {
                     Text(
-                        modifier = Modifier.fillMaxWidth().onClick {
+                        modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.extraSmall).onClick {
                             component.itemClicked(SearchConfig.Series(it))
                         }.padding(12.dp).animateItemPlacement(),
                         text = it.title,
@@ -191,7 +192,7 @@ private fun SearchBar(component: SearchComponent) {
     ) {
         items.forEach { item ->
             Text(
-                modifier = Modifier.fillMaxWidth().onClick {
+                modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.extraSmall).onClick {
                     component.itemClicked(SearchConfig.Series(item))
                 }.padding(12.dp),
                 text = item.title,

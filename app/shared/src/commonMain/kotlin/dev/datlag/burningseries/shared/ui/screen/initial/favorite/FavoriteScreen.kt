@@ -18,6 +18,7 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
@@ -145,7 +146,7 @@ private fun SearchBar(component: FavoriteComponent) {
     ) {
         items.forEach { item ->
             Text(
-                modifier = Modifier.fillMaxWidth().onClick {
+                modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.extraSmall).onClick {
                     component.itemClicked(FavoriteConfig.Series(item))
                 }.padding(12.dp),
                 text = item.title,

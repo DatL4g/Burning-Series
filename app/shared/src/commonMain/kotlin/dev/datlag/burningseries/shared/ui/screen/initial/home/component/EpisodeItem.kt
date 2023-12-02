@@ -27,7 +27,7 @@ import io.kamel.image.asyncPainterResource
 @Composable
 fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
     ElevatedCard(
-        modifier = Modifier.animateItemPlacement().height(150.dp).bounceClick().onClick {
+        modifier = Modifier.animateItemPlacement().height(150.dp).bounceClick().clip(MaterialTheme.shapes.medium).onClick {
             onclick()
         }
     ) {
