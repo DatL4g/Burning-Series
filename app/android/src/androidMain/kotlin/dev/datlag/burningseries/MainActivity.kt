@@ -27,7 +27,6 @@ import dev.datlag.burningseries.shared.App
 import dev.datlag.burningseries.shared.ui.*
 import dev.datlag.burningseries.shared.ui.custom.Permission
 import dev.datlag.burningseries.shared.ui.navigation.NavHostComponent
-import dev.datlag.burningseries.shared.ui.screen.video.LocalCastContext
 import dev.icerock.moko.resources.compose.stringResource
 import io.kamel.core.config.KamelConfig
 import io.kamel.core.config.takeFrom
@@ -38,10 +37,11 @@ import io.kamel.image.config.resourcesIdMapper
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.concurrent.Executors
 import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.shared.common.withIOContext
+import dev.datlag.kast.Kast
+import kotlinx.coroutines.delay
 
 class MainActivity : AppCompatActivity() {
-
-    private var castContext: MutableStateFlow<CastContext?> = MutableStateFlow(null)
 
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,10 +74,7 @@ class MainActivity : AppCompatActivity() {
             di = di
         )
 
-        CastContext.getSharedInstance(this, Executors.newSingleThreadExecutor()).addOnCompleteListener {
-            val result = it.result ?: CastContext.getSharedInstance()
-            castContext.value = result
-        }
+        Kast.setup(this)
         SmallIcon = R.drawable.ic_launcher_foreground
 
         setContent {
@@ -85,55 +82,55 @@ class MainActivity : AppCompatActivity() {
                 LocalKamelConfig provides imageConfig,
                 LocalLifecycleOwner provides lifecycleOwner
             ) {
-                val cast by castContext.collectAsStateWithLifecycle()
+                App(di) {
+                    root.render()
 
-                CompositionLocalProvider(
-                    LocalCastContext provides cast
-                ) {
-                    App(di) {
-                        root.render()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        var showDialog by remember { mutableStateOf(true) }
+                        var showDialogAgain by remember { mutableStateOf(true) }
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            var showDialog by remember { mutableStateOf(true) }
-                            var showDialogAgain by remember { mutableStateOf(true) }
-
-                            Permission(
-                                permission = Manifest.permission.POST_NOTIFICATIONS,
-                                onGranted = {
-                                    NotificationPermission = true
-                                },
-                                onShowInfo = {
-                                    if (showDialog && showDialogAgain) {
-                                        val text = if (it.status.shouldShowRationale) {
-                                            SharedRes.strings.permission_notification_rational
-                                        } else {
-                                            SharedRes.strings.permission_notification
-                                        }
-
-                                        NotificationDialog(
-                                            text = stringResource(text),
-                                            onConfirm = {
-                                                it.launchPermissionRequest()
-                                            },
-                                            onDismiss = { force ->
-                                                showDialog = false
-                                                showDialogAgain = !force
-                                            }
-                                        )
+                        Permission(
+                            permission = Manifest.permission.POST_NOTIFICATIONS,
+                            onGranted = {
+                                NotificationPermission = true
+                            },
+                            onShowInfo = {
+                                if (showDialog && showDialogAgain) {
+                                    val text = if (it.status.shouldShowRationale) {
+                                        SharedRes.strings.permission_notification_rational
+                                    } else {
+                                        SharedRes.strings.permission_notification
                                     }
-                                },
-                                onDeniedForever = {
-                                    showDialog = false
-                                    showDialogAgain = false
+
+                                    NotificationDialog(
+                                        text = stringResource(text),
+                                        onConfirm = {
+                                            it.launchPermissionRequest()
+                                        },
+                                        onDismiss = { force ->
+                                            showDialog = false
+                                            showDialogAgain = !force
+                                        }
+                                    )
                                 }
-                            )
-                        } else {
-                            NotificationPermission = true
-                        }
+                            },
+                            onDeniedForever = {
+                                showDialog = false
+                                showDialogAgain = false
+                            }
+                        )
+                    } else {
+                        NotificationPermission = true
                     }
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        Kast.dispose()
     }
 
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {

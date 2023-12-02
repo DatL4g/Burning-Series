@@ -27,6 +27,7 @@ interface VideoComponent : Component {
     fun progressUpdate(millis: Long)
 
     fun selectSubtitle(subtitles: List<Subtitle>)
+    fun selectCast()
 
     @Parcelize
     data class Subtitle(

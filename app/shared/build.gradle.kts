@@ -65,6 +65,8 @@ kotlin {
                 api(libs.ktor.content.negotiation)
                 api(libs.ktor.serialization.json)
 
+                api("dev.datlag.kast:kast:0.1.6-SNAPSHOT")
+
                 api(project(":model"))
                 api(project(":network"))
                 api(project(":color"))
@@ -94,8 +96,6 @@ kotlin {
                 api(libs.media3.smooth)
                 api(libs.media3.ui)
                 api(libs.media3.cast)
-                api(libs.cast)
-                api(libs.cast.framework)
                 api(libs.accompanist.uicontroller)
                 api(libs.webview.android)
                 api(libs.permission)

@@ -16,6 +16,7 @@ import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
+import dev.datlag.burningseries.shared.ui.screen.video.dialog.cast.CastDialogComponent
 import dev.datlag.burningseries.shared.ui.screen.video.dialog.subtitle.SubtitleDialogComponent
 import dev.datlag.burningseries.shared.ui.theme.SchemeTheme
 import kotlinx.coroutines.currentCoroutineContext
@@ -65,6 +66,11 @@ class VideoScreenComponent(
                 onChosen = {
                     selectedSubtitle.value = it
                 }
+            ) as DialogComponent
+            is DialogConfig.Cast -> CastDialogComponent(
+                componentContext = slotContext,
+                di = di,
+                onDismiss = dialogNavigation::dismiss
             )
         }
     }
@@ -134,5 +140,9 @@ class VideoScreenComponent(
 
     override fun selectSubtitle(subtitles: List<VideoComponent.Subtitle>) {
         dialogNavigation.activate(DialogConfig.Subtitle(subtitles))
+    }
+
+    override fun selectCast() {
+        dialogNavigation.activate(DialogConfig.Cast)
     }
 }

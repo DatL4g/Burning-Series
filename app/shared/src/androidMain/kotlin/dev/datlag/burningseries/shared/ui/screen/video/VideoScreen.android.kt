@@ -13,6 +13,8 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -52,6 +54,9 @@ import dev.datlag.burningseries.shared.common.withIOContext
 import dev.datlag.burningseries.shared.common.withMainContext
 import dev.datlag.burningseries.model.common.scopeCatching
 import dev.datlag.burningseries.shared.ui.*
+import dev.datlag.kast.ConnectionState
+import dev.datlag.kast.Kast
+import dev.datlag.kast.UnselectReason
 import dev.datlag.nanoid.NanoIdUtils
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
@@ -59,14 +64,20 @@ import kotlinx.coroutines.isActive
 import java.util.Locale
 import kotlin.random.Random
 
-val LocalCastContext = compositionLocalOf<CastContext?> { null }
 val PseudoRandom = Random(12345) // pseudo random as secure random is not needed
 
 @Composable
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 actual fun VideoScreen(component: VideoComponent) {
     val context = LocalContext.current
-    val castContext = LocalCastContext.current
+    val castContext = Kast.castContext
+    val connectionState by Kast.connectionState.collectAsStateWithLifecycle()
+    val castButtonConnected = remember(connectionState) {
+        when (connectionState) {
+            is ConnectionState.DISCONNECTED -> false
+            else -> true
+        }
+    }
     val dialogState by component.dialog.subscribeAsState()
 
     val streamList = remember { component.streams }
@@ -321,20 +332,22 @@ actual fun VideoScreen(component: VideoComponent) {
             val playerView = view.findViewById<PlayerView>(R.id.player)
             val controls = playerView.findViewById<View>(R.id.exoplayer_controls)
             val backButton = controls.findViewById<ImageButton>(R.id.back_button)
-            val mediaRouteButton = controls.findViewById<MediaRouteButton>(R.id.cast_button)
+            val mediaRouteButton = controls.findViewById<ImageButton>(R.id.cast_button)
             val subtitleButton = controls.findViewById<ImageButton>(R.id.subtitle)
 
             backButton.setOnClickListener {
                 component.back()
             }
 
-            CastButtonFactory.setUpMediaRouteButton(
-                viewContext.findActivity() ?: viewContext,
-                mediaRouteButton
-            )
-
+            val initialIcon = if (castButtonConnected) {
+                R.drawable.baseline_cast_connected_24
+            } else {
+                R.drawable.baseline_cast_24
+            }
+            mediaRouteButton.setImageResource(initialIcon)
             mediaRouteButton.setOnClickListener {
                 usingPlayer.pause()
+                component.selectCast()
             }
 
             subtitleButton.setOnClickListener {
@@ -362,10 +375,18 @@ actual fun VideoScreen(component: VideoComponent) {
             val title = controls.findViewById<TextView>(R.id.title)
             val subtitleButton = controls.findViewById<ImageButton>(R.id.subtitle)
             val progress = controls.findViewById<DefaultTimeBar>(R.id.exo_progress)
+            val mediaRouteButton = controls.findViewById<ImageButton>(R.id.cast_button)
 
             playerView.player = usingPlayer
 
             title.text = episode.episodeTitle
+
+            val castIcon = if (castButtonConnected) {
+                R.drawable.baseline_cast_connected_24
+            } else {
+                R.drawable.baseline_cast_24
+            }
+            mediaRouteButton.setImageResource(castIcon)
 
             if (subtitles.isNotEmpty()) {
                 subtitleButton.visibility = View.VISIBLE
@@ -388,6 +409,7 @@ actual fun VideoScreen(component: VideoComponent) {
             PIPEventDispatcher = { null }
             PIPModeListener = { }
             PIPActions = { null }
+            Kast.unselect(UnselectReason.stopped)
         }
     }
 

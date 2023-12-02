@@ -10,4 +10,7 @@ sealed class DialogConfig : Parcelable {
     data class Subtitle(
         val list: List<VideoComponent.Subtitle>
     ) : DialogConfig(), Parcelable
+
+    @Parcelize
+    data object Cast : DialogConfig(), Parcelable
 }
