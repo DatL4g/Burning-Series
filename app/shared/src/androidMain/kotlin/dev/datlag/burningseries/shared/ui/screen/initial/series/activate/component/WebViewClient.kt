@@ -1,7 +1,6 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series.activate.component
 
 import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import com.google.accompanist.web.AccompanistWebViewClient
 

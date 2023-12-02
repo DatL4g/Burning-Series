@@ -3,13 +3,6 @@
 
 package browser.events
 
-import kotlin.Any
-import kotlin.Array
-import kotlin.Boolean
-import kotlin.Int
-import kotlin.String
-import kotlin.Unit
-
 /**
  * An object which allows the addition and removal of listeners for a Chrome event.
  */

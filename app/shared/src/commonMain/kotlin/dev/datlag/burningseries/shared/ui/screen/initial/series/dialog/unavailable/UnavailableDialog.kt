@@ -1,6 +1,9 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.unavailable
 
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
 import dev.datlag.burningseries.shared.SharedRes

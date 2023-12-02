@@ -8,10 +8,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
-import dev.datlag.burningseries.shared.Sekret
-import dev.datlag.burningseries.shared.common.*
 import dev.datlag.burningseries.database.BurningSeries
-import dev.datlag.burningseries.shared.getPackageName
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
@@ -22,10 +19,12 @@ import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.network.WrapAPI
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.SeriesStateMachine
+import dev.datlag.burningseries.shared.Sekret
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.common.withMainContext
+import dev.datlag.burningseries.shared.getPackageName
 import dev.datlag.burningseries.shared.other.StateSaver
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.navigation.DialogComponent

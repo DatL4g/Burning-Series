@@ -1,7 +1,5 @@
 package browser.tabs
 
-import kotlin.String
-
 /**
  * The tab's loading status.
  */

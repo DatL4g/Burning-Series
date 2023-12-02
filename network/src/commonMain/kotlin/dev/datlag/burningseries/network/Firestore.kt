@@ -3,9 +3,7 @@ package dev.datlag.burningseries.network
 import de.jensklingenberg.ktorfit.http.*
 import dev.datlag.burningseries.model.FirestoreDocument
 import dev.datlag.burningseries.model.FirestoreQuery
-import dev.datlag.burningseries.model.FirestoreQueryResponse
 import io.ktor.client.statement.*
-import kotlinx.serialization.json.JsonElement
 
 interface Firestore {
 
@@ -14,7 +12,7 @@ interface Firestore {
         "Accept: application/json"
     )
     @POST("databases/(default)/documents:runQuery")
-    suspend fun query(@Body request: FirestoreQuery): List<FirestoreQueryResponse>
+    suspend fun query(@Body request: FirestoreQuery): List<FirestoreQuery.Response>
 
     @Headers(
         "Content-Type: application/json",

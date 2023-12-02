@@ -1,10 +1,9 @@
 package dev.datlag.burningseries.shared.ui.theme
 
-import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.model.common.scopeCatching
+import dev.datlag.burningseries.shared.SharedRes
 import dev.icerock.moko.resources.ImageResource
-import dev.icerock.moko.resources.getImageByFileName
-import java.util.Locale
+import java.util.*
 
 object CountryImage {
 

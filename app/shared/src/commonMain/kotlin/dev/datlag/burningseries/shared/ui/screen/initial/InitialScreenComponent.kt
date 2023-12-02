@@ -9,14 +9,14 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.pages.*
 import com.arkivanov.decompose.value.Value
-import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
+import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.favorite.FavoriteScreenComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.home.HomeScreenComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.search.SearchScreenComponent
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.kodein.di.DI
 
 class InitialScreenComponent(

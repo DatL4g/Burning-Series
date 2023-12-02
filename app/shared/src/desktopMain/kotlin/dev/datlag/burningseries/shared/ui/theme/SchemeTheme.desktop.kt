@@ -10,8 +10,8 @@ import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.dzirbel.contextmenu.MaterialContextMenuRepresentation
-import dev.datlag.burningseries.shared.ContextMenuColors
 import dev.datlag.burningseries.color.createTheme
+import dev.datlag.burningseries.shared.ContextMenuColors
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

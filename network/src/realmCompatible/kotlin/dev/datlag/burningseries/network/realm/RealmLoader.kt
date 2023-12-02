@@ -1,13 +1,12 @@
 package dev.datlag.burningseries.network.realm
 
 import dev.datlag.burningseries.model.common.suspendCatching
-import dev.datlag.burningseries.network.state.NetworkStateSaver
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.User
-import org.mongodb.kbson.BsonDocument
 import io.realm.kotlin.mongodb.ext.call
 import io.realm.kotlin.types.RealmAny
+import org.mongodb.kbson.BsonDocument
 
 actual class RealmLoader(private val app: App?) {
     actual suspend fun login() {

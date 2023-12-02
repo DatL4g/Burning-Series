@@ -11,11 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.LocalRestartRequired
 import dev.datlag.burningseries.shared.common.header
 import dev.datlag.burningseries.shared.other.CEFState
 import dev.datlag.burningseries.shared.other.LocalCEFInitialization
-import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.window.ApplicationDisposer
 import dev.icerock.moko.resources.compose.stringResource
 

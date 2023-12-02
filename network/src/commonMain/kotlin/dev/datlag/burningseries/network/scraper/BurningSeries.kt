@@ -4,16 +4,12 @@ import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.common.getDigitsOrNull
 import dev.datlag.burningseries.model.common.suspendCatching
 import dev.datlag.burningseries.network.common.getHref
 import dev.datlag.burningseries.network.common.getSrc
 import dev.datlag.burningseries.network.common.getTitle
 import dev.datlag.burningseries.network.common.getValue
 import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

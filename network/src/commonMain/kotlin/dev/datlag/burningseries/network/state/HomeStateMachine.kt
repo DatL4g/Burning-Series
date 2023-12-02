@@ -2,13 +2,12 @@ package dev.datlag.burningseries.network.state
 
 import com.freeletics.flowredux.dsl.FlowReduxStateMachine
 import dev.datlag.burningseries.model.Home
-import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.model.state.HomeAction
+import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.network.WrapAPI
 import dev.datlag.burningseries.network.scraper.BurningSeries
 import io.ktor.client.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 

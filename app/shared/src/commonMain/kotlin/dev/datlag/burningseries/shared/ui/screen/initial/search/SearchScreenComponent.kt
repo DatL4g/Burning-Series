@@ -4,9 +4,6 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
-import dev.datlag.burningseries.shared.common.ioDispatcher
-import dev.datlag.burningseries.shared.common.ioScope
-import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
@@ -15,12 +12,14 @@ import dev.datlag.burningseries.model.common.safeSubList
 import dev.datlag.burningseries.model.state.SearchAction
 import dev.datlag.burningseries.model.state.SearchState
 import dev.datlag.burningseries.network.state.SearchStateMachine
+import dev.datlag.burningseries.shared.common.ioDispatcher
+import dev.datlag.burningseries.shared.common.ioScope
+import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.series.SeriesScreenComponent
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.*
 import org.kodein.di.DI
 import org.kodein.di.instance

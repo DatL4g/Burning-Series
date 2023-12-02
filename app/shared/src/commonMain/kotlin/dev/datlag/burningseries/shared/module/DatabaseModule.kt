@@ -1,7 +1,7 @@
 package dev.datlag.burningseries.shared.module
 
-import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.database.BurningSeries
+import dev.datlag.burningseries.database.DriverFactory
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
 import org.kodein.di.instance

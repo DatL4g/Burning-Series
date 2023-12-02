@@ -8,10 +8,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.web.rememberWebViewState
+import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.withIOContext
 import dev.datlag.burningseries.shared.common.withMainContext
-import dev.datlag.burningseries.model.BSUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 

@@ -2,9 +2,9 @@ package dev.datlag.burningseries.shared
 
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.res.useResource
+import dev.datlag.burningseries.model.common.*
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.common.withMainContext
-import dev.datlag.burningseries.model.common.*
 import dev.icerock.moko.resources.AssetResource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async

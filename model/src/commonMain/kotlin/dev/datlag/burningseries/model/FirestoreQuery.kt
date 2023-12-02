@@ -83,4 +83,9 @@ data class FirestoreQuery(
             @SerialName("fieldPath") val fieldPath: String
         )
     }
+
+    @Serializable
+    data class Response(
+        @SerialName("document") val document: FirestoreDocument
+    )
 }

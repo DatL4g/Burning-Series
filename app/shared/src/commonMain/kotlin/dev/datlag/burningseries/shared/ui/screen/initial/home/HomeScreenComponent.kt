@@ -4,17 +4,20 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
-import dev.datlag.burningseries.shared.common.ioDispatcher
-import dev.datlag.burningseries.shared.common.ioScope
-import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.state.HomeAction
 import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.network.state.HomeStateMachine
+import dev.datlag.burningseries.shared.common.ioDispatcher
+import dev.datlag.burningseries.shared.common.ioScope
+import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.series.SeriesScreenComponent
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import org.kodein.di.DI
 import org.kodein.di.instance
 

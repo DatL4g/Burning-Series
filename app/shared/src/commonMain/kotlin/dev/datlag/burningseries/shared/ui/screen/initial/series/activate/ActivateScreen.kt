@@ -12,12 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import dev.icerock.moko.resources.compose.stringResource
+import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
-import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.shared.ui.custom.state.UnreachableState
 import dev.datlag.burningseries.shared.ui.screen.initial.series.activate.component.WebView
+import dev.icerock.moko.resources.compose.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

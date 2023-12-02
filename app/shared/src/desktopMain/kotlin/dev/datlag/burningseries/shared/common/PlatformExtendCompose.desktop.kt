@@ -1,9 +1,9 @@
 package dev.datlag.burningseries.shared.common
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.ui.Modifier
 import androidx.compose.foundation.onClick
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import com.arkivanov.decompose.ExperimentalDecomposeApi

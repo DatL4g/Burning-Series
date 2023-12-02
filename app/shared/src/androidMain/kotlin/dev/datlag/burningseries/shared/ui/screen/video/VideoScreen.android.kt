@@ -13,8 +13,6 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -39,20 +37,16 @@ import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.*
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.DefaultTimeBar
 import androidx.media3.ui.PlayerView
-import androidx.mediarouter.app.MediaRouteButton
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.android.gms.cast.framework.CastButtonFactory
-import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastState
+import dev.datlag.burningseries.model.common.scopeCatching
 import dev.datlag.burningseries.shared.R
 import dev.datlag.burningseries.shared.SharedRes
-import dev.datlag.burningseries.shared.common.findActivity
 import dev.datlag.burningseries.shared.common.findWindow
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.withIOContext
 import dev.datlag.burningseries.shared.common.withMainContext
-import dev.datlag.burningseries.model.common.scopeCatching
 import dev.datlag.burningseries.shared.ui.*
 import dev.datlag.kast.ConnectionState
 import dev.datlag.kast.Kast
@@ -61,7 +55,7 @@ import dev.datlag.nanoid.NanoIdUtils
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import java.util.Locale
+import java.util.*
 import kotlin.random.Random
 
 val PseudoRandom = Random(12345) // pseudo random as secure random is not needed

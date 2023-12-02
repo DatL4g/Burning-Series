@@ -1,14 +1,14 @@
 package dev.datlag.burningseries.database.common
 
-import dev.datlag.burningseries.database.Hoster
-import dev.datlag.burningseries.model.Series.Episode.Hoster as ModelHoster
 import dev.datlag.burningseries.database.Episode
+import dev.datlag.burningseries.database.Hoster
 import dev.datlag.burningseries.database.SearchItem
-import dev.datlag.burningseries.model.Series.Episode as ModelEpisode
 import dev.datlag.burningseries.database.Series
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.Series as ModelSeries
+import dev.datlag.burningseries.model.Series.Episode as ModelEpisode
+import dev.datlag.burningseries.model.Series.Episode.Hoster as ModelHoster
 
 fun Series.toModelSeries(episodes: List<Episode>, hosters: List<Hoster>): ModelSeries {
     return ModelSeries(

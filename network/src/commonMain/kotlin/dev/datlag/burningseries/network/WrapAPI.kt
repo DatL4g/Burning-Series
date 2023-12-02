@@ -3,7 +3,6 @@ package dev.datlag.burningseries.network
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
 import dev.datlag.burningseries.model.WrapAPIResponse
-import kotlinx.serialization.json.JsonElement
 
 interface WrapAPI {
 

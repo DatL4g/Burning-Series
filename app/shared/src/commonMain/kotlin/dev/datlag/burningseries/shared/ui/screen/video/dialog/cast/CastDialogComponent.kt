@@ -2,7 +2,6 @@ package dev.datlag.burningseries.shared.ui.screen.video.dialog.cast
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
-import dev.datlag.kast.Device
 import org.kodein.di.DI
 
 class CastDialogComponent(

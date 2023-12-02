@@ -1,9 +1,9 @@
 package dev.datlag.burningseries.shared.module
 
 import android.content.Context
+import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.shared.AppIO
 import dev.datlag.burningseries.shared.Sekret
-import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.shared.getPackageName
 import dev.datlag.burningseries.shared.other.StateSaver
 import dev.gitlive.firebase.Firebase

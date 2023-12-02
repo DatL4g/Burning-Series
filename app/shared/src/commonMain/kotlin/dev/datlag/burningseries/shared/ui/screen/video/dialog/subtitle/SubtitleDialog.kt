@@ -15,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.icerock.moko.resources.compose.stringResource
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.ui.custom.CountryImage
+import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun SubtitleDialog(component: SubtitleComponent) {

@@ -3,10 +3,6 @@
 
 package browser.events
 
-import kotlin.Array
-import kotlin.Int
-import kotlin.String
-
 /**
  * Description of a declarative rule for handling events.
  */

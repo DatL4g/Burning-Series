@@ -2,11 +2,9 @@ package dev.datlag.burningseries.shared.module
 
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.ktorfitBuilder
-import dev.datlag.burningseries.shared.Sekret
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.database.common.toGenres
 import dev.datlag.burningseries.database.common.toSearchItems
-import dev.datlag.burningseries.shared.getPackageName
 import dev.datlag.burningseries.network.Firestore
 import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.WrapAPI
@@ -15,6 +13,8 @@ import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.HomeStateMachine
 import dev.datlag.burningseries.network.state.SaveStateMachine
 import dev.datlag.burningseries.network.state.SearchStateMachine
+import dev.datlag.burningseries.shared.Sekret
+import dev.datlag.burningseries.shared.getPackageName
 import dev.datlag.burningseries.shared.other.StateSaver
 import io.ktor.client.*
 import io.realm.kotlin.mongodb.App

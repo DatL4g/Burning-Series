@@ -2,7 +2,6 @@ package dev.datlag.burningseries.network.scraper.hoster
 
 import dev.datlag.burningseries.model.common.listFrom
 import dev.datlag.burningseries.network.scraper.Video
-import io.github.aakira.napier.Napier
 import ktsoup.KtSoupDocument
 
 class Streamtape : Manipulation {

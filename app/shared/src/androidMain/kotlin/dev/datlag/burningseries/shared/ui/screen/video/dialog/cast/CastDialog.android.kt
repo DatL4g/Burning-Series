@@ -19,12 +19,9 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.onClick
-import dev.datlag.burningseries.shared.ui.*
 import dev.datlag.kast.*
 import dev.icerock.moko.resources.compose.stringResource
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 
 @Composable
 actual fun CastDialog(component: CastComponent) {

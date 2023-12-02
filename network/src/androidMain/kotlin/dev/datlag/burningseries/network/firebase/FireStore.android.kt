@@ -4,7 +4,6 @@ import dev.datlag.burningseries.model.HosterScraping
 import dev.datlag.burningseries.model.common.suspendCatching
 import dev.datlag.burningseries.network.Firestore
 import dev.gitlive.firebase.auth.FirebaseUser
-import dev.gitlive.firebase.firestore.DocumentReference
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.where
 

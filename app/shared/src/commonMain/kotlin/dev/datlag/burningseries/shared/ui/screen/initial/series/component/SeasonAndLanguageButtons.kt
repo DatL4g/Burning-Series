@@ -3,7 +3,6 @@ package dev.datlag.burningseries.shared.ui.screen.initial.series.component
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -12,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.ui.custom.CountryImage
-import dev.datlag.burningseries.shared.ui.theme.MaterialSymbols
 import dev.icerock.moko.resources.compose.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)

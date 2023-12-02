@@ -3,7 +3,6 @@ package dev.datlag.burningseries.network.state
 import com.freeletics.flowredux.dsl.FlowReduxStateMachine
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.WrapAPIResponse
 import dev.datlag.burningseries.model.state.SeriesAction
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.network.WrapAPI
@@ -11,7 +10,6 @@ import dev.datlag.burningseries.network.scraper.BurningSeries
 import io.ktor.client.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
 @OptIn(ExperimentalCoroutinesApi::class)

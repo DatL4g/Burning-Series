@@ -10,8 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import dev.datlag.burningseries.shared.LocalDarkMode
 import dev.datlag.burningseries.color.theme.Theme
+import dev.datlag.burningseries.shared.LocalDarkMode
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.withIOContext

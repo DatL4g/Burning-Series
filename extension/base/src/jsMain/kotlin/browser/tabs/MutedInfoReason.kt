@@ -1,7 +1,5 @@
 package browser.tabs
 
-import kotlin.String
-
 /**
  * An event that caused a muted state change.
  */

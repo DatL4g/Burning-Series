@@ -13,13 +13,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.datlag.burningseries.shared.common.bounceClick
-import dev.datlag.burningseries.shared.common.onClick
-import dev.datlag.burningseries.database.Series as DBSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.shared.common.bounceClick
+import dev.datlag.burningseries.shared.common.onClick
 import io.kamel.core.Resource
 import io.kamel.image.asyncPainterResource
+import dev.datlag.burningseries.database.Series as DBSeries
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

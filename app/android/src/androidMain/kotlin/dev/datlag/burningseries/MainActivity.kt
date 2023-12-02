@@ -20,13 +20,13 @@ import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.shouldShowRationale
-import com.google.android.gms.cast.framework.CastContext
-import dev.datlag.burningseries.shared.common.lifecycle.LocalLifecycleOwner
-import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.App
+import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.shared.common.lifecycle.LocalLifecycleOwner
 import dev.datlag.burningseries.shared.ui.*
 import dev.datlag.burningseries.shared.ui.custom.Permission
 import dev.datlag.burningseries.shared.ui.navigation.NavHostComponent
+import dev.datlag.kast.Kast
 import dev.icerock.moko.resources.compose.stringResource
 import io.kamel.core.config.KamelConfig
 import io.kamel.core.config.takeFrom
@@ -34,12 +34,6 @@ import io.kamel.image.config.Default
 import io.kamel.image.config.LocalKamelConfig
 import io.kamel.image.config.resourcesFetcher
 import io.kamel.image.config.resourcesIdMapper
-import kotlinx.coroutines.flow.MutableStateFlow
-import java.util.concurrent.Executors
-import dev.datlag.burningseries.shared.SharedRes
-import dev.datlag.burningseries.shared.common.withIOContext
-import dev.datlag.kast.Kast
-import kotlinx.coroutines.delay
 
 class MainActivity : AppCompatActivity() {
 

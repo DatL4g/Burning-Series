@@ -7,17 +7,16 @@ import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.backhandler.BackCallback
-import dev.datlag.burningseries.model.Series
-import org.kodein.di.DI
-import dev.datlag.burningseries.shared.common.ioScope
-import dev.datlag.burningseries.shared.common.launchIO
-import dev.datlag.burningseries.shared.common.withMainContext
 import dev.datlag.burningseries.model.HosterScraping
+import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.common.scopeCatching
 import dev.datlag.burningseries.model.state.SaveAction
 import dev.datlag.burningseries.model.state.SaveState
 import dev.datlag.burningseries.network.state.SaveStateMachine
+import dev.datlag.burningseries.shared.common.ioScope
+import dev.datlag.burningseries.shared.common.launchIO
+import dev.datlag.burningseries.shared.common.withMainContext
 import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.series.activate.component.DialogConfig
 import dev.datlag.burningseries.shared.ui.screen.initial.series.activate.dialog.error.ErrorDialogComponent
@@ -26,6 +25,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
+import org.kodein.di.DI
 import org.kodein.di.instance
 
 class ActivateScreenComponent(
