@@ -1,8 +1,13 @@
 package dev.datlag.burningseries.shared.common
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
@@ -96,6 +101,43 @@ fun LazyListState.OnBottomReached(enabled: Boolean = true, buffer: Int = 0, bloc
                     block()
                 }
             }
+        }
+    }
+}
+
+fun Modifier.isFocused(
+    hoverable: Boolean = true,
+    focusable: Boolean = true,
+    builder: Modifier.() -> Modifier
+): Modifier = composed {
+    val interactionSource = remember { MutableInteractionSource() }
+
+    val isHovered by interactionSource.collectIsHoveredAsState()
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    this.ifTrue(isHovered || isFocused) {
+        builder()
+    }.hoverable(
+        interactionSource = interactionSource,
+        enabled = hoverable
+    ).focusable(
+        interactionSource = interactionSource,
+        enabled = focusable
+    )
+}
+
+fun Modifier.focusScale(
+    scale: Float = 1.1F,
+    hoverable: Boolean = true,
+    focusable: Boolean = true
+) = composed {
+    isFocused(
+        hoverable,
+        focusable
+    ) {
+        graphicsLayer {
+            scaleX = scale
+            scaleY = scale
         }
     }
 }

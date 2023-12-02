@@ -51,7 +51,7 @@ fun EpisodeItem(content: Series.Episode, dbEpisode: Episode?, isLoading: Boolean
     }
 
     Row(
-        modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth().height(100.dp).clip(MaterialTheme.shapes.medium).onClick(enabled) {
+        modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth().focusScale(1.05F).height(100.dp).clip(MaterialTheme.shapes.medium).onClick(enabled) {
             onClick()
         }.ifTrue(enabled) { bounceClick(0.95F) }.ifFalse(enabled) { alpha(0.5F) },
         horizontalArrangement = Arrangement.spacedBy(8.dp),

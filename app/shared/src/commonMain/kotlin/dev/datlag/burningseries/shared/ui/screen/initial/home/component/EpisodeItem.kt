@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.shared.common.bounceClick
+import dev.datlag.burningseries.shared.common.focusScale
 import dev.datlag.burningseries.shared.common.onClick
 import dev.datlag.burningseries.shared.ui.custom.AutoSizeText
 import dev.datlag.burningseries.shared.ui.custom.CountryImage
@@ -28,7 +29,7 @@ import io.kamel.image.asyncPainterResource
 @Composable
 fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
     ElevatedCard(
-        modifier = Modifier.animateItemPlacement().height(150.dp).bounceClick().clip(MaterialTheme.shapes.medium).onClick {
+        modifier = Modifier.animateItemPlacement().focusScale(1.05F).height(150.dp).bounceClick().clip(MaterialTheme.shapes.medium).onClick {
             onclick()
         }
     ) {
