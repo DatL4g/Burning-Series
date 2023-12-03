@@ -65,4 +65,6 @@
     <string name="download">Herunterladen</string>
     <string name="activate_episode_title">Episode aktivieren</string>
     <string name="activate_episode_text">Willst du diese Episode jetzt aktivieren?</string>
+    <string name="release_available_title">Neue Version verfügbar</string>
+    <string name="release_available_text">Eine neue Version ist verfügbar "%s".\nDas solltest du dir ansehen!</string>
 </resources>

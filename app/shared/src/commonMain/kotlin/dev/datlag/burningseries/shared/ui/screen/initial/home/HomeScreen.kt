@@ -105,7 +105,7 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             state = state
         ) {
-            DeviceContent()
+            DeviceContent(component.release)
             header {
                 Text(
                     modifier = Modifier.padding(top = 16.dp),

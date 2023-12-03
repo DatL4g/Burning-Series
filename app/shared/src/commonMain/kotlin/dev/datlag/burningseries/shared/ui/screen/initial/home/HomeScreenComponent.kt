@@ -4,22 +4,24 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
+import dev.datlag.burningseries.model.Release
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Stream
+import dev.datlag.burningseries.model.common.getDigitsOrNull
 import dev.datlag.burningseries.model.state.HomeAction
 import dev.datlag.burningseries.model.state.HomeState
+import dev.datlag.burningseries.model.state.ReleaseState
 import dev.datlag.burningseries.network.state.HomeStateMachine
+import dev.datlag.burningseries.network.state.ReleaseStateMachine
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.series.SeriesScreenComponent
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import org.kodein.di.DI
 import org.kodein.di.instance
+import org.kodein.di.instanceOrNull
 
 class HomeScreenComponent(
     componentContext: ComponentContext,
@@ -30,6 +32,22 @@ class HomeScreenComponent(
 
     private val homeStateMachine: HomeStateMachine by di.instance()
     override val homeState: StateFlow<HomeState> = homeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), HomeState.Loading)
+
+    private val appVersion: String? by di.instanceOrNull("APP_VERSION")
+    private val releaseStateMachine: ReleaseStateMachine by di.instance()
+    override val release: StateFlow<Release?> = releaseStateMachine.state.map { state ->
+        if (state is ReleaseState.Success) {
+            if (!appVersion.isNullOrBlank()) {
+                state.releases.filter {
+                    (it.tagAsNumber?.toIntOrNull() ?: 0) > (appVersion?.getDigitsOrNull()?.toIntOrNull() ?: 0)
+                }.maxByOrNull { it.publishedAtSeconds }
+            } else {
+                state.releases.maxByOrNull { it.publishedAtSeconds }
+            }
+        } else {
+            null
+        }
+    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
 
     private val navigation = SlotNavigation<HomeConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(

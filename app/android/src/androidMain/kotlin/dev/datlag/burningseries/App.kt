@@ -24,6 +24,9 @@ class App : MultiDexApplication(), DIAware, DefaultLifecycleObserver {
             bindSingleton {
                 applicationContext
             }
+            bindSingleton("APP_VERSION") {
+                BuildConfig.VERSION_NAME
+            }
 
             import(NetworkModule.di)
         }

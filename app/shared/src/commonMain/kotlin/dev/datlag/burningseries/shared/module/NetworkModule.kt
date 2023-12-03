@@ -6,13 +6,11 @@ import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.database.common.toGenres
 import dev.datlag.burningseries.database.common.toSearchItems
 import dev.datlag.burningseries.network.Firestore
+import dev.datlag.burningseries.network.GitHub
 import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.WrapAPI
 import dev.datlag.burningseries.network.realm.RealmLoader
-import dev.datlag.burningseries.network.state.EpisodeStateMachine
-import dev.datlag.burningseries.network.state.HomeStateMachine
-import dev.datlag.burningseries.network.state.SaveStateMachine
-import dev.datlag.burningseries.network.state.SearchStateMachine
+import dev.datlag.burningseries.network.state.*
 import dev.datlag.burningseries.shared.Sekret
 import dev.datlag.burningseries.shared.getPackageName
 import dev.datlag.burningseries.shared.other.StateSaver
@@ -25,6 +23,7 @@ object NetworkModule {
     private const val TAG_KTORFIT_JSONBASE = "JsonBaseKtorfit"
     private const val TAG_KTORFIT_WRAPAPI = "WrapAPIKtorfit"
     private const val TAG_KTORFIT_FIRESTORE = "FirestoreKtorfit"
+    private const val TAG_KTORFIT_GITHUB = "GitHubKtorfit"
     const val NAME = "NetworkModule"
 
     val di = DI.Module(NAME) {
@@ -54,6 +53,16 @@ object NetworkModule {
         bindSingleton {
             val wrapApiKtor: Ktorfit = instance(TAG_KTORFIT_WRAPAPI)
             wrapApiKtor.create<WrapAPI>()
+        }
+        bindSingleton(TAG_KTORFIT_GITHUB) {
+            val builder = instance<Ktorfit.Builder>()
+            builder.build {
+                baseUrl("https://api.github.com/")
+            }
+        }
+        bindSingleton {
+            val githubApiKtor: Ktorfit = instance(TAG_KTORFIT_GITHUB)
+            githubApiKtor.create<GitHub>()
         }
         bindSingleton {
             HomeStateMachine(
@@ -112,6 +121,9 @@ object NetworkModule {
         }
         bindEagerSingleton {
             SaveStateMachine(instance(), instance(), instance(), instanceOrNull(), instanceOrNull())
+        }
+        bindSingleton {
+            ReleaseStateMachine(instance())
         }
     }
 }

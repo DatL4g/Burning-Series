@@ -65,4 +65,7 @@
     <string name="download">Download</string>
     <string name="activate_episode_title">Activate episode</string>
     <string name="activate_episode_text">Do you want to activate this episode now?</string>
+    <string name="release_available_title">New version available</string>
+    <string name="release_available_text">A new version is available "%s".\nYou should check it out!</string>
+    <string name="github">GitHub</string>
 </resources>

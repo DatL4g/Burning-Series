@@ -41,6 +41,7 @@ import io.kamel.image.config.LocalKamelConfig
 import io.kamel.image.config.resourcesFetcher
 import kotlinx.coroutines.runBlocking
 import org.kodein.di.DI
+import org.kodein.di.bindSingleton
 import java.io.File
 
 fun main(vararg args: String) {
@@ -55,6 +56,12 @@ fun main(vararg args: String) {
     })
 
     val di = DI {
+        systemProperty("jpackage.app-version")?.let {
+            bindSingleton("APP_VERSION") {
+                it
+            }
+        }
+
         import(NetworkModule.di)
     }
 
