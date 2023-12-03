@@ -6,7 +6,6 @@ import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.common.safeSubList
 import dev.datlag.burningseries.model.state.SearchAction
@@ -17,6 +16,7 @@ import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.series.SeriesScreenComponent
+import dev.datlag.skeo.Stream
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -73,6 +73,7 @@ class SearchScreenComponent(
     private val navigation = SlotNavigation<SearchConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(
         source = navigation,
+        serializer = SearchConfig.serializer(),
         handleBackButton = false
     ) { config, context ->
         when (config) {

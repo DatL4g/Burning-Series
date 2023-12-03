@@ -1,16 +1,15 @@
 package dev.datlag.burningseries.shared.ui.screen.video
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import kotlinx.serialization.Serializable
 
-@Parcelize
-sealed class DialogConfig : Parcelable {
+@Serializable
+sealed class DialogConfig {
 
-    @Parcelize
+    @Serializable
     data class Subtitle(
         val list: List<VideoComponent.Subtitle>
-    ) : DialogConfig(), Parcelable
+    ) : DialogConfig()
 
-    @Parcelize
-    data object Cast : DialogConfig(), Parcelable
+    @Serializable
+    data object Cast : DialogConfig()
 }

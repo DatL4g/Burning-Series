@@ -1,12 +1,9 @@
 package dev.datlag.burningseries.model
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import dev.datlag.burningseries.model.common.getDigitsOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data class Series(
     @SerialName("title") val title: String,
@@ -18,7 +15,7 @@ data class Series(
     @SerialName("seasons") val seasons: List<Season>,
     @SerialName("languages") val languages: List<Language>,
     @SerialName("episodes") val episodes: List<Episode>
-) : Parcelable {
+) {
 
     val currentSeason: Season? by lazy {
         seasons.firstOrNull {
@@ -64,37 +61,33 @@ data class Series(
         )
     }
 
-    @Parcelize
     @Serializable
     data class Season(
         @SerialName("value") val value: Int,
         @SerialName("title") val title: String
-    ) : Parcelable
+    )
 
-    @Parcelize
     @Serializable
     data class Language(
         @SerialName("value") val value: String,
         @SerialName("title") val title: String
-    ) : Parcelable
+    )
 
-    @Parcelize
     @Serializable
     data class Episode(
         @SerialName("number") val number: String,
         @SerialName("title") val title: String,
         @SerialName("href") val href: String,
         @SerialName("hosters") val hosters: List<Hoster>
-    ) : Parcelable {
+    ) {
 
         val episodeNumber: String = BSUtil.episodeNumberRegex.find(title)?.groupValues?.lastOrNull() ?: number
         val episodeTitle: String = BSUtil.episodeNumberRegex.replaceFirst(title, String()).trim().ifBlank { title }
 
-        @Parcelize
         @Serializable
         data class Hoster(
             @SerialName("title") val title: String,
             @SerialName("href") val href: String
-        ) : Parcelable
+        )
     }
 }

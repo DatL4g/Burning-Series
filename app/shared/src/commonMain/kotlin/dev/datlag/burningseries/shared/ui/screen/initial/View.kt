@@ -1,17 +1,16 @@
 package dev.datlag.burningseries.shared.ui.screen.initial
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import kotlinx.serialization.Serializable
 
-@Parcelize
-sealed class View : Parcelable {
+@Serializable
+sealed class View {
 
-    @Parcelize
-    data object Home : View(), Parcelable
+    @Serializable
+    data object Home : View()
 
-    @Parcelize
-    data object Favorite : View(), Parcelable
+    @Serializable
+    data object Favorite : View()
 
-    @Parcelize
-    data object Search : View(), Parcelable
+    @Serializable
+    data object Search : View()
 }

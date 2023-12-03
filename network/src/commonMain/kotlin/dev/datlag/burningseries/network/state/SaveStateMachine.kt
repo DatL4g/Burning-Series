@@ -9,7 +9,7 @@ import dev.datlag.burningseries.network.Firestore
 import dev.datlag.burningseries.network.JsonBase
 import dev.datlag.burningseries.network.firebase.FireStore
 import dev.datlag.burningseries.network.realm.RealmLoader
-import dev.datlag.burningseries.network.scraper.Video
+import dev.datlag.skeo.Skeo
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.FirebaseFirestore
@@ -72,7 +72,7 @@ class SaveStateMachine(
                     }
 
                     val stream = if (state.snapshot.loadStream) {
-                        Video.loadVideos(client, state.snapshot.data.url)
+                        Skeo.loadVideos(client, state.snapshot.data.url)
                     } else {
                         null
                     }

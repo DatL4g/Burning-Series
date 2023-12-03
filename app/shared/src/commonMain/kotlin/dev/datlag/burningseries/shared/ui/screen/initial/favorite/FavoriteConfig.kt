@@ -1,17 +1,16 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.favorite
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import kotlinx.serialization.Serializable
 import dev.datlag.burningseries.database.Series as DBSeries
 
-@Parcelize
-sealed class FavoriteConfig : Parcelable {
-    @Parcelize
+@Serializable
+sealed class FavoriteConfig {
+    @Serializable
     data class Series(
         val title: String,
         val href: String,
         val coverHref: String?
-    ) : FavoriteConfig(), Parcelable {
+    ) : FavoriteConfig() {
         constructor(item: DBSeries) : this(item.title, item.href, item.coverHref)
     }
 }

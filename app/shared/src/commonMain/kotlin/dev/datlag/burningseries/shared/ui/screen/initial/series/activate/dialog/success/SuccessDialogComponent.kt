@@ -2,7 +2,7 @@ package dev.datlag.burningseries.shared.ui.screen.initial.series.activate.dialog
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
-import dev.datlag.burningseries.model.Stream
+import dev.datlag.skeo.Stream
 import org.kodein.di.DI
 
 class SuccessDialogComponent(

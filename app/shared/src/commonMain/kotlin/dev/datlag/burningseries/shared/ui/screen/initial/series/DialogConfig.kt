@@ -1,33 +1,32 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import dev.datlag.burningseries.model.Series
+import kotlinx.serialization.Serializable
 
-@Parcelize
-sealed class DialogConfig : Parcelable {
+@Serializable
+sealed class DialogConfig {
 
-    @Parcelize
+    @Serializable
     data class Season(
         val selected: Series.Season,
         val seasons: List<Series.Season>
-    ) : DialogConfig(), Parcelable
+    ) : DialogConfig()
 
-    @Parcelize
+    @Serializable
     data class Language(
         val selected: Series.Language,
         val languages: List<Series.Language>
-    ) : DialogConfig(), Parcelable
+    ) : DialogConfig()
 
-    @Parcelize
+    @Serializable
     data class StreamUnavailable(
         val series: Series,
         val episode: Series.Episode
-    ) : DialogConfig(), Parcelable
+    ) : DialogConfig()
 
-    @Parcelize
+    @Serializable
     data class Activate(
         val series: Series,
         val episode: Series.Episode
-    ) : DialogConfig(), Parcelable
+    ) : DialogConfig()
 }

@@ -6,7 +6,6 @@ import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.Release
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.common.getDigitsOrNull
 import dev.datlag.burningseries.model.state.HomeAction
 import dev.datlag.burningseries.model.state.HomeState
@@ -18,6 +17,7 @@ import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.series.SeriesScreenComponent
+import dev.datlag.skeo.Stream
 import kotlinx.coroutines.flow.*
 import org.kodein.di.DI
 import org.kodein.di.instance
@@ -52,6 +52,7 @@ class HomeScreenComponent(
     private val navigation = SlotNavigation<HomeConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(
         source = navigation,
+        serializer = HomeConfig.serializer(),
         handleBackButton = false
     ) { config, context ->
         when (config) {

@@ -1,15 +1,14 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import dev.datlag.burningseries.model.Series
+import kotlinx.serialization.Serializable
 
-@Parcelize
-sealed class SeriesConfig : Parcelable {
+@Serializable
+sealed class SeriesConfig {
 
-    @Parcelize
+    @Serializable
     data class Activate(
         val series: Series,
         val episode: Series.Episode
-    ) : SeriesConfig(), Parcelable
+    ) : SeriesConfig()
 }

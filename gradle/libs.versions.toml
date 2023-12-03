@@ -15,7 +15,7 @@ context-menu = "0.2.0"
 coroutines = "1.7.3"
 datastore = "1.0.0"
 datetime = "0.4.1"
-decompose = "2.1.4-compose-experimental"
+decompose = "2.2.0-compose-experimental"
 firebase = "1.10.4"
 firebase-android = "20.4.2"
 firebase-android-auth = "22.3.0"
@@ -40,12 +40,12 @@ multidex = "2.0.1"
 nanoid = "1.0.1"
 napier = "2.6.1"
 osdetector = "1.7.3"
-parcelable = "1.2.0"
 protobuf = "0.9.4"
 protoc = "3.24.4"
 realm = "1.13.0"
 sekret = "0.2.1"
 serialization-json = "1.6.2"
+skeo = "0.1.1"
 splashscreen = "1.0.1"
 sqldelight = "2.0.1"
 turbine = "1.0.0"
@@ -117,7 +117,6 @@ moko-resources-generator = { group = "dev.icerock.moko", name = "resources-gener
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 nanoid = { group = "dev.datlag.nanoid", name = "nanoid", version.ref = "nanoid" }
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
-parcelable = { group = "com.arkivanov.essenty", name = "parcelable", version.ref = "parcelable" }
 permission = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 protobuf = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protoc" }
 protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protoc" }
@@ -125,6 +124,7 @@ realm = { group = "io.realm.kotlin", name = "library-base", version.ref = "realm
 realm-sync = { group = "io.realm.kotlin", name = "library-sync", version.ref = "realm" }
 sekret = { group = "dev.datlag.sekret", name = "sekret", version.ref = "sekret" }
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization-json" }
+skeo = { group = "dev.datlag.skeo", name = "skeo", version.ref = "skeo" }
 splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 sqldelight-coroutines = { group = "app.cash.sqldelight", name = "coroutines-extensions", version.ref = "sqldelight" }

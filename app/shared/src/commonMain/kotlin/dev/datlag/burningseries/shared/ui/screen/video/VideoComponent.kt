@@ -2,13 +2,12 @@ package dev.datlag.burningseries.shared.ui.screen.video
 
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
+import dev.datlag.skeo.Stream
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.Serializable
 
 interface VideoComponent : Component {
 
@@ -29,9 +28,9 @@ interface VideoComponent : Component {
     fun selectSubtitle(subtitles: List<Subtitle>)
     fun selectCast()
 
-    @Parcelize
+    @Serializable
     data class Subtitle(
         val code: String,
         val title: String
-    ) : Parcelable
+    )
 }

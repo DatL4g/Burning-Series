@@ -47,7 +47,7 @@ fun VideoPlayer(
 
         var streamIndex by remember(streamList) { mutableIntStateOf(0) }
         var sourceIndex by remember(streamIndex) { mutableIntStateOf(0) }
-        val url = remember(streamIndex, sourceIndex) { streamList[streamIndex].list[sourceIndex] }
+        val url = remember(streamIndex, sourceIndex) { streamList[streamIndex].sources.toList()[sourceIndex] }
         val headers = remember(streamIndex) {
             streamList[streamIndex].headers
         }
@@ -61,7 +61,7 @@ fun VideoPlayer(
             override fun error(mediaPlayer: MediaPlayer?) {
                 super.error(mediaPlayer)
 
-                if (streamList[streamIndex].list.size - 1 > sourceIndex) {
+                if (streamList[streamIndex].sources.size - 1 > sourceIndex) {
                     sourceIndex++
                 } else if (streamList.size - 1 > streamIndex) {
                     streamIndex++

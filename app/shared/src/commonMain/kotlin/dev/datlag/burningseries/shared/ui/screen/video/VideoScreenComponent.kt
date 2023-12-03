@@ -10,7 +10,6 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.shared.common.ioScope
@@ -19,6 +18,7 @@ import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
 import dev.datlag.burningseries.shared.ui.screen.video.dialog.cast.CastDialogComponent
 import dev.datlag.burningseries.shared.ui.screen.video.dialog.subtitle.SubtitleDialogComponent
 import dev.datlag.burningseries.shared.ui.theme.SchemeTheme
+import dev.datlag.skeo.Stream
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -54,7 +54,8 @@ class VideoScreenComponent(
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = childSlot(
-        source = dialogNavigation
+        source = dialogNavigation,
+        serializer = DialogConfig.serializer()
     ) { config, slotContext ->
         when (config) {
             is DialogConfig.Subtitle -> SubtitleDialogComponent(

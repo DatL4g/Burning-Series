@@ -1,15 +1,14 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series.activate.component
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
-import dev.datlag.burningseries.model.Stream
+import dev.datlag.skeo.Stream
+import kotlinx.serialization.Serializable
 
-@Parcelize
-sealed class DialogConfig : Parcelable {
+@Serializable
+sealed class DialogConfig {
 
-    @Parcelize
-    data class Success(val stream: Stream?) : DialogConfig(), Parcelable
+    @Serializable
+    data class Success(val stream: Stream?) : DialogConfig()
 
-    @Parcelize
-    data class Error(val stream: Stream?) : DialogConfig(), Parcelable
+    @Serializable
+    data class Error(val stream: Stream?) : DialogConfig()
 }

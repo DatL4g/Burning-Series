@@ -27,11 +27,11 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(libs.parcelable)
                 api(libs.serialization.json)
                 api(libs.coroutines)
                 api(libs.datetime)
                 api(libs.napier)
+                api(libs.skeo)
             }
         }
 

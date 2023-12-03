@@ -1,21 +1,20 @@
 package dev.datlag.burningseries.shared.ui.navigation
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.Stream
+import dev.datlag.skeo.Stream
+import kotlinx.serialization.Serializable
 
-@Parcelize
-sealed class ScreenConfig : Parcelable {
+@Serializable
+sealed class ScreenConfig {
 
-    @Parcelize
-    data object Home : ScreenConfig(), Parcelable
+    @Serializable
+    data object Home : ScreenConfig()
 
-    @Parcelize
+    @Serializable
     data class Video(
         val schemeKey: String,
         val series: Series,
         val episode: Series.Episode,
         val streams: List<Stream>
-    ) : ScreenConfig(), Parcelable
+    ) : ScreenConfig()
 }

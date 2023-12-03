@@ -83,7 +83,7 @@ actual fun VideoScreen(component: VideoComponent) {
         mutableStateOf(streamList[streamIndex].headers)
     }
     val mediaItem = remember(streamList, streamIndex, sourceIndex) {
-        MediaItem.fromUri(streamList[streamIndex].list[sourceIndex])
+        MediaItem.fromUri(streamList[streamIndex].sources.toList()[sourceIndex])
     }
     val startingPos by component.startingPos.collectAsStateWithLifecycle()
 
@@ -146,7 +146,7 @@ actual fun VideoScreen(component: VideoComponent) {
         override fun onPlayerError(error: PlaybackException) {
             super.onPlayerError(error)
 
-            if (streamList[streamIndex].list.size - 1 > sourceIndex) {
+            if (streamList[streamIndex].sources.size - 1 > sourceIndex) {
                 sourceIndex++
             } else if (streamList.size - 1 > streamIndex) {
                 streamIndex++

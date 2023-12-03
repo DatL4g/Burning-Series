@@ -1,7 +1,7 @@
 package dev.datlag.burningseries.model.state
 
 import dev.datlag.burningseries.model.HosterScraping
-import dev.datlag.burningseries.model.Stream
+import dev.datlag.skeo.Stream
 
 sealed interface SaveState {
     data object Waiting : SaveState

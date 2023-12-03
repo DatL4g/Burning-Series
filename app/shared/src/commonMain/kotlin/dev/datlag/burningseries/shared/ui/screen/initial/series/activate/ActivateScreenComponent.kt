@@ -9,7 +9,6 @@ import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.model.HosterScraping
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.common.scopeCatching
 import dev.datlag.burningseries.model.state.SaveAction
 import dev.datlag.burningseries.model.state.SaveState
@@ -21,6 +20,7 @@ import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.series.activate.component.DialogConfig
 import dev.datlag.burningseries.shared.ui.screen.initial.series.activate.dialog.error.ErrorDialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.series.activate.dialog.success.SuccessDialogComponent
+import dev.datlag.skeo.Stream
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -46,7 +46,8 @@ class ActivateScreenComponent(
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     override val dialog = childSlot(
-        source = dialogNavigation
+        source = dialogNavigation,
+        serializer = DialogConfig.serializer()
     ) { config, slotContext ->
         when (config) {
             is DialogConfig.Success -> SuccessDialogComponent(

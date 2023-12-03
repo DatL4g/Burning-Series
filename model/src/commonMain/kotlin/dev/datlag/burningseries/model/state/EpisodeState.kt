@@ -1,7 +1,7 @@
 package dev.datlag.burningseries.model.state
 
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.Stream
+import dev.datlag.skeo.Stream
 
 sealed interface EpisodeState {
     data object Waiting : EpisodeState

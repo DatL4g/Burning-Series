@@ -11,7 +11,6 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.model.Stream
 import dev.datlag.burningseries.model.state.EpisodeAction
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.model.state.SeriesAction
@@ -33,6 +32,7 @@ import dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.activate.
 import dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.language.LanguageDialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.season.SeasonDialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.unavailable.UnavailableDialogComponent
+import dev.datlag.skeo.Stream
 import io.ktor.client.*
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.*
@@ -107,6 +107,7 @@ class SeriesScreenComponent(
     private val navigation = SlotNavigation<SeriesConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(
         source = navigation,
+        serializer = SeriesConfig.serializer(),
         handleBackButton = false
     ) { config, context ->
         when (config) {
@@ -124,7 +125,8 @@ class SeriesScreenComponent(
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     private val _dialog = childSlot(
         key = "DialogChildSlot",
-        source = dialogNavigation
+        source = dialogNavigation,
+        serializer = DialogConfig.serializer()
     ) { config, slotContext ->
         when (config) {
             is DialogConfig.Season -> SeasonDialogComponent(

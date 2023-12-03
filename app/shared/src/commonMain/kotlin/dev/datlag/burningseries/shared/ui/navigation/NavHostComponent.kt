@@ -20,6 +20,7 @@ class NavHostComponent(
     private val navigation = StackNavigation<ScreenConfig>()
     private val stack = childStack(
         source = navigation,
+        serializer = ScreenConfig.serializer(),
         initialConfiguration = ScreenConfig.Home,
         childFactory = ::createScreenComponent
     )
