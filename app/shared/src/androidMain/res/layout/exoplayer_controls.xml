@@ -73,11 +73,24 @@
                 android:src="@drawable/baseline_replay_10_24"
                 style="@style/ExoMediaButton.Rewind"/>
 
-        <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@id/exo_play_pause"
-                android:tint="@android:color/white"
-                android:scaleType="centerInside"
-                style="@style/ExoStyledControls.Button.Center.PlayPause"/>
+        <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@id/exo_play_pause"
+                    android:tint="@android:color/white"
+                    android:scaleType="centerInside"
+                    android:layout_gravity="center"
+                    style="@style/ExoStyledControls.Button.Center.PlayPause"/>
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/loading_indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:indeterminate="true"/>
+        </FrameLayout>
 
         <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@id/exo_ffwd"

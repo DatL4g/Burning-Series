@@ -40,6 +40,7 @@ import androidx.media3.ui.PlayerView
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.cast.framework.CastState
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import dev.datlag.burningseries.model.common.scopeCatching
 import dev.datlag.burningseries.shared.R
 import dev.datlag.burningseries.shared.SharedRes
@@ -139,6 +140,8 @@ actual fun VideoScreen(component: VideoComponent) {
         subtitles = languages
     }
 
+    var displayLoading by remember { mutableStateOf(true) }
+
     val playListener = remember { object : Player.Listener {
         override fun onPlayerError(error: PlaybackException) {
             super.onPlayerError(error)
@@ -159,8 +162,17 @@ actual fun VideoScreen(component: VideoComponent) {
         override fun onPlaybackStateChanged(playbackState: Int) {
             super.onPlaybackStateChanged(playbackState)
 
-            if (playbackState == Player.STATE_ENDED) {
-                component.ended()
+            when (playbackState) {
+                Player.STATE_ENDED -> {
+                    displayLoading = false
+                    component.ended()
+                }
+                Player.STATE_IDLE, Player.STATE_BUFFERING -> {
+                    displayLoading = true
+                }
+                else -> {
+                    displayLoading = false
+                }
             }
         }
     } }
@@ -369,6 +381,7 @@ actual fun VideoScreen(component: VideoComponent) {
             val subtitleButton = controls.findViewById<ImageButton>(R.id.subtitle)
             val progress = controls.findViewById<DefaultTimeBar>(R.id.exo_progress)
             val mediaRouteButton = controls.findViewById<ImageButton>(R.id.cast_button)
+            val loadingIndicator = controls.findViewById<CircularProgressIndicator>(R.id.loading_indicator)
 
             playerView.player = usingPlayer
 
@@ -380,6 +393,13 @@ actual fun VideoScreen(component: VideoComponent) {
                 R.drawable.baseline_cast_24
             }
             mediaRouteButton.setImageResource(castIcon)
+
+            loadingIndicator.setIndicatorColor(progressColor)
+            loadingIndicator.visibility = if (displayLoading) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
 
             if (subtitles.isNotEmpty()) {
                 subtitleButton.visibility = View.VISIBLE
