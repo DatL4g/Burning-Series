@@ -61,4 +61,8 @@
     <string name="selected">Selected</string>
     <string name="available">Available</string>
     <string name="disconnect">Disconnect</string>
+    <string name="vlc_required">VLC is required to play videos on your PC.\nMake sure to only download and install the official package from videolan.org or your system package manager.</string>
+    <string name="download">Download</string>
+    <string name="activate_episode_title">Activate episode</string>
+    <string name="activate_episode_text">Do you want to activate this episode now?</string>
 </resources>

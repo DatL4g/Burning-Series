@@ -34,4 +34,5 @@ interface SeriesComponent : Component {
 
     fun toggleFavorite(): Any?
     fun itemClicked(episode: Series.Episode): Any?
+    fun itemLongClicked(episode: Series.Episode)
 }

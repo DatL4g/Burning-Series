@@ -146,4 +146,5 @@ object AppIO {
     }
 
     private const val APP_NAME = "Burning-Series"
+    internal const val VLC_ORG = "https://www.videolan.org/vlc"
 }

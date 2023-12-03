@@ -58,7 +58,7 @@ fun LazyItemScope.SeriesItem(series: DBSeries, modifier: Modifier = Modifier, on
 @Composable
 private fun SeriesItem(title: String, coverHref: String?, modifier: Modifier = Modifier, onClick: () -> Unit) {
     ElevatedCard(
-        modifier = modifier.focusScale(1.05F).height(150.dp).bounceClick().clip(MaterialTheme.shapes.medium).onClick {
+        modifier = modifier.focusScale(1.02F).height(150.dp).bounceClick().clip(MaterialTheme.shapes.medium).onClick {
             onClick()
         }
     ) {

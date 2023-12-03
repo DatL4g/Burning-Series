@@ -61,4 +61,8 @@
     <string name="selected">Ausgewählt</string>
     <string name="available">Verfügbar</string>
     <string name="disconnect">Unterbrechen</string>
+    <string name="vlc_required">VLC muss auf deinem PC installiert sein, um Videos abzuspielen.\nStelle sicher, dass du nur das offizielle Paket von videolan.org oder deinem Systempaketmanager herunterlädst und installierst.</string>
+    <string name="download">Herunterladen</string>
+    <string name="activate_episode_title">Episode aktivieren</string>
+    <string name="activate_episode_text">Willst du diese Episode jetzt aktivieren?</string>
 </resources>

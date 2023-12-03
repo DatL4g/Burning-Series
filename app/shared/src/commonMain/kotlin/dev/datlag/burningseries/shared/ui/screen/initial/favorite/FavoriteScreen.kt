@@ -119,6 +119,9 @@ private fun SearchBar(component: FavoriteComponent) {
         modifier = Modifier.fillMaxWidth().animateContentSize(),
         active = queryComp.isNotBlank() && items.isNotEmpty(),
         onActiveChange = {},
+        placeholder = {
+            Text(text = stringResource(SharedRes.strings.search))
+        },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,

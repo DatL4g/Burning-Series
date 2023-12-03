@@ -11,17 +11,23 @@ sealed class DialogConfig : Parcelable {
     data class Season(
         val selected: Series.Season,
         val seasons: List<Series.Season>
-    ) : DialogConfig()
+    ) : DialogConfig(), Parcelable
 
     @Parcelize
     data class Language(
         val selected: Series.Language,
         val languages: List<Series.Language>
-    ) : DialogConfig()
+    ) : DialogConfig(), Parcelable
 
     @Parcelize
     data class StreamUnavailable(
         val series: Series,
         val episode: Series.Episode
-    ) : DialogConfig()
+    ) : DialogConfig(), Parcelable
+
+    @Parcelize
+    data class Activate(
+        val series: Series,
+        val episode: Series.Episode
+    ) : DialogConfig(), Parcelable
 }

@@ -29,6 +29,7 @@ import dev.datlag.burningseries.shared.other.StateSaver
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.series.activate.ActivateScreenComponent
+import dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.activate.ActivateDialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.language.LanguageDialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.season.SeasonDialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.unavailable.UnavailableDialogComponent
@@ -156,6 +157,16 @@ class SeriesScreenComponent(
                     navigation.activate(SeriesConfig.Activate(series, episode))
                 }
             )
+            is DialogConfig.Activate -> ActivateDialogComponent(
+                componentContext = slotContext,
+                di = di,
+                series = config.series,
+                episode = config.episode,
+                onDismiss = dialogNavigation::dismiss,
+                onActivate = { series, episode ->
+                    navigation.activate(SeriesConfig.Activate(series, episode))
+                }
+            )
         }
     }
     override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = _dialog
@@ -260,6 +271,15 @@ class SeriesScreenComponent(
 
     override fun itemClicked(episode: Series.Episode): Any? = ioScope().launchIO {
         episodeStateMachine.dispatch(EpisodeAction.Load(episode))
+    }
+
+    override fun itemLongClicked(episode: Series.Episode) {
+        currentSeries.value?.let { series ->
+            showDialog(DialogConfig.Activate(
+                series = series,
+                episode = episode
+            ))
+        }
     }
 
     private fun loadNewSeason(season: Series.Season) = ioScope().launchIO {

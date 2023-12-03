@@ -32,7 +32,13 @@ import dev.icerock.moko.resources.compose.stringResource
 import kotlin.math.roundToInt
 
 @Composable
-fun EpisodeItem(content: Series.Episode, dbEpisode: Episode?, isLoading: Boolean, onClick: () -> Unit) {
+fun EpisodeItem(
+    content: Series.Episode,
+    dbEpisode: Episode?,
+    isLoading: Boolean,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
+) {
     val blurHash = remember(content.href) { BlurHash.random() }
     val enabled = content.hosters.isNotEmpty()
 
@@ -51,9 +57,17 @@ fun EpisodeItem(content: Series.Episode, dbEpisode: Episode?, isLoading: Boolean
     }
 
     Row(
-        modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth().focusScale(1.05F).height(100.dp).clip(MaterialTheme.shapes.medium).onClick(enabled) {
-            onClick()
-        }.ifTrue(enabled) { bounceClick(0.95F) }.ifFalse(enabled) { alpha(0.5F) },
+        modifier = Modifier
+            .padding(vertical = 4.dp)
+            .fillMaxWidth()
+            .focusScale(1.02F)
+            .height(100.dp)
+            .clip(MaterialTheme.shapes.medium)
+            .onClick(
+                enabled = enabled,
+                onLongClick = onLongClick,
+                onClick = onClick
+            ).ifTrue(enabled) { bounceClick(0.95F) }.ifFalse(enabled) { alpha(0.5F) },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

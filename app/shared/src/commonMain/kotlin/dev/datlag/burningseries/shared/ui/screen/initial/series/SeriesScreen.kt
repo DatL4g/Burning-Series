@@ -258,9 +258,17 @@ private fun CompactScreen(component: SeriesComponent) {
                         )
                     }
 
-                    SeriesContent(current.series, dbEpisodes, loadingEpisode) {
-                        component.itemClicked(it)
-                    }
+                    SeriesContent(
+                        content = current.series,
+                        dbEpisodes = dbEpisodes,
+                        loadingEpisode = loadingEpisode,
+                        onEpisodeClick = {
+                            component.itemClicked(it)
+                        },
+                        onEpisodeLongClick = {
+                            component.itemLongClicked(it)
+                        }
+                    )
                 }
 
                 DisposableEffect(state) {
@@ -390,9 +398,17 @@ private fun DefaultScreen(component: SeriesComponent) {
                         }
                     }
 
-                    SeriesContent(current.series, dbEpisodes, loadingEpisode) {
-                        component.itemClicked(it)
-                    }
+                    SeriesContent(
+                        content = current.series,
+                        dbEpisodes = dbEpisodes,
+                        loadingEpisode = loadingEpisode,
+                        onEpisodeClick = {
+                            component.itemClicked(it)
+                        },
+                        onEpisodeLongClick = {
+                            component.itemLongClicked(it)
+                        }
+                    )
                 }
                 VerticalScrollbar(rememberScrollbarAdapter(state))
 
@@ -407,14 +423,28 @@ private fun DefaultScreen(component: SeriesComponent) {
     }
 }
 
-private fun LazyListScope.SeriesContent(content: Series, dbEpisodes: List<Episode>, loadingEpisode: String?, onEpisodeClick: (Series.Episode) -> Unit) {
+private fun LazyListScope.SeriesContent(
+    content: Series,
+    dbEpisodes: List<Episode>,
+    loadingEpisode: String?,
+    onEpisodeClick: (Series.Episode) -> Unit,
+    onEpisodeLongClick: (Series.Episode) -> Unit
+) {
     items(content.episodes, key = { it.href }) { episode ->
         val dbEpisode = remember(dbEpisodes, episode.href) {
             dbEpisodes.firstOrNull { it.href == episode.href } ?: dbEpisodes.firstOrNull { it.href.equals(episode.href, true) }
         }
 
-        EpisodeItem(episode, dbEpisode, loadingEpisode.equals(episode.href, true)) {
-            onEpisodeClick(episode)
-        }
+        EpisodeItem(
+            content = episode,
+            dbEpisode = dbEpisode,
+            isLoading = loadingEpisode.equals(episode.href, true),
+            onClick = {
+                onEpisodeClick(episode)
+            },
+            onLongClick = {
+                onEpisodeLongClick(episode)
+            }
+        )
     }
 }
