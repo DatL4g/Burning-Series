@@ -26,6 +26,7 @@ import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.header
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.onClick
+import dev.datlag.burningseries.shared.isTv
 import dev.datlag.burningseries.shared.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.shared.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.shared.ui.screen.initial.home.component.SeriesItem
@@ -35,7 +36,13 @@ import dev.icerock.moko.resources.compose.stringResource
 @Composable
 fun FavoriteScreen(component: FavoriteComponent) {
     when (calculateWindowSizeClass().widthSizeClass) {
-        WindowWidthSizeClass.Expanded -> ExpandedView(component)
+        WindowWidthSizeClass.Expanded -> {
+            if (isTv()) {
+                DefaultView(component)
+            } else {
+                ExpandedView(component)
+            }
+        }
         else -> DefaultView(component)
     }
 }

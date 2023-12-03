@@ -19,6 +19,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import dev.datlag.burningseries.model.common.scopeCatching
+import dev.datlag.burningseries.shared.common.safeSubSequence
 import kotlin.math.max
 
 
@@ -144,7 +146,7 @@ fun ExpandableText(
     val expandableText = remember(text, toggle as Any?, textInfo) {
         if (textInfo.shouldShowToggleContent && toggle != null) {
             buildAnnotatedString {
-                append(text.subSequence(0, textInfo.visibleCharCount))
+                append(text.safeSubSequence(0, textInfo.visibleCharCount))
                 appendInlineContent(INLINE_CONTENT_ID)
             }
         } else {
@@ -211,7 +213,11 @@ fun ExpandableText(
                 while (count > 0) {
                     val charRight = layoutRet.getBoundingBox(offset = count - 1).right
                     val isOverlapped = charRight >= toggleTopLeft.x
-                    val isWhitespace = text[count - 1].isWhitespace()
+                    val isWhitespace = scopeCatching {
+                        text[count - 1].isWhitespace()
+                    }.getOrNull() ?: scopeCatching {
+                        text.lastOrNull()?.isWhitespace()
+                    }.getOrNull() ?: false
                     if (isOverlapped || isWhitespace) {
                         count--
                     } else {
@@ -228,7 +234,11 @@ fun ExpandableText(
                 while (count > 0) {
                     val charLeft = layoutRet.getBoundingBox(offset = count - 1).left
                     val isOverlapped = charLeft <= toggleTopRight.x
-                    val isWhitespace = text[count - 1].isWhitespace()
+                    val isWhitespace = scopeCatching {
+                        text[count - 1].isWhitespace()
+                    }.getOrNull() ?: scopeCatching {
+                        text.lastOrNull()?.isWhitespace()
+                    }.getOrNull() ?: false
                     if (isOverlapped || isWhitespace) {
                         count--
                     } else {

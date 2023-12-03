@@ -60,3 +60,6 @@ fun App(
 
 @Composable
 expect fun SystemProvider(content: @Composable () -> Unit)
+
+@Composable
+expect fun isTv(): Boolean

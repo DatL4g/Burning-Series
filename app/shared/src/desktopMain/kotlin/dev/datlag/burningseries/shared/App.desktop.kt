@@ -74,3 +74,8 @@ fun ContextMenuColors(scheme: ColorScheme = MaterialTheme.colorScheme) = Context
     divider = scheme.onSurfaceVariant,
     shortcutText = scheme.onSurfaceVariant
 )
+
+@Composable
+actual fun isTv(): Boolean {
+    return false
+}

@@ -22,6 +22,7 @@ import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.header
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
+import dev.datlag.burningseries.shared.isTv
 import dev.datlag.burningseries.shared.other.StateSaver
 import dev.datlag.burningseries.shared.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.shared.ui.custom.rememberScrollbarAdapter
@@ -48,7 +49,13 @@ fun HomeScreen(component: HomeComponent) {
         }
         is HomeState.Success -> {
             when (calculateWindowSizeClass().widthSizeClass) {
-                WindowWidthSizeClass.Expanded -> ExpandedView(currentState.home, component)
+                WindowWidthSizeClass.Expanded -> {
+                    if (isTv()) {
+                        DefaultView(currentState.home, component)
+                    } else {
+                        ExpandedView(currentState.home, component)
+                    }
+                }
                 else -> DefaultView(currentState.home, component)
             }
         }
