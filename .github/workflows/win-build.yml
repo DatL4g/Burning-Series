@@ -20,26 +20,14 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Create empty Properties
-        run: cd . > sekret.properties
-        working-directory: ${{ github.workspace }}
-
       - name: Create Sekrets
-        uses: christian-draeger/write-properties@1.1.0
-        with:
-          file_path: ${{ github.workspace }}/sekret.properties
-          property: |
-            MONGO_APPLICATION
-            WRAP_API
-            FIREBASE_PROJECT
-            FIREBASE_APPLICATION
-            FIREBASE_API_KEY
-          value: |
-            ${{ secrets.MONGO_APPLICATION }}
-            ${{ secrets.WRAP_API }}
-            ${{ secrets.FIREBASE_PROJECT }}
-            ${{ secrets.FIREBASE_APPLICATION }}
-            ${{ secrets.FIREBASE_API_KEY }}
+        run: |
+          gradle createSekretProperties -Pkey=MONGO_APPLICATION -Pvalue=${{ secrets.MONGO_APPLICATION }};
+          gradle createSekretProperties -Pkey=WRAP_API -Pvalue=${{ secrets.WRAP_API }};
+          gradle createSekretProperties -Pkey=FIREBASE_PROJECT -Pvalue=${{ secrets.FIREBASE_PROJECT }};
+          gradle createSekretProperties -Pkey=FIREBASE_APPLICATION -Pvalue=${{ secrets.FIREBASE_APPLICATION }};
+          gradle createSekretProperties -Pkey=FIREBASE_API_KEY -Pvalue=${{ secrets.FIREBASE_API_KEY }}
+        working-directory: ${{ github.workspace }}
 
       - name: Generate Sekrets
         run: gradle generateSekret

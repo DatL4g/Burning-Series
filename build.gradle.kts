@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain
+import java.nio.file.Files
 
 plugins {
     alias(libs.plugins.android) apply false
@@ -139,3 +140,39 @@ fun isNonStable(version: String): Boolean {
     val isStable = stableKeyword || regex.matches(version)
     return isStable.not()
 }
+
+tasks.create("createSekretProperties") {
+    var file = File(rootDir, "sekret.properties")
+    val key = properties["key"] as? String ?: return@create
+    val value = properties["value"] as? String ?: return@create
+
+    val append = if (!file.existsSafely()) {
+        file = file.create()
+        false
+    } else {
+        true
+    }
+
+    if (append) {
+        file.appendText(
+            "\n$key=$value"
+        )
+    } else {
+        file.writeText(
+            "$key=$value"
+        )
+    }
+}
+
+fun File.existsSafely() = runCatching {
+    Files.exists(this.toPath())
+}.getOrNull() ?: runCatching {
+    this.exists()
+}.getOrNull() ?: false
+
+fun File.create() = runCatching {
+    Files.createFile(this.toPath()).toFile()
+}.getOrNull() ?: runCatching {
+    this.createNewFile()
+    this
+}.getOrNull() ?: this
