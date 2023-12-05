@@ -109,7 +109,6 @@ kotlin {
                 api(compose.desktop.currentOs)
                 api(libs.coroutines.swing)
                 api(libs.context.menu)
-                api(libs.window.styler)
                 api(libs.ktor.jvm)
                 api(libs.appdirs)
                 api(libs.vlcj)

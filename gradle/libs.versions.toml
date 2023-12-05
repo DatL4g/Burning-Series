@@ -52,7 +52,6 @@ turbine = "1.0.0"
 versions = "0.50.0"
 vlcj = "4.8.2"
 windowsize-multiplatform = "0.3.1"
-window-styler = "0.3.2"
 
 [libraries]
 aboutlibraries =  { group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutlibraries" }
@@ -137,7 +136,6 @@ vlcj = { group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
 webview-android = { group = "com.google.accompanist", name = "accompanist-webview", version.ref = "accompanist" }
 webview-desktop = { group = "dev.datlag", name = "kcef", version.ref = "kcef" }
 windowsize-multiplatform = { group = "dev.chrisbanes.material3", name = "material3-window-size-class-multiplatform", version.ref = "windowsize-multiplatform" }
-window-styler = { group = "com.mayakapps.compose", name = "window-styler", version.ref = "window-styler" }
 
 [plugins]
 aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }

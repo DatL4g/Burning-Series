@@ -81,6 +81,47 @@ compose {
                     iconFile.set(File(rootProject.project("app").project("shared").projectDir, "src/commonMain/resources/MR/assets/icns/launcher.icns"))
                 }
 
+                modules(
+                    "javax.xml",
+                    "javax.xml.datatype",
+                    "javax.xml.namespace",
+                    "javax.xml.parsers",
+                    "javax.xml.stream",
+                    "javax.xml.stream.events",
+                    "javax.xml.stream.util",
+                    "javax.xml.transform",
+                    "javax.xml.transform.dom",
+                    "javax.xml.transform.sax",
+                    "javax.xml.transform.stax",
+                    "javax.xml.transform.stream",
+                    "javax.xml.validation",
+                    "javax.xml.xpath",
+
+                    "org.w3c.dom",
+                    "org.w3c.dom.bootstrap",
+                    "org.w3c.dom.css",
+                    "org.w3c.dom.events",
+                    "org.w3c.dom.html",
+                    "org.w3c.dom.ls",
+                    "org.w3c.dom.ranges",
+                    "org.w3c.dom.stylesheets",
+                    "org.w3c.dom.traversal",
+                    "org.w3c.dom.views",
+                    "org.w3c.dom.xpath",
+
+                    "org.xml.sax",
+                    "org.xml.sax.ext",
+                    "org.xml.sax.helpers",
+
+                    "java.base",
+                    "java.compiler",
+                    "java.instrument",
+                    "java.management",
+                    "java.naming",
+                    "java.sql",
+                    "jdk.unsupported",
+                    "jdk.xml.dom"
+                )
                 includeAllModules = true
             }
         }
