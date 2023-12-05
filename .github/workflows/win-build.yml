@@ -33,6 +33,10 @@ jobs:
         run: gradle generateSekret
         working-directory: ${{ github.workspace }}
 
+      - name: Create native lib
+        run: gradle app:shared:createNativeLib
+        working-directory: ${{ github.workspace }}
+
       - name: Package
         run: gradle app:desktop:packageExe; gradle app:desktop:packageMsi
         working-directory: ${{ github.workspace }}
