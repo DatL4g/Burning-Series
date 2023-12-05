@@ -2,10 +2,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "compose" ]
+    branches: [ "5.x" ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "compose" ]
+    branches: [ "5.x" ]
 
 jobs:
   analyze:
@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -44,7 +44,7 @@ jobs:
     - name: Manual Java Build
       if: matrix.language == 'java'
       run: |
-        ./gradlew app:build
+        ./gradlew build
 
     - name: Manual Javascript Build
       if: matrix.language == 'javascript'

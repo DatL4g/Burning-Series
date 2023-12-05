@@ -92,7 +92,6 @@ fun SeasonDialog(component: SeasonComponent) {
                 onClick = {
                     component.dismiss()
                 },
-                modifier = Modifier.padding(bottom = 8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer,
                     contentColor = MaterialTheme.colorScheme.onErrorContainer

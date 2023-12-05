@@ -139,7 +139,11 @@ actual fun CastDialog(component: CastComponent) {
                     onClick = {
                         Kast.unselect(UnselectReason.disconnected)
                         component.dismiss()
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
                 ) {
                     Text(text = stringResource(SharedRes.strings.disconnect))
                 }

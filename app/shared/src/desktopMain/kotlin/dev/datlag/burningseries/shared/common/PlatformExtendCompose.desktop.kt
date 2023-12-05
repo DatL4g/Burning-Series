@@ -1,7 +1,7 @@
 package dev.datlag.burningseries.shared.common
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.onClick
+import androidx.compose.foundation.onClick as defaultClick
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -22,7 +22,7 @@ actual fun Modifier.onClick(
     onLongClick: (() -> Unit)?,
     onClick: () -> Unit
 ): Modifier {
-    return this.onClick(
+    return this.defaultClick(
         enabled = enabled,
         onDoubleClick = onDoubleClick,
         onLongClick = onLongClick,
