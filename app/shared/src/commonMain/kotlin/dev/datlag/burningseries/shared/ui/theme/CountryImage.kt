@@ -65,7 +65,6 @@ object CountryImage {
             code.equals("DJ", true) -> SharedRes.images.DJ
             code.equals("DK", true) -> SharedRes.images.DK
             code.equals("DO", true) -> SharedRes.images.COUNTRY_DO
-            code.equals("DZ", true) -> SharedRes.images.DZ
 
             code.equals("EE", true) -> SharedRes.images.EE
             code.equals("EG", true) -> SharedRes.images.EG
@@ -106,8 +105,6 @@ object CountryImage {
             code.equals("KM", true) -> SharedRes.images.KM
             code.equals("KN", true) -> SharedRes.images.KN
             code.equals("KP", true) -> SharedRes.images.KP
-            code.equals("KR", true) -> SharedRes.images.KR
-            code.equals("KR-EXTRA", true) -> SharedRes.images.KR_EXTRA
             code.equals("KRD", true) -> SharedRes.images.KRD
             code.equals("KW", true) -> SharedRes.images.KW
 
@@ -171,7 +168,6 @@ object CountryImage {
 
             code.equals("TH", true) -> SharedRes.images.TH
             code.equals("TL", true) -> SharedRes.images.TL
-            code.equals("TN", true) -> SharedRes.images.TN
             code.equals("TO", true) -> SharedRes.images.TO
             code.equals("TR", true) -> SharedRes.images.TR
             code.equals("TW", true) -> SharedRes.images.TW

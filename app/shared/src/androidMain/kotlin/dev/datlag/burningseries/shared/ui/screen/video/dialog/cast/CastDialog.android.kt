@@ -26,19 +26,13 @@ import kotlinx.coroutines.flow.map
 @Composable
 actual fun CastDialog(component: CastComponent) {
     val selectedItem by Kast.selectedDevice.collectAsStateWithLifecycle()
-    val otherItems by Kast.allAvailableDevices.map { list -> list.mapNotNull {
+    val otherItems by remember { Kast.allAvailableDevices.map { list -> list.mapNotNull {
         if (it.selected) {
             null
         } else {
             it
         }
-    } }.collectAsStateWithLifecycle(initialValue = Kast.allAvailableDevices.value.mapNotNull {
-        if (it.selected) {
-            null
-        } else {
-            it
-        }
-    })
+    } } }.collectAsStateWithLifecycle(initialValue = emptyList())
     var closeRequest by remember { mutableStateOf(false) }
 
     SideEffect {
