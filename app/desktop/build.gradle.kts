@@ -28,19 +28,21 @@ compose {
         application {
             mainClass = "$artifact.MainKt"
 
+            jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+            jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
+            jvmArgs("--add-opens", "java.desktop/sun.java2d=ALL-UNNAMED")
+            jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
             when (getHost()) {
                 Host.Linux -> {
                     jvmArgs("--add-opens", "java.desktop/sun.awt.X11=ALL-UNNAMED")
                     jvmArgs("--add-opens", "java.desktop/sun.awt.wl=ALL-UNNAMED")
                 }
                 Host.MAC -> {
-                    jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
                     jvmArgs("--add-opens", "java.desktop/sun.lwawt=ALL-UNNAMED")
                     jvmArgs("--add-opens", "java.desktop/sun.lwawt.macosx=ALL-UNNAMED")
                 }
                 else -> { }
             }
-            jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
 
             nativeDistributions {
                 packageName = "Burning-Series"
@@ -66,15 +68,17 @@ compose {
                 }
 
                 linux {
+                    iconFile.set(File(rootProject.project("app").project("shared").projectDir, "src/commonMain/resources/MR/assets/png/launcher_128.png"))
                     rpmLicenseType = "GPL-3.0"
                     debMaintainer = "Jeff Retz (DatLag)"
                     appCategory = "Video"
                 }
                 windows {
+                    iconFile.set(File(rootProject.project("app").project("shared").projectDir, "src/commonMain/resources/MR/assets/ico/launcher_128.ico"))
                     upgradeUuid = "3487d337-1ef5-4e01-87cb-d1ede6e10752"
                 }
                 macOS {
-
+                    iconFile.set(File(rootProject.project("app").project("shared").projectDir, "src/commonMain/resources/MR/assets/icns/launcher.icns"))
                 }
 
                 includeAllModules = true
