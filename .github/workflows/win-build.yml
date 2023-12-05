@@ -5,7 +5,7 @@ on:
 
 
 jobs:
-  windows-publish:
+  windows-build:
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -27,7 +27,7 @@ jobs:
       - name: Create Sekrets
         uses: GuillaumeFalourd/write-java-properties-file@v1
         with:
-          file_path: ./sekret.properties
+          file_path: ${{ github.workspace }}/sekret.properties
           property: |
             MONGO_APPLICATION
             WRAP_API
