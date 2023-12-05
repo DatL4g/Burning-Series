@@ -1,6 +1,5 @@
 package dev.datlag.burningseries.network
 
-import com.hadiyarajesh.flower_core.ApiResponse
 import de.jensklingenberg.ktorfit.http.*
 import dev.datlag.burningseries.model.JsonBaseCaptchaEntry
 
@@ -10,7 +9,7 @@ interface JsonBase {
     @GET("bs-decaptcha/{id}")
     suspend fun burningSeriesCaptcha(
         @Path("id") id: String
-    ): ApiResponse<JsonBaseCaptchaEntry>
+    ): JsonBaseCaptchaEntry
 
     @Headers(
         "Content-Type: application/json",
@@ -20,5 +19,5 @@ interface JsonBase {
     suspend fun setBurningSeriesCaptcha(
         @Path("id") id: String,
         @Body body: JsonBaseCaptchaEntry
-    ): ApiResponse<JsonBaseCaptchaEntry>
+    ): JsonBaseCaptchaEntry
 }

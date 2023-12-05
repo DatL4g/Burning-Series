@@ -1,0 +1,31 @@
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_118:999)">
+<rect width="300" height="300" fill="white"/>
+<path d="M0.25 299.75L0.250039 -0.250031L150.25 -0.250011L150.25 299.75L0.25 299.75Z" fill="#FFB84F"/>
+<path d="M149.75 299.75L149.75 -0.250031L299.75 -0.250011L299.75 299.75L149.75 299.75Z" fill="white"/>
+<circle r="11" transform="matrix(-0.707107 0.707107 0.707107 0.707107 243.862 168.861)" stroke="#828282" stroke-width="4"/>
+<rect width="4" height="56" transform="matrix(-0.707107 0.707107 0.707107 0.707107 198.607 120.778)" fill="#828282"/>
+<rect width="4" height="13" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 205.678 127.849)" fill="#828282"/>
+<rect width="4" height="13" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 214.163 136.334)" fill="#828282"/>
+<rect width="4" height="7" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 212.042 134.213)" fill="#828282"/>
+<rect width="4" height="7" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 207.799 129.97)" fill="#828282"/>
+<rect width="4" height="8" transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 197.9 139.87)" fill="#828282"/>
+<rect width="4" height="7" transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 204.971 146.941)" fill="#828282"/>
+<circle cx="206.385" cy="168.861" r="11" transform="rotate(45 206.385 168.861)" stroke="#FFB84F" stroke-width="4"/>
+<rect x="251.64" y="120.778" width="4" height="56" transform="rotate(45 251.64 120.778)" fill="#FFB84F"/>
+<rect x="244.568" y="127.849" width="4" height="13" transform="rotate(-45 244.568 127.849)" fill="#FFB84F"/>
+<rect x="236.083" y="136.334" width="4" height="13" transform="rotate(-45 236.083 136.334)" fill="#FFB84F"/>
+<rect x="238.204" y="134.213" width="4" height="7" transform="rotate(-45 238.204 134.213)" fill="#FFB84F"/>
+<rect x="242.447" y="129.97" width="4" height="7" transform="rotate(-45 242.447 129.97)" fill="#FFB84F"/>
+<rect x="252.347" y="139.87" width="4" height="8" transform="rotate(-135 252.347 139.87)" fill="#FFB84F"/>
+<rect x="245.276" y="146.941" width="4" height="7" transform="rotate(-135 245.276 146.941)" fill="#FFB84F"/>
+<path d="M215 121C215 115.477 219.477 111 225 111C230.523 111 235 115.477 235 121V133C235 133.552 234.552 134 234 134H216C215.448 134 215 133.552 215 133V121Z" fill="#FFB84F"/>
+<rect x="223" y="95" width="4" height="28" rx="1" fill="#FFB84F"/>
+<rect x="217" y="105" width="4" height="16" rx="1" transform="rotate(-90 217 105)" fill="#FFB84F"/>
+</g>
+<defs>
+<clipPath id="clip0_118:999">
+<rect width="300" height="300" fill="white"/>
+</clipPath>
+</defs>
+</svg>

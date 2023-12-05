@@ -1,41 +1,51 @@
 plugins {
-    kotlin("multiplatform")
-    id("com.android.library")
-    id("com.squareup.sqldelight")
+    alias(libs.plugins.multiplatform)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.sqldelight)
 }
 
-group = "dev.datlag.burningseries.database"
+val artifact = VersionCatalog.artifactName("database")
+
+group = artifact
 
 kotlin {
-    android()
-    jvm("desktop")
+    jvm()
+    androidTarget()
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    jvmToolchain(CompileOptions.jvmTargetVersion)
+
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("com.squareup.sqldelight:coroutines-extensions:1.5.5")
+                api(libs.sqldelight.coroutines)
+                api(project(":model"))
             }
         }
 
-        val androidMain by getting {
-            dependencies {
-                implementation("com.squareup.sqldelight:android-driver:1.5.5")
-            }
+        androidMain.get().dependencies {
+            implementation(libs.sqldelight.android)
         }
 
-        val desktopMain by getting {
-            dependencies {
-                implementation("com.squareup.sqldelight:sqlite-driver:1.5.5")
-            }
+        jvmMain.get().dependencies {
+            implementation(libs.sqldelight.jvm)
+        }
+
+        iosMain.get().dependencies {
+            implementation(libs.sqldelight.native)
         }
     }
 }
 
 android {
-    sourceSets["main"].setRoot("src/androidMain/")
-
     compileSdk = Configuration.compileSdk
-    buildToolsVersion = Configuration.buildTools
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+
+    namespace = artifact
 
     defaultConfig {
         minSdk = Configuration.minSdk
@@ -45,10 +55,21 @@ android {
         sourceCompatibility = CompileOptions.sourceCompatibility
         targetCompatibility = CompileOptions.targetCompatibility
     }
+    packaging {
+        resources.merges.add("META-INF/LICENSE")
+        resources.merges.add("META-INF/DEPENDENCIES")
+        resources.pickFirsts.add("**")
+        resources.pickFirsts.add("**/*")
+        resources.pickFirsts.add("*")
+        resources.excludes.add("META-INF/versions/9/previous-compilation-data.bin")
+    }
 }
 
 sqldelight {
-    database("BurningSeriesDB") {
-        packageName = "dev.datlag.burningseries.database"
+    databases {
+        create("BurningSeries") {
+            packageName.set(artifact)
+            srcDirs("src/commonMain/bs")
+        }
     }
 }

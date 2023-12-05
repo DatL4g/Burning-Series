@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="ic_launcher_background">#094576</color>
-    <color name="tv_banner_background">#094576</color>
-    <color name="statusBarColor">#2B5EA7</color>
-    <color name="statusBarColorAmoled">#000000</color>
-</resources>

@@ -1,0 +1,24 @@
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_124:165)">
+<rect width="300" height="300" fill="white"/>
+<mask id="mask0_124:165" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="150" width="300" height="150">
+<path d="M300 300L-3.05176e-05 300L-1.74042e-05 150L300 150L300 300Z" fill="#EF4B4B"/>
+</mask>
+<g mask="url(#mask0_124:165)">
+<path d="M300 300L-3.05176e-05 300L-1.74042e-05 150L300 150L300 300Z" fill="#EF4B4B"/>
+<circle cx="101.5" cy="147.5" r="74.5" fill="white"/>
+</g>
+<mask id="mask1_124:165" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="300" height="150">
+<path d="M0 0L300 5.24537e-05L300 150L-2.62268e-05 150L0 0Z" fill="#EF4B4B"/>
+</mask>
+<g mask="url(#mask1_124:165)">
+<path d="M0 0L300 5.24537e-05L300 150L-2.62268e-05 150L0 0Z" fill="white"/>
+<circle cx="101.5" cy="147.5" r="74.5" transform="rotate(-180 101.5 147.5)" fill="#EF4B4B"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_124:165">
+<rect width="300" height="300" fill="white"/>
+</clipPath>
+</defs>
+</svg>

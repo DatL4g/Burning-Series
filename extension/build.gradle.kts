@@ -2,46 +2,46 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
 plugins {
-    kotlin("js")
-    kotlin("plugin.serialization")
-    id("de.jensklingenberg.ktorfit")
+    alias(libs.plugins.multiplatform)
+    alias(libs.plugins.serialization)
+    alias(libs.plugins.ktorfit)
 }
 
-group = "dev.datlag.burningseries.extension"
+val version = appVersion
+val artifact = VersionCatalog.artifactName("extension")
+group = artifact
 
 kotlin {
     js(IR) {
         browser()
+        binaries.executable()
+    }
+
+    sourceSets {
+        jsMain.get().dependencies {
+            runtimeOnly(npm("webextension-polyfill", "0.10.0"))
+        }
     }
 }
 
-dependencies {
-    runtimeOnly(npm("webextension-polyfill", "0.10.0"))
-    runtimeOnly(npm("@jaames/iro", "5.5.0"))
-}
-
 tasks {
-    val extensionFolder = File(rootProject.buildDir, "extension")
-    val resourcesFolder = File(projectDir, "src/main/resources")
-    val commonAppFolder = File(rootProject.project("app").projectDir, "src/commonMain")
-    val assetsFolder = File(commonAppFolder, "assets")
-    val iconsFolder = File(assetsFolder, "png")
-    val svgFolder = File(assetsFolder, "svg")
-    val fontFolder = File(commonAppFolder, "resources/font")
-    val releaseFolder = File(rootProject.buildDir, "release/main/extension")
+    val extensionFolder = File(rootProject.layout.buildDirectory.get().asFile, "extension")
+    val resourcesFolder = File(projectDir, "src/jsMain/resources")
+    val releaseFolder = File(rootProject.layout.buildDirectory.get().asFile, "release/main/extension")
+    val commonShared = File(rootProject.project("app").project("shared").projectDir, "src/commonMain")
+    val iconsFolder = File(commonShared, "resources/MR/assets/png")
     var firefox = false
 
     val buildAndCopy = register("buildAndCopy") {
         dependsOn(
             project("content").tasks.build,
             project("background").tasks.build,
-            project("popup").tasks.build,
             assemble
         )
 
         doLast {
             copy {
-                from(File(buildDir, "distributions")) {
+                from(File(layout.buildDirectory.get().asFile, "distributions")) {
                     include("*.js")
                 }
                 into(extensionFolder)
@@ -49,39 +49,23 @@ tasks {
 
             copy {
                 from(File(resourcesFolder, "manifest.json"))
-                from(File(resourcesFolder, "html")) {
-                    include("*.html")
-                }
-                from(File(resourcesFolder, "css")) {
-                    include("*.css")
-                }
-                from(fontFolder) {
-                    include("manrope_regular.ttf")
-                }
                 into(extensionFolder)
 
                 from(iconsFolder) {
                     include("launcher_*.png")
                     into("icons")
                 }
-                from(svgFolder) {
-                    include("GitHub.svg")
-                    into("icons")
-                }
             }
 
             copy {
                 val buildDirs = listOf(
-                    rootProject.buildDir,
-                    buildDir
+                    rootProject.layout.buildDirectory.get().asFile,
+                    layout.buildDirectory.get().asFile
                 )
 
                 from(buildDirs.map { File(it, "js/node_modules/webextension-polyfill/dist") }) {
                     include("browser-polyfill.min.js")
                     include("browser-polyfill.min.js.map")
-                }
-                from(buildDirs.map { File(it, "js/node_modules/@jaames/iro/dist") }) {
-                    include("iro.min.js")
                 }
                 into(extensionFolder)
             }
@@ -90,7 +74,7 @@ tasks {
                 JsonSlurper().parse(File(extensionFolder, "manifest.json"))
             )?.toMutableMap()?.let { json ->
                 if (json.containsKey("version")) {
-                    json["version"] = rootProject.project("app").version.toString()
+                    json["version"] = version
                 }
                 if (firefox) {
                     json["background"] = mapOf("scripts" to listOf("background.js"))
@@ -113,23 +97,21 @@ tasks {
 
         mkdir(releaseFolder)
         from(extensionFolder)
-        archiveBaseName.set("Chromium-${rootProject.project("app").version}")
+        archiveBaseName.set("Chromium-$version")
         destinationDirectory.set(releaseFolder)
     }
-
     register<Zip>("packFirefox") {
         firefox = true
         dependsOn(buildAndCopy)
 
         mkdir(releaseFolder)
         from(extensionFolder)
-        archiveBaseName.set("Firefox-${rootProject.project("app").version}")
+        archiveBaseName.set("Firefox-$version")
         archiveExtension.set("xpi")
         destinationDirectory.set(releaseFolder)
     }
 }
 
-@Suppress("UNCHECKED_CAST")
 fun jsonObjectAsMap(data: Any?): Map<String, Any>? {
     if (data == null) {
         return null

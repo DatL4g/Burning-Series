@@ -1,0 +1,52 @@
+name: Check Dependency Versions
+on:
+  push:
+
+jobs:
+  dependency-versions:
+    runs-on: ubuntu-latest
+
+    permissions:
+      checks: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Check Dependency Versions
+        run: ./gradlew dependencyUpdates
+
+      - name: Publish version results
+        run: |
+          ruby << 'EOF' | gh api -X POST '/repos/${{ github.repository }}/check-runs' --input -
+            require 'json'
+            report = {
+              name: ENV.fetch('REPORT_CHECK_NAME'),
+              head_sha: ENV.fetch('REPORT_SHA'),
+              status: 'completed',
+              conclusion: ENV.fetch('REPORT_CONCLUSION'),
+              output: {
+                title: ENV.fetch('REPORT_CHECK_OUTPUT_TITLE'),
+                summary: File.read(ENV.fetch('REPORT_CHECK_OUTPUT_SUMMARY_FILE')),
+              },
+            }
+            puts report.to_json
+          EOF
+        env:
+          REPORT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GITHUB_TOKEN: ${{ github.token }}
+          REPORT_CHECK_NAME: Version Results
+          REPORT_CHECK_OUTPUT_TITLE: ${{ github.event.repository.updated_at }}
+          REPORT_CHECK_OUTPUT_SUMMARY_FILE: build/dependencyUpdates/report.md
+          REPORT_CONCLUSION: ${{ job.status }}
+        shell: bash

@@ -1,10 +1,9 @@
 package dev.datlag.burningseries.model.algorithm
 
-import dev.datlag.burningseries.model.common.toHexString
 import kotlin.math.abs
 import kotlin.math.sin
 
-object MD5 {
+data object MD5 {
 
     private val INIT_A = 0x67452301
     private val INIT_B = 0xEFCDAB89L.toInt()
@@ -108,6 +107,7 @@ object MD5 {
         return md5
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     fun hexString(byteArray: ByteArray): String {
         return compute(byteArray).toHexString()
     }

@@ -1,44 +1,40 @@
 package dev.datlag.burningseries.model.common
 
-import kotlin.collections.contains as defaultContains
+import kotlin.math.max
+import kotlin.math.min
 
-fun <T> Collection<T>.maxSize(size: Int): List<T> {
-    return this.toList().subList(0, if (this.size < size) this.size else size)
-}
-
-fun <T> MutableList<T>.move(from: Int, to: Int): MutableList<T> {
-    if (to > from) {
-        for (i in from until to) {
-            if (i < this.size) {
-                try {
-                    this[i] = this[i + 1].also { this[i + 1] = this[i] }
-                } catch (ignored: Throwable) { }
-            }
-        }
-    } else {
-        for (i in from downTo to + 1) {
-            if (i < this.size) {
-                try {
-                    this[i] = this[i - 1].also { this[i - 1] = this[i] }
-                } catch (ignored: Throwable) { }
-            }
-        }
+fun <T> listFrom(vararg list: Collection<T>): List<T> {
+    return mutableListOf<T>().apply {
+        list.forEach(::addAll)
     }
-    return this
 }
 
-fun Collection<String>.contains(element: String?, ignoreCase: Boolean = false): Boolean {
+fun <T> setFrom(vararg list: Collection<T>): Set<T>  {
+    return mutableSetOf<T>().apply {
+        list.forEach(::addAll)
+    }
+}
+
+fun <T> T.asList(): List<T> {
+    return listOf(this)
+}
+
+fun <T> List<T>.safeSubList(from: Int, to: Int): List<T> {
+    if (this.isEmpty()) {
+        return this
+    }
+
+    val safeFrom = max(min(from, lastIndex), 0)
+    return this.subList(
+        safeFrom,
+        max(safeFrom, min(to, size))
+    )
+}
+
+fun Collection<String>.contains(element: String, ignoreCase: Boolean): Boolean {
     return if (ignoreCase) {
         this.any { it.equals(element, true) }
     } else {
-        this.defaultContains(element)
-    }
-}
-
-fun Map<String, *>.containsKey(element: String?, ignoreCase: Boolean = false): Boolean {
-    return if (ignoreCase) {
-        this.keys.any { it.equals(element, true) }
-    } else {
-        this.defaultContains(element)
+        this.contains(element)
     }
 }

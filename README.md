@@ -1,7 +1,3 @@
-# !!! PLEASE READ THIS FIRST !!!
-
-### [Go Anime-Exclusive](https://github.com/DATL4G/Burning-Series/discussions/57)
-
 # Burning-Series
 
 [![Issues](https://img.shields.io/github/issues/DATL4G/Burning-Series.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/issues)
@@ -12,7 +8,6 @@
 [![Github all releases](https://img.shields.io/github/downloads/DATL4G/Burning-Series/total.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/releases)
 
 [![Release Status](https://github.com/DatL4g/Burning-Series/actions/workflows/release.yml/badge.svg)](https://github.com/DATL4G/Burning-Series/actions/workflows/release.yml)
-[![CodeQL](https://github.com/DATL4G/Burning-Series/actions/workflows/codeql.yml/badge.svg)](https://github.com/DATL4G/Burning-Series/actions/workflows/codeql.yml)
 
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/kotlin-%230095D5.svg?style=for-the-badge&logo=kotlin&logoColor=white)
@@ -24,13 +19,10 @@ Watch any series or videos on [Burning Series](https://bs.to/) easily with this 
 You can see the latest series and episodes, get an overview of all available series, save your favorites and start watching directly inside the app.
 **You can't log in to your [Burning Series](https://bs.to/) Account because it's not using an official API.** Read the [Important Notice](#important-notice) for more info.
 
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="60">](https://f-droid.org/packages/dev.datlag.burningseries/)
-
 - [Important Notice](#important-notice)
 - [Supported devices and Installation](#supported-devices-and-installation)
-- [Usage](#usage)
 - [Contributing](#contributing)
-  - [Maintainers](#maintainers)
+    - [Maintainers](#maintainers)
 - [Support the project](#support-the-project)
 
 ## Important Notice
@@ -47,24 +39,22 @@ If the app stops working don't report that in any form on [Burning Series](https
 
 ## Supported devices and Installation
 
-All Android smartphones with version >=6.0 (Marshmallow and up) as well as Android TVs are supported.
+All Android smartphones with version >=8.0 (Oreo and up) are supported, furthermore Android TVs should work as well.
 
 To install the app head over to the [Release Section](https://github.com/DATL4G/Burning-Series/releases) and download the ```.apk``` file. For more advanced users is an ```.aab``` file provided which can be installed using [bundletool](https://developer.android.com/studio/command-line/bundletool).
 Installing the ```.apk``` file is easy, just copy it to your phone (or download it directly on your phone) and open it to install. If this won't work you can use [ADB](https://developer.android.com/studio/command-line/adb) sideloading to install it from your pc on your phone.
-
-You can also download the app from [F-Droid](https://f-droid.org/packages/dev.datlag.burningseries/).
 
 Search on the internet if you face any problems. Don't ask for help here!
 
 ### Desktop
 
-- **Windows** (tested by member)
-- **MacOS** (untested)
+- **Windows**
+- **MacOS**
 - **Linux**
-  - Fedora
-  - AppImage
-  - Debian / Ubuntu
-  - Tarball
+    - Fedora
+    - AppImage
+    - Debian / Ubuntu
+    - Tarball
 
 ### Browser (Activation Extension)
 
@@ -75,22 +65,13 @@ The extension doesn't need to be updated every version, it just follows the over
 If an update is required/recommended, then there is a hint in the [release notes](https://github.com/DATL4G/Burning-Series/releases/latest).
 
 - **Chromium**
-  - Chrome
-  - Brave
-  - Opera
-  - Edge
-  - etc...
+    - Chrome
+    - Brave
+    - Opera
+    - Edge
+    - etc...
 - **Firefox**
-  - may require to allow some website permissions manually
-
-## Usage
-
-The usage is pretty self-explanatory the screenshots below show some examples.
-
-| Home                                                                                                                               | All                                                                                                                               | Favorites                                                                                                                               | Series                                                                                                                               |
-|------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| ![Home Dark](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png)  | ![All Dark](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png)  | ![Favorites Dark](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/7.png)  | ![Series Dark](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/8.png)  |
-| ![Home Light](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png) | ![All Light](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png) | ![Favorites Light](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png) | ![Series Light](https://github.com/DATL4G/Burning-Series/blob/compose/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png) |
+    - may require to allow some website permissions manually
 
 ## Contributing
 
@@ -116,4 +97,4 @@ Sponsoring to this project means sponsoring to all my projects!
 So the further text is not to be attributed to this project, but to all my apps and libraries.
 
 Supporting this project helps to keep it up-to-date. You can donate if you want or contribute to the project as well.
-This shows that the app is used by people, and it's worth to maintain.
+This shows that the app or library is used by people, and it's worth to maintain.

@@ -1,11 +1,6 @@
 plugins {
-    kotlin("js")
-    kotlin("plugin.serialization")
-}
-
-dependencies {
-    parent?.project("base")?.let { implementation(it) }
-    implementation(rootProject.project("model"))
+    alias(libs.plugins.multiplatform)
+    alias(libs.plugins.serialization)
 }
 
 kotlin {
@@ -13,12 +8,20 @@ kotlin {
         browser {
             binaries.executable()
             webpackTask {
-                outputFileName = "content_script.js"
+                mainOutputFileName = "content_script.js"
                 sourceMaps = false
             }
             distribution {
-                directory = parent?.buildDir?.let { File(it, "distributions") } ?: File(projectDir, "../build/distributions")
+                outputDirectory.set(parentBuildDir("distributions"))
             }
+        }
+    }
+
+    sourceSets {
+        jsMain.get().dependencies {
+            implementation(parent?.project("base") ?: rootProject.project("extension:base"))
+            implementation(rootProject.project("model"))
+            implementation(rootProject.project("color"))
         }
     }
 }

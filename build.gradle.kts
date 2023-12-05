@@ -1,58 +1,140 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.gradle.jvm.toolchain.internal.JavaToolchain
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
+import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain
 
 plugins {
-    kotlin("multiplatform") version "1.8.10" apply false
-    kotlin("plugin.serialization") version "1.8.10" apply false
-    kotlin("android") version "1.8.10" apply false
-    id("org.jetbrains.compose") version "1.4.0" apply false
-    id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
-    id("com.google.protobuf") version "0.9.3" apply false
-    id("com.squareup.sqldelight") version "1.5.5" apply false
-    id("com.mikepenz.aboutlibraries.plugin") version "10.6.2" apply false
-    id("de.jensklingenberg.ktorfit") version "1.0.0" apply false
-    id("com.google.osdetector") version "1.7.3" apply false
-    id("com.github.ben-manes.versions") version "0.46.0"
+    alias(libs.plugins.android) apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.cocoapods) apply false
+    alias(libs.plugins.compose) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.ktorfit) apply false
+    alias(libs.plugins.multiplatform) apply false
+    alias(libs.plugins.osdetector) apply false
+    alias(libs.plugins.protobuf) apply false
+    alias(libs.plugins.realm) apply false
+    alias(libs.plugins.sekret) apply false
+    alias(libs.plugins.serialization) apply false
+    alias(libs.plugins.sqldelight) apply false
+    alias(libs.plugins.complete.kotlin)
+    alias(libs.plugins.versions)
 }
 
 buildscript {
     repositories {
         google()
-        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
-        maven { url = uri("https://jitpack.io") }
-        maven { url = uri("https://plugins.gradle.org/m2/") }
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle:7.4.2")
+        maven("https://jitpack.io")
+        maven("https://plugins.gradle.org/m2/")
+        maven("https://jogamp.org/deployment/maven")
+        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     }
 }
 
 allprojects {
     repositories {
         google()
-        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
-        maven { url = uri("https://jitpack.io") }
-        maven { url = uri("https://plugins.gradle.org/m2/") }
+        maven("https://jitpack.io")
+        maven("https://plugins.gradle.org/m2/")
+        maven("https://jogamp.org/deployment/maven")
+        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+    }
+
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions.jvmTarget = CompileOptions.jvmTarget
     }
 }
 
+plugins.withType<YarnPlugin> {
+    yarn.yarnLockAutoReplace = true
+}
+
 tasks.withType<DependencyUpdatesTask> {
+    outputFormatter {
+        val updatable = this.outdated.dependencies
+        val markdown = if (updatable.isEmpty()) {
+            buildString {
+                append("### Dependencies up-to-date")
+                appendLine()
+                appendLine()
+                appendLine("Everything up-to-date")
+                appendLine()
+                appendLine("### Gradle Version")
+                appendLine()
+                appendLine("**Current version:** ${this@outputFormatter.gradle.running.version}")
+                appendLine("**Latest version:** ${this@outputFormatter.gradle.current.version}")
+            }
+        } else {
+            buildString {
+                append("## Updatable dependencies (${updatable.size})")
+                appendLine()
+                appendLine()
+                append('|')
+                append("Group")
+                append('|')
+                append("Module")
+                append('|')
+                append("Used Version")
+                append('|')
+                append("Available Version")
+                append('|')
+                appendLine()
+                append('|')
+                repeat(2) {
+                    append("---")
+                    append('|')
+                }
+                repeat(2) {
+                    append(":-:")
+                    append('|')
+                }
+                updatable.forEach { dependency ->
+                    appendLine()
+                    append('|')
+                    append(dependency.group ?: ' ')
+                    append('|')
+                    append(dependency.name ?: ' ')
+                    append('|')
+                    append(dependency.version ?: ' ')
+                    append('|')
+                    append(dependency.available.release ?: dependency.available.milestone ?: ' ')
+                    append('|')
+                }
+                appendLine()
+                appendLine()
+                appendLine("### Gradle Version")
+                appendLine()
+                appendLine("**Current version:** ${this@outputFormatter.gradle.running.version}")
+                appendLine("**Latest version:** ${this@outputFormatter.gradle.current.version}")
+            }
+        }
+        val outputFile = layout.buildDirectory.file("dependencyUpdates/report.md").get().asFile
+        try {
+            if (outputFile.exists()) {
+                outputFile.delete()
+            }
+        } catch (ignored: Throwable) { }
+        try {
+            outputFile.parentFile.mkdirs()
+        } catch (ignored: Throwable) { }
+        try {
+            outputFile.writeText(markdown)
+        } catch (ignored: Throwable) { }
+    }
     rejectVersionIf {
         isNonStable(candidate.version) && !isNonStable(currentVersion)
     }
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
-}
-
 fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
     val regex = "^[0-9,.v-]+(-r)?$".toRegex()
     val isStable = stableKeyword || regex.matches(version)
     return isStable.not()

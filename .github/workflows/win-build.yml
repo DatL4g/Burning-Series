@@ -1,0 +1,54 @@
+name: Build Windows Package
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  windows-publish:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Create Sekrets
+        uses: GuillaumeFalourd/write-java-properties-file@v1
+        with:
+          file_path: ./sekret.properties
+          property: |
+            MONGO_APPLICATION
+            WRAP_API
+            FIREBASE_PROJECT
+            FIREBASE_APPLICATION
+            FIREBASE_API_KEY
+          value: |
+            ${{ secrets.MONGO_APPLICATION }}
+            ${{ secrets.WRAP_API }}
+            ${{ secrets.FIREBASE_PROJECT }}
+            ${{ secrets.FIREBASE_APPLICATION }}
+            ${{ secrets.FIREBASE_API_KEY }}
+
+      - name: Generate Sekrets
+        run: gradle generateSekret
+        working-directory: ${{ github.workspace }}
+
+      - name: Package
+        run: gradle app:desktop:packageExe; gradle app:desktop:packageMsi
+        working-directory: ${{ github.workspace }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            build/release/main/exe/*.exe
+            build/release/main/msi/*.msi
+          retention-days: 1

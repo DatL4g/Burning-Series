@@ -1,6 +1,5 @@
 package dev.datlag.burningseries.network
 
-import com.hadiyarajesh.flower_core.ApiResponse
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Headers
 import de.jensklingenberg.ktorfit.http.Path
@@ -13,5 +12,5 @@ interface GitHub {
     suspend fun getReleases(
         @Path("owner") owner: String,
         @Path("repo") repo: String
-    ): ApiResponse<List<Release>>
+    ): List<Release>
 }

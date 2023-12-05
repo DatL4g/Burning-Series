@@ -3,7 +3,7 @@ package dev.datlag.burningseries.model.algorithm
 import kotlin.math.max
 import kotlin.math.min
 
-object JaroWinkler {
+data object JaroWinkler {
     fun distance(s1: String, s2: String): Double {
         val s1Len = s1.length
         val s2Len = s2.length

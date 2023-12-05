@@ -1,43 +1,66 @@
 plugins {
-    kotlin("multiplatform")
-    id("com.android.library")
-    kotlin("plugin.serialization")
+    alias(libs.plugins.multiplatform)
+    alias(libs.plugins.serialization)
+    alias(libs.plugins.android.library)
     id ("kotlin-parcelize") apply false
 }
 
-group = "dev.datlag.burningseries.model"
+val artifact = VersionCatalog.artifactName("model")
+group = artifact
 
 kotlin {
-    android()
     jvm()
+    androidTarget()
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
     js(IR) {
         browser()
+        nodejs()
+        binaries.executable()
     }
+
+    jvmToolchain(CompileOptions.jvmTargetVersion)
+
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("com.arkivanov.essenty:parcelable:1.1.0")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                api(libs.serialization.json)
+                api(libs.coroutines)
+                api(libs.datetime)
+                api(libs.napier)
+                api(libs.skeo)
             }
         }
 
-        val androidMain by getting {
+        val javaMain by creating {
+            dependsOn(commonMain)
+
+            jvmMain.get().dependsOn(this)
+            androidMain.get().dependsOn(this)
+        }
+
+        androidMain.get().apply {
             apply(plugin = "kotlin-parcelize")
         }
 
-        val jvmMain by getting
+        jvmMain.get().dependencies {
+            api(libs.lang)
+        }
 
-        val jsMain by getting
+        jsMain.get().dependencies {
+            api(libs.coroutines.js)
+        }
     }
 }
 
 android {
-    sourceSets["main"].setRoot("src/androidMain/")
-
     compileSdk = Configuration.compileSdk
-    buildToolsVersion = Configuration.buildTools
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+
+    namespace = artifact
 
     defaultConfig {
         minSdk = Configuration.minSdk
@@ -46,5 +69,13 @@ android {
     compileOptions {
         sourceCompatibility = CompileOptions.sourceCompatibility
         targetCompatibility = CompileOptions.targetCompatibility
+    }
+    packaging {
+        resources.merges.add("META-INF/LICENSE")
+        resources.merges.add("META-INF/DEPENDENCIES")
+        resources.pickFirsts.add("**")
+        resources.pickFirsts.add("**/*")
+        resources.pickFirsts.add("*")
+        resources.excludes.add("META-INF/versions/9/previous-compilation-data.bin")
     }
 }

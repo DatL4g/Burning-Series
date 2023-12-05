@@ -1,0 +1,26 @@
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_118:947)">
+<rect width="300" height="300" fill="#3661F6"/>
+<rect x="300" y="300" width="300" height="100" transform="rotate(-180 300 300)" fill="#FF4A4A"/>
+<rect x="300" y="100" width="300" height="100" transform="rotate(-180 300 100)" fill="white"/>
+<path d="M53 84H50V87V165.5C50 193.943 73.0573 217 101.5 217C129.943 217 153 193.943 153 165.5V87V84H150H53Z" fill="#FF4A4A" stroke="white" stroke-width="6"/>
+<mask id="mask0_118:947" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="53" y="87" width="97" height="127">
+<path d="M53 87H150V165.5C150 192.286 128.286 214 101.5 214C74.7142 214 53 192.286 53 165.5V87Z" fill="#FF4A4A"/>
+</mask>
+<g mask="url(#mask0_118:947)">
+<path d="M53 84H50V87V165.5C50 193.943 73.0573 217 101.5 217C129.943 217 153 193.943 153 165.5V87V84H150H53Z" fill="#FF4A4A" stroke="white" stroke-width="6"/>
+<rect x="98" y="102" width="8" height="59" rx="1" fill="white"/>
+<rect x="81" y="135" width="8" height="42" rx="1" transform="rotate(-90 81 135)" fill="white"/>
+<rect x="84" y="120" width="8" height="36" rx="1" transform="rotate(-90 84 120)" fill="white"/>
+<circle cx="102" cy="176" r="26" fill="#3661F6"/>
+<circle cx="61" cy="182" r="20" fill="#3661F6"/>
+<circle cx="140" cy="184" r="20" fill="#3661F6"/>
+<ellipse cx="97.5" cy="198" rx="43.5" ry="20" fill="#3661F6"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_118:947">
+<rect width="300" height="300" fill="white"/>
+</clipPath>
+</defs>
+</svg>

@@ -5,14 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ExtensionMessage(
-    @SerialName("query") val query: QueryType,
-    @SerialName("id") val id: String,
+    @SerialName("set") val set: Boolean,
+    @SerialName("href") val href: String,
     @SerialName("url") val url: String? = null
-) {
-
-    enum class QueryType {
-        GET,
-        EXISTS,
-        SET;
-    }
-}
+)

@@ -1,0 +1,38 @@
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_118:1609)">
+<rect width="300" height="300" fill="#59AFFF"/>
+<rect x="300" y="300" width="300" height="300" transform="rotate(-180 300 300)" fill="#59AFFF"/>
+<mask id="mask0_118:1609" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="137" height="83">
+<rect x="137" y="82.2002" width="137" height="82.2" transform="rotate(-180 137 82.2002)" fill="#3662D5"/>
+</mask>
+<g mask="url(#mask0_118:1609)">
+<rect x="137" y="82.2002" width="137" height="82.2" transform="rotate(-180 137 82.2002)" fill="#3662D5"/>
+<rect x="-15.5999" y="80.1401" width="235.649" height="16.5549" transform="rotate(-30 -15.5999 80.1401)" fill="white"/>
+<rect width="235.649" height="16.5549" transform="matrix(-0.866025 -0.5 -0.5 0.866025 182.215 97.5483)" fill="white"/>
+<rect x="-0.478109" y="0.128109" width="94.0374" height="7.94375" transform="matrix(-0.866025 -0.5 -0.5 0.866025 152.982 80.927)" fill="#EF4B4B" stroke="white" stroke-width="0.7"/>
+<rect x="-2.9519" y="0.790958" width="90.4155" height="4.32188" transform="matrix(-0.866025 -0.5 -0.5 0.866025 61.2522 38.6007)" fill="#EF4B4B" stroke="white" stroke-width="4.32188"/>
+<rect x="-0.478109" y="0.128109" width="94.0374" height="7.94375" transform="matrix(-0.866025 -0.5 -0.5 0.866025 65.5369 39.7488)" fill="#EF4B4B" stroke="white" stroke-width="0.7"/>
+<rect x="57.7442" y="38.4548" width="94.0374" height="7.94375" transform="rotate(-30 57.7442 38.4548)" fill="#EF4B4B" stroke="white" stroke-width="0.7"/>
+<rect x="-20.3459" y="92.4328" width="114.437" height="7.94375" transform="rotate(-30 -20.3459 92.4328)" fill="#EF4B4B" stroke="white" stroke-width="0.7"/>
+<rect x="-1.5" y="1.5" width="232.649" height="13.5549" transform="matrix(-1 8.74228e-08 8.74228e-08 1 191.001 32.8799)" fill="#EF4B4B" stroke="white" stroke-width="3"/>
+<rect x="-4.11" y="-4.11" width="73.98" height="8.22" transform="matrix(1.19249e-08 -1 -1 -1.19249e-08 68.5 27.1262)" fill="#EF4B4B" stroke="white" stroke-width="8.22"/>
+<rect x="-4.11" y="-4.11" width="73.98" height="8.22" transform="matrix(1.19249e-08 -1 -1 -1.19249e-08 68.5 121.108)" fill="#EF4B4B" stroke="white" stroke-width="8.22"/>
+<rect width="95" height="11" transform="matrix(1.19249e-08 -1 -1 -1.19249e-08 74 93)" fill="#EF4B4B"/>
+</g>
+<path d="M182 95H179V98V162.742C179 186.491 198.252 205.742 222 205.742C245.748 205.742 265 186.49 265 162.742V98V95H262H182Z" fill="#FF4A4A" stroke="#232323" stroke-width="6"/>
+<mask id="mask1_118:1609" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="182" y="98" width="80" height="105">
+<path d="M182 98H262V162.742C262 184.834 244.091 202.742 222 202.742C199.909 202.742 182 184.834 182 162.742V98Z" fill="#FF4A4A"/>
+</mask>
+<g mask="url(#mask1_118:1609)">
+<rect x="182" y="127.691" width="35.4639" height="28.0412" fill="white"/>
+<rect x="226.536" y="127.691" width="35.4639" height="28.0412" fill="white"/>
+<rect x="226.536" y="164.804" width="35.4639" height="37.9381" fill="white"/>
+<rect x="182" y="164.804" width="35.4639" height="37.9381" fill="white"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_118:1609">
+<rect width="300" height="300" fill="white"/>
+</clipPath>
+</defs>
+</svg>

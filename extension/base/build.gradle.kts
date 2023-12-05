@@ -1,10 +1,5 @@
 plugins {
-    kotlin("js")
-}
-
-dependencies {
-    implementation(kotlin("stdlib-js"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.6.4")
+    alias(libs.plugins.multiplatform)
 }
 
 kotlin {
@@ -13,12 +8,18 @@ kotlin {
             binaries.executable()
             useCommonJs()
             webpackTask {
-                outputFileName = "base.js"
+                mainOutputFileName.set("base.js")
                 sourceMaps = false
             }
             distribution {
-                directory = parent?.buildDir?.let { File(it, "distributions") } ?: File(projectDir, "../build/distributions")
+                outputDirectory.set(parentBuildDir("distributions"))
             }
+        }
+    }
+
+    sourceSets {
+        dependencies {
+
         }
     }
 }

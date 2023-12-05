@@ -1,7 +1,7 @@
 package dev.datlag.burningseries.database
 
-import com.squareup.sqldelight.db.SqlDriver
+import app.cash.sqldelight.db.SqlDriver
 
 expect class DriverFactory {
-     fun createDriver(): SqlDriver
+    fun createBurningSeriesDriver(): SqlDriver
 }
