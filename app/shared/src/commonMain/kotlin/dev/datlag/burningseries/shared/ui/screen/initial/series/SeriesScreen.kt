@@ -218,14 +218,9 @@ private fun CompactScreen(component: SeriesComponent) {
             }
             is SeriesState.Success -> {
                 val loadingEpisode by component.loadingEpisodeHref.collectAsStateWithLifecycle()
-                val state = rememberLazyListState(
-                    initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
-                    initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
-                )
                 val dbEpisodes by component.dbEpisodes.collectAsStateWithLifecycle()
 
                 LazyColumn(
-                    state = state,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
@@ -269,13 +264,6 @@ private fun CompactScreen(component: SeriesComponent) {
                             component.itemLongClicked(it)
                         }
                     )
-                }
-
-                DisposableEffect(state) {
-                    onDispose {
-                        StateSaver.seriesListIndex = state.firstVisibleItemIndex
-                        StateSaver.seriesListOffset = state.firstVisibleItemScrollOffset
-                    }
                 }
             }
         }

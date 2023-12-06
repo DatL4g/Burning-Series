@@ -60,7 +60,7 @@ compose {
                         TargetFormat.AppImage, TargetFormat.Deb, TargetFormat.Rpm
                     )
                     Host.MAC -> targetFormats(
-                        TargetFormat.Dmg, TargetFormat.Pkg
+                        TargetFormat.Dmg
                     )
                     Host.Windows -> targetFormats(
                         TargetFormat.Exe, TargetFormat.Msi
