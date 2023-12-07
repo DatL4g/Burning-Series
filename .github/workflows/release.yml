@@ -167,9 +167,6 @@ jobs:
       - name: Remove "-unsigned" from filename(s)
         run: for filename in ./app/release/*-unsigned*; do mv "./$filename" "./$(echo "$filename" | sed -e 's/-unsigned//g')";  done
 
-      - name: List all release files
-        run: ls ./app/release/
-
       - uses: ilharp/sign-android-release@v1
         id: sign_app
         with:
