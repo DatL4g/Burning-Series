@@ -32,7 +32,6 @@ jobs:
 
       - name: Package
         run: ./gradlew app:desktop:packageDmg; ./gradlew app:desktop:packageUberJarForCurrentOS
-        working-directory: ${{ github.workspace }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
