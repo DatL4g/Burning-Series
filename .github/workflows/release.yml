@@ -37,17 +37,33 @@ jobs:
         run: ./gradlew app:shared:createNativeLib
 
       - name: Create package on Ubuntu
-        run: ./gradlew app:desktop:packageDeb; ./gradlew app:desktop:packageUberJarForCurrentOS
+        run: ./gradlew app:desktop:packageDeb; ./gradlew app:desktop:packageAppImage; ./gradlew app:desktop:packageUberJarForCurrentOS
 
       - name: Create Browser Extensions on Ubuntu
         continue-on-error: true
         run: ./gradlew extension:packChromium; ./gradlew extension:packFirefox
+
+      - name: Create AppImage and Tarball
+        continue-on-error: true
+        run: |
+          mkdir -p ./build/release/main/image/Burning-Series/usr
+          curl --request GET --url https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage --location --output ./build/release/main/image/appimagetool.AppImage
+          curl --request GET --url https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-x86_64 --location --output ./build/release/main/image/Burning-Series/AppRun
+          chmod +x ./build/release/main/image/appimagetool.AppImage
+          chmod +x ./build/release/main/image/Burning-Series/AppRun
+          cp ./app/desktop/Burning-Series.desktop ./build/release/main/image/Burning-Series/
+          cp ./build/release/main/app/Burning-Series/lib/Burning-Series.png ./build/release/main/image/Burning-Series/
+          cp -r ./build/release/main/app/Burning-Series/bin ./build/release/main/image/Burning-Series/usr/
+          cp -r ./build/release/main/app/Burning-Series/lib ./build/release/main/image/Burning-Series/usr/
+          ./build/release/main/image/appimagetool.AppImage ./build/release/main/image/Burning-Series ./build/release/main/image/Burning-Series-${{  github.ref_name }}-x86_64.AppImage
+          tar cJf ./build/release/main/app/Burning-Series.tar.xz ./build/release/main/app/Burning-Series
 
       - name: Upload release packages
         uses: softprops/action-gh-release@v1
         with:
           files: |
             ./build/release/main/app/Burning-Series.tar.xz
+            ./build/release/main/image/Burning-Series-${{  github.ref_name }}-x86_64.AppImage
             ./build/release/main/deb/*.deb
             ./build/release/main/extension/*.zip
             ./build/release/main/extension/*.xpi
@@ -159,10 +175,10 @@ jobs:
         run: ./gradlew assembleRelease && ./gradlew bundleRelease
 
       - name: Move APK file(s)
-        run: mv ./app/build/outputs/apk/release/*.apk ./app/release/
+        run: mv ./app/android/build/outputs/apk/release/*.apk ./app/release/
 
       - name: Move AAB file(s)
-        run: mv ./app/build/outputs/bundle/release/*.aab ./app/release/
+        run: mv ./app/android/build/outputs/bundle/release/*.aab ./app/release/
 
       - name: Remove "-unsigned" from filename(s)
         run: for filename in ./app/release/*-unsigned*; do mv "./$filename" "./$(echo "$filename" | sed -e 's/-unsigned//g')";  done

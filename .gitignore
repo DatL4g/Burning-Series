@@ -1,6 +1,7 @@
 TODO
 
 app/release/*
+app/android/release/*
 !app/release/.gitkeep
 
 sekret.properties
