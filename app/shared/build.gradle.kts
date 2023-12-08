@@ -65,7 +65,7 @@ kotlin {
                 api(libs.ktor.content.negotiation)
                 api(libs.ktor.serialization.json)
 
-                api("dev.datlag.kast:kast:0.1.6-SNAPSHOT")
+                api("dev.datlag.kast:kast:0.1.7-SNAPSHOT")
 
                 api(project(":model"))
                 api(project(":network"))

@@ -8,7 +8,6 @@ android-core = "1.12.0"
 appcompat = "1.6.1"
 appdirs = "1.2.2"
 blurhash = "0.1.0"
-cast = "21.3.0"
 compose = "1.5.11"
 complete-kotlin = "1.1.0"
 context-menu = "0.2.0"
@@ -29,7 +28,7 @@ kcef = "2023.10.13"
 kodein = "7.21.1"
 kotlin = "1.9.21"
 ksp = "1.9.21-1.0.15"
-ktor = "2.3.6"
+ktor = "2.3.7"
 ktorfit = "1.11.0"
 ktsoup = "0.3.0"
 lang = "3.14.0"
@@ -63,8 +62,6 @@ android = { group = "androidx.core", name = "core-ktx", version.ref = "android-c
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 appdirs = { group = "net.harawata", name = "appdirs", version.ref = "appdirs" }
 blurhash = { group = "com.vanniktech", name = "blurhash", version.ref = "blurhash" }
-cast = { group = "com.google.android.gms", name = "play-services-cast", version.ref = "cast" }
-cast-framework = { group = "com.google.android.gms", name = "play-services-cast-framework", version.ref = "cast" }
 compose-ui-util = { group = "org.jetbrains.compose.ui", name = "ui-util", version.ref = "compose" }
 context-menu = { group = "io.github.dzirbel", name = "compose-material-context-menu", version.ref = "context-menu" }
 coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }

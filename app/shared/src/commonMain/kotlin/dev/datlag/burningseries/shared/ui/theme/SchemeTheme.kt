@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import dev.datlag.burningseries.color.theme.Theme
 import dev.datlag.burningseries.shared.LocalDarkMode
+import dev.datlag.burningseries.shared.common.animate
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.withIOContext
@@ -162,10 +163,10 @@ fun SchemeTheme(key: Any?, content: @Composable () -> Unit) {
     val scheme = (if (LocalDarkMode.current) themeHolder?.dark else themeHolder?.light) ?: MaterialTheme.colorScheme
 
     MaterialTheme(
-        colorScheme = scheme
+        colorScheme = scheme.animate()
     ) {
         androidx.compose.material.MaterialTheme(
-            colors = scheme.toLegacyColors(LocalDarkMode.current)
+            colors = MaterialTheme.colorScheme.toLegacyColors(LocalDarkMode.current)
         ) {
             SchemeThemeSystemProvider(scheme) {
                 content()
