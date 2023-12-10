@@ -57,6 +57,8 @@ kotlin {
                 api(libs.kamel)
                 api(libs.moko.resources.compose)
                 api(libs.blurhash)
+                api(libs.kmpalette)
+                api(libs.kolor)
 
                 api(libs.windowsize.multiplatform)
                 api(libs.insetsx)
@@ -69,7 +71,6 @@ kotlin {
 
                 api(project(":model"))
                 api(project(":network"))
-                api(project(":color"))
                 api(project(":database"))
                 api(project("sekret"))
             }

@@ -7,7 +7,6 @@ include(":app:desktop")
 
 include(":model")
 include(":network")
-include(":color")
 include(":database")
 
 include(

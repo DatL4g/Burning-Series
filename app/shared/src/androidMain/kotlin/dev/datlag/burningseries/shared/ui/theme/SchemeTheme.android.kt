@@ -6,7 +6,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import dev.datlag.burningseries.color.utils.ThemeUtils
 import dev.datlag.burningseries.shared.ui.theme.image.PainterImage
 
 @Composable
@@ -15,24 +14,4 @@ actual fun SchemeThemeSystemProvider(
     content: @Composable () -> Unit
 ) {
     content()
-}
-
-@Composable
-actual fun loadImageScheme(key: Any, painter: Painter) {
-    if (!SchemeTheme.containsScheme(key)) {
-        val density = LocalDensity.current
-        val layout = LocalLayoutDirection.current
-
-        SchemeTheme.createColorScheme(key) {
-            val bitmap = PainterImage(
-                painter,
-                density,
-                layout
-            ).asBitmap()
-
-            ThemeUtils.intArrayToTheme(
-                bitmap.toPixelMap().buffer
-            )
-        }
-    }
 }

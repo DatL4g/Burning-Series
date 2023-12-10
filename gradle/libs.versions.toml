@@ -25,7 +25,9 @@ instesx = "0.1.0-alpha10"
 jsunpacker = "1.0.2"
 kamel = "0.9.0"
 kcef = "2023.10.13"
+kmpalette = "2.1.0"
 kodein = "7.21.1"
+kolor = "1.2.9"
 kotlin = "1.9.21"
 ksp = "1.9.21-1.0.15"
 ktor = "2.3.7"
@@ -84,8 +86,10 @@ grpc = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
 insetsx = { group = "com.moriatsushi.insetsx", name = "insetsx", version.ref = "instesx" }
 jsunpacker = { group = "dev.datlag.jsunpacker", name = "jsunpacker", version.ref = "jsunpacker" }
 kamel = { group = "media.kamel", name = "kamel-image", version.ref = "kamel" }
+kmpalette = { group = "com.kmpalette", name = "kmpalette-core", version.ref = "kmpalette" }
 kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }
 kodein-compose = { group = "org.kodein.di", name = "kodein-di-framework-compose", version.ref = "kodein" }
+kolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "kolor" }
 ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-jvm = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-apple = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }

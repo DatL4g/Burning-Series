@@ -2,176 +2,108 @@ package dev.datlag.burningseries.shared.ui.theme
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
-import dev.datlag.burningseries.color.theme.Theme
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.palette.graphics.Palette
+import com.kmpalette.DominantColorState
+import com.kmpalette.loader.ImageBitmapLoader
+import com.kmpalette.rememberDominantColorState
+import com.materialkolor.AnimatedDynamicMaterialTheme
+import com.materialkolor.DynamicMaterialTheme
 import dev.datlag.burningseries.shared.LocalDarkMode
-import dev.datlag.burningseries.shared.common.animate
-import dev.datlag.burningseries.shared.common.launchIO
+import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.withIOContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
+import dev.datlag.burningseries.shared.ui.theme.image.PainterImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.flow.*
+import kotlin.coroutines.CoroutineContext
+import kotlin.properties.Delegates
 
 data object SchemeTheme {
 
-    internal val commonSchemeKey : MutableStateFlow<Any?> = MutableStateFlow(null)
-    internal val itemScheme: MutableStateFlow<Map<Any, ThemeHolder?>> = MutableStateFlow(emptyMap())
+    internal val commonSchemeKey = MutableStateFlow<Any?>(null)
+    internal val itemScheme = MutableStateFlow<Map<Any, Color?>>(emptyMap())
 
-    @Composable
+    internal var _state: DominantColorState<Painter>? = null
+    internal val state: DominantColorState<Painter>
+        get() = _state!!
+
     fun setCommon(key: Any?) {
-        LaunchedEffect(key) {
-            withIOContext {
-                setCommon(key, this)
-            }
-        }
-    }
-
-    fun setCommon(key: Any?, scope: CoroutineScope?) {
-        commonSchemeKey.value = key
-        scope?.launchIO {
-            commonSchemeKey.emit(key)
-        }
-    }
-
-    fun containsScheme(key: Any): Boolean {
-        return itemScheme.value[key] != null
+        commonSchemeKey.update { key }
     }
 
     @Composable
-    fun createColorScheme(key: Any, block: suspend CoroutineScope.() -> Theme?) {
-        LaunchedEffect(key) {
+    fun update(key: Any, input: Painter) {
+        if (_state == null) {
+            return
+        }
+
+        LaunchedEffect(key, input) {
             withIOContext {
-                createColorScheme(key, block(), this)
+                state.updateFrom(input)
+
+                itemScheme.getAndUpdate {
+                    it.toMutableMap().apply {
+                        put(key, state.color)
+                    }
+                }
             }
         }
     }
+}
 
-    @Composable
-    fun createColorScheme(key: Any, theme: Theme?) {
-        createColorScheme(key, theme, rememberCoroutineScope())
-    }
-
-    fun createColorScheme(key: Any, theme: Theme?, scope: CoroutineScope) {
-        if (theme == null) return
-
-        val newTheme = ThemeHolder(
-            dark = darkColorScheme(
-                primary = Color(theme.schemes.dark.primary),
-                onPrimary = Color(theme.schemes.dark.onPrimary),
-                primaryContainer = Color(theme.schemes.dark.primaryContainer),
-                onPrimaryContainer = Color(theme.schemes.dark.onPrimaryContainer),
-
-                secondary = Color(theme.schemes.dark.secondary),
-                onSecondary = Color(theme.schemes.dark.onSecondary),
-                secondaryContainer = Color(theme.schemes.dark.secondaryContainer),
-                onSecondaryContainer = Color(theme.schemes.dark.onSecondaryContainer),
-
-                tertiary = Color(theme.schemes.dark.tertiary),
-                onTertiary = Color(theme.schemes.dark.onTertiary),
-                tertiaryContainer = Color(theme.schemes.dark.tertiaryContainer),
-                onTertiaryContainer = Color(theme.schemes.dark.onTertiaryContainer),
-
-                error = Color(theme.schemes.dark.error),
-                onError = Color(theme.schemes.dark.onError),
-                errorContainer = Color(theme.schemes.dark.errorContainer),
-                onErrorContainer = Color(theme.schemes.dark.onErrorContainer),
-
-                background = Color(theme.schemes.dark.background),
-                onBackground = Color(theme.schemes.dark.onBackground),
-
-                surface = Color(theme.schemes.dark.surface),
-                onSurface = Color(theme.schemes.dark.onSurface),
-                surfaceVariant = Color(theme.schemes.dark.surfaceVariant),
-                onSurfaceVariant = Color(theme.schemes.dark.onSurfaceVariant),
-
-                outline = Color(theme.schemes.dark.outline),
-                inverseSurface = Color(theme.schemes.dark.inverseSurface),
-                inverseOnSurface = Color(theme.schemes.dark.inverseOnSurface),
-                inversePrimary = Color(theme.schemes.dark.inversePrimary)
-            ),
-            light = lightColorScheme(
-                primary = Color(theme.schemes.light.primary),
-                onPrimary = Color(theme.schemes.light.onPrimary),
-                primaryContainer = Color(theme.schemes.light.primaryContainer),
-                onPrimaryContainer = Color(theme.schemes.light.onPrimaryContainer),
-
-                secondary = Color(theme.schemes.light.secondary),
-                onSecondary = Color(theme.schemes.light.onSecondary),
-                secondaryContainer = Color(theme.schemes.light.secondaryContainer),
-                onSecondaryContainer = Color(theme.schemes.light.onSecondaryContainer),
-
-                tertiary = Color(theme.schemes.light.tertiary),
-                onTertiary = Color(theme.schemes.light.onTertiary),
-                tertiaryContainer = Color(theme.schemes.light.tertiaryContainer),
-                onTertiaryContainer = Color(theme.schemes.light.onTertiaryContainer),
-
-                error = Color(theme.schemes.light.error),
-                onError = Color(theme.schemes.light.onError),
-                errorContainer = Color(theme.schemes.light.errorContainer),
-                onErrorContainer = Color(theme.schemes.light.onErrorContainer),
-
-                background = Color(theme.schemes.light.background),
-                onBackground = Color(theme.schemes.light.onBackground),
-
-                surface = Color(theme.schemes.light.surface),
-                onSurface = Color(theme.schemes.light.onSurface),
-                surfaceVariant = Color(theme.schemes.light.surfaceVariant),
-                onSurfaceVariant = Color(theme.schemes.light.onSurfaceVariant),
-
-                outline = Color(theme.schemes.light.outline),
-                inverseSurface = Color(theme.schemes.light.inverseSurface),
-                inverseOnSurface = Color(theme.schemes.light.inverseOnSurface),
-                inversePrimary = Color(theme.schemes.light.inversePrimary),
-            )
-        )
-
-        scope.launchIO {
-            val currentMap = (itemScheme.firstOrNull() ?: itemScheme.value).toMutableMap()
-            currentMap[key] = newTheme
-            itemScheme.emit(currentMap)
-        }
-    }
-
-    data object COLOR_KEY {
-        private const val SUFFIX = "ColorKey"
-
-        const val ERROR = "Error$SUFFIX"
+internal data class PainterLoader(
+    private val density: Density,
+    private val layoutDirection: LayoutDirection
+) : ImageBitmapLoader<Painter> {
+    override suspend fun load(input: Painter): ImageBitmap {
+        return PainterImage(input, density, layoutDirection).asBitmap()
     }
 }
 
 @Composable
+public fun rememberPainterDominantColorState(
+    defaultColor: Color = MaterialTheme.colorScheme.primary,
+    defaultOnColor: Color = MaterialTheme.colorScheme.onPrimary,
+    density: Density = LocalDensity.current,
+    layoutDirection: LayoutDirection = LocalLayoutDirection.current,
+    cacheSize: Int = 0,
+    coroutineContext: CoroutineContext = Dispatchers.Default,
+    isSwatchValid: (Palette.Swatch) -> Boolean = { true },
+    builder: Palette.Builder.() -> Unit = {},
+): DominantColorState<Painter> = rememberDominantColorState(
+    loader = PainterLoader(density, layoutDirection),
+    defaultColor = defaultColor,
+    defaultOnColor = defaultOnColor,
+    cacheSize = cacheSize,
+    coroutineContext = coroutineContext,
+    isSwatchValid = isSwatchValid,
+    builder = builder
+)
+
+@Composable
 fun SchemeTheme(key: Any?, content: @Composable () -> Unit) {
-    val themeHolder by SchemeTheme.itemScheme.map {
-        it.firstNotNullOfOrNull { entry ->
-            if (entry.key == key) {
-                entry.value
-            } else {
-                null
-            }
-        }
-    }.collectAsStateWithLifecycle(initialValue = null)
+    if (SchemeTheme._state == null) {
+        SchemeTheme._state = rememberPainterDominantColorState()
+    }
 
-    val scheme = (if (LocalDarkMode.current) themeHolder?.dark else themeHolder?.light) ?: MaterialTheme.colorScheme
+    val color by remember(key) {
+        SchemeTheme.itemScheme.map { it[key] }
+    }.collectAsStateWithLifecycle(SchemeTheme.itemScheme.value[key])
 
-    MaterialTheme(
-        colorScheme = scheme.animate()
+    AnimatedDynamicMaterialTheme(
+        seedColor = color ?: MaterialTheme.colorScheme.primary,
+        useDarkTheme = LocalDarkMode.current
     ) {
-        androidx.compose.material.MaterialTheme(
-            colors = MaterialTheme.colorScheme.toLegacyColors(LocalDarkMode.current)
-        ) {
-            SchemeThemeSystemProvider(scheme) {
-                content()
-            }
-        }
+        content()
     }
 }
 
@@ -182,13 +114,5 @@ fun CommonSchemeTheme(content: @Composable () -> Unit) {
     SchemeTheme(key, content)
 }
 
-data class ThemeHolder(
-    val dark: ColorScheme,
-    val light: ColorScheme
-)
-
 @Composable
 expect fun SchemeThemeSystemProvider(scheme: ColorScheme, content: @Composable () -> Unit)
-
-@Composable
-expect fun loadImageScheme(key: Any, painter: Painter)

@@ -42,7 +42,6 @@ import dev.datlag.burningseries.shared.ui.screen.initial.series.component.Descri
 import dev.datlag.burningseries.shared.ui.screen.initial.series.component.EpisodeItem
 import dev.datlag.burningseries.shared.ui.screen.initial.series.component.SeasonAndLanguageButtons
 import dev.datlag.burningseries.shared.ui.theme.SchemeTheme
-import dev.datlag.burningseries.shared.ui.theme.loadImageScheme
 import dev.datlag.burningseries.shared.ui.theme.shape.DiagonalShape
 import dev.icerock.moko.resources.compose.stringResource
 import io.kamel.core.Resource
@@ -56,7 +55,9 @@ fun SeriesScreen(component: SeriesComponent) {
     val dialogState by component.dialog.subscribeAsState()
     val childState by component.child.subscribeAsState()
 
-    SchemeTheme.setCommon(href)
+    LaunchedEffect(href) {
+        SchemeTheme.setCommon(href)
+    }
 
     childState.child?.also { (_, instance) ->
         instance.render()
@@ -70,7 +71,7 @@ fun SeriesScreen(component: SeriesComponent) {
     val scope = rememberCoroutineScope()
     DisposableEffect(scope) {
         onDispose {
-            SchemeTheme.setCommon(null, scope)
+            SchemeTheme.setCommon(null)
         }
     }
 
@@ -103,7 +104,7 @@ private fun CompactScreen(component: SeriesComponent) {
                         contentDescription = title,
                         contentScale = ContentScale.FillWidth,
                     )
-                    loadImageScheme(commonHref, resource.value)
+                    SchemeTheme.update(commonHref, resource.value)
                 }
             }
 
@@ -380,7 +381,7 @@ private fun DefaultScreen(component: SeriesComponent) {
                                         contentDescription = title,
                                         contentScale = ContentScale.FillWidth,
                                     )
-                                    loadImageScheme(commonHref, resource.value)
+                                    SchemeTheme.update(commonHref, resource.value)
                                 }
                             }
                         }
