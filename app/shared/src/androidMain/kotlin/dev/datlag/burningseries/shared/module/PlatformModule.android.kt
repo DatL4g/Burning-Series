@@ -75,9 +75,6 @@ actual object PlatformModule {
                 )
             }
         }
-        bindSingleton<PlatformContext> {
-            instance<Context>()
-        }
         bindSingleton {
             ImageLoader.Builder(instance())
                 .components {

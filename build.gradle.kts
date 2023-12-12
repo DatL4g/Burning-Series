@@ -21,6 +21,7 @@ plugins {
     alias(libs.plugins.sqldelight) apply false
     alias(libs.plugins.complete.kotlin)
     alias(libs.plugins.versions)
+    `project-report`
 }
 
 buildscript {
@@ -51,6 +52,13 @@ allprojects {
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions.jvmTarget = CompileOptions.jvmTarget
     }
+    configurations.configureEach {
+        exclude("androidx.palette", "palette")
+    }
+}
+
+tasks.withType<HtmlDependencyReportTask> {
+    projects = project.allprojects
 }
 
 plugins.withType<YarnPlugin> {
