@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.home
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
@@ -12,6 +13,7 @@ import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.model.state.ReleaseState
 import dev.datlag.burningseries.network.state.HomeStateMachine
 import dev.datlag.burningseries.network.state.ReleaseStateMachine
+import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
@@ -74,7 +76,11 @@ class HomeScreenComponent(
 
     @Composable
     override fun render() {
-        HomeScreen(this)
+        CompositionLocalProvider(
+            LocalDI provides di
+        ) {
+            HomeScreen(this)
+        }
     }
 
     override fun retryLoadingHome(): Any? = ioScope().launchIO {

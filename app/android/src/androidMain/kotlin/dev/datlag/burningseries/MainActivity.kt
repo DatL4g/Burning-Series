@@ -28,12 +28,6 @@ import dev.datlag.burningseries.shared.ui.custom.Permission
 import dev.datlag.burningseries.shared.ui.navigation.NavHostComponent
 import dev.datlag.kast.Kast
 import dev.icerock.moko.resources.compose.stringResource
-import io.kamel.core.config.KamelConfig
-import io.kamel.core.config.takeFrom
-import io.kamel.image.config.Default
-import io.kamel.image.config.LocalKamelConfig
-import io.kamel.image.config.resourcesFetcher
-import io.kamel.image.config.resourcesIdMapper
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,11 +44,6 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
 
         val di = ((applicationContext as? App) ?: (application as App)).di
-        val imageConfig = KamelConfig {
-            takeFrom(KamelConfig.Default)
-            resourcesFetcher(this@MainActivity)
-            resourcesIdMapper(this@MainActivity)
-        }
 
         val lifecycleOwner = object : LifecycleOwner {
             override val lifecycle: Lifecycle = essentyLifecycle()
@@ -73,7 +62,6 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             CompositionLocalProvider(
-                LocalKamelConfig provides imageConfig,
                 LocalLifecycleOwner provides lifecycleOwner
             ) {
                 App(di) {

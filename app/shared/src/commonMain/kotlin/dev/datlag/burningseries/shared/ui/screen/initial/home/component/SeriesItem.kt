@@ -1,7 +1,6 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.home.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyItemScope
@@ -13,14 +12,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import dev.datlag.burningseries.database.common.bestTitle
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.bounceClick
 import dev.datlag.burningseries.shared.common.focusScale
 import dev.datlag.burningseries.shared.common.onClick
-import io.kamel.core.Resource
-import io.kamel.image.asyncPainterResource
+import org.kodein.di.instance
 import dev.datlag.burningseries.database.Series as DBSeries
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -69,26 +72,22 @@ private fun SeriesItem(title: String, coverHref: String?, modifier: Modifier = M
             Surface(
                 shape = CardDefaults.elevatedShape
             ) {
-                coverHref?.let { cover ->
-                    when (val resource = asyncPainterResource(BSUtil.getBurningSeriesLink(cover))) {
-                        is Resource.Loading, is Resource.Failure -> {
-                            Box(
-                                modifier = Modifier
-                                    .aspectRatio(1F, true)
-                                    .clip(CardDefaults.elevatedShape)
-                                    .background(MaterialTheme.colorScheme.tertiaryContainer)
-                            )
-                        }
-                        is Resource.Success -> {
-                            Image(
-                                painter = resource.value,
-                                contentScale = ContentScale.FillWidth,
-                                contentDescription = title,
-                                modifier = Modifier.aspectRatio(1F, true)
-                            )
-                        }
-                    }
-                }
+                val platformContext: PlatformContext by LocalDI.current.instance()
+                val imageLoader: ImageLoader by LocalDI.current.instance()
+
+                AsyncImage(
+                    model = ImageRequest.Builder(platformContext)
+                        .data(coverHref?.let { BSUtil.getBurningSeriesLink(it) })
+                        .placeholderMemoryCacheKey(coverHref)
+                        .build(),
+                    imageLoader = imageLoader,
+                    contentDescription = title,
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier
+                        .aspectRatio(1F, true)
+                        .clip(CardDefaults.elevatedShape)
+                        .background(MaterialTheme.colorScheme.tertiaryContainer)
+                )
             }
             Column(
                 modifier = Modifier.padding(16.dp),

@@ -7,7 +7,7 @@ android = "8.1.4"
 android-core = "1.12.0"
 appcompat = "1.6.1"
 appdirs = "1.2.2"
-blurhash = "0.1.0"
+blurhash = "0.2.0"
 compose = "1.5.11"
 complete-kotlin = "1.1.0"
 context-menu = "0.2.0"
@@ -23,7 +23,6 @@ flowredux = "1.2.0"
 grpc = "1.59.0"
 instesx = "0.1.0-alpha10"
 jsunpacker = "1.0.2"
-kamel = "0.9.0"
 kcef = "2023.10.13"
 kmpalette = "2.1.0"
 kodein = "7.21.1"
@@ -52,7 +51,7 @@ sqldelight = "2.0.1"
 turbine = "1.0.0"
 versions = "0.50.0"
 vlcj = "4.8.2"
-windowsize-multiplatform = "0.3.1"
+windowsize-multiplatform = "0.3.2"
 
 [libraries]
 aboutlibraries =  { group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutlibraries" }
@@ -85,7 +84,6 @@ flowredux = { group = "com.freeletics.flowredux", name = "flowredux", version.re
 grpc = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
 insetsx = { group = "com.moriatsushi.insetsx", name = "insetsx", version.ref = "instesx" }
 jsunpacker = { group = "dev.datlag.jsunpacker", name = "jsunpacker", version.ref = "jsunpacker" }
-kamel = { group = "media.kamel", name = "kamel-image", version.ref = "kamel" }
 kmpalette = { group = "com.kmpalette", name = "kmpalette-core", version.ref = "kmpalette" }
 kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }
 kodein-compose = { group = "org.kodein.di", name = "kodein-di-framework-compose", version.ref = "kodein" }

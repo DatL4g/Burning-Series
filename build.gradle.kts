@@ -1,9 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import org.gradle.jvm.toolchain.internal.JavaToolchain
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain
 import java.nio.file.Files
 
 plugins {
@@ -34,6 +32,7 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
         maven("https://jogamp.org/deployment/maven")
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
 
@@ -46,6 +45,7 @@ allprojects {
         maven("https://plugins.gradle.org/m2/")
         maven("https://jogamp.org/deployment/maven")
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
     }
 
     tasks.withType<KotlinCompile>().configureEach {

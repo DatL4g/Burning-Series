@@ -14,6 +14,7 @@ import dev.datlag.burningseries.shared.ui.theme.*
 import org.kodein.di.DI
 
 val LocalDarkMode = compositionLocalOf<Boolean> { error("No dark mode state provided") }
+val LocalDI = compositionLocalOf<DI> { error("No dependency injection provided") }
 
 @Composable
 fun App(
@@ -31,7 +32,8 @@ fun App(
     }
 
     CompositionLocalProvider(
-        LocalDarkMode provides systemDarkTheme
+        LocalDarkMode provides systemDarkTheme,
+        LocalDI provides di
     ) {
         MaterialTheme(
             colorScheme = if (systemDarkTheme) Colors.getDarkScheme() else Colors.getLightScheme(),

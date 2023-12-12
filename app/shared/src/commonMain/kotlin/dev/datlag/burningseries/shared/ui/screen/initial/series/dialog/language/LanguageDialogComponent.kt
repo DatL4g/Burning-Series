@@ -1,8 +1,10 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.language
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.shared.LocalDI
 import org.kodein.di.DI
 
 class LanguageDialogComponent(
@@ -16,7 +18,11 @@ class LanguageDialogComponent(
 
     @Composable
     override fun render() {
-        LanguageDialog(this)
+        CompositionLocalProvider(
+            LocalDI provides di
+        ) {
+            LanguageDialog(this)
+        }
     }
 
     override fun dismiss() {

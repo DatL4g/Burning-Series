@@ -1,8 +1,10 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.activate
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.shared.LocalDI
 import org.kodein.di.DI
 
 class ActivateDialogComponent(
@@ -16,7 +18,11 @@ class ActivateDialogComponent(
 
     @Composable
     override fun render() {
-        ActivateDialog(this)
+        CompositionLocalProvider(
+            LocalDI provides di
+        ) {
+            ActivateDialog(this)
+        }
     }
 
     override fun dismiss() {

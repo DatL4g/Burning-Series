@@ -2,7 +2,10 @@ package dev.datlag.burningseries.shared.ui.theme
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
@@ -15,17 +18,18 @@ import com.kmpalette.DominantColorState
 import com.kmpalette.loader.ImageBitmapLoader
 import com.kmpalette.rememberDominantColorState
 import com.materialkolor.AnimatedDynamicMaterialTheme
-import com.materialkolor.DynamicMaterialTheme
 import dev.datlag.burningseries.shared.LocalDarkMode
-import dev.datlag.burningseries.shared.common.ioDispatcher
+import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.withIOContext
 import dev.datlag.burningseries.shared.ui.theme.image.PainterImage
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlin.coroutines.CoroutineContext
-import kotlin.properties.Delegates
 
 data object SchemeTheme {
 
@@ -41,19 +45,33 @@ data object SchemeTheme {
     }
 
     @Composable
-    fun update(key: Any, input: Painter) {
-        if (_state == null) {
+    fun update(key: Any, input: Painter?) {
+        if (_state == null || input == null) {
             return
         }
 
         LaunchedEffect(key, input) {
-            withIOContext {
-                state.updateFrom(input)
+            suspendUpdate(key, input)
+        }
+    }
 
-                itemScheme.getAndUpdate {
-                    it.toMutableMap().apply {
-                        put(key, state.color)
-                    }
+    fun update(key: Any, input: Painter?, scope: CoroutineScope) {
+        scope.launchIO {
+            suspendUpdate(key, input)
+        }
+    }
+
+    suspend fun suspendUpdate(key: Any, input: Painter?) {
+        if (_state == null || input == null) {
+            return
+        }
+
+        withIOContext {
+            state.updateFrom(input)
+
+            itemScheme.getAndUpdate {
+                it.toMutableMap().apply {
+                    put(key, state.color)
                 }
             }
         }

@@ -1,8 +1,10 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.unavailable
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.shared.LocalDI
 import org.kodein.di.DI
 
 class UnavailableDialogComponent(
@@ -16,7 +18,11 @@ class UnavailableDialogComponent(
 
     @Composable
     override fun render() {
-        UnavailableDialog(this)
+        CompositionLocalProvider(
+            LocalDI provides di
+        ) {
+            UnavailableDialog(this)
+        }
     }
 
     override fun dismiss() {

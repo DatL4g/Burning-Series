@@ -54,7 +54,6 @@ kotlin {
                 implementation(libs.aboutlibraries)
                 implementation(libs.aboutlibraries.compose)
 
-                api(libs.kamel)
                 api(libs.moko.resources.compose)
                 api(libs.blurhash)
                 api(libs.kmpalette)
@@ -68,6 +67,9 @@ kotlin {
                 api(libs.ktor.serialization.json)
 
                 api("dev.datlag.kast:kast:0.1.7-SNAPSHOT")
+                api("io.coil-kt.coil3:coil:3.0.0-SNAPSHOT")
+                api("io.coil-kt.coil3:coil-network:3.0.0-SNAPSHOT")
+                api("io.coil-kt.coil3:coil-compose:3.0.0-SNAPSHOT")
 
                 api(project(":model"))
                 api(project(":network"))
@@ -101,6 +103,9 @@ kotlin {
                 api(libs.webview.android)
                 api(libs.permission)
                 api(libs.nanoid)
+
+                api("io.coil-kt.coil3:coil-gif:3.0.0-SNAPSHOT")
+                api("io.coil-kt.coil3:coil-svg:3.0.0-SNAPSHOT")
             }
         }
         val desktopMain by getting {

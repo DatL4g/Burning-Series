@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series.activate
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
@@ -13,6 +14,7 @@ import dev.datlag.burningseries.model.common.scopeCatching
 import dev.datlag.burningseries.model.state.SaveAction
 import dev.datlag.burningseries.model.state.SaveState
 import dev.datlag.burningseries.network.state.SaveStateMachine
+import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.common.withMainContext
@@ -91,7 +93,11 @@ class ActivateScreenComponent(
 
     @Composable
     override fun render() {
-        ActivateScreen(this)
+        CompositionLocalProvider(
+            LocalDI provides di
+        ) {
+            ActivateScreen(this)
+        }
     }
 
     override fun back() {

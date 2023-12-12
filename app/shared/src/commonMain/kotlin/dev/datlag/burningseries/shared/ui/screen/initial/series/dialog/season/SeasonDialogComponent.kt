@@ -1,8 +1,10 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series.dialog.season
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.shared.LocalDI
 import org.kodein.di.DI
 
 class SeasonDialogComponent(
@@ -16,7 +18,11 @@ class SeasonDialogComponent(
 
     @Composable
     override fun render() {
-        SeasonDialog(this)
+        CompositionLocalProvider(
+            LocalDI provides di
+        ) {
+            SeasonDialog(this)
+        }
     }
 
     override fun dismiss() {

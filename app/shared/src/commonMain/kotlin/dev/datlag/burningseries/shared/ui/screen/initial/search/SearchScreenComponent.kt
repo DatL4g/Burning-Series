@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.search
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
@@ -11,6 +12,7 @@ import dev.datlag.burningseries.model.common.safeSubList
 import dev.datlag.burningseries.model.state.SearchAction
 import dev.datlag.burningseries.model.state.SearchState
 import dev.datlag.burningseries.network.state.SearchStateMachine
+import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
@@ -95,7 +97,11 @@ class SearchScreenComponent(
 
     @Composable
     override fun render() {
-        SearchScreen(this)
+        CompositionLocalProvider(
+            LocalDI provides di
+        ) {
+            SearchScreen(this)
+        }
     }
 
     override fun retryLoadingSearch(): Any? = ioScope().launchIO {

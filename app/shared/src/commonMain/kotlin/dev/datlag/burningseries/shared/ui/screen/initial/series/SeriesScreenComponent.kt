@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
@@ -18,6 +19,7 @@ import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.network.WrapAPI
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.SeriesStateMachine
+import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.Sekret
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
@@ -213,7 +215,11 @@ class SeriesScreenComponent(
 
     @Composable
     override fun render() {
-        SeriesScreen(this)
+        CompositionLocalProvider(
+            LocalDI provides di
+        ) {
+            SeriesScreen(this)
+        }
     }
 
     override fun retryLoadingSeries(): Any? = ioScope().launchIO {

@@ -5,11 +5,13 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.pages.*
 import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.favorite.FavoriteScreenComponent
@@ -67,7 +69,11 @@ class InitialScreenComponent(
 
     @Composable
     override fun render() {
-        InitialScreen(this)
+        CompositionLocalProvider(
+            LocalDI provides di
+        ) {
+            InitialScreen(this)
+        }
     }
 
     private fun createChild(

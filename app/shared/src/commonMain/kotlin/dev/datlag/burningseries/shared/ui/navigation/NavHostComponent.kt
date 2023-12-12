@@ -1,12 +1,14 @@
 package dev.datlag.burningseries.shared.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
+import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.backAnimation
 import dev.datlag.burningseries.shared.ui.screen.initial.InitialScreenComponent
 import dev.datlag.burningseries.shared.ui.screen.video.VideoScreenComponent
@@ -67,7 +69,11 @@ class NavHostComponent(
                 }
             )
         ) {
-            it.instance.render()
+            CompositionLocalProvider(
+                LocalDI provides di
+            ) {
+                it.instance.render()
+            }
         }
     }
 }

@@ -1,6 +1,17 @@
 package dev.datlag.burningseries.shared.module
 
 import android.content.Context
+import android.os.Build
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.annotation.ExperimentalCoilApi
+import coil3.decode.GifDecoder
+import coil3.decode.ImageDecoderDecoder
+import coil3.decode.SvgDecoder
+import coil3.disk.DiskCache
+import coil3.fetch.NetworkFetcher
+import coil3.memory.MemoryCache
+import coil3.request.crossfade
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.shared.Sekret
 import dev.datlag.burningseries.shared.getPackageName
@@ -14,6 +25,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import okio.FileSystem
 import org.kodein.di.DI
 import org.kodein.di.bindEagerSingleton
 import org.kodein.di.bindSingleton
@@ -24,6 +36,7 @@ actual object PlatformModule {
 
     private const val NAME = "PlatformModuleAndroid"
 
+    @OptIn(ExperimentalCoilApi::class)
     actual val di: DI.Module = DI.Module(NAME) {
         bindSingleton {
             Json {
@@ -61,6 +74,34 @@ actual object PlatformModule {
                     )
                 )
             }
+        }
+        bindSingleton<PlatformContext> {
+            instance<Context>()
+        }
+        bindSingleton {
+            ImageLoader.Builder(instance())
+                .components {
+                    add(NetworkFetcher.Factory(lazyOf(instance<HttpClient>())))
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        add(ImageDecoderDecoder.Factory())
+                    } else {
+                        add(GifDecoder.Factory())
+                    }
+                    add(SvgDecoder.Factory())
+                }
+                .memoryCache {
+                    MemoryCache.Builder()
+                        .maxSizePercent(instance())
+                        .build()
+                }
+                .diskCache {
+                    DiskCache.Builder()
+                        .directory(FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "image_cache")
+                        .maxSizeBytes(512L * 1024 * 1024) // 512MB
+                        .build()
+                }
+                .crossfade(true)
+                .build()
         }
     }
 

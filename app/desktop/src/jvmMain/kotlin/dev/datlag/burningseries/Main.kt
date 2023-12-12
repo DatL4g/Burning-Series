@@ -34,11 +34,6 @@ import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
-import io.kamel.core.config.KamelConfig
-import io.kamel.core.config.takeFrom
-import io.kamel.image.config.Default
-import io.kamel.image.config.LocalKamelConfig
-import io.kamel.image.config.resourcesFetcher
 import kotlinx.coroutines.runBlocking
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
@@ -97,10 +92,6 @@ private fun runWindow(di: DI) {
         ),
         di = di
     )
-    val imageConfig = KamelConfig {
-        takeFrom(KamelConfig.Default)
-        resourcesFetcher()
-    }
 
     disposableSingleWindowApplication(
         state = windowState,
@@ -139,8 +130,7 @@ private fun runWindow(di: DI) {
         InitCEF {
             CompositionLocalProvider(
                 LocalLifecycleOwner provides lifecycleOwner,
-                LocalWindow provides this.window,
-                LocalKamelConfig provides imageConfig
+                LocalWindow provides this.window
             ) {
                 App(di) {
                     PredictiveBackGestureOverlay(

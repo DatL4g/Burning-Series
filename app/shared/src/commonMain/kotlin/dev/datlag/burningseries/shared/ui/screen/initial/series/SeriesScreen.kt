@@ -1,6 +1,5 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,11 +23,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.database.Episode
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesState
+import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.diagonalShape
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
@@ -44,8 +48,7 @@ import dev.datlag.burningseries.shared.ui.screen.initial.series.component.Season
 import dev.datlag.burningseries.shared.ui.theme.SchemeTheme
 import dev.datlag.burningseries.shared.ui.theme.shape.DiagonalShape
 import dev.icerock.moko.resources.compose.stringResource
-import io.kamel.core.Resource
-import io.kamel.image.asyncPainterResource
+import org.kodein.di.instance
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -91,22 +94,27 @@ private fun CompactScreen(component: SeriesComponent) {
 
     DefaultCollapsingToolbar(
         expandedBody = { state ->
-            when (val resource = asyncPainterResource(coverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
-                is Resource.Loading, is Resource.Failure -> { }
-                is Resource.Success -> {
-                    Image(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .defaultMinSize(minHeight = 320.dp)
-                            .parallax(0.5F)
-                            .diagonalShape(-10F, DiagonalShape.POSITION.BOTTOM),
-                        painter = resource.value,
-                        contentDescription = title,
-                        contentScale = ContentScale.FillWidth,
-                    )
-                    SchemeTheme.update(commonHref, resource.value)
+            val platformContext: PlatformContext by LocalDI.current.instance()
+            val imageLoader: ImageLoader by LocalDI.current.instance()
+            val scope = rememberCoroutineScope()
+
+            AsyncImage(
+                model = ImageRequest.Builder(platformContext)
+                    .data(coverHref?.let { BSUtil.getBurningSeriesLink(it) })
+                    .placeholderMemoryCacheKey(coverHref)
+                    .build(),
+                imageLoader = imageLoader,
+                contentDescription = title,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = 320.dp)
+                    .parallax(0.5F)
+                    .diagonalShape(-10F, DiagonalShape.POSITION.BOTTOM),
+                onSuccess = { success ->
+                    SchemeTheme.update(commonHref, success.painter, scope)
                 }
-            }
+            )
 
             Text(
                 text = title,
@@ -310,6 +318,10 @@ private fun DefaultScreen(component: SeriesComponent) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
+                            val platformContext: PlatformContext by LocalDI.current.instance()
+                            val imageLoader: ImageLoader by LocalDI.current.instance()
+                            val scope = rememberCoroutineScope()
+
                             Column(
                                 modifier = Modifier.weight(1F),
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -372,18 +384,22 @@ private fun DefaultScreen(component: SeriesComponent) {
                                 )
                             }
 
-                            when (val resource = asyncPainterResource(coverHref?.let { BSUtil.getBurningSeriesLink(it) } ?: String())) {
-                                is Resource.Loading, is Resource.Failure -> { }
-                                is Resource.Success -> {
-                                    Image(
-                                        modifier = Modifier.width(200.dp).clip(MaterialTheme.shapes.medium).align(Alignment.CenterVertically),
-                                        painter = resource.value,
-                                        contentDescription = title,
-                                        contentScale = ContentScale.FillWidth,
-                                    )
-                                    SchemeTheme.update(commonHref, resource.value)
+                            AsyncImage(
+                                model = ImageRequest.Builder(platformContext)
+                                    .data(coverHref?.let { BSUtil.getBurningSeriesLink(it) })
+                                    .placeholderMemoryCacheKey(coverHref)
+                                    .build(),
+                                imageLoader = imageLoader,
+                                contentDescription = title,
+                                contentScale = ContentScale.FillWidth,
+                                modifier = Modifier
+                                    .width(200.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                                    .align(Alignment.CenterVertically),
+                                onSuccess = { success ->
+                                    SchemeTheme.update(commonHref, success.painter, scope)
                                 }
-                            }
+                            )
                         }
                     }
 

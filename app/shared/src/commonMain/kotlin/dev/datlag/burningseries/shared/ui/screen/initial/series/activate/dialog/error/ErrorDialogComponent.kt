@@ -1,7 +1,9 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.series.activate.dialog.error
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
+import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.skeo.Stream
 import org.kodein.di.DI
 
@@ -15,7 +17,11 @@ class ErrorDialogComponent(
 
     @Composable
     override fun render() {
-        ErrorDialog(this)
+        CompositionLocalProvider(
+            LocalDI provides di
+        ) {
+            ErrorDialog(this)
+        }
     }
 
     override fun dismiss() {

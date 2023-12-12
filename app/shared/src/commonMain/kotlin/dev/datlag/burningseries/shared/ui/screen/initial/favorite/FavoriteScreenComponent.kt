@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.favorite
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.arkivanov.decompose.ComponentContext
@@ -10,6 +11,7 @@ import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.database.Series
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.common.safeSubList
+import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.ui.navigation.Component
@@ -85,7 +87,11 @@ class FavoriteScreenComponent(
 
     @Composable
     override fun render() {
-        FavoriteScreen(this)
+        CompositionLocalProvider(
+            LocalDI provides di
+        ) {
+            FavoriteScreen(this)
+        }
     }
 
     override fun itemClicked(config: FavoriteConfig) {
