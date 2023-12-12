@@ -6,6 +6,7 @@ import dev.datlag.burningseries.database.SearchItem
 import dev.datlag.burningseries.database.Series
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Genre
+import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.Series as ModelSeries
 import dev.datlag.burningseries.model.Series.Episode as ModelEpisode
 import dev.datlag.burningseries.model.Series.Episode.Hoster as ModelHoster
@@ -63,3 +64,27 @@ fun List<SearchItem>.toGenres(): List<Genre> {
         )
     }
 }
+
+val Series.allTitles
+    get() = allTitlesCache.getOrPut(this) {
+        title.split('|').filterNot { it.isBlank() }.map { it.trim() }.distinct()
+    }
+
+val Series.bestTitle
+    get() = bestTitleCache.getOrPut(this) {
+        when {
+            allTitles.size <= 1 -> allTitles.firstOrNull() ?: title
+            else -> {
+                val newTitles = mutableListOf<String>()
+                allTitles.forEach { str ->
+                    if (newTitles.none { JaroWinkler.distance(str, it) > 0.95 }) {
+                        newTitles.add(str)
+                    }
+                }
+                newTitles.toSet().joinToString(separator = " | ")
+            }
+        }
+    }
+
+private val allTitlesCache = mutableMapOf<Series, List<String>>()
+private val bestTitleCache = mutableMapOf<Series, String>()

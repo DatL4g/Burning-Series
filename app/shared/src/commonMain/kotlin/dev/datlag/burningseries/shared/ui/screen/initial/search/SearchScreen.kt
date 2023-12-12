@@ -131,7 +131,7 @@ private fun MainView(component: SearchComponent, modifier: Modifier = Modifier) 
                         modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.extraSmall).onClick {
                             component.itemClicked(SearchConfig.Series(it))
                         }.padding(12.dp).animateItemPlacement(),
-                        text = it.title,
+                        text = it.bestTitle,
                         softWrap = true,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -208,7 +208,7 @@ private fun SearchBar(component: SearchComponent) {
                 modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.extraSmall).onClick {
                     component.itemClicked(SearchConfig.Series(item))
                 }.padding(12.dp),
-                text = item.title,
+                text = item.bestTitle,
                 softWrap = true,
                 overflow = TextOverflow.Ellipsis
             )

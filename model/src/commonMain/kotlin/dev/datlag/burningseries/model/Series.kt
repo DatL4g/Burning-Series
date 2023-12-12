@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Series(
-    @SerialName("title") val title: String,
+    @SerialName("title") override val title: String,
     @SerialName("description") val description: String,
     @SerialName("cover") val coverHref: String? = null,
     @SerialName("href") val href: String,
@@ -15,7 +15,7 @@ data class Series(
     @SerialName("seasons") val seasons: List<Season>,
     @SerialName("languages") val languages: List<Language>,
     @SerialName("episodes") val episodes: List<Episode>
-) {
+) : TitleHolder() {
 
     val currentSeason: Season? by lazy {
         seasons.firstOrNull {

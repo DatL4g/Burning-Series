@@ -13,6 +13,6 @@ sealed class HomeConfig {
         val coverHref: String?,
     ) : HomeConfig() {
         constructor(series: Home.Series) : this(series.title, series.href, series.coverHref)
-        constructor(episode: Home.Episode) : this(episode.series ?: episode.title, episode.href, episode.coverHref)
+        constructor(episode: Home.Episode) : this(episode.series ?: episode.fullTitle, episode.href, episode.coverHref)
     }
 }

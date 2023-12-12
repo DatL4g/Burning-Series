@@ -54,7 +54,7 @@ data object BurningSeries {
                     val (cover, isNsfw) = getCover(client, episodeHref)
 
                     Home.Episode(
-                        title = episodeTitle,
+                        fullTitle = episodeTitle,
                         href = episodeHref,
                         info = episodeInfo,
                         flags = episodeInfoFlags,

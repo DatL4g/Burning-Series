@@ -69,7 +69,7 @@ class SeriesScreenComponent(
     private val successState = seriesState.mapNotNull { it as? SeriesState.Success }
     private val currentSeries = successState.map { it.series }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
     private val onDeviceReachable = successState.map { it.onDeviceReachable }.stateIn(ioScope(), SharingStarted.Eagerly, true)
-    override val title: StateFlow<String> = currentSeries.mapNotNull { it?.title }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialTitle)
+    override val title: StateFlow<String> = currentSeries.mapNotNull { it?.bestTitle }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialTitle)
     override val href: StateFlow<String> = currentSeries.mapNotNull { it?.href }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), BSUtil.fixSeriesHref(initialHref))
     override val commonHref: StateFlow<String> = href.map {
         val commonized = BSUtil.commonSeriesHref(it)

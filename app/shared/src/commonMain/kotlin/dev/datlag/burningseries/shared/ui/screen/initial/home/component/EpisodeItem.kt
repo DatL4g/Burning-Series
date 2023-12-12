@@ -52,7 +52,7 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                         Image(
                             painter = resource.value,
                             contentScale = ContentScale.FillWidth,
-                            contentDescription = episode.title,
+                            contentDescription = episode.bestTitle,
                             modifier = Modifier.aspectRatio(1F, true)
                         )
                     }
@@ -63,7 +63,7 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = episode.series ?: episode.title,
+                    text = episode.bestTitle,
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 2,
@@ -76,7 +76,7 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         AutoSizeText(
-                            text = episode.episode ?: episode.title,
+                            text = episode.episode ?: episode.bestTitle,
                             maxLines = 2,
                             softWrap = true,
                             maxTextSize = LocalTextStyle.current.fontSize,

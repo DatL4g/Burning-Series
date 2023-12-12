@@ -11,7 +11,7 @@ data class Genre(
 
     @Serializable
     data class Item(
-        @SerialName("title") val title: String,
+        @SerialName("title") override val title: String,
         @SerialName("href") val href: String
-    )
+    ) : TitleHolder()
 }

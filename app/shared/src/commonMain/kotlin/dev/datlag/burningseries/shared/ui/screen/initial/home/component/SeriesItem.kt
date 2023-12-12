@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.database.common.bestTitle
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.shared.common.bounceClick
@@ -26,7 +27,7 @@ import dev.datlag.burningseries.database.Series as DBSeries
 @Composable
 fun LazyGridItemScope.SeriesItem(series: Home.Series, modifier: Modifier = Modifier, onClick: () -> Unit) {
     SeriesItem(
-        title = series.title,
+        title = series.bestTitle,
         coverHref = series.coverHref,
         modifier = modifier.animateItemPlacement(),
         onClick = onClick
@@ -37,7 +38,7 @@ fun LazyGridItemScope.SeriesItem(series: Home.Series, modifier: Modifier = Modif
 @Composable
 fun LazyGridItemScope.SeriesItem(series: DBSeries, modifier: Modifier = Modifier, onClick: () -> Unit) {
     SeriesItem(
-        title = series.title,
+        title = series.bestTitle,
         coverHref = series.coverHref,
         modifier = modifier.animateItemPlacement(),
         onClick = onClick
@@ -48,7 +49,7 @@ fun LazyGridItemScope.SeriesItem(series: DBSeries, modifier: Modifier = Modifier
 @Composable
 fun LazyItemScope.SeriesItem(series: DBSeries, modifier: Modifier = Modifier, onClick: () -> Unit) {
     SeriesItem(
-        title = series.title,
+        title = series.bestTitle,
         coverHref = series.coverHref,
         modifier = modifier.animateItemPlacement(),
         onClick = onClick
