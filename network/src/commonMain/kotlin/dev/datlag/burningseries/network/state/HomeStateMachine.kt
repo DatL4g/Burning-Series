@@ -17,10 +17,13 @@ class HomeStateMachine(
     private val json: Json,
     private val wrapApi: WrapAPI,
     private val wrapApiKey: String?
-) : FlowReduxStateMachine<HomeState, HomeAction>(initialState = HomeState.Loading) {
+) : FlowReduxStateMachine<HomeState, HomeAction>(initialState = NetworkStateSaver.initialHomeState) {
     init {
         spec {
             inState<HomeState.Loading> {
+                onEnterEffect {
+                    NetworkStateSaver.initialHomeState = it
+                }
                 onEnter { state ->
                     try {
                         val loadedHome = BurningSeries.getHome(client) ?: run {
@@ -39,8 +42,15 @@ class HomeStateMachine(
                     }
                 }
             }
-
+            inState<HomeState.Success> {
+                onEnterEffect {
+                    NetworkStateSaver.initialHomeState = it
+                }
+            }
             inState<HomeState.Error> {
+                onEnterEffect {
+                    NetworkStateSaver.initialHomeState = it
+                }
                 on<HomeAction.Retry> { _, state ->
                     state.override { HomeState.Loading }
                 }

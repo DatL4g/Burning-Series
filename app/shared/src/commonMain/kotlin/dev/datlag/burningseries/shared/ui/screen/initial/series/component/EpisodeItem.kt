@@ -25,6 +25,7 @@ import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.*
 import dev.datlag.burningseries.shared.ui.theme.TopLeftBottomRightRoundedShape
 import dev.icerock.moko.resources.compose.stringResource
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 @Composable
@@ -39,10 +40,10 @@ fun EpisodeItem(
     val enabled = content.hosters.isNotEmpty()
 
     val length = remember(dbEpisode) {
-        dbEpisode?.length ?: 0L
+        max(dbEpisode?.length ?: 0L, 0L)
     }
     val progress = remember(dbEpisode) {
-        dbEpisode?.progress ?: 0L
+        max(dbEpisode?.progress ?: 0L, 0L)
     }
     val isFinished = remember(length, progress) {
         if (length > 0L && progress > 0L) {

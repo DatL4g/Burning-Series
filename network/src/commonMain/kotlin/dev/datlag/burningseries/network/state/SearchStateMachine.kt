@@ -21,10 +21,13 @@ class SearchStateMachine(
     private val wrapApiKey: String?,
     private val saveToDB: (SearchState.Success) -> Unit,
     private val loadFromDB: suspend () -> List<Genre>
-) : FlowReduxStateMachine<SearchState, SearchAction>(initialState = SearchState.Loading) {
+) : FlowReduxStateMachine<SearchState, SearchAction>(initialState = NetworkStateSaver.initialSearchState) {
     init {
         spec {
             inState<SearchState.Loading> {
+                onEnterEffect {
+                    NetworkStateSaver.initialSearchState = it
+                }
                 onEnter { state ->
                     try {
                         val loadedClient = suspendCatching {
@@ -61,11 +64,15 @@ class SearchStateMachine(
 
             inState<SearchState.Success> {
                 onEnterEffect {
+                    NetworkStateSaver.initialSearchState = it
                     saveToDB(it)
                 }
             }
 
             inState<SearchState.Error> {
+                onEnterEffect {
+                    NetworkStateSaver.initialSearchState = it
+                }
                 on<SearchAction.Retry> { _, state ->
                     state.override { SearchState.Loading }
                 }

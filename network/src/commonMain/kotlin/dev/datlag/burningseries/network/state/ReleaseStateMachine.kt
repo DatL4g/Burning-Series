@@ -8,10 +8,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReleaseStateMachine(
     private val gitHub: GitHub
-) : FlowReduxStateMachine<ReleaseState, Nothing>(initialState = ReleaseState.Loading) {
+) : FlowReduxStateMachine<ReleaseState, Nothing>(initialState = NetworkStateSaver.initialReleaseState) {
     init {
         spec {
             inState<ReleaseState.Loading> {
+                onEnterEffect {
+                    NetworkStateSaver.initialReleaseState = it
+                }
                 onEnter { state ->
                     try {
                         val releases = gitHub.getReleases(owner = "DatL4g", repo = "Burning-Series")
@@ -25,6 +28,16 @@ class ReleaseStateMachine(
                     } catch (t: Throwable) {
                         state.override { ReleaseState.Error }
                     }
+                }
+            }
+            inState<ReleaseState.Success> {
+                onEnterEffect {
+                    NetworkStateSaver.initialReleaseState = it
+                }
+            }
+            inState<ReleaseState.Error> {
+                onEnterEffect {
+                    NetworkStateSaver.initialReleaseState = it
                 }
             }
         }
