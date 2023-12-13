@@ -68,7 +68,7 @@ class SaveStateMachine(
                             }.getOrNull() ?: false
                         }
 
-                        return@coroutineScope jsonBaseSaved.await() || mongoSaved.await() || firebaseSaved.await()
+                        return@coroutineScope mongoSaved.await() || firebaseSaved.await() || jsonBaseSaved.await()
                     }
 
                     val stream = if (state.snapshot.loadStream) {

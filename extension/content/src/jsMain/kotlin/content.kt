@@ -2,34 +2,18 @@ import common.collect
 import common.forEachNotNull
 import common.isNullOrEmpty
 import common.onReady
-import dev.datlag.burningseries.color.createTheme
-import dev.datlag.burningseries.color.scheme.Scheme
-import dev.datlag.burningseries.color.theme.Theme
 import dev.datlag.burningseries.model.ExtensionMessage
 import kotlinx.browser.document
 import kotlinx.browser.window
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.dom.hasClass
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.w3c.dom.*
 
-val themes = mutableMapOf<String, Theme?>()
-
 @OptIn(ExperimentalStdlibApi::class)
 fun main() {
     document.onReady {
         val href = document.URL.ifBlank { document.location?.href } ?: document.URL
-        val coverImage = document.getElementsByClassName("serie")[0]?.getElementsByTagName("img")?.get(0) as? HTMLImageElement
-        if (coverImage != null) {
-            if (!themes.containsKey(href)) {
-                GlobalScope.launch(Dispatchers.Default) {
-                    themes[href] = coverImage.createTheme()
-                }
-            }
-        }
 
         if (document.getElementsByClassName("episodes").length <= 0) {
             checkEpisode(href)
@@ -178,17 +162,7 @@ private fun getThemeColor(docHref: String, href: String): Pair<Int, Int> {
     } else {
         0xFFd2e4ff.toInt() to 0xFF001c37.toInt()
     }
-    val scheme = themes[docHref]?.getScheme() ?: themes[href]?.getScheme()
-    return (scheme?.primaryContainer ?: fallbackBackground) to (scheme?.onPrimaryContainer ?: fallbackContent)
-}
-
-private fun Theme.getScheme(): Scheme {
-    val isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
-    return if (isDarkMode) {
-        this.schemes.dark
-    } else {
-        this.schemes.light
-    }
+    return fallbackBackground to fallbackContent
 }
 
 @OptIn(ExperimentalStdlibApi::class)

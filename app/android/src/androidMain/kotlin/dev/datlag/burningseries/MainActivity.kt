@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onUserLeaveHint() {
-        if (PIPEventDispatcher.invoke() == true) {
+        if (PIPEnabled) {
             enterPIPMode()
         } else {
             super.onUserLeaveHint()
@@ -134,6 +134,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun enterPIPMode() {
+        if (!PIPEnabled) {
+            return
+        }
+
         val builder = PictureInPictureParams.Builder()
             .setAspectRatio(Rational(16, 9))
 
@@ -147,5 +151,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         this.enterPictureInPictureMode(builder.build())
+    }
+
+    override fun enterPictureInPictureMode(params: PictureInPictureParams): Boolean {
+        return if (!PIPEnabled) {
+            false
+        } else {
+            super.enterPictureInPictureMode(params)
+        }
     }
 }

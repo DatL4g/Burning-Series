@@ -363,7 +363,7 @@ actual fun VideoScreen(component: VideoComponent) {
             KeyEventDispatcher = { event ->
                 event?.let { playerView.dispatchKeyEvent(it) }
             }
-            PIPEventDispatcher = { true }
+            PIPEnabled = true
             PIPModeListener = { isInPIP ->
                 if (isInPIP) {
                     controls.visibility = View.GONE
@@ -419,7 +419,7 @@ actual fun VideoScreen(component: VideoComponent) {
     DisposableEffect(Unit) {
         onDispose {
             KeyEventDispatcher = { null }
-            PIPEventDispatcher = { null }
+            PIPEnabled = false
             PIPModeListener = { }
             PIPActions = { null }
             Kast.unselect(UnselectReason.stopped)

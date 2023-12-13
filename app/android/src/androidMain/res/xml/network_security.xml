@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">https://wrapapi.com</domain>
+        <domain includeSubdomains="true">http://wrapapi.com</domain>
+        <domain includeSubdomains="true">wrapapi.com</domain>
+
+        <domain includeSubdomains="true">https://bs.to</domain>
+        <domain includeSubdomains="true">http://bs.to</domain>
+        <domain includeSubdomains="true">bs.to</domain>
+
+        <domain includeSubdomains="true">https://jsonbase.com</domain>
+        <domain includeSubdomains="true">http://jsonbase.com</domain>
+        <domain includeSubdomains="true">jsonbase.com</domain>
+
+        <domain includeSubdomains="true">https://googleapis.com</domain>
+        <domain includeSubdomains="true">http://googleapis.com</domain>
+        <domain includeSubdomains="true">googleapis.com</domain>
+
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>
