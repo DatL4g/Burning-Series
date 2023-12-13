@@ -7,29 +7,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.palette.graphics.Palette
 import com.kmpalette.DominantColorState
-import com.kmpalette.loader.ImageBitmapLoader
-import com.kmpalette.rememberDominantColorState
+import com.kmpalette.rememberPainterDominantColorState
 import com.materialkolor.AnimatedDynamicMaterialTheme
 import dev.datlag.burningseries.shared.LocalDarkMode
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.withIOContext
-import dev.datlag.burningseries.shared.ui.theme.image.PainterImage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlin.coroutines.CoroutineContext
 
 data object SchemeTheme {
 
@@ -78,35 +68,6 @@ data object SchemeTheme {
     }
 }
 
-internal data class PainterLoader(
-    private val density: Density,
-    private val layoutDirection: LayoutDirection
-) : ImageBitmapLoader<Painter> {
-    override suspend fun load(input: Painter): ImageBitmap {
-        return PainterImage(input, density, layoutDirection).asBitmap()
-    }
-}
-
-@Composable
-public fun rememberPainterDominantColorState(
-    defaultColor: Color = MaterialTheme.colorScheme.primary,
-    defaultOnColor: Color = MaterialTheme.colorScheme.onPrimary,
-    density: Density = LocalDensity.current,
-    layoutDirection: LayoutDirection = LocalLayoutDirection.current,
-    cacheSize: Int = 0,
-    coroutineContext: CoroutineContext = Dispatchers.Default,
-    isSwatchValid: (Palette.Swatch) -> Boolean = { true },
-    builder: Palette.Builder.() -> Unit = {},
-): DominantColorState<Painter> = rememberDominantColorState(
-    loader = PainterLoader(density, layoutDirection),
-    defaultColor = defaultColor,
-    defaultOnColor = defaultOnColor,
-    cacheSize = cacheSize,
-    coroutineContext = coroutineContext,
-    isSwatchValid = isSwatchValid,
-    builder = builder
-)
-
 @Composable
 fun SchemeTheme(key: Any?, content: @Composable () -> Unit) {
     if (SchemeTheme._state == null) {
@@ -121,7 +82,11 @@ fun SchemeTheme(key: Any?, content: @Composable () -> Unit) {
         seedColor = color ?: MaterialTheme.colorScheme.primary,
         useDarkTheme = LocalDarkMode.current
     ) {
-        content()
+        androidx.compose.material.MaterialTheme(
+            colors = MaterialTheme.colorScheme.toLegacyColors(LocalDarkMode.current)
+        ) {
+            content()
+        }
     }
 }
 

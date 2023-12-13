@@ -3,7 +3,6 @@ package dev.datlag.burningseries.shared.module
 import android.content.Context
 import android.os.Build
 import coil3.ImageLoader
-import coil3.PlatformContext
 import coil3.annotation.ExperimentalCoilApi
 import coil3.decode.GifDecoder
 import coil3.decode.ImageDecoderDecoder
@@ -11,6 +10,7 @@ import coil3.decode.SvgDecoder
 import coil3.disk.DiskCache
 import coil3.fetch.NetworkFetcher
 import coil3.memory.MemoryCache
+import coil3.request.allowHardware
 import coil3.request.crossfade
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.shared.Sekret
@@ -97,6 +97,7 @@ actual object PlatformModule {
                         .maxSizeBytes(512L * 1024 * 1024) // 512MB
                         .build()
                 }
+                .allowHardware(false)
                 .crossfade(true)
                 .build()
         }

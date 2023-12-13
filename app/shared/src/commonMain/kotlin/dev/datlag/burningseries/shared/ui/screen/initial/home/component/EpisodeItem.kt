@@ -10,23 +10,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.ImageLoader
-import coil3.PlatformContext
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
-import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.bounceClick
 import dev.datlag.burningseries.shared.common.focusScale
 import dev.datlag.burningseries.shared.common.onClick
 import dev.datlag.burningseries.shared.ui.custom.AutoSizeText
 import dev.datlag.burningseries.shared.ui.custom.CountryImage
-import org.kodein.di.instance
+import dev.datlag.burningseries.shared.ui.custom.Cover
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -42,21 +37,15 @@ fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
             Surface(
                 shape = CardDefaults.elevatedShape
             ) {
-                val platformContext: PlatformContext by LocalDI.current.instance()
-                val imageLoader: ImageLoader by LocalDI.current.instance()
-
-                AsyncImage(
-                    model = ImageRequest.Builder(platformContext)
-                        .data(episode.coverHref?.let { BSUtil.getBurningSeriesLink(it) })
-                        .placeholderMemoryCacheKey(episode.coverHref)
-                        .build(),
-                    imageLoader = imageLoader,
+                Cover(
+                    key = episode.coverHref,
+                    data = episode.coverHref?.let { BSUtil.getBurningSeriesLink(it) },
                     contentDescription = episode.bestTitle,
-                    contentScale = ContentScale.FillWidth,
                     modifier = Modifier
                         .aspectRatio(1F, true)
                         .clip(CardDefaults.elevatedShape)
-                        .background(MaterialTheme.colorScheme.tertiaryContainer)
+                        .background(MaterialTheme.colorScheme.tertiaryContainer),
+                    errorColorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onTertiaryContainer)
                 )
             }
             Column(

@@ -20,23 +20,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.ImageLoader
-import coil3.PlatformContext
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.database.Episode
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesState
-import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.diagonalShape
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.other.StateSaver
+import dev.datlag.burningseries.shared.ui.custom.Cover
 import dev.datlag.burningseries.shared.ui.custom.DefaultCollapsingToolbar
 import dev.datlag.burningseries.shared.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.shared.ui.custom.rememberScrollbarAdapter
@@ -48,7 +43,6 @@ import dev.datlag.burningseries.shared.ui.screen.initial.series.component.Season
 import dev.datlag.burningseries.shared.ui.theme.SchemeTheme
 import dev.datlag.burningseries.shared.ui.theme.shape.DiagonalShape
 import dev.icerock.moko.resources.compose.stringResource
-import org.kodein.di.instance
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -94,18 +88,12 @@ private fun CompactScreen(component: SeriesComponent) {
 
     DefaultCollapsingToolbar(
         expandedBody = { state ->
-            val platformContext: PlatformContext by LocalDI.current.instance()
-            val imageLoader: ImageLoader by LocalDI.current.instance()
             val scope = rememberCoroutineScope()
 
-            AsyncImage(
-                model = ImageRequest.Builder(platformContext)
-                    .data(coverHref?.let { BSUtil.getBurningSeriesLink(it) })
-                    .placeholderMemoryCacheKey(coverHref)
-                    .build(),
-                imageLoader = imageLoader,
+            Cover(
+                key = coverHref,
+                data = coverHref?.let { BSUtil.getBurningSeriesLink(it) },
                 contentDescription = title,
-                contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .fillMaxWidth()
                     .defaultMinSize(minHeight = 320.dp)
@@ -115,7 +103,6 @@ private fun CompactScreen(component: SeriesComponent) {
                     SchemeTheme.update(commonHref, success.painter, scope)
                 }
             )
-
             Text(
                 text = title,
                 modifier = Modifier.road(Alignment.TopStart, Alignment.BottomStart).padding(16.dp).background(
@@ -318,8 +305,6 @@ private fun DefaultScreen(component: SeriesComponent) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            val platformContext: PlatformContext by LocalDI.current.instance()
-                            val imageLoader: ImageLoader by LocalDI.current.instance()
                             val scope = rememberCoroutineScope()
 
                             Column(
@@ -384,14 +369,10 @@ private fun DefaultScreen(component: SeriesComponent) {
                                 )
                             }
 
-                            AsyncImage(
-                                model = ImageRequest.Builder(platformContext)
-                                    .data(coverHref?.let { BSUtil.getBurningSeriesLink(it) })
-                                    .placeholderMemoryCacheKey(coverHref)
-                                    .build(),
-                                imageLoader = imageLoader,
+                            Cover(
+                                key = coverHref,
+                                data = coverHref?.let { BSUtil.getBurningSeriesLink(it) },
                                 contentDescription = title,
-                                contentScale = ContentScale.FillWidth,
                                 modifier = Modifier
                                     .width(200.dp)
                                     .clip(MaterialTheme.shapes.medium)
