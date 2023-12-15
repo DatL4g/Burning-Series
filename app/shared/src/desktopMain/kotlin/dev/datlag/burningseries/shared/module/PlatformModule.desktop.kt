@@ -9,6 +9,7 @@ import coil3.fetch.NetworkFetcher
 import coil3.memory.MemoryCache
 import coil3.request.crossfade
 import dev.datlag.burningseries.database.DriverFactory
+import dev.datlag.burningseries.model.common.canWriteSafely
 import dev.datlag.burningseries.shared.AppIO
 import dev.datlag.burningseries.shared.Sekret
 import dev.datlag.burningseries.shared.getPackageName
@@ -22,6 +23,8 @@ import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.realm.kotlin.mongodb.App
+import io.realm.kotlin.mongodb.AppConfiguration
 import kotlinx.serialization.json.Json
 import okio.FileSystem
 import org.kodein.di.DI
@@ -65,6 +68,18 @@ actual object PlatformModule {
             DriverFactory(instance("BurningSeriesDBFile"))
         }
         if (StateSaver.sekretLibraryLoaded) {
+            bindEagerSingleton {
+                AppIO.getWriteableExecutableFolder().let {
+                    if (it.canWriteSafely()) {
+                        AppConfiguration.Builder(Sekret().mongoApplication(getPackageName())!!)
+                            .syncRootDirectory(it.canonicalPath)
+                            .build()
+                    } else {
+                        AppConfiguration.create(Sekret().mongoApplication(getPackageName())!!)
+                    }
+                }
+
+            }
             bindEagerSingleton {
                 Firebase.initialize(
                     context = Context(),

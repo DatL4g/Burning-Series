@@ -16,6 +16,7 @@ import dev.datlag.burningseries.shared.getPackageName
 import dev.datlag.burningseries.shared.other.StateSaver
 import io.ktor.client.*
 import io.realm.kotlin.mongodb.App
+import io.realm.kotlin.mongodb.AppConfiguration
 import org.kodein.di.*
 
 object NetworkModule {
@@ -100,7 +101,7 @@ object NetworkModule {
         }
         if (StateSaver.sekretLibraryLoaded) {
             bindEagerSingleton {
-                App.create(Sekret().mongoApplication(getPackageName())!!)
+                App.create(instance<AppConfiguration>())
             }
             bindEagerSingleton(TAG_KTORFIT_FIRESTORE) {
                 val builder = instance<Ktorfit.Builder>()

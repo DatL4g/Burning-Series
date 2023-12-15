@@ -24,6 +24,8 @@ import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.realm.kotlin.mongodb.App
+import io.realm.kotlin.mongodb.AppConfiguration
 import kotlinx.serialization.json.Json
 import okio.FileSystem
 import org.kodein.di.DI
@@ -64,6 +66,9 @@ actual object PlatformModule {
             DriverFactory(instance())
         }
         if (StateSaver.sekretLibraryLoaded) {
+            bindEagerSingleton {
+                AppConfiguration.create(Sekret().mongoApplication(getPackageName())!!)
+            }
             bindEagerSingleton {
                 Firebase.initialize(
                     context = instance<Context>(),
