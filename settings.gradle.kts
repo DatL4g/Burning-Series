@@ -25,6 +25,7 @@ pluginManagement {
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://plugins.gradle.org/m2/") }
         maven("https://jogamp.org/deployment/maven")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
