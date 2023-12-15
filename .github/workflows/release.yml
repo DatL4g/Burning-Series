@@ -172,21 +172,21 @@ jobs:
         run: ./gradlew app:shared:createNativeLib
 
       - name: Execute Build
-        run: ./gradlew assembleRelease && ./gradlew bundleRelease
+        run: ./gradlew app:android:assembleRelease && ./gradlew app:android:bundleRelease
 
       - name: Move APK file(s)
-        run: mv ./app/android/build/outputs/apk/release/*.apk ./app/release/
+        run: mv ./app/android/build/outputs/apk/release/*.apk ./app/android/release/
 
       - name: Move AAB file(s)
-        run: mv ./app/android/build/outputs/bundle/release/*.aab ./app/release/
+        run: mv ./app/android/build/outputs/bundle/release/*.aab ./app/android/release/
 
       - name: Remove "-unsigned" from filename(s)
-        run: for filename in ./app/release/*-unsigned*; do mv "./$filename" "./$(echo "$filename" | sed -e 's/-unsigned//g')";  done
+        run: for filename in ./app/android/release/*-unsigned*; do mv "./$filename" "./$(echo "$filename" | sed -e 's/-unsigned//g')";  done
 
       - uses: ilharp/sign-android-release@v1
         id: sign_app
         with:
-          releaseDir: app/release
+          releaseDir: app/android/release
           signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
           keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}

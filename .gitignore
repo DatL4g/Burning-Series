@@ -3,6 +3,7 @@ TODO
 app/release/*
 app/android/release/*
 !app/release/.gitkeep
+!app/android/release/.gitkeep
 
 sekret.properties
 app/desktop/mongodb-realm
