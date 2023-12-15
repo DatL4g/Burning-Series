@@ -12,6 +12,7 @@ import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
+import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
@@ -37,20 +38,22 @@ class VideoScreenComponent(
 
     override val streams: List<Stream> = initialStreams.sortedBy { it.headers.size }
     private val episodeStateMachine by di.instance<EpisodeStateMachine>()
-    override val episode: StateFlow<Series.Episode> = episodeStateMachine.state.mapNotNull { it as? EpisodeState.EpisodeHolder }.map { it.episode }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialEpisode)
+    override val episode: StateFlow<Series.Episode> = episodeStateMachine.state.mapNotNull { it as? EpisodeState.EpisodeHolder }.map { it.episode }.flowOn(
+        ioDispatcher()
+    ).stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialEpisode)
 
     private val database by di.instance<BurningSeries>()
     private val dbEpisode = episode.transform {
         return@transform emitAll(database.burningSeriesQueries.selectEpisodeByHref(it.href).asFlow().mapToOneOrNull(
             currentCoroutineContext()
         ))
-    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), database.burningSeriesQueries.selectEpisodeByHref(episode.value.href).executeAsOneOrNull())
+    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), database.burningSeriesQueries.selectEpisodeByHref(episode.value.href).executeAsOneOrNull())
 
     override val selectedSubtitle = MutableStateFlow<VideoComponent.Subtitle?>(null)
 
     override val startingPos: StateFlow<Long> = dbEpisode.transform {
         return@transform emit(it?.progress ?: 0L)
-    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), dbEpisode.value?.progress ?: 0L)
+    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), dbEpisode.value?.progress ?: 0L)
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = childSlot(

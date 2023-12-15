@@ -15,6 +15,7 @@ import dev.datlag.burningseries.model.state.SaveAction
 import dev.datlag.burningseries.model.state.SaveState
 import dev.datlag.burningseries.network.state.SaveStateMachine
 import dev.datlag.burningseries.shared.LocalDI
+import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.common.withMainContext
@@ -24,6 +25,7 @@ import dev.datlag.burningseries.shared.ui.screen.initial.series.activate.dialog.
 import dev.datlag.burningseries.shared.ui.screen.initial.series.activate.dialog.success.SuccessDialogComponent
 import dev.datlag.skeo.Stream
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
@@ -40,11 +42,11 @@ class ActivateScreenComponent(
 ) : ActivateComponent, ComponentContext by componentContext {
 
     private val saveStateMachine by di.instance<SaveStateMachine>()
-    private val saveState = saveStateMachine.state.stateIn(ioScope(), SharingStarted.WhileSubscribed(), SaveState.Waiting)
+    private val saveState = saveStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), SaveState.Waiting)
     private val json by di.instance<Json>()
     private val savedData: MutableSet<String> = mutableSetOf()
 
-    override val isSaving = saveState.map { it is SaveState.Saving }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), saveState.value is SaveState.Saving)
+    override val isSaving = saveState.map { it is SaveState.Saving }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), saveState.value is SaveState.Saving)
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     override val dialog = childSlot(

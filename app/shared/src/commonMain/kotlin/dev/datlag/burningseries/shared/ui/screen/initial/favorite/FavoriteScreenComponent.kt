@@ -38,6 +38,7 @@ class FavoriteScreenComponent(
         .favoriteSeries()
         .asFlow()
         .mapToList(ioDispatcher())
+        .flowOn(ioDispatcher())
         .stateIn(ioScope(), SharingStarted.WhileSubscribed(), emptyList())
 
     private val searchQuery: MutableStateFlow<String> = MutableStateFlow(String())
@@ -60,7 +61,7 @@ class FavoriteScreenComponent(
                 }.sortedByDescending { it.second }.map { it.first }.safeSubList(0, 10)
             }
         }
-    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), emptyList())
+    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), emptyList())
 
     private val navigation = SlotNavigation<FavoriteConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(

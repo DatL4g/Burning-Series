@@ -68,17 +68,17 @@ class SeriesScreenComponent(
     )
     override val seriesState: StateFlow<SeriesState> = seriesStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), SeriesState.Loading(initialHref))
 
-    private val successState = seriesState.mapNotNull { it as? SeriesState.Success }
-    private val currentSeries = successState.map { it.series }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
-    private val onDeviceReachable = successState.map { it.onDeviceReachable }.stateIn(ioScope(), SharingStarted.Eagerly, true)
-    override val title: StateFlow<String> = currentSeries.mapNotNull { it?.bestTitle }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialTitle)
-    override val href: StateFlow<String> = currentSeries.mapNotNull { it?.href }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), BSUtil.fixSeriesHref(initialHref))
+    private val successState = seriesState.mapNotNull { it as? SeriesState.Success }.flowOn(ioDispatcher())
+    private val currentSeries = successState.map { it.series }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
+    private val onDeviceReachable = successState.map { it.onDeviceReachable }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Eagerly, true)
+    override val title: StateFlow<String> = currentSeries.mapNotNull { it?.bestTitle }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialTitle)
+    override val href: StateFlow<String> = currentSeries.mapNotNull { it?.href }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), BSUtil.fixSeriesHref(initialHref))
     override val commonHref: StateFlow<String> = href.map {
         val commonized = BSUtil.commonSeriesHref(it)
         database.burningSeriesQueries.seriesUpdateHrefByCommonHref(it, commonized)
         commonized
-    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), BSUtil.commonSeriesHref(initialHref))
-    override val coverHref: StateFlow<String?> = currentSeries.mapNotNull { it?.coverHref }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialCoverHref)
+    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), BSUtil.commonSeriesHref(initialHref))
+    override val coverHref: StateFlow<String?> = currentSeries.mapNotNull { it?.coverHref }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialCoverHref)
 
     private val database: BurningSeries by di.instance()
     override val isFavorite: StateFlow<Boolean> = commonHref.transform {
@@ -92,13 +92,13 @@ class SeriesScreenComponent(
                     s != null && s.favoriteSince > 0
                 }
         )
-    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), database.burningSeriesQueries.seriesByHref(commonHref.value).executeAsOneOrNull()?.favoriteSince?.let { it > 0 } ?: false)
+    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), database.burningSeriesQueries.seriesByHref(commonHref.value).executeAsOneOrNull()?.favoriteSince?.let { it > 0 } ?: false)
 
     private val episodeStateMachine by di.instance<EpisodeStateMachine>()
     private val episodeState: StateFlow<EpisodeState> = episodeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), EpisodeState.Waiting)
     override val loadingEpisodeHref: StateFlow<String?> = episodeState.map {
         (it as? EpisodeState.Loading)?.episode?.href ?: (it as? EpisodeState.SuccessHoster)?.episode?.href
-    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
+    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
 
     override val dbEpisodes = commonHref.transform {
         return@transform emitAll(database.burningSeriesQueries.selectEpisodesBySeriesHref(it).asFlow().mapToList(

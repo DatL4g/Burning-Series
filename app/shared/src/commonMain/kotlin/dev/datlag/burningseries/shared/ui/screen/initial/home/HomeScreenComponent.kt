@@ -49,7 +49,7 @@ class HomeScreenComponent(
         } else {
             null
         }
-    }.stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
+    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
 
     private val navigation = SlotNavigation<HomeConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(
