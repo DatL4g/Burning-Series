@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.DpSize
 import dev.datlag.burningseries.shared.ui.theme.shape.DiagonalShape
@@ -172,4 +173,35 @@ fun ColorScheme.animate(spec: AnimationSpec<Color> = spring(stiffness = Spring.S
         errorContainer = animateColorAsState(this.errorContainer, spec).value,
         onErrorContainer = animateColorAsState(this.onErrorContainer, spec).value
     )
+}
+
+fun PathBuilder.drawPathFromSvgData(data: String) {
+    val pathCommands = data.split("(?=[a-zA-Z])".toRegex()).filterNot { it.isBlank() }
+    val numberRegex = "[-+]?\\d*\\.?\\d+".toRegex()
+
+    for (command in pathCommands) {
+        val cmd = command.substring(0, 1).trim()
+        val coords = numberRegex.findAll(command.substring(1)).mapNotNull { it.value.toFloatOrNull() }.toList()
+        println(coords)
+
+        when (cmd) {
+            "M" -> moveTo(coords[0], coords[1])
+            "m" -> moveToRelative(coords[0], coords[1])
+            "L" -> lineTo(coords[0], coords[1])
+            "l" -> lineToRelative(coords[0], coords[1])
+            "Q" -> quadTo(coords[0], coords[1], coords[2], coords[3])
+            "q" -> quadToRelative(coords[0], coords[1], coords[2], coords[3])
+            "T" -> reflectiveQuadTo(coords[0], coords[1])
+            "t" -> reflectiveQuadToRelative(coords[0], coords[1])
+            "C" -> curveTo(coords[0], coords[1], coords[2], coords[3], coords[4], coords[5])
+            "c" -> curveToRelative(coords[0], coords[1], coords[2], coords[3], coords[4], coords[5])
+            "S" -> reflectiveCurveTo(coords[0], coords[1], coords[2], coords[3])
+            "s" -> reflectiveCurveToRelative(coords[0], coords[1], coords[2], coords[3])
+            "V" -> verticalLineTo(coords[0])
+            "v" -> verticalLineToRelative(coords[0])
+            "H" -> horizontalLineTo(coords[0])
+            "h" -> horizontalLineToRelative(coords[0])
+            "Z", "z" -> close()
+        }
+    }
 }

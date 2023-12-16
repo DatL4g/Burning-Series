@@ -18,6 +18,8 @@ import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.ui.navigation.Component
+import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
+import dev.datlag.burningseries.shared.ui.screen.initial.home.dialog.sekret.SekretDialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.series.SeriesScreenComponent
 import dev.datlag.skeo.Stream
 import kotlinx.coroutines.flow.*
@@ -74,6 +76,21 @@ class HomeScreenComponent(
         }
     }
 
+    private val dialogNavigation = SlotNavigation<DialogConfig>()
+    override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = childSlot(
+        key = "DialogChildSlot",
+        source = dialogNavigation,
+        serializer = DialogConfig.serializer()
+    ) { config, slotContext ->
+        when (config) {
+            DialogConfig.Sekret -> SekretDialogComponent(
+                componentContext = slotContext,
+                di = di,
+                onDismissed = dialogNavigation::dismiss
+            )
+        }
+    }
+
     @Composable
     override fun render() {
         CompositionLocalProvider(
@@ -91,5 +108,9 @@ class HomeScreenComponent(
         navigation.activate(config) {
             scrollEnabled(false)
         }
+    }
+
+    override fun showDialog(config: DialogConfig) {
+        dialogNavigation.activate(config)
     }
 }

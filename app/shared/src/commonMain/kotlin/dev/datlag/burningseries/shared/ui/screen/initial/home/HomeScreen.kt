@@ -5,14 +5,15 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,12 +32,14 @@ import dev.datlag.burningseries.shared.ui.custom.state.LoadingState
 import dev.datlag.burningseries.shared.ui.screen.initial.home.component.DeviceContent
 import dev.datlag.burningseries.shared.ui.screen.initial.home.component.EpisodeItem
 import dev.datlag.burningseries.shared.ui.screen.initial.home.component.SeriesItem
+import dev.datlag.burningseries.shared.ui.theme.MaterialSymbols
 import dev.icerock.moko.resources.compose.stringResource
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun HomeScreen(component: HomeComponent) {
     val homeState by component.homeState.collectAsStateWithLifecycle()
+    val dialogState by component.dialog.subscribeAsState()
 
     when (val currentState = homeState) {
         is HomeState.Loading -> {
@@ -60,6 +63,8 @@ fun HomeScreen(component: HomeComponent) {
             }
         }
     }
+
+    dialogState.child?.instance?.render()
 }
 
 @Composable
@@ -114,12 +119,34 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
         ) {
             DeviceContent(component.release)
             header {
-                Text(
-                    modifier = Modifier.padding(top = 16.dp),
-                    text = stringResource(SharedRes.strings.newest_episodes),
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1F),
+                        text = stringResource(SharedRes.strings.newest_episodes),
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (!StateSaver.sekretLibraryLoaded) {
+                        IconButton(
+                            onClick = {
+                                component.showDialog(DialogConfig.Sekret)
+                            },
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                contentColor = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        ) {
+                            Icon(
+                                imageVector = MaterialSymbols.rememberDeployedCodeAlert(),
+                                contentDescription = null
+                            )
+                        }
+                    }
+                }
             }
             items(home.episodes, key = {
                 it.href
