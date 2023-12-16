@@ -5,6 +5,8 @@ import de.jensklingenberg.ktorfit.ktorfitBuilder
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.database.common.toGenres
 import dev.datlag.burningseries.database.common.toSearchItems
+import dev.datlag.burningseries.model.common.scopeCatching
+import dev.datlag.burningseries.model.common.suspendCatching
 import dev.datlag.burningseries.network.Firestore
 import dev.datlag.burningseries.network.GitHub
 import dev.datlag.burningseries.network.JsonBase
@@ -76,7 +78,7 @@ object NetworkModule {
             )
         }
         bindSingleton {
-            val database = instance<BurningSeries>()
+            val database = instanceOrNull<BurningSeries>()
 
             SearchStateMachine(
                 client = instance(),
@@ -86,16 +88,20 @@ object NetworkModule {
                     Sekret().wrapApi(getPackageName())
                 } else { null },
                 saveToDB = {
-                    database.burningSeriesQueries.transaction {
+                    database?.burningSeriesQueries?.transaction {
                         it.genres.forEach { genre ->
                             genre.toSearchItems().forEach { item ->
-                                database.burningSeriesQueries.insertSearchItem(item)
+                                scopeCatching {
+                                    database.burningSeriesQueries.insertSearchItem(item)
+                                }.getOrNull()
                             }
                         }
                     }
                 },
                 loadFromDB = {
-                    database.burningSeriesQueries.selectAllSearchItems().executeAsList().toGenres()
+                    suspendCatching {
+                        database?.burningSeriesQueries?.selectAllSearchItems()?.executeAsList()?.toGenres()
+                    }.getOrNull() ?: emptyList()
                 }
             )
         }

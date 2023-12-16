@@ -104,6 +104,9 @@ kotlin {
                 api(libs.permission)
                 api(libs.nanoid)
 
+                api(libs.firebase.crashlytics)
+                api(libs.firebase.android.crashlytics)
+
                 api("io.coil-kt.coil3:coil-gif:3.0.0-SNAPSHOT")
                 api("io.coil-kt.coil3:coil-svg:3.0.0-SNAPSHOT")
             }

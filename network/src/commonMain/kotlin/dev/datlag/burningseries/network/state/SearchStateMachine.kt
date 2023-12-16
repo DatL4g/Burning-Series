@@ -19,7 +19,7 @@ class SearchStateMachine(
     private val json: Json,
     private val wrapApi: WrapAPI,
     private val wrapApiKey: String?,
-    private val saveToDB: (SearchState.Success) -> Unit,
+    private val saveToDB: suspend (SearchState.Success) -> Unit,
     private val loadFromDB: suspend () -> List<Genre>
 ) : FlowReduxStateMachine<SearchState, SearchAction>(initialState = NetworkStateSaver.initialSearchState) {
     init {
@@ -52,12 +52,12 @@ class SearchStateMachine(
                             loadFromDB()
                         }
                         if (loadedGenres.isEmpty()) {
-                            state.override { SearchState.Error(String()) }
+                            state.override { SearchState.Error }
                         } else {
                             state.override { SearchState.Success(loadedGenres) }
                         }
                     } catch (t: Throwable) {
-                        state.override { SearchState.Error(t.message ?: String()) }
+                        state.override { SearchState.Error }
                     }
                 }
             }

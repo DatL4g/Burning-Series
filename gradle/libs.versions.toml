@@ -12,12 +12,14 @@ compose = "1.5.11"
 complete-kotlin = "1.1.0"
 context-menu = "0.2.0"
 coroutines = "1.7.3"
+crashlytics-plugin = "2.9.9"
 datastore = "1.0.0"
 datetime = "0.4.1"
 decompose = "2.2.1-compose-experimental"
 firebase = "1.10.4"
 firebase-android = "20.4.2"
 firebase-android-auth = "22.3.0"
+firebase-android-crashlytics = "18.6.0"
 firebase-android-firestore = "24.10.0"
 flowredux = "1.2.0"
 grpc = "1.59.0"
@@ -76,9 +78,11 @@ datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version
 decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
 decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-compose-jetbrains", version.ref = "decompose" }
 firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "firebase" }
+firebase-crashlytics = { group = "dev.gitlive", name = "firebase-crashlytics", version.ref = "firebase" }
 firebase-store = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "firebase" }
 firebase-android = { group = "com.google.firebase", name = "firebase-common", version.ref = "firebase-android" }
 firebase-android-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebase-android-auth" }
+firebase-android-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebase-android-crashlytics" }
 firebase-android-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebase-android-firestore" }
 flowredux = { group = "com.freeletics.flowredux", name = "flowredux", version.ref = "flowredux" }
 grpc = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
@@ -144,6 +148,7 @@ android-library = { id = "com.android.library", version.ref = "android" }
 cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 complete-kotlin = { id = "com.louiscad.complete-kotlin", version.ref = "complete-kotlin" }
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics-plugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }

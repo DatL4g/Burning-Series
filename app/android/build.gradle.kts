@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose)
+    alias(libs.plugins.crashlytics)
     alias(libs.plugins.multiplatform)
 }
 

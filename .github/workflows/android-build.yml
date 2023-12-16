@@ -1,0 +1,68 @@
+name: Build Android Release Package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  android-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Create Sekrets
+        run: |
+          ./gradlew createSekretProperties -Pkey=MONGO_APPLICATION -Pvalue=${{ secrets.MONGO_APPLICATION }};
+          ./gradlew createSekretProperties -Pkey=WRAP_API -Pvalue=${{ secrets.WRAP_API }};
+          ./gradlew createSekretProperties -Pkey=FIREBASE_PROJECT -Pvalue=${{ secrets.FIREBASE_PROJECT }};
+          ./gradlew createSekretProperties -Pkey=FIREBASE_APPLICATION -Pvalue=${{ secrets.FIREBASE_APPLICATION }};
+          ./gradlew createSekretProperties -Pkey=FIREBASE_API_KEY -Pvalue=${{ secrets.FIREBASE_API_KEY }}
+
+      - name: Create native library
+        run: ./gradlew app:shared:createNativeLib
+
+      - name: Execute Build
+        run: ./gradlew app:android:assembleRelease && ./gradlew app:android:bundleRelease
+
+      - name: Move APK file(s)
+        run: mv ./app/android/build/outputs/apk/release/*.apk ./app/android/release/
+
+      - name: Move AAB file(s)
+        run: mv ./app/android/build/outputs/bundle/release/*.aab ./app/android/release/
+
+      - name: Remove "-unsigned" from filename(s)
+        run: for filename in ./app/android/release/*-unsigned*; do mv "./$filename" "./$(echo "$filename" | sed -e 's/-unsigned//g')";  done
+
+      - uses: ilharp/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDir: app/android/release
+          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
+          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Split signed files
+        uses: xom9ikk/split@v1
+        id: split
+        with:
+          string: ${{ steps.sign_app.outputs.signedFiles }}
+          separator: ':'
+          limit: 2
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            ${{ steps.split.outputs._0 }}
+            ${{ steps.split.outputs._1 }}
+          retention-days: 1

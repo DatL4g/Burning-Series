@@ -19,6 +19,7 @@ plugins {
     alias(libs.plugins.sekret) apply false
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.sqldelight) apply false
+    alias(libs.plugins.crashlytics) apply false
     alias(libs.plugins.complete.kotlin)
     alias(libs.plugins.versions)
     `project-report`
