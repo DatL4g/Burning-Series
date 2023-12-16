@@ -10,6 +10,7 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.common.safeCast
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.shared.common.ioDispatcher
@@ -38,7 +39,7 @@ class VideoScreenComponent(
 
     override val streams: List<Stream> = initialStreams.sortedBy { it.headers.size }
     private val episodeStateMachine by di.instance<EpisodeStateMachine>()
-    override val episode: StateFlow<Series.Episode> = episodeStateMachine.state.mapNotNull { it as? EpisodeState.EpisodeHolder }.map { it.episode }.flowOn(
+    override val episode: StateFlow<Series.Episode> = episodeStateMachine.state.mapNotNull { it.safeCast<EpisodeState.EpisodeHolder>() }.map { it.episode }.flowOn(
         ioDispatcher()
     ).stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialEpisode)
 

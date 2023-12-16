@@ -20,6 +20,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.shouldShowRationale
+import dev.datlag.burningseries.model.common.safeCast
 import dev.datlag.burningseries.shared.App
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.lifecycle.LocalLifecycleOwner
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
 
-        val di = ((applicationContext as? App) ?: (application as App)).di
+        val di = applicationContext.safeCast<App>()?.di ?: (application as App).di
 
         val lifecycleOwner = object : LifecycleOwner {
             override val lifecycle: Lifecycle = essentyLifecycle()

@@ -25,3 +25,25 @@ suspend fun <T> suspendCatching(block: suspend CoroutineScope.() -> T): Result<T
         Result.failure(e)
     }
 }
+
+fun <T> safeCast(block: () -> T?): T? {
+    return scopeCatching {
+        block()
+    }.getOrNull()
+}
+
+suspend fun <T> suspendSafeCast(block: () -> T?): T? {
+    return suspendCatching {
+        block()
+    }.getOrNull()
+}
+
+inline fun <reified T> Any?.safeCast(): T? {
+    return safeCast {
+        if (this is T) {
+            this
+        } else {
+            this as? T?
+        }
+    }
+}

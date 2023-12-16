@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
+import dev.datlag.burningseries.model.common.safeCast
 import kotlin.math.max
 
 @Stable
@@ -145,7 +146,7 @@ fun CollapsingToolbarScaffold(
 
         val bodyMeasurables = measurables.subList(1, measurables.size)
         val childrenAlignments = bodyMeasurables.map {
-            (it.parentData as? ScaffoldParentData)?.alignment
+            it.parentData.safeCast<ScaffoldParentData>()?.alignment
         }
         val bodyPlaceables = bodyMeasurables.map {
             it.measure(bodyConstraints)
@@ -210,7 +211,7 @@ private class ScaffoldChildAlignmentModifier(
     private val alignment: Alignment
 ) : ParentDataModifier {
     override fun Density.modifyParentData(parentData: Any?): Any {
-        return (parentData as? ScaffoldParentData) ?: ScaffoldParentData(alignment)
+        return parentData.safeCast<ScaffoldParentData>()?.alignment ?: ScaffoldParentData(alignment)
     }
 }
 

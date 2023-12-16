@@ -12,6 +12,7 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.common.safeCast
 import dev.datlag.burningseries.model.state.EpisodeAction
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.model.state.SeriesAction
@@ -68,7 +69,7 @@ class SeriesScreenComponent(
     )
     override val seriesState: StateFlow<SeriesState> = seriesStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), SeriesState.Loading(initialHref))
 
-    private val successState = seriesState.mapNotNull { it as? SeriesState.Success }.flowOn(ioDispatcher())
+    private val successState = seriesState.mapNotNull { it.safeCast<SeriesState.Success>() }.flowOn(ioDispatcher())
     private val currentSeries = successState.map { it.series }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
     private val onDeviceReachable = successState.map { it.onDeviceReachable }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Eagerly, true)
     override val title: StateFlow<String> = currentSeries.mapNotNull { it?.bestTitle }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialTitle)
@@ -97,7 +98,7 @@ class SeriesScreenComponent(
     private val episodeStateMachine by di.instance<EpisodeStateMachine>()
     private val episodeState: StateFlow<EpisodeState> = episodeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), EpisodeState.Waiting)
     override val loadingEpisodeHref: StateFlow<String?> = episodeState.map {
-        (it as? EpisodeState.Loading)?.episode?.href ?: (it as? EpisodeState.SuccessHoster)?.episode?.href
+        it.safeCast<EpisodeState.Loading>()?.episode?.href ?: it.safeCast<EpisodeState.SuccessHoster>()?.episode?.href
     }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
 
     override val dbEpisodes = commonHref.transform {
@@ -196,7 +197,7 @@ class SeriesScreenComponent(
                         }
                     }
                     is EpisodeState.ErrorHoster, is EpisodeState.ErrorStream -> {
-                        val episode = (state as? EpisodeState.EpisodeHolder)?.episode
+                        val episode = state.safeCast<EpisodeState.EpisodeHolder>()?.episode
                         val series = currentSeries.value ?: currentSeries.first() ?: currentSeries.value!!
 
                         if (episode != null) {

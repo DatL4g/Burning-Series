@@ -15,6 +15,7 @@ import androidx.compose.ui.layout.*
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
+import dev.datlag.burningseries.model.common.safeCast
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -289,7 +290,7 @@ internal class RoadModifier(
     override fun Density.modifyParentData(parentData: Any?): Any {
         return CollapsingToolbarRoadData(
             this@RoadModifier.whenCollapsed, this@RoadModifier.whenExpanded,
-            (parentData as? CollapsingToolbarData)?.progressListener
+            parentData.safeCast<CollapsingToolbarData>()?.progressListener
         )
     }
 }
@@ -298,13 +299,13 @@ internal class ParallaxModifier(
     private val ratio: Float
 ): ParentDataModifier {
     override fun Density.modifyParentData(parentData: Any?): Any {
-        return CollapsingToolbarParallaxData(ratio, (parentData as? CollapsingToolbarData)?.progressListener)
+        return CollapsingToolbarParallaxData(ratio, parentData.safeCast<CollapsingToolbarData>()?.progressListener)
     }
 }
 
 internal class PinModifier: ParentDataModifier {
     override fun Density.modifyParentData(parentData: Any?): Any {
-        return CollapsingToolbarPinData((parentData as? CollapsingToolbarData)?.progressListener)
+        return CollapsingToolbarPinData(parentData.safeCast<CollapsingToolbarData>()?.progressListener)
     }
 }
 

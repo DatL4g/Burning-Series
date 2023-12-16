@@ -8,6 +8,7 @@ import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
+import dev.datlag.burningseries.model.common.safeCast
 import dev.datlag.burningseries.model.common.safeSubList
 import dev.datlag.burningseries.model.state.SearchAction
 import dev.datlag.burningseries.model.state.SearchState
@@ -36,7 +37,7 @@ class SearchScreenComponent(
     private val searchStateMachine: SearchStateMachine by di.instance()
     override val searchState: StateFlow<SearchState> = searchStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), SearchState.Loading)
 
-    private val allGenres = searchState.mapNotNull { it as SearchState.Success }.map { it.genres }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), emptyList())
+    private val allGenres = searchState.mapNotNull { it.safeCast<SearchState.Success>() }.map { it.genres }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), emptyList())
     private val allItems = allGenres.map { it.flatMap { g -> g.items } }.flowOn(ioDispatcher())
     private val maxGenres = allGenres.map { it.size }.flowOn(ioDispatcher())
     private val loadedGenres = MutableStateFlow(1)
