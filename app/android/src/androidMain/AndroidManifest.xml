@@ -17,6 +17,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:banner="@mipmap/tv_banner"
         android:supportsRtl="true"
         android:theme="@style/SplashScreenTheme"
         android:name=".App"
@@ -40,6 +41,7 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
 
@@ -49,7 +51,7 @@
 
         <receiver
             android:name="androidx.mediarouter.media.MediaTransferReceiver"
-            android:exported="true"></receiver>
+            android:exported="true" />
     </application>
 
 </manifest>

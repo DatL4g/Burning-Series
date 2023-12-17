@@ -14,6 +14,7 @@ import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter
 import uk.co.caprica.vlcj.player.component.CallbackMediaPlayerComponent
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent
 import uk.co.caprica.vlcj.player.component.MediaPlayerComponent
+import kotlin.math.roundToInt
 
 @Composable
 fun VideoPlayer(
@@ -56,6 +57,21 @@ fun VideoPlayer(
         val isPlaying = remember { mutableStateOf(false) }
         val length = remember { mutableLongStateOf(0) }
         val time = remember { mutableLongStateOf(0) }
+        val isMuted = remember { mutableStateOf(mediaPlayerComponent.mediaPlayer()?.audio()?.isMute ?: false) }
+        val volumeState = remember {
+            val current = mediaPlayerComponent.mediaPlayer()?.audio()?.volume()?.toFloat() ?: 0F
+            val set = if (current <= 0F) {
+                if (isMuted.value) {
+                    0F
+                } else {
+                    1F
+                }
+            } else {
+                current
+            }
+
+            mutableFloatStateOf(set)
+        }
 
         val eventListener = remember { object : MediaPlayerEventAdapter() {
             override fun error(mediaPlayer: MediaPlayer?) {
@@ -105,6 +121,18 @@ fun VideoPlayer(
 
                 (mediaPlayer ?: mediaPlayerComponent.mediaPlayer())?.controls()?.setTime(startingPos)
             }
+
+            override fun muted(mediaPlayer: MediaPlayer?, muted: Boolean) {
+                super.muted(mediaPlayer, muted)
+
+                isMuted.value = muted
+            }
+
+            override fun volumeChanged(mediaPlayer: MediaPlayer?, volume: Float) {
+                super.volumeChanged(mediaPlayer, volume)
+
+                volumeState.value = volume * 100
+            }
         } }
 
         LaunchedEffect(mediaPlayerComponent, eventListener) {
@@ -126,6 +154,8 @@ fun VideoPlayer(
             override val isPlaying: MutableState<Boolean> = isPlaying
             override val length: MutableLongState = length
             override val time: MutableLongState = time
+            override val isMuted: MutableState<Boolean> = isMuted
+            override val volume: MutableFloatState = volumeState
 
             override fun play() {
                 mediaPlayerComponent.mediaPlayer()?.controls()?.play()
@@ -145,6 +175,18 @@ fun VideoPlayer(
 
             override fun seekTo(millis: Long) {
                 mediaPlayerComponent.mediaPlayer()?.controls()?.setTime(millis)
+            }
+
+            override fun mute() {
+                mediaPlayerComponent.mediaPlayer()?.audio()?.isMute = true
+            }
+
+            override fun unmute() {
+                mediaPlayerComponent.mediaPlayer()?.audio()?.isMute = false
+            }
+
+            override fun setVolume(volume: Float) {
+                mediaPlayerComponent.mediaPlayer()?.audio()?.setVolume(volume.roundToInt())
             }
         } }
     }

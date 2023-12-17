@@ -30,7 +30,7 @@ import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.OnBottomReached
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.onClick
-import dev.datlag.burningseries.shared.isTv
+import dev.datlag.burningseries.shared.rememberIsTv
 import dev.datlag.burningseries.shared.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.shared.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.shared.ui.custom.state.ErrorState
@@ -54,7 +54,7 @@ fun SearchScreen(component: SearchComponent) {
         is SearchState.Success -> {
             when (calculateWindowSizeClass().widthSizeClass) {
                 WindowWidthSizeClass.Expanded -> {
-                    if (isTv()) {
+                    if (rememberIsTv()) {
                         DefaultView(component)
                     } else {
                         ExpandedView(component)

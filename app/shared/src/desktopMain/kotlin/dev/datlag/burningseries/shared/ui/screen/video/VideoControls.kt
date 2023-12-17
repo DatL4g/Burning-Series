@@ -1,10 +1,7 @@
 package dev.datlag.burningseries.shared.ui.screen.video
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -137,6 +134,39 @@ fun VideoControls(
                     )
                 }
             }
+
+            if (mediaPlayer.isMuted.value) {
+                IconButton(
+                    onClick = {
+                        mediaPlayer.unmute()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.VolumeOff,
+                        contentDescription = stringResource(SharedRes.strings.muted)
+                    )
+                }
+            } else {
+                IconButton(
+                    onClick = {
+                        mediaPlayer.mute()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.VolumeUp,
+                        contentDescription = stringResource(SharedRes.strings.unmuted)
+                    )
+                }
+            }
+
+            Slider(
+                value = mediaPlayer.volume.value,
+                onValueChange = {
+                    mediaPlayer.setVolume(it)
+                },
+                valueRange = 0F..100F,
+                modifier = Modifier.width(100.dp)
+            )
         }
 
         DisposableEffect(window) {

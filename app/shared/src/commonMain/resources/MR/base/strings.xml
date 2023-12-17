@@ -70,4 +70,6 @@
     <string name="github">GitHub</string>
     <string name="sekret_unavailable_title">Sekret unavailable</string>
     <string name="sekret_unavailable_text">Some features do not work currently.\nYou should restart the app and check if this issue persists.</string>
+    <string name="muted">Muted</string>
+    <string name="unmuted">Unmuted</string>
 </resources>

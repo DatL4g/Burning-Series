@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -23,8 +22,8 @@ import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.header
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
-import dev.datlag.burningseries.shared.isTv
 import dev.datlag.burningseries.shared.other.StateSaver
+import dev.datlag.burningseries.shared.rememberIsTv
 import dev.datlag.burningseries.shared.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.shared.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.shared.ui.custom.state.ErrorState
@@ -53,7 +52,7 @@ fun HomeScreen(component: HomeComponent) {
         is HomeState.Success -> {
             when (calculateWindowSizeClass().widthSizeClass) {
                 WindowWidthSizeClass.Expanded -> {
-                    if (isTv()) {
+                    if (rememberIsTv()) {
                         DefaultView(currentState.home, component)
                     } else {
                         ExpandedView(currentState.home, component)
@@ -142,7 +141,7 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
                         ) {
                             Icon(
                                 imageVector = MaterialSymbols.rememberDeployedCodeAlert(),
-                                contentDescription = null
+                                contentDescription = stringResource(SharedRes.strings.sekret_unavailable_title)
                             )
                         }
                     }

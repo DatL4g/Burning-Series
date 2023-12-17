@@ -68,4 +68,8 @@
     <string name="release_available_title">Neue Version verfügbar</string>
     <string name="release_available_text">Eine neue Version ist verfügbar "%s".\nDas solltest du dir ansehen!</string>
     <string name="github">GitHub</string>
+    <string name="sekret_unavailable_title">Sekret nicht verfügbar</string>
+    <string name="sekret_unavailable_text">Einige Funktionen sind momentan nicht verfügbar.\nDu solltest die App neu starten und prüfen, ob das Problem bestehen bleibt.</string>
+    <string name="muted">Stumm</string>
+    <string name="unmuted">Nicht stumm</string>
 </resources>

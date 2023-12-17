@@ -48,6 +48,7 @@ import dev.datlag.burningseries.shared.common.findWindow
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.withIOContext
 import dev.datlag.burningseries.shared.common.withMainContext
+import dev.datlag.burningseries.shared.rememberIsTv
 import dev.datlag.burningseries.shared.ui.*
 import dev.datlag.kast.ConnectionState
 import dev.datlag.kast.Kast
@@ -324,6 +325,7 @@ actual fun VideoScreen(component: VideoComponent) {
 
     val progressColor = MaterialTheme.colorScheme.primary.toArgb()
     val episode by component.episode.collectAsStateWithLifecycle()
+    val isTv = rememberIsTv()
 
     AndroidView(
         modifier = Modifier.fillMaxSize().background(Color.Black),
@@ -354,6 +356,12 @@ actual fun VideoScreen(component: VideoComponent) {
                 usingPlayer.pause()
                 component.selectCast()
             }
+            mediaRouteButton.visibility = if (isTv) {
+                View.GONE
+            } else {
+                View.VISIBLE
+            }
+            mediaRouteButton.isEnabled = !isTv
 
             subtitleButton.setOnClickListener {
                 playerView.player?.pause()

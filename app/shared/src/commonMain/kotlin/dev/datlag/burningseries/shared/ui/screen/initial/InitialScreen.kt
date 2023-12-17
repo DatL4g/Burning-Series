@@ -15,7 +15,7 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.pages.Pages
 import com.moriatsushi.insetsx.ExperimentalSoftwareKeyboardApi
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
-import dev.datlag.burningseries.shared.isTv
+import dev.datlag.burningseries.shared.rememberIsTv
 import dev.datlag.burningseries.shared.ui.custom.ExpandedPages
 import dev.icerock.moko.resources.compose.stringResource
 
@@ -29,7 +29,7 @@ fun InitialScreen(component: InitialComponent) {
             WindowWidthSizeClass.Compact -> CompactScreen(component)
             WindowWidthSizeClass.Medium -> MediumScreen(component)
             WindowWidthSizeClass.Expanded -> {
-                if (isTv()) {
+                if (rememberIsTv()) {
                     MediumScreen(component)
                 } else {
                     ExpandedScreen(component)

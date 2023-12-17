@@ -5,7 +5,9 @@ import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.text.LocalTextContextMenu
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.awt.ComposeWindow
 import com.dzirbel.contextmenu.ContextMenuColors
@@ -35,6 +37,6 @@ fun ContextMenuColors(scheme: ColorScheme = MaterialTheme.colorScheme) = Context
 )
 
 @Composable
-actual fun isTv(): Boolean {
+actual fun rememberIsTv(): Boolean {
     return false
 }

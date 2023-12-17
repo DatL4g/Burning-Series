@@ -64,4 +64,4 @@ fun App(
 expect fun SystemProvider(content: @Composable () -> Unit)
 
 @Composable
-expect fun isTv(): Boolean
+expect fun rememberIsTv(): Boolean

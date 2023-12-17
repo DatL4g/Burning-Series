@@ -11,7 +11,7 @@ actual fun SystemProvider(content: @Composable () -> Unit) {
 }
 
 @Composable
-actual fun isTv(): Boolean {
+actual fun rememberIsTv(): Boolean {
     val context = LocalContext.current
     return remember { context.isTv() }
 }

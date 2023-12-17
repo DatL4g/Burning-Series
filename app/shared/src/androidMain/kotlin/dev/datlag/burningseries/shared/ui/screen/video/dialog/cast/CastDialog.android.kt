@@ -52,7 +52,7 @@ actual fun CastDialog(component: CastComponent) {
         icon = {
             Icon(
                 imageVector = Icons.Default.Cast,
-                contentDescription = null
+                contentDescription = stringResource(SharedRes.strings.casting)
             )
         },
         title = {
