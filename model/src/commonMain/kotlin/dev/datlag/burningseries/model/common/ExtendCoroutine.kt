@@ -3,6 +3,10 @@ package dev.datlag.burningseries.model.common
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 
 fun <T> scopeCatching(block: () -> T): Result<T> = try {
     Result.success(block())
@@ -46,4 +50,16 @@ inline fun <reified T> Any?.safeCast(): T? {
             this as? T?
         }
     }
+}
+
+suspend fun <T> Flow<T>.collectSafe(collector: FlowCollector<T>) {
+    suspendCatching {
+        this@collectSafe.collect(collector)
+    }.getOrNull() ?: collector.emit(this.first())
+}
+
+suspend fun <T> StateFlow<T>.collectSafe(collector: FlowCollector<T>) {
+    suspendCatching {
+        this@collectSafe.collect(collector)
+    }.getOrNull() ?: collector.emit(this.value)
 }

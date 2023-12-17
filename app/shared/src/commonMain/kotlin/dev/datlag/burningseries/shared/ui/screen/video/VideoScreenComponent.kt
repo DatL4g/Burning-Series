@@ -10,6 +10,7 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.common.collectSafe
 import dev.datlag.burningseries.model.common.safeCast
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.network.state.EpisodeStateMachine
@@ -93,7 +94,7 @@ class VideoScreenComponent(
         backHandler.register(backCallback)
 
         ioScope().launchIO {
-            backPressCounter.collect { count ->
+            backPressCounter.collectSafe { count ->
                 if (count > 0) {
                     delay(2000)
                     backPressCounter.emit(0)

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
+import dev.datlag.burningseries.model.common.collectSafe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.callbackFlow
@@ -14,7 +15,7 @@ suspend fun <T> Flow<T>.collectOnLifecycle(
     collector: FlowCollector<T>
 ) {
     lifecycle.repeatOnLifecycle(state) {
-        collect(collector)
+        collectSafe(collector)
     }
 }
 
@@ -24,7 +25,7 @@ suspend fun <T> Flow<T>.collectOnLifecycle(
     collector: FlowCollector<T>
 ) {
     lifecycleOwner.repeatOnLifecycle(state) {
-        collect(collector)
+        collectSafe(collector)
     }
 }
 
@@ -36,7 +37,7 @@ fun <T> Flow<T>.collectOnLocalLifecycle(
     val lifecycle = LocalLifecycleOwner.current
     LaunchedEffect(this, lifecycle) {
         lifecycle.repeatOnLifecycle(state) {
-            collect(collector)
+            collectSafe(collector)
         }
     }
 }
@@ -46,7 +47,7 @@ fun <T> Flow<T>.flowWithLifecycle(
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED
 ): Flow<T> = callbackFlow {
     lifecycle.repeatOnLifecycle(minActiveState) {
-        this@flowWithLifecycle.collect {
+        this@flowWithLifecycle.collectSafe {
             send(it)
         }
     }
@@ -58,7 +59,7 @@ fun <T> Flow<T>.flowWithLifecycle(
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED
 ): Flow<T> = callbackFlow {
     lifecycle.repeatOnLifecycle(minActiveState) {
-        this@flowWithLifecycle.collect {
+        this@flowWithLifecycle.collectSafe {
             send(it)
         }
     }
@@ -72,7 +73,7 @@ fun <T> Flow<T>.withLocalLifecycle(
     val lifecycle = LocalLifecycleOwner.current
     return callbackFlow {
         lifecycle.repeatOnLifecycle(minActiveState) {
-            this@withLocalLifecycle.collect {
+            this@withLocalLifecycle.collectSafe {
                 send(it)
             }
         }

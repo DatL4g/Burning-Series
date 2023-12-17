@@ -10,6 +10,7 @@ import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.model.HosterScraping
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.common.collectSafe
 import dev.datlag.burningseries.model.common.scopeCatching
 import dev.datlag.burningseries.model.state.SaveAction
 import dev.datlag.burningseries.model.state.SaveState
@@ -79,7 +80,7 @@ class ActivateScreenComponent(
         backHandler.register(backCallback)
 
         ioScope().launchIO {
-            saveState.collect { state ->
+            saveState.collectSafe { state ->
                 if (state is SaveState.Success) {
                     withMainContext {
                         dialogNavigation.activate(DialogConfig.Success(state.stream))

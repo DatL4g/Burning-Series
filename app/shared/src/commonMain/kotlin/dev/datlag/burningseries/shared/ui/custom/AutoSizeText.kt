@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
+import dev.datlag.burningseries.model.common.scopeCatching
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.reflect.KProperty
@@ -169,13 +170,16 @@ fun AutoSizeText(
             }
 
             val min = remember(minTextSize, step, max) {
-                if (minTextSize.isUnspecified)
+                if (minTextSize.isUnspecified) {
                     step
-                else
-                    minTextSize.value.coerceIn(
-                        minimumValue = step.value,
-                        maximumValue = max.value
-                    ).sp
+                } else {
+                    (scopeCatching {
+                        minTextSize.value.coerceIn(
+                            minimumValue = step.value,
+                            maximumValue = max.value
+                        )
+                    }.getOrNull() ?: max.value).sp
+                }
             }
 
             val possibleFontSizes = remember(suggestedFontSizes, min, max, step) {

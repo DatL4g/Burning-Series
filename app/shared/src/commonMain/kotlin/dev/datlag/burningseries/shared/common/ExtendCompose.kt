@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.DpSize
+import dev.datlag.burningseries.model.common.collectSafe
 import dev.datlag.burningseries.shared.ui.theme.shape.DiagonalShape
 import kotlin.math.max
 
@@ -97,7 +98,7 @@ fun LazyListState.OnBottomReached(enabled: Boolean = true, buffer: Int = 0, bloc
         }
 
         LaunchedEffect(shouldCallBlock) {
-            snapshotFlow { shouldCallBlock.value }.collect {
+            snapshotFlow { shouldCallBlock.value }.collectSafe {
                 if (it) {
                     block()
                 }

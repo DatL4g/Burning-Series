@@ -12,6 +12,7 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.common.collectSafe
 import dev.datlag.burningseries.model.common.safeCast
 import dev.datlag.burningseries.model.state.EpisodeAction
 import dev.datlag.burningseries.model.state.EpisodeState
@@ -184,7 +185,7 @@ class SeriesScreenComponent(
         backHandler.register(backCallback)
 
         ioScope().launchIO {
-            episodeState.collect { state ->
+            episodeState.collectSafe { state ->
                 when (state) {
                     is EpisodeState.SuccessHoster -> {
                         saveSeriesAndEpisodeToDB()
