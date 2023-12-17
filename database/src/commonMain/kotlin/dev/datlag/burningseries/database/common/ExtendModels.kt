@@ -77,7 +77,15 @@ val Series.bestTitle
             else -> {
                 val newTitles = mutableListOf<String>()
                 allTitles.forEach { str ->
-                    if (newTitles.none { JaroWinkler.distance(str, it) > 0.95 }) {
+                    val strFlatten = str.replace("\\s".toRegex(RegexOption.MULTILINE), String()).trim()
+
+                    if (newTitles.none {
+                        JaroWinkler.distance(str, it) > 0.95 || run {
+                            val itFlatten = it.replace("\\s".toRegex(RegexOption.MULTILINE), String())
+
+                            JaroWinkler.distance(strFlatten, itFlatten) > 0.95F
+                        }
+                    }) {
                         newTitles.add(str)
                     }
                 }

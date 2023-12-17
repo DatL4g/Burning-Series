@@ -18,7 +18,15 @@ abstract class TitleHolder {
             else -> {
                 val newTitles = mutableListOf<String>()
                 allTitles.forEach { str ->
-                    if (newTitles.none { JaroWinkler.distance(str, it) > 0.95 }) {
+                    val strFlatten = str.replace("\\s".toRegex(RegexOption.MULTILINE), String()).trim()
+
+                    if (newTitles.none {
+                        JaroWinkler.distance(str, it) > 0.95 || run {
+                            val itFlatten = it.replace("\\s".toRegex(RegexOption.MULTILINE), String()).trim()
+
+                            JaroWinkler.distance(strFlatten, itFlatten) > 0.95
+                        }
+                    }) {
                         newTitles.add(str)
                     }
                 }
