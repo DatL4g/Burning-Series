@@ -93,7 +93,9 @@ private fun CompactScreen(component: SeriesComponent) {
             Cover(
                 key = coverHref,
                 data = coverHref?.let { BSUtil.getBurningSeriesLink(it) },
-                contentDescription = title,
+                contentDescription = title.ifBlank {
+                    stringResource(SharedRes.strings.loading_intent_series)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .defaultMinSize(minHeight = 320.dp)
@@ -104,7 +106,9 @@ private fun CompactScreen(component: SeriesComponent) {
                 }
             )
             Text(
-                text = title,
+                text = title.ifBlank {
+                    stringResource(SharedRes.strings.loading_intent_series)
+                },
                 modifier = Modifier.road(Alignment.TopStart, Alignment.BottomStart).padding(16.dp).background(
                     color = Color.Black.copy(alpha = run {
                         val alpha = state.toolbarState.progress
@@ -148,7 +152,9 @@ private fun CompactScreen(component: SeriesComponent) {
                 }
 
                 Text(
-                    text = title,
+                    text = title.ifBlank {
+                        stringResource(SharedRes.strings.loading_intent_series)
+                    },
                     color = LocalContentColor.current.copy(alpha = run {
                         val alpha = reversedProgress
                         if (alpha < 0.7F) {
@@ -314,7 +320,9 @@ private fun DefaultScreen(component: SeriesComponent) {
                                 TopAppBar(
                                     title = {
                                         Text(
-                                            text = title,
+                                            text = title.ifBlank {
+                                                stringResource(SharedRes.strings.loading_intent_series)
+                                            },
                                             maxLines = 2,
                                             overflow = TextOverflow.Ellipsis,
                                             softWrap = true
@@ -372,7 +380,9 @@ private fun DefaultScreen(component: SeriesComponent) {
                             Cover(
                                 key = coverHref,
                                 data = coverHref?.let { BSUtil.getBurningSeriesLink(it) },
-                                contentDescription = title,
+                                contentDescription = title.ifBlank {
+                                    stringResource(SharedRes.strings.loading_intent_series)
+                                },
                                 modifier = Modifier
                                     .width(200.dp)
                                     .clip(MaterialTheme.shapes.medium)

@@ -72,4 +72,5 @@
     <string name="sekret_unavailable_text">Some features do not work currently.\nYou should restart the app and check if this issue persists.</string>
     <string name="muted">Muted</string>
     <string name="unmuted">Unmuted</string>
+    <string name="loading_intent_series">Loading series</string>
 </resources>

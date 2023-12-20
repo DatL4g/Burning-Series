@@ -11,6 +11,7 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.pages.*
 import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.Shortcut
 import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.ui.navigation.Component
@@ -24,6 +25,7 @@ import org.kodein.di.DI
 class InitialScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
+    shortcutIntent: Shortcut.Intent,
     private val watchVideo: (String, Series, Series.Episode, Collection<Stream>) -> Unit
 ) : InitialComponent, ComponentContext by componentContext {
 
@@ -52,11 +54,15 @@ class InitialScreenComponent(
         initialPages = {
             Pages(
                 items = listOf(
-                    View.Home,
+                    View.Home(shortcutIntent),
                     View.Favorite,
                     View.Search
                 ),
-                selectedIndex = 0
+                selectedIndex = when (shortcutIntent) {
+                    is Shortcut.Intent.SEARCH -> 2
+                    is Shortcut.Intent.Series -> 0
+                    else -> 0
+                }
             )
         }
     ) { config, context ->
@@ -84,6 +90,7 @@ class InitialScreenComponent(
             is View.Home -> HomeScreenComponent(
                 componentContext = componentContext,
                 di = di,
+                shortcutIntent = view.shortcutIntent,
                 watchVideo = { schemeKey, series, episode, stream ->
                     watchVideo(schemeKey, series, episode, stream)
                 },

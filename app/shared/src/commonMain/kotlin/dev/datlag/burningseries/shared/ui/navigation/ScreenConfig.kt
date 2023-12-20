@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.shared.ui.navigation
 
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.Shortcut
 import dev.datlag.skeo.Stream
 import kotlinx.serialization.Serializable
 
@@ -8,7 +9,9 @@ import kotlinx.serialization.Serializable
 sealed class ScreenConfig {
 
     @Serializable
-    data object Home : ScreenConfig()
+    data class Home(
+        val shortcutIntent: Shortcut.Intent
+    ) : ScreenConfig()
 
     @Serializable
     data class Video(

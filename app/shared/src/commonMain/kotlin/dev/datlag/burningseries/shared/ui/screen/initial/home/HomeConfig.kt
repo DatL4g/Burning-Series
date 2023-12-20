@@ -8,7 +8,7 @@ sealed class HomeConfig {
 
     @Serializable
     data class Series(
-        val title: String,
+        val title: String?,
         val href: String,
         val coverHref: String?,
     ) : HomeConfig() {

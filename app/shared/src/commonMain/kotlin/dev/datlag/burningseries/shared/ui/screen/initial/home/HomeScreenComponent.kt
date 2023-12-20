@@ -7,6 +7,7 @@ import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.Release
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.Shortcut
 import dev.datlag.burningseries.model.common.getDigitsOrNull
 import dev.datlag.burningseries.model.state.HomeAction
 import dev.datlag.burningseries.model.state.HomeState
@@ -30,6 +31,7 @@ import org.kodein.di.instanceOrNull
 class HomeScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
+    private val shortcutIntent: Shortcut.Intent,
     private val watchVideo: (String, Series, Series.Episode, Collection<Stream>) -> Unit,
     private val scrollEnabled: (Boolean) -> Unit
 ) : HomeComponent, ComponentContext by componentContext {
@@ -57,7 +59,13 @@ class HomeScreenComponent(
     override val child: Value<ChildSlot<*, Component>> = childSlot(
         source = navigation,
         serializer = HomeConfig.serializer(),
-        handleBackButton = false
+        handleBackButton = false,
+        initialConfiguration = {
+            when (shortcutIntent) {
+                is Shortcut.Intent.Series -> HomeConfig.Series(null, shortcutIntent.href, null)
+                else -> null
+            }
+        }
     ) { config, context ->
         when (config) {
             is HomeConfig.Series -> SeriesScreenComponent(

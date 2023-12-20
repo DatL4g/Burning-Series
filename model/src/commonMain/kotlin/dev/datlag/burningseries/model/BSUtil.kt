@@ -10,6 +10,21 @@ data object BSUtil {
 
     val episodeNumberRegex = "[|({]\\s*Ep([.]|isode)?\\s*(\\d+)\\s*[|)}]".toRegex(RegexOption.IGNORE_CASE)
 
+    fun getIntentDataUrl(data: String?): Shortcut.Intent {
+        return when {
+            data.isNullOrBlank() -> Shortcut.Intent.NONE
+            data.contains(SEARCH, true) -> Shortcut.Intent.SEARCH
+            else -> {
+                val normalized = normalizeHref(data)
+                if (!normalized.equals(data, true)) {
+                    Shortcut.Intent.Series(normalized)
+                } else {
+                    Shortcut.Intent.NONE
+                }
+            }
+        }
+    }
+
     fun getBurningSeriesLink(href: String, http: Boolean = false, host: String = HOST_BS_TO): String {
         return if (!href.matches("^\\w+?://.*".toRegex())) {
             if (!href.startsWith("/")) {

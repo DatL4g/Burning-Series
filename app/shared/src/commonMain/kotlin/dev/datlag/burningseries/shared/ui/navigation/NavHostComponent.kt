@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
+import dev.datlag.burningseries.model.Shortcut
 import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.backAnimation
 import dev.datlag.burningseries.shared.ui.screen.initial.InitialScreenComponent
@@ -16,14 +17,17 @@ import org.kodein.di.DI
 
 class NavHostComponent(
     componentContext: ComponentContext,
-    override val di: DI
+    override val di: DI,
+    shortcutIntent: Shortcut.Intent = Shortcut.Intent.NONE
 ) : Component, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<ScreenConfig>()
     private val stack = childStack(
         source = navigation,
         serializer = ScreenConfig.serializer(),
-        initialConfiguration = ScreenConfig.Home,
+        initialConfiguration = ScreenConfig.Home(
+            shortcutIntent = shortcutIntent
+        ),
         childFactory = ::createScreenComponent
     )
 
@@ -35,6 +39,7 @@ class NavHostComponent(
             is ScreenConfig.Home -> InitialScreenComponent(
                 componentContext = componentContext,
                 di = di,
+                shortcutIntent = screenConfig.shortcutIntent,
                 watchVideo = { schemeKey, series, episode, stream ->
                     navigation.push(
                         ScreenConfig.Video(

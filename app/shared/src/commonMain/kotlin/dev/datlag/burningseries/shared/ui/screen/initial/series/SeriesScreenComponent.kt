@@ -48,7 +48,7 @@ import org.kodein.di.instance
 class SeriesScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val initialTitle: String,
+    private val initialTitle: String?,
     private val initialHref: String,
     private val initialCoverHref: String?,
     private val onGoBack: () -> Unit,
@@ -73,7 +73,7 @@ class SeriesScreenComponent(
     private val successState = seriesState.mapNotNull { it.safeCast<SeriesState.Success>() }.flowOn(ioDispatcher())
     private val currentSeries = successState.map { it.series }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), null)
     private val onDeviceReachable = successState.map { it.onDeviceReachable }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.Eagerly, true)
-    override val title: StateFlow<String> = currentSeries.mapNotNull { it?.bestTitle }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialTitle)
+    override val title: StateFlow<String> = currentSeries.mapNotNull { it?.bestTitle }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), initialTitle ?: String())
     override val href: StateFlow<String> = currentSeries.mapNotNull { it?.href }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), BSUtil.fixSeriesHref(initialHref))
     override val commonHref: StateFlow<String> = href.map {
         val commonized = BSUtil.commonSeriesHref(it)

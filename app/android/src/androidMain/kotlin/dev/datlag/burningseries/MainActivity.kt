@@ -20,6 +20,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.shouldShowRationale
+import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.common.safeCast
 import dev.datlag.burningseries.shared.App
 import dev.datlag.burningseries.shared.SharedRes
@@ -50,12 +51,14 @@ class MainActivity : AppCompatActivity() {
             override val lifecycle: Lifecycle = essentyLifecycle()
         }
 
+        val shortcutIntent = BSUtil.getIntentDataUrl(intent?.data?.toString())
         val root = NavHostComponent(
             componentContext = DefaultComponentContext(
                 lifecycle = lifecycleOwner.lifecycle,
                 backHandler = backHandler()
             ),
-            di = di
+            di = di,
+            shortcutIntent = shortcutIntent
         )
 
         Kast.setup(this)
