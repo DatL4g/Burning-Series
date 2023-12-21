@@ -2,6 +2,7 @@ package dev.datlag.burningseries.shared.ui.screen.initial.series
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
@@ -28,6 +29,7 @@ import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.common.withMainContext
 import dev.datlag.burningseries.shared.getPackageName
+import dev.datlag.burningseries.shared.other.Crashlytics
 import dev.datlag.burningseries.shared.other.StateSaver
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
@@ -221,6 +223,9 @@ class SeriesScreenComponent(
             LocalDI provides di
         ) {
             SeriesScreen(this)
+        }
+        SideEffect {
+            Crashlytics.screen(this)
         }
     }
 

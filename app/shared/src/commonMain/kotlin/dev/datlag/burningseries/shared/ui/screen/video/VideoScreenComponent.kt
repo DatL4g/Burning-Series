@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.shared.ui.screen.video
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.arkivanov.decompose.ComponentContext
@@ -17,6 +18,7 @@ import dev.datlag.burningseries.network.state.EpisodeStateMachine
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
+import dev.datlag.burningseries.shared.other.Crashlytics
 import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
 import dev.datlag.burningseries.shared.ui.screen.video.dialog.cast.CastDialogComponent
 import dev.datlag.burningseries.shared.ui.screen.video.dialog.subtitle.SubtitleDialogComponent
@@ -107,6 +109,9 @@ class VideoScreenComponent(
     override fun render() {
         SchemeTheme(schemeKey) {
             VideoScreen(this)
+        }
+        SideEffect {
+            Crashlytics.screen(this)
         }
     }
 

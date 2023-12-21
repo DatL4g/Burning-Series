@@ -2,6 +2,7 @@ package dev.datlag.burningseries.shared.ui.screen.initial.favorite
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.arkivanov.decompose.ComponentContext
@@ -14,6 +15,7 @@ import dev.datlag.burningseries.model.common.safeSubList
 import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
+import dev.datlag.burningseries.shared.other.Crashlytics
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.series.SeriesScreenComponent
 import dev.datlag.skeo.Stream
@@ -92,6 +94,9 @@ class FavoriteScreenComponent(
             LocalDI provides di
         ) {
             FavoriteScreen(this)
+        }
+        SideEffect {
+            Crashlytics.screen(this)
         }
     }
 

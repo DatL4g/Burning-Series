@@ -67,7 +67,7 @@ object NetworkModule {
             val githubApiKtor: Ktorfit = instance(TAG_KTORFIT_GITHUB)
             githubApiKtor.create<GitHub>()
         }
-        bindSingleton {
+        bindProvider {
             HomeStateMachine(
                 client = instance(),
                 json = instance(),
@@ -77,7 +77,7 @@ object NetworkModule {
                 } else { null }
             )
         }
-        bindSingleton {
+        bindProvider {
             val database = instanceOrNull<BurningSeries>()
 
             SearchStateMachine(
@@ -126,10 +126,10 @@ object NetworkModule {
         bindProvider {
             EpisodeStateMachine(instance(), instance(), instance(), instanceOrNull(), instanceOrNull())
         }
-        bindEagerSingleton {
+        bindProvider {
             SaveStateMachine(instance(), instance(), instance(), instanceOrNull(), instanceOrNull())
         }
-        bindSingleton {
+        bindProvider {
             ReleaseStateMachine(instance())
         }
     }

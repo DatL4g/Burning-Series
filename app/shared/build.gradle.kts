@@ -66,7 +66,7 @@ kotlin {
                 api(libs.ktor.content.negotiation)
                 api(libs.ktor.serialization.json)
 
-                api("dev.datlag.kast:kast:0.1.7-SNAPSHOT")
+                api("dev.datlag.kast:kast:0.1.8-SNAPSHOT")
                 api("io.coil-kt.coil3:coil:3.0.0-SNAPSHOT")
                 api("io.coil-kt.coil3:coil-network:3.0.0-SNAPSHOT")
                 api("io.coil-kt.coil3:coil-compose:3.0.0-SNAPSHOT")

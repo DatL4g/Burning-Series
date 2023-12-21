@@ -52,6 +52,23 @@
                 <data android:scheme="https" />
 
                 <data android:host="bs.to" />
+                <data android:host="burningseries.tw" />
+                <data android:host="burningseries.co" />
+                <data android:host="burningseries.sx" />
+                <data android:host="burningseries.ac" />
+                <data android:host="burningseries.vc" />
+                <data android:host="burningseries.cx" />
+                <data android:host="burningseries.nz" />
+                <data android:host="burningseries.se" />
+
+                <!-- Fake domains, but can still be redirected -->
+                <data android:host="burning-series.io" />
+                <data android:host="burning-series.net" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.gms.actions.SEARCH_ACTION" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 

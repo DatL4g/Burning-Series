@@ -11,13 +11,14 @@ data object BSUtil {
     val episodeNumberRegex = "[|({]\\s*Ep([.]|isode)?\\s*(\\d+)\\s*[|)}]".toRegex(RegexOption.IGNORE_CASE)
 
     fun getIntentDataUrl(data: String?): Shortcut.Intent {
+        val normalizedData = data?.replace("series.io", String(), true)
         return when {
-            data.isNullOrBlank() -> Shortcut.Intent.NONE
-            data.contains(SEARCH, true) -> Shortcut.Intent.SEARCH
+            normalizedData.isNullOrBlank() -> Shortcut.Intent.NONE
+            normalizedData.contains(SEARCH, true) -> Shortcut.Intent.SEARCH
             else -> {
-                val normalized = normalizeHref(data)
-                if (!normalized.equals(data, true)) {
-                    Shortcut.Intent.Series(normalized)
+                val normalized = normalizeHref(normalizedData)
+                if (!normalized.equals(normalizedData, true)) {
+                    Shortcut.Intent.Series(fixSeriesHref(normalized))
                 } else {
                     Shortcut.Intent.NONE
                 }

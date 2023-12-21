@@ -2,6 +2,7 @@ package dev.datlag.burningseries.shared.ui.screen.initial.search
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
@@ -17,6 +18,7 @@ import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
+import dev.datlag.burningseries.shared.other.Crashlytics
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.series.SeriesScreenComponent
 import dev.datlag.skeo.Stream
@@ -102,6 +104,9 @@ class SearchScreenComponent(
             LocalDI provides di
         ) {
             SearchScreen(this)
+        }
+        SideEffect {
+            Crashlytics.screen(this)
         }
     }
 

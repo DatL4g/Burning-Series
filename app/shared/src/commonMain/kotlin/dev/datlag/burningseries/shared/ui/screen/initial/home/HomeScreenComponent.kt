@@ -2,6 +2,7 @@ package dev.datlag.burningseries.shared.ui.screen.initial.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
@@ -18,6 +19,7 @@ import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
 import dev.datlag.burningseries.shared.common.launchIO
+import dev.datlag.burningseries.shared.other.Crashlytics
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.home.dialog.sekret.SekretDialogComponent
@@ -31,7 +33,7 @@ import org.kodein.di.instanceOrNull
 class HomeScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val shortcutIntent: Shortcut.Intent,
+    private var shortcutIntent: Shortcut.Intent,
     private val watchVideo: (String, Series, Series.Episode, Collection<Stream>) -> Unit,
     private val scrollEnabled: (Boolean) -> Unit
 ) : HomeComponent, ComponentContext by componentContext {
@@ -61,8 +63,8 @@ class HomeScreenComponent(
         serializer = HomeConfig.serializer(),
         handleBackButton = false,
         initialConfiguration = {
-            when (shortcutIntent) {
-                is Shortcut.Intent.Series -> HomeConfig.Series(null, shortcutIntent.href, null)
+            when (val current = shortcutIntent) {
+                is Shortcut.Intent.Series -> HomeConfig.Series(null, current.href, null)
                 else -> null
             }
         }
@@ -75,6 +77,7 @@ class HomeScreenComponent(
                 initialHref = config.href,
                 initialCoverHref = config.coverHref,
                 onGoBack = {
+                    shortcutIntent = Shortcut.Intent.NONE
                     navigation.dismiss(scrollEnabled)
                 },
                 watchVideo = { schemeKey, series, episode, stream ->
@@ -105,6 +108,9 @@ class HomeScreenComponent(
             LocalDI provides di
         ) {
             HomeScreen(this)
+        }
+        SideEffect {
+            Crashlytics.screen(this)
         }
     }
 
