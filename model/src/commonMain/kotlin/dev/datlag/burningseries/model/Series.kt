@@ -84,6 +84,8 @@ data class Series(
         val episodeNumber: String = BSUtil.episodeNumberRegex.find(title)?.groupValues?.lastOrNull() ?: number
         val episodeTitle: String = BSUtil.episodeNumberRegex.replaceFirst(title, String()).trim().ifBlank { title }
 
+        val convertedNumber: Int? = number.toIntOrNull() ?: number.getDigitsOrNull()?.toIntOrNull()
+
         @Serializable
         data class Hoster(
             @SerialName("title") val title: String,

@@ -11,6 +11,7 @@ import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.database.BurningSeries
+import dev.datlag.burningseries.database.common.convertedNumber
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.common.collectSafe
@@ -116,12 +117,20 @@ class SeriesScreenComponent(
         if (seriesEpisodes == null) {
             null
         } else {
-            val maxWatchedEpisode = savedEpisodes.maxByOrNull {
-                if (it.progress > 0L || it.progress == Long.MIN_VALUE) {
-                    it.number.toIntOrNull() ?: -1
-                } else {
-                    -1
+            val availableEpisodes = savedEpisodes.filter {
+                seriesEpisodes.any { s ->
+                    s.href.equals(it.href, true)
                 }
+            }
+
+            val maxWatchedEpisode = availableEpisodes.mapNotNull {
+                if (it.progress > 0L || it.progress == Long.MIN_VALUE) {
+                    it
+                } else {
+                    null
+                }
+            }.maxByOrNull {
+                it.convertedNumber ?: -1
             }
 
             if (maxWatchedEpisode == null) {
@@ -141,9 +150,9 @@ class SeriesScreenComponent(
                 }
 
                 val wantedNumber = if (isFinished) {
-                    maxWatchedEpisode.number.toIntOrNull()?.plus(1)?.toString()
+                    maxWatchedEpisode.convertedNumber?.plus(1)?.toString()
                 } else {
-                    maxWatchedEpisode.number
+                    maxWatchedEpisode.convertedNumber?.toString() ?: maxWatchedEpisode.number
                 }
 
                 if (!wantedNumber.isNullOrBlank()) {
@@ -151,7 +160,7 @@ class SeriesScreenComponent(
                         it.number.equals(wantedNumber, true)
                     } ?: seriesEpisodes.firstOrNull {
                         val compareNumber = wantedNumber.toIntOrNull() ?: return@firstOrNull false
-                        it.number.toIntOrNull() == compareNumber
+                        it.convertedNumber == compareNumber
                     }
                 } else {
                     null

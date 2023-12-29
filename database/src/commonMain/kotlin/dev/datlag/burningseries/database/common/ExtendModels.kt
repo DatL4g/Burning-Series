@@ -7,6 +7,7 @@ import dev.datlag.burningseries.database.Series
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
+import dev.datlag.burningseries.model.common.getDigitsOrNull
 import dev.datlag.burningseries.model.Series as ModelSeries
 import dev.datlag.burningseries.model.Series.Episode as ModelEpisode
 import dev.datlag.burningseries.model.Series.Episode.Hoster as ModelHoster
@@ -96,3 +97,6 @@ val Series.bestTitle
 
 private val allTitlesCache = mutableMapOf<Series, List<String>>()
 private val bestTitleCache = mutableMapOf<Series, String>()
+
+val Episode.convertedNumber: Int?
+    get() = this.number.toIntOrNull() ?: this.number.getDigitsOrNull()?.toIntOrNull()
