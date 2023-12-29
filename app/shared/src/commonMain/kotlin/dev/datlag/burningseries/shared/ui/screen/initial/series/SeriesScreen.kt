@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -51,22 +52,41 @@ fun SeriesScreen(component: SeriesComponent) {
     val href by component.commonHref.collectAsStateWithLifecycle()
     val dialogState by component.dialog.subscribeAsState()
     val childState by component.child.subscribeAsState()
+    val nextEpisode by component.nextEpisodeToWatch.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(href) {
         SchemeTheme.setCommon(href)
     }
 
-    childState.child?.also { (_, instance) ->
-        instance.render()
-    } ?: run {
-        when (calculateWindowSizeClass().widthSizeClass) {
-            WindowWidthSizeClass.Compact -> CompactScreen(component)
-            else -> DefaultScreen(component)
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        childState.child?.also { (_, instance) ->
+            instance.render()
+        } ?: run {
+            when (calculateWindowSizeClass().widthSizeClass) {
+                WindowWidthSizeClass.Compact -> CompactScreen(component)
+                else -> DefaultScreen(component)
+            }
+        }
+
+        nextEpisode?.let { next ->
+            ExtendedFloatingActionButton(
+                onClick = {
+                    component.itemClicked(next)
+                },
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = next.episodeTitle
+                )
+                Text(text = next.episodeTitle)
+            }
         }
     }
 
-    val scope = rememberCoroutineScope()
-    DisposableEffect(scope) {
+    DisposableEffect(Unit) {
         onDispose {
             SchemeTheme.setCommon(null)
         }

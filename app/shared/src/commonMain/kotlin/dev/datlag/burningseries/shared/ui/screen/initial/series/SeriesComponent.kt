@@ -7,6 +7,7 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface SeriesComponent : Component {
@@ -25,6 +26,7 @@ interface SeriesComponent : Component {
     val loadingEpisodeHref: StateFlow<String?>
 
     val dbEpisodes: StateFlow<List<Episode>>
+    val nextEpisodeToWatch: Flow<Series.Episode?>
 
     fun retryLoadingSeries(): Any?
 

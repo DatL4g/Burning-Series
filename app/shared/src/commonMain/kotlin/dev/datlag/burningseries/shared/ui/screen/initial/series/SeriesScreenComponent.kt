@@ -46,6 +46,7 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import org.kodein.di.DI
 import org.kodein.di.instance
+import kotlin.math.max
 
 class SeriesScreenComponent(
     componentContext: ComponentContext,
@@ -109,6 +110,53 @@ class SeriesScreenComponent(
             currentCoroutineContext()
         ))
     }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), database.burningSeriesQueries.selectEpisodesBySeriesHref(commonHref.value).executeAsList())
+
+    override val nextEpisodeToWatch = combine(currentSeries.map { it?.episodes }, dbEpisodes) { seriesEpisodes, savedEpisodes ->
+        if (seriesEpisodes == null) {
+            null
+        } else {
+            val maxWatchedEpisode = savedEpisodes.maxByOrNull {
+                if (it.progress > 0L || it.progress == Long.MIN_VALUE) {
+                    it.number.toIntOrNull() ?: -1
+                } else {
+                    -1
+                }
+            }
+
+            if (maxWatchedEpisode == null) {
+                seriesEpisodes.firstOrNull()
+            } else {
+                val length = max(maxWatchedEpisode.length, 0L)
+                val progress = if (maxWatchedEpisode.progress == Long.MIN_VALUE) {
+                    Long.MIN_VALUE
+                } else {
+                    max(maxWatchedEpisode.progress, 0L)
+                }
+
+                val isFinished = if (length > 0L && progress > 0L) {
+                    (progress.toDouble() / length.toDouble() * 100.0).toFloat() >= 85F
+                } else {
+                    progress == Long.MIN_VALUE
+                }
+
+                val wantedNumber = if (isFinished) {
+                    maxWatchedEpisode.number.toIntOrNull()?.plus(1)?.toString()
+                } else {
+                    maxWatchedEpisode.number
+                }
+
+                if (!wantedNumber.isNullOrBlank()) {
+                    seriesEpisodes.firstOrNull {
+                        it.number.equals(wantedNumber, true)
+                    } ?: seriesEpisodes.firstOrNull {
+                        it.number.toIntOrNull() == (wantedNumber.toIntOrNull() ?: return@firstOrNull false)
+                    }
+                } else {
+                    null
+                }
+            }
+        }
+    }.flowOn(ioDispatcher())
 
     private val navigation = SlotNavigation<SeriesConfig>()
     override val child: Value<ChildSlot<*, Component>> = childSlot(
