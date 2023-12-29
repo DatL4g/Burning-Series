@@ -14,7 +14,6 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Shortcut
 import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.SharedRes
-import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.favorite.FavoriteScreenComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.home.HomeScreenComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.search.SearchScreenComponent
@@ -48,7 +47,7 @@ class InitialScreenComponent(
     private val pagesNavigation = PagesNavigation<View>()
 
     @OptIn(ExperimentalDecomposeApi::class)
-    override val pages: Value<ChildPages<*, Component>> = childPages(
+    override val pages: Value<ChildPages<View, SeriesHolderComponent>> = childPages(
         source = pagesNavigation,
         serializer = View.serializer(),
         initialPages = {
@@ -85,7 +84,7 @@ class InitialScreenComponent(
     private fun createChild(
         view: View,
         componentContext: ComponentContext
-    ) : Component {
+    ) : SeriesHolderComponent {
         return when (view) {
             is View.Home -> HomeScreenComponent(
                 componentContext = componentContext,
@@ -117,6 +116,10 @@ class InitialScreenComponent(
 
     @OptIn(ExperimentalDecomposeApi::class)
     override fun selectPage(index: Int) {
-        pagesNavigation.select(index = index)
+        pagesNavigation.select(index = index) { new, old ->
+            if (new.items[new.selectedIndex] == old.items[old.selectedIndex]) {
+                pages.value.items[pages.value.selectedIndex].instance?.dismissHoldingSeries()
+            }
+        }
     }
 }

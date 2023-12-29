@@ -6,9 +6,10 @@ import dev.datlag.burningseries.model.Release
 import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
+import dev.datlag.burningseries.shared.ui.screen.initial.SeriesHolderComponent
 import kotlinx.coroutines.flow.StateFlow
 
-interface HomeComponent : Component {
+interface HomeComponent : SeriesHolderComponent {
 
     val child: Value<ChildSlot<*, Component>>
     val dialog: Value<ChildSlot<DialogConfig, DialogComponent>>

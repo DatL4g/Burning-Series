@@ -79,7 +79,7 @@ class FavoriteScreenComponent(
                 initialHref = config.href,
                 initialCoverHref = config.coverHref,
                 onGoBack = {
-                    navigation.dismiss(scrollEnabled)
+                    dismissHoldingSeries()
                 },
                 watchVideo = { schemeKey, series, episode, stream ->
                     watchVideo(schemeKey, series, episode, stream)
@@ -108,5 +108,9 @@ class FavoriteScreenComponent(
 
     override fun searchQuery(text: String) {
         searchQuery.value = text.trim()
+    }
+
+    override fun dismissHoldingSeries() {
+        navigation.dismiss(scrollEnabled)
     }
 }

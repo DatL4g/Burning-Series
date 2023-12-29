@@ -75,7 +75,9 @@ private fun CompactScreen(
             Pages(
                 pages = component.pages,
                 onPageSelected = { index ->
-                    component.selectPage(index)
+                    if (selectedPage != index) {
+                        component.selectPage(index)
+                    }
                 },
                 pager = { modifier, state, key, pageContent ->
                     val scrollEnabled = when (state.currentPage) {

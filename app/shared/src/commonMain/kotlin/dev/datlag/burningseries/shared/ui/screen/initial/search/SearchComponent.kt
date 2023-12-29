@@ -5,9 +5,10 @@ import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.state.SearchState
 import dev.datlag.burningseries.shared.ui.navigation.Component
+import dev.datlag.burningseries.shared.ui.screen.initial.SeriesHolderComponent
 import kotlinx.coroutines.flow.StateFlow
 
-interface SearchComponent : Component {
+interface SearchComponent : SeriesHolderComponent {
 
     val searchState: StateFlow<SearchState>
     val genres: StateFlow<List<Genre>>

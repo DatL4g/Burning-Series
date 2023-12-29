@@ -77,8 +77,7 @@ class HomeScreenComponent(
                 initialHref = config.href,
                 initialCoverHref = config.coverHref,
                 onGoBack = {
-                    shortcutIntent = Shortcut.Intent.NONE
-                    navigation.dismiss(scrollEnabled)
+                    dismissHoldingSeries()
                 },
                 watchVideo = { schemeKey, series, episode, stream ->
                     watchVideo(schemeKey, series, episode, stream)
@@ -126,5 +125,10 @@ class HomeScreenComponent(
 
     override fun showDialog(config: DialogConfig) {
         dialogNavigation.activate(config)
+    }
+
+    override fun dismissHoldingSeries() {
+        shortcutIntent = Shortcut.Intent.NONE
+        navigation.dismiss(scrollEnabled)
     }
 }

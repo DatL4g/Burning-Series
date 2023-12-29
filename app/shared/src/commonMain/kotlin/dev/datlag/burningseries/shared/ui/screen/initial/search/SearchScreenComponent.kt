@@ -89,7 +89,7 @@ class SearchScreenComponent(
                 initialHref = config.href,
                 initialCoverHref = null,
                 onGoBack = {
-                    navigation.dismiss(scrollEnabled)
+                    dismissHoldingSeries()
                 },
                 watchVideo = { schemeKey, series, episode, stream ->
                     watchVideo(schemeKey, series, episode, stream)
@@ -126,5 +126,9 @@ class SearchScreenComponent(
         navigation.activate(config) {
             scrollEnabled(false)
         }
+    }
+
+    override fun dismissHoldingSeries() {
+        navigation.dismiss(scrollEnabled)
     }
 }
