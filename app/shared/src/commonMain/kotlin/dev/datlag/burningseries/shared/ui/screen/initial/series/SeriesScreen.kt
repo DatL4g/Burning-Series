@@ -8,10 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -53,6 +50,7 @@ fun SeriesScreen(component: SeriesComponent) {
     val dialogState by component.dialog.subscribeAsState()
     val childState by component.child.subscribeAsState()
     val nextEpisode by component.nextEpisodeToWatch.collectAsStateWithLifecycle(initialValue = null)
+    val nextSeason by component.nextSeasonToWatch.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(href) {
         SchemeTheme.setCommon(href)
@@ -79,9 +77,33 @@ fun SeriesScreen(component: SeriesComponent) {
             ) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
-                    contentDescription = next.episodeTitle
+                    contentDescription = next.episodeTitle,
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
+                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = next.episodeTitle)
+            }
+        }
+        nextSeason?.let { next ->
+            ExtendedFloatingActionButton(
+                onClick = {
+                    component.switchToSeason(next)
+                },
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+            ) {
+                val seasonText = if (next.title.toIntOrNull() != null) {
+                    stringResource(SharedRes.strings.season_placeholder, next.title)
+                } else {
+                    next.title
+                }
+
+                Icon(
+                    imageVector = Icons.Default.Redo,
+                    contentDescription = next.title,
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                Text(text = seasonText)
             }
         }
     }
@@ -284,6 +306,9 @@ private fun CompactScreen(component: SeriesComponent) {
                         },
                         onEpisodeLongClick = {
                             component.itemLongClicked(it)
+                        },
+                        onWatchToggle = { episode, watched ->
+                            component.watchToggle(current.series, episode, watched)
                         }
                     )
                 }
@@ -423,6 +448,9 @@ private fun DefaultScreen(component: SeriesComponent) {
                         },
                         onEpisodeLongClick = {
                             component.itemLongClicked(it)
+                        },
+                        onWatchToggle = { episode, watched ->
+                            component.watchToggle(current.series, episode, watched)
                         }
                     )
                 }
@@ -444,7 +472,8 @@ private fun LazyListScope.SeriesContent(
     dbEpisodes: List<Episode>,
     loadingEpisode: String?,
     onEpisodeClick: (Series.Episode) -> Unit,
-    onEpisodeLongClick: (Series.Episode) -> Unit
+    onEpisodeLongClick: (Series.Episode) -> Unit,
+    onWatchToggle: (episode: Series.Episode, Boolean) -> Unit
 ) {
     items(content.episodes, key = { it.href }) { episode ->
         val dbEpisode = remember(dbEpisodes, episode.href) {
@@ -460,6 +489,9 @@ private fun LazyListScope.SeriesContent(
             },
             onLongClick = {
                 onEpisodeLongClick(episode)
+            },
+            onWatchToggle = { watched ->
+                onWatchToggle(episode, watched)
             }
         )
     }

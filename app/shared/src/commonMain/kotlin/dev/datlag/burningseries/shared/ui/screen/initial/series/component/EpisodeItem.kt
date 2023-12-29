@@ -10,7 +10,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,22 +37,29 @@ fun EpisodeItem(
     dbEpisode: Episode?,
     isLoading: Boolean,
     onClick: () -> Unit,
-    onLongClick: () -> Unit
+    onLongClick: () -> Unit,
+    onWatchToggle: (Boolean) -> Unit
 ) {
     val blurHash = remember(content.href) { BlurHash.random() }
     val enabled = content.hosters.isNotEmpty()
 
-    val length = remember(dbEpisode) {
+    val length = remember(dbEpisode?.length) {
         max(dbEpisode?.length ?: 0L, 0L)
     }
-    val progress = remember(dbEpisode) {
-        max(dbEpisode?.progress ?: 0L, 0L)
+    val progress = remember(dbEpisode?.progress) {
+        val value = dbEpisode?.progress ?: 0L
+
+        if (value == Long.MIN_VALUE) {
+            Long.MIN_VALUE
+        } else {
+            max(value, 0L)
+        }
     }
     val isFinished = remember(length, progress) {
         if (length > 0L && progress > 0L) {
             (progress.toDouble() / length.toDouble() * 100.0).toFloat() >= 85F
         } else {
-            false
+            progress == Long.MIN_VALUE
         }
     }
 
@@ -62,6 +72,9 @@ fun EpisodeItem(
             .clip(MaterialTheme.shapes.medium)
             .onClick(
                 enabled = enabled,
+                onDoubleClick = {
+                    onWatchToggle(isFinished)
+                },
                 onLongClick = onLongClick,
                 onClick = onClick
             ).ifTrue(enabled) { bounceClick(0.95F) }.ifFalse(enabled) { alpha(0.5F) },
@@ -127,9 +140,9 @@ fun EpisodeItem(
                     maxLines = 3
                 )
             }
-            if (length != 0L && progress != 0L) {
+            if (length != 0L && max(progress, 0L) != 0L) {
                 Text(
-                    text = stringResource(SharedRes.strings.episode_progress, progress.toDuration(), length.toDuration()),
+                    text = stringResource(SharedRes.strings.episode_progress, max(progress, 0L).toDuration(), length.toDuration()),
                     style = MaterialTheme.typography.labelSmall
                 )
             }

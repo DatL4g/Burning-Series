@@ -28,6 +28,8 @@ interface SeriesComponent : Component {
     val dbEpisodes: StateFlow<List<Episode>>
     val nextEpisodeToWatch: Flow<Series.Episode?>
 
+    val nextSeasonToWatch: Flow<Series.Season?>
+
     fun retryLoadingSeries(): Any?
 
     fun goBack()
@@ -37,4 +39,6 @@ interface SeriesComponent : Component {
     fun toggleFavorite(): Any?
     fun itemClicked(episode: Series.Episode): Any?
     fun itemLongClicked(episode: Series.Episode)
+    fun watchToggle(series: Series, episode: Series.Episode, watched: Boolean): Any?
+    fun switchToSeason(season: Series.Season): Any?
 }

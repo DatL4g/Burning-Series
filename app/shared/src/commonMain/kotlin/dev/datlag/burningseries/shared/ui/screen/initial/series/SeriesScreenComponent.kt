@@ -15,6 +15,7 @@ import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.common.collectSafe
 import dev.datlag.burningseries.model.common.safeCast
+import dev.datlag.burningseries.model.common.suspendCatching
 import dev.datlag.burningseries.model.state.EpisodeAction
 import dev.datlag.burningseries.model.state.EpisodeState
 import dev.datlag.burningseries.model.state.SeriesAction
@@ -149,11 +150,26 @@ class SeriesScreenComponent(
                     seriesEpisodes.firstOrNull {
                         it.number.equals(wantedNumber, true)
                     } ?: seriesEpisodes.firstOrNull {
-                        it.number.toIntOrNull() == (wantedNumber.toIntOrNull() ?: return@firstOrNull false)
+                        val compareNumber = wantedNumber.toIntOrNull() ?: return@firstOrNull false
+                        it.number.toIntOrNull() == compareNumber
                     }
                 } else {
                     null
                 }
+            }
+        }
+    }.flowOn(ioDispatcher())
+
+    override val nextSeasonToWatch = combine(
+        currentSeries.map { it?.seasons },
+        currentSeries.map { it?.currentSeason },
+        nextEpisodeToWatch
+    ) { seasons, current, episode ->
+        if (episode != null) {
+            null
+        } else {
+            seasons?.firstOrNull {
+                it.value == current?.value?.plus(1)
             }
         }
     }.flowOn(ioDispatcher())
@@ -344,6 +360,33 @@ class SeriesScreenComponent(
             ))
         }
     }
+
+    override fun watchToggle(series: Series, episode: Series.Episode, watched: Boolean): Any? = ioScope().launchIO {
+        val maxLength = suspendCatching {
+            database.burningSeriesQueries.selectEpisodeByHref(episode.href).executeAsOneOrNull()?.length
+        }.getOrNull() ?: 0L
+
+        val progress = if (watched) {
+            0L
+        } else {
+            if (maxLength == 0L) {
+                Long.MIN_VALUE
+            } else {
+                maxLength
+            }
+        }
+
+        database.burningSeriesQueries.updateEpisodeProgress(
+            progress = progress,
+            href = episode.href,
+            number = episode.number,
+            title = episode.title,
+            length = maxLength,
+            seriesHref = BSUtil.commonSeriesHref(series.href)
+        )
+    }
+
+    override fun switchToSeason(season: Series.Season): Any? = loadNewSeason(season)
 
     private fun loadNewSeason(season: Series.Season) = ioScope().launchIO {
         (currentSeries.value ?: currentSeries.firstOrNull())?.let { series ->
