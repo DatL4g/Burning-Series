@@ -68,7 +68,12 @@ fun SeriesScreen(component: SeriesComponent) {
             }
         }
 
-        nextEpisode?.let { next ->
+        val availableEpisode = if (nextEpisode?.hosters?.isNotEmpty() == true) {
+            nextEpisode
+        } else {
+            null
+        }
+        availableEpisode?.let { next ->
             ExtendedFloatingActionButton(
                 onClick = {
                     component.itemClicked(next)
