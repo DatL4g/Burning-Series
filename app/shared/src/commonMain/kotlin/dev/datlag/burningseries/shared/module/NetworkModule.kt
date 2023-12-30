@@ -16,6 +16,9 @@ import dev.datlag.burningseries.network.state.*
 import dev.datlag.burningseries.shared.Sekret
 import dev.datlag.burningseries.shared.getPackageName
 import dev.datlag.burningseries.shared.other.StateSaver
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.FirebaseApp
+import dev.gitlive.firebase.firestore.firestore
 import io.ktor.client.*
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.AppConfiguration
@@ -124,7 +127,13 @@ object NetworkModule {
             RealmLoader(instanceOrNull())
         }
         bindProvider {
-            EpisodeStateMachine(instance(), instance(), instance(), instanceOrNull(), instanceOrNull())
+            EpisodeStateMachine(
+                client = instance(),
+                jsonBase = instance(),
+                realmLoader = instance(),
+                firestore = instanceOrNull() ?: instanceOrNull<FirebaseApp>()?.let { Firebase.firestore(it) },
+                firestoreApi = instanceOrNull()
+            )
         }
         bindProvider {
             SaveStateMachine(instance(), instance(), instance(), instanceOrNull(), instanceOrNull())

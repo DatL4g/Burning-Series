@@ -1,6 +1,6 @@
 package dev.datlag.burningseries.shared.module
 
-import android.content.Context
+import android.app.Application
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.annotation.ExperimentalCoilApi
@@ -23,7 +23,6 @@ import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.AppConfiguration
 import kotlinx.serialization.json.Json
 import okio.FileSystem
@@ -82,7 +81,7 @@ actual object PlatformModule {
             }
             bindEagerSingleton {
                 Firebase.initialize(
-                    context = Context(),
+                    context = Application(),
                     options = FirebaseOptions(
                         applicationId = Sekret().firebaseApplication(getPackageName())!!,
                         apiKey = Sekret().firebaseApiKey(getPackageName())!!,
@@ -94,8 +93,7 @@ actual object PlatformModule {
                 val store = Firebase.firestore(instance())
 
                 store.setSettings(
-                    persistenceEnabled = false,
-                    // sslEnabled = false, // requires non-default host (firebase.googleapis.com)
+                    persistenceEnabled = false
                 )
                 store
             }
