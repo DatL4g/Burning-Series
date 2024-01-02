@@ -5,7 +5,7 @@ import dev.datlag.burningseries.model.Home
 sealed interface HomeState {
     data object Loading : HomeState
     data class Success(val home: Home) : HomeState
-    data class Error(val msg: String) : HomeState
+    data object Error : HomeState
 }
 
 sealed interface HomeAction {

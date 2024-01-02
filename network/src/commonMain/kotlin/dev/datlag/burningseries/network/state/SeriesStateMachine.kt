@@ -3,6 +3,7 @@ package dev.datlag.burningseries.network.state
 import com.freeletics.flowredux.dsl.FlowReduxStateMachine
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.model.common.suspendCatchResult
 import dev.datlag.burningseries.model.state.SeriesAction
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.network.WrapAPI
@@ -25,7 +26,7 @@ class SeriesStateMachine(
         spec {
             inState<SeriesState.Loading> {
                 onEnter { state ->
-                    try {
+                    val result = suspendCatchResult<SeriesState> {
                         var onDeviceReachable: Boolean = true
                         val result = BurningSeries.getSeries(client, state.snapshot.href) ?: run {
                             onDeviceReachable = false
@@ -34,10 +35,11 @@ class SeriesStateMachine(
                                 json.decodeFromJsonElement<Series>(wrapResult.data)
                             }
                         }!!
-                        state.override { SeriesState.Success(result, onDeviceReachable) }
-                    } catch (e: Throwable) {
-                        state.override { SeriesState.Error(e.message ?: String()) }
+                        SeriesState.Success(result, onDeviceReachable)
+                    }.asSuccess {
+                        SeriesState.Error(state.snapshot.href)
                     }
+                    state.override { result }
                 }
                 on<SeriesAction.Load> { action, state ->
                     state.mutate {

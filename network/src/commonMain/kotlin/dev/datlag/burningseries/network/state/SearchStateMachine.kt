@@ -2,6 +2,7 @@ package dev.datlag.burningseries.network.state
 
 import com.freeletics.flowredux.dsl.FlowReduxStateMachine
 import dev.datlag.burningseries.model.Genre
+import dev.datlag.burningseries.model.common.suspendCatchResult
 import dev.datlag.burningseries.model.common.suspendCatching
 import dev.datlag.burningseries.model.state.SearchAction
 import dev.datlag.burningseries.model.state.SearchState
@@ -29,7 +30,7 @@ class SearchStateMachine(
                     NetworkStateSaver.initialSearchState = it
                 }
                 onEnter { state ->
-                    try {
+                    val result = suspendCatchResult {
                         val loadedClient = suspendCatching {
                             BurningSeries.getSearch(client)
                         }.getOrNull() ?: emptyList()
@@ -52,13 +53,15 @@ class SearchStateMachine(
                             loadFromDB()
                         }
                         if (loadedGenres.isEmpty()) {
-                            state.override { SearchState.Error }
+                            SearchState.Error
                         } else {
-                            state.override { SearchState.Success(loadedGenres) }
+                            SearchState.Success(loadedGenres)
                         }
-                    } catch (t: Throwable) {
-                        state.override { SearchState.Error }
+                    }.asSuccess {
+                        SearchState.Error
                     }
+
+                    state.override { result }
                 }
             }
 

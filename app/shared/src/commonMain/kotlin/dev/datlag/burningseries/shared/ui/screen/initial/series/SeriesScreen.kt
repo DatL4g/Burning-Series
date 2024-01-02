@@ -49,66 +49,66 @@ fun SeriesScreen(component: SeriesComponent) {
     val href by component.commonHref.collectAsStateWithLifecycle()
     val dialogState by component.dialog.subscribeAsState()
     val childState by component.child.subscribeAsState()
-    val nextEpisode by component.nextEpisodeToWatch.collectAsStateWithLifecycle(initialValue = null)
-    val nextSeason by component.nextSeasonToWatch.collectAsStateWithLifecycle(initialValue = null)
 
     LaunchedEffect(href) {
         SchemeTheme.setCommon(href)
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        childState.child?.also { (_, instance) ->
-            instance.render()
-        } ?: run {
+    childState.child?.also { (_, instance) ->
+        instance.render()
+    } ?: run {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
             when (calculateWindowSizeClass().widthSizeClass) {
                 WindowWidthSizeClass.Compact -> CompactScreen(component)
                 else -> DefaultScreen(component)
             }
-        }
 
-        val availableEpisode = if (nextEpisode?.hosters?.isNotEmpty() == true) {
-            nextEpisode
-        } else {
-            null
-        }
-        availableEpisode?.let { next ->
-            ExtendedFloatingActionButton(
-                onClick = {
-                    component.itemClicked(next)
-                },
-                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = next.episodeTitle,
-                    modifier = Modifier.size(ButtonDefaults.IconSize)
-                )
-                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = next.episodeTitle)
+            val nextEpisode by component.nextEpisodeToWatch.collectAsStateWithLifecycle(initialValue = null)
+            val nextSeason by component.nextSeasonToWatch.collectAsStateWithLifecycle(initialValue = null)
+            val availableEpisode = if (nextEpisode?.hosters?.isNotEmpty() == true) {
+                nextEpisode
+            } else {
+                null
             }
-        }
-        nextSeason?.let { next ->
-            ExtendedFloatingActionButton(
-                onClick = {
-                    component.switchToSeason(next)
-                },
-                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
-            ) {
-                val seasonText = if (next.title.toIntOrNull() != null) {
-                    stringResource(SharedRes.strings.season_placeholder, next.title)
-                } else {
-                    next.title
+            availableEpisode?.let { next ->
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        component.itemClicked(next)
+                    },
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = next.episodeTitle,
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
+                    )
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(text = next.episodeTitle)
                 }
+            }
+            nextSeason?.let { next ->
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        component.switchToSeason(next)
+                    },
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+                ) {
+                    val seasonText = if (next.title.toIntOrNull() != null) {
+                        stringResource(SharedRes.strings.season_placeholder, next.title)
+                    } else {
+                        next.title
+                    }
 
-                Icon(
-                    imageVector = Icons.Default.Redo,
-                    contentDescription = next.title,
-                    modifier = Modifier.size(ButtonDefaults.IconSize)
-                )
-                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = seasonText)
+                    Icon(
+                        imageVector = Icons.Default.Redo,
+                        contentDescription = next.title,
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
+                    )
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(text = seasonText)
+                }
             }
         }
     }

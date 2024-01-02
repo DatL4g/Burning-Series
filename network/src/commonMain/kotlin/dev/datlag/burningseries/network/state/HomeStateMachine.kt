@@ -2,10 +2,12 @@ package dev.datlag.burningseries.network.state
 
 import com.freeletics.flowredux.dsl.FlowReduxStateMachine
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.model.common.suspendCatchResult
 import dev.datlag.burningseries.model.state.HomeAction
 import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.network.WrapAPI
 import dev.datlag.burningseries.network.scraper.BurningSeries
+import io.github.aakira.napier.Napier
 import io.ktor.client.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.serialization.json.Json
@@ -25,7 +27,7 @@ class HomeStateMachine(
                     NetworkStateSaver.initialHomeState = it
                 }
                 onEnter { state ->
-                    try {
+                    val result = suspendCatchResult {
                         val loadedHome = BurningSeries.getHome(client) ?: run {
                             wrapApiKey?.let {
                                 json.decodeFromJsonElement<Home>(wrapApi.getBurningSeriesHome(it).data)
@@ -33,13 +35,15 @@ class HomeStateMachine(
                         }!!
 
                         if (loadedHome.episodes.isNotEmpty() || loadedHome.series.isNotEmpty()) {
-                            state.override { HomeState.Success(loadedHome) }
+                            HomeState.Success(loadedHome)
                         } else {
-                            state.override { HomeState.Error(String()) }
+                            HomeState.Error
                         }
-                    } catch (t: Throwable) {
-                        state.override { HomeState.Error(t.message ?: String()) }
                     }
+                    result.onError {
+                        Napier.e("HomeStateError", it)
+                    }
+                    state.override { result.asSuccess { HomeState.Error } }
                 }
             }
             inState<HomeState.Success> {

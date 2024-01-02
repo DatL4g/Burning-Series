@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.network.state
 
 import com.freeletics.flowredux.dsl.FlowReduxStateMachine
+import dev.datlag.burningseries.model.common.suspendCatchResult
 import dev.datlag.burningseries.model.state.ReleaseState
 import dev.datlag.burningseries.network.GitHub
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,18 +17,20 @@ class ReleaseStateMachine(
                     NetworkStateSaver.initialReleaseState = it
                 }
                 onEnter { state ->
-                    try {
+                    val result = suspendCatchResult {
                         val releases = gitHub.getReleases(owner = "DatL4g", repo = "Burning-Series")
                         val filtered = releases.filterNot { it.draft || it.preRelease }
 
                         if (filtered.isEmpty()) {
-                            state.override { ReleaseState.Error }
+                            ReleaseState.Error
                         } else {
-                            state.override { ReleaseState.Success(filtered) }
+                            ReleaseState.Success(filtered)
                         }
-                    } catch (t: Throwable) {
-                        state.override { ReleaseState.Error }
+                    }.asSuccess {
+                        ReleaseState.Error
                     }
+
+                    state.override { result }
                 }
             }
             inState<ReleaseState.Success> {

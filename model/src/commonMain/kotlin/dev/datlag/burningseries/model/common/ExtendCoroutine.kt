@@ -1,9 +1,13 @@
 package dev.datlag.burningseries.model.common
 
+import dev.datlag.burningseries.model.state.CatchResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
 
 fun <T> scopeCatching(block: () -> T): Result<T> = try {
     Result.success(block())
@@ -24,6 +28,17 @@ suspend fun <T> suspendCatching(block: suspend CoroutineScope.() -> T): Result<T
             throw e
         }
         Result.failure(e)
+    }
+}
+
+suspend fun <T> suspendCatchResult(block: suspend CoroutineScope.() -> T): CatchResult<T & Any> = coroutineScope {
+    val result = suspendCatching(block)
+    return@coroutineScope if (result.isFailure) {
+        CatchResult.Error(result.exceptionOrNull())
+    } else {
+        result.getOrNull()?.let {
+            CatchResult.Success(it)
+        } ?: CatchResult.Error(result.exceptionOrNull())
     }
 }
 

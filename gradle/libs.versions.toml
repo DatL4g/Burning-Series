@@ -8,6 +8,7 @@ android-core = "1.12.0"
 appcompat = "1.6.1"
 appdirs = "1.2.2"
 blurhash = "0.2.0"
+coil = "3.0.0-alpha01"
 compose = "1.5.11"
 complete-kotlin = "1.1.0"
 context-menu = "0.2.0"
@@ -65,6 +66,11 @@ android = { group = "androidx.core", name = "core-ktx", version.ref = "android-c
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 appdirs = { group = "net.harawata", name = "appdirs", version.ref = "appdirs" }
 blurhash = { group = "com.vanniktech", name = "blurhash", version.ref = "blurhash" }
+coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
+coil-network = { group = "io.coil-kt.coil3", name = "coil-network", version.ref = "coil" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-gif = { group = "io.coil-kt.coil3", name = "coil-gif", version.ref = "coil" }
+coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil" }
 compose-ui-util = { group = "org.jetbrains.compose.ui", name = "ui-util", version.ref = "compose" }
 context-menu = { group = "io.github.dzirbel", name = "compose-material-context-menu", version.ref = "context-menu" }
 coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }

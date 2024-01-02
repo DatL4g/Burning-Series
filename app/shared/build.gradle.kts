@@ -67,9 +67,9 @@ kotlin {
                 api(libs.ktor.serialization.json)
 
                 api("dev.datlag.kast:kast:0.1.8-SNAPSHOT")
-                api("io.coil-kt.coil3:coil:3.0.0-SNAPSHOT")
-                api("io.coil-kt.coil3:coil-network:3.0.0-SNAPSHOT")
-                api("io.coil-kt.coil3:coil-compose:3.0.0-SNAPSHOT")
+                api(libs.coil)
+                api(libs.coil.network)
+                api(libs.coil.compose)
 
                 api(project(":model"))
                 api(project(":network"))
@@ -107,8 +107,8 @@ kotlin {
                 api(libs.firebase.crashlytics)
                 api(libs.firebase.android.crashlytics)
 
-                api("io.coil-kt.coil3:coil-gif:3.0.0-SNAPSHOT")
-                api("io.coil-kt.coil3:coil-svg:3.0.0-SNAPSHOT")
+                api(libs.coil.gif)
+                api(libs.coil.svg)
             }
         }
         val desktopMain by getting {

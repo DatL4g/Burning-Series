@@ -8,11 +8,13 @@ import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.pages.Pages
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.moriatsushi.insetsx.ExperimentalSoftwareKeyboardApi
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.rememberIsTv
@@ -44,7 +46,7 @@ fun InitialScreen(component: InitialComponent) {
 private fun CompactScreen(
     component: InitialComponent
 ) {
-    var selectedPage by remember { mutableIntStateOf(0) }
+    val selectedPage by component.selectedPage.subscribeAsState()
 
     Scaffold(
         bottomBar = {
@@ -94,8 +96,7 @@ private fun CompactScreen(
                         userScrollEnabled = scrollEnabled
                     )
                 }
-            ) { index, page ->
-                selectedPage = index
+            ) { _, page ->
                 page.render()
             }
         }
@@ -107,7 +108,7 @@ private fun CompactScreen(
 private fun MediumScreen(
     component: InitialComponent
 ) {
-    var selectedPage by remember { mutableIntStateOf(0) }
+    val selectedPage by component.selectedPage.subscribeAsState()
 
     Scaffold {
         Row(modifier = Modifier.padding(it)) {
@@ -133,8 +134,7 @@ private fun MediumScreen(
 
             ExpandedPages(
                 pages = component.pages
-            ) { index, page ->
-                selectedPage = index
+            ) { _, page ->
                 page.render()
             }
         }
@@ -146,7 +146,7 @@ private fun MediumScreen(
 private fun ExpandedScreen(
     component: InitialComponent
 ) {
-    var selectedPage by remember { mutableIntStateOf(0) }
+    val selectedPage by component.selectedPage.subscribeAsState()
 
     Scaffold {
         PermanentNavigationDrawer(
@@ -181,8 +181,7 @@ private fun ExpandedScreen(
         ) {
             ExpandedPages(
                 pages = component.pages
-            ) { index, page ->
-                selectedPage = index
+            ) { _, page ->
                 page.render()
             }
         }

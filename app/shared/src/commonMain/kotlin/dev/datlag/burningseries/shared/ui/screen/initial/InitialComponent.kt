@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface InitialComponent : Component {
 
     val pagerItems: List<PagerItem>
+    val selectedPage: Value<Int>
 
     @OptIn(ExperimentalDecomposeApi::class)
     val pages: Value<ChildPages<*, Component>>

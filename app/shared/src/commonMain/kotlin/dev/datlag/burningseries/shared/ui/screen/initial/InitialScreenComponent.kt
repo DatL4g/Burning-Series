@@ -10,6 +10,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.pages.*
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.value.operator.map
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Shortcut
 import dev.datlag.burningseries.shared.LocalDI
@@ -67,6 +68,9 @@ class InitialScreenComponent(
     ) { config, context ->
         createChild(config, context)
     }
+
+    @OptIn(ExperimentalDecomposeApi::class)
+    override val selectedPage: Value<Int> = pages.map { it.selectedIndex }
 
     override val homeScrollEnabled = MutableStateFlow(true)
     override val favoriteScrollEnabled = MutableStateFlow(true)
