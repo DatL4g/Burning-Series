@@ -27,11 +27,16 @@ import io.ktor.serialization.kotlinx.json.*
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.AppConfiguration
 import kotlinx.serialization.json.Json
+import okhttp3.Dns
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.dnsoverhttps.DnsOverHttps
 import okio.FileSystem
 import org.kodein.di.DI
 import org.kodein.di.bindEagerSingleton
 import org.kodein.di.bindSingleton
 import org.kodein.di.instance
+import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
 actual object PlatformModule {
@@ -47,6 +52,22 @@ actual object PlatformModule {
             }
         }
         bindSingleton {
+            OkHttpClient.Builder()
+                .followRedirects(true)
+                .followSslRedirects(true)
+                .connectTimeout(3, TimeUnit.MINUTES)
+                .readTimeout(3, TimeUnit.MINUTES)
+                .writeTimeout(3, TimeUnit.MINUTES)
+                .build()
+        }
+        bindSingleton {
+            DnsOverHttps.Builder()
+                .client(instance())
+                .url("https://dns.google/dns-query".toHttpUrl())
+                .bootstrapDnsHosts(InetAddress.getByName("8.8.4.4"), InetAddress.getByName("8.8.8.8"))
+                .build()
+        }
+        bindSingleton {
             HttpClient(OkHttp) {
                 engine {
                     config {
@@ -54,6 +75,7 @@ actual object PlatformModule {
                         connectTimeout(3, TimeUnit.MINUTES)
                         readTimeout(3, TimeUnit.MINUTES)
                         writeTimeout(3, TimeUnit.MINUTES)
+                        dns(instance())
                     }
                 }
                 install(ContentNegotiation) {

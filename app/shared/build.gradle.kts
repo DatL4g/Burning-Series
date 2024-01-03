@@ -109,6 +109,8 @@ kotlin {
 
                 api(libs.coil.gif)
                 api(libs.coil.svg)
+
+                api(libs.okhttp.doh)
             }
         }
         val desktopMain by getting {
@@ -122,6 +124,8 @@ kotlin {
                 api(libs.appdirs)
                 api(libs.vlcj)
                 api(libs.webview.desktop)
+
+                api(libs.okhttp.doh)
             }
         }
     }

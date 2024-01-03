@@ -42,6 +42,7 @@ moko-resources = "0.23.0"
 multidex = "2.0.1"
 nanoid = "1.0.1"
 napier = "2.6.1"
+okhttp = "4.12.0"
 osdetector = "1.7.3"
 protobuf = "0.9.4"
 protoc = "3.24.4"
@@ -125,6 +126,7 @@ moko-resources-generator = { group = "dev.icerock.moko", name = "resources-gener
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 nanoid = { group = "dev.datlag.nanoid", name = "nanoid", version.ref = "nanoid" }
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
+okhttp-doh = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttp" }
 permission = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 protobuf = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protoc" }
 protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protoc" }
