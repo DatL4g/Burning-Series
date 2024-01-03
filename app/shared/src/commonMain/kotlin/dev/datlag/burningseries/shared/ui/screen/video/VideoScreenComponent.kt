@@ -57,7 +57,7 @@ class VideoScreenComponent(
     override val selectedSubtitle = MutableStateFlow<VideoComponent.Subtitle?>(null)
 
     override val startingPos: StateFlow<Long> = dbEpisode.transform {
-        return@transform emit(it?.progress ?: 0L)
+        return@transform emit(max(it?.progress ?: 0L, 0L))
     }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), dbEpisode.value?.progress ?: 0L)
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
