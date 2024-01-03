@@ -26,7 +26,7 @@ import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.StateFlow
 
-actual fun LazyGridScope.DeviceContent(release: StateFlow<Release?>) {
+actual fun LazyGridScope.DeviceContent(release: StateFlow<Release?>, onDeviceReachable: StateFlow<Boolean>) {
     header {
         val newRelease by release.collectAsStateWithLifecycle()
 
@@ -120,6 +120,16 @@ actual fun LazyGridScope.DeviceContent(release: StateFlow<Release?>) {
                             LinearProgressIndicator(
                                 modifier = Modifier.fillMaxWidth().clip(CircleShape),
                                 progress = current.progress / 100F
+                            )
+                        }
+                    }
+                    is CEFState.INITIALIZED -> {
+                        val reachable by onDeviceReachable.collectAsStateWithLifecycle()
+
+                        if (!reachable) {
+                            Text(
+                                modifier = Modifier.padding(top = 16.dp),
+                                text = stringResource(SharedRes.strings.enable_custom_dns)
                             )
                         }
                     }

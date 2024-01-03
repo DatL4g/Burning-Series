@@ -73,4 +73,5 @@
     <string name="muted">Muted</string>
     <string name="unmuted">Unmuted</string>
     <string name="loading_intent_series">Loading series</string>
+    <string name="enable_custom_dns">You should set a custom DNS to make sure you can access all features.</string>
 </resources>

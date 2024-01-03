@@ -10,6 +10,7 @@ import dev.datlag.burningseries.model.Release
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Shortcut
 import dev.datlag.burningseries.model.common.getDigitsOrNull
+import dev.datlag.burningseries.model.common.safeCast
 import dev.datlag.burningseries.model.state.HomeAction
 import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.model.state.ReleaseState
@@ -40,6 +41,9 @@ class HomeScreenComponent(
 
     private val homeStateMachine: HomeStateMachine by di.instance()
     override val homeState: StateFlow<HomeState> = homeStateMachine.state.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), HomeState.Loading)
+    override val onDeviceReachable = homeState.map {
+        it.safeCast<HomeState.Success>()?.onDeviceReachable ?: (it is HomeState.Loading)
+    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), true)
 
     private val appVersion: String? by di.instanceOrNull("APP_VERSION")
     private val releaseStateMachine: ReleaseStateMachine by di.instance()

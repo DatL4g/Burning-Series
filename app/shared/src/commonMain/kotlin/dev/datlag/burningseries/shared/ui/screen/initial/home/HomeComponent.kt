@@ -17,6 +17,8 @@ interface HomeComponent : SeriesHolderComponent {
     val homeState: StateFlow<HomeState>
     val release: StateFlow<Release?>
 
+    val onDeviceReachable: StateFlow<Boolean>
+
     fun retryLoadingHome(): Any?
     fun itemClicked(config: HomeConfig)
 

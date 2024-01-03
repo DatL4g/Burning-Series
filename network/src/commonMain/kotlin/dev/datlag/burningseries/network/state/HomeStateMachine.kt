@@ -28,14 +28,16 @@ class HomeStateMachine(
                 }
                 onEnter { state ->
                     val result = suspendCatchResult {
+                        var onDeviceReachable: Boolean = true
                         val loadedHome = BurningSeries.getHome(client) ?: run {
+                            onDeviceReachable = false
                             wrapApiKey?.let {
                                 json.decodeFromJsonElement<Home>(wrapApi.getBurningSeriesHome(it).data)
                             }
                         }!!
 
                         if (loadedHome.episodes.isNotEmpty() || loadedHome.series.isNotEmpty()) {
-                            HomeState.Success(loadedHome)
+                            HomeState.Success(loadedHome, onDeviceReachable)
                         } else {
                             HomeState.Error
                         }

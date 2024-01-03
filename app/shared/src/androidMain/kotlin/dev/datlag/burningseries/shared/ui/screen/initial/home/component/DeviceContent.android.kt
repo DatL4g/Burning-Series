@@ -19,9 +19,10 @@ import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.StateFlow
 
-actual fun LazyGridScope.DeviceContent(release: StateFlow<Release?>) {
+actual fun LazyGridScope.DeviceContent(release: StateFlow<Release?>, onDeviceReachable: StateFlow<Boolean>) {
     header {
         val newRelease by release.collectAsStateWithLifecycle()
+        val reachable by onDeviceReachable.collectAsStateWithLifecycle()
 
         if (newRelease != null) {
             Row(
@@ -58,6 +59,8 @@ actual fun LazyGridScope.DeviceContent(release: StateFlow<Release?>) {
                     Text(text = stringResource(SharedRes.strings.github))
                 }
             }
+        } else if (!reachable) {
+            Text(text = stringResource(SharedRes.strings.enable_custom_dns))
         }
     }
 }

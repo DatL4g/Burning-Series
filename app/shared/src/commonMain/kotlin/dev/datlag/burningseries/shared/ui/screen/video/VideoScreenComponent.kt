@@ -29,6 +29,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import org.kodein.di.DI
 import org.kodein.di.instance
+import kotlin.math.max
 
 class VideoScreenComponent(
     componentContext: ComponentContext,
@@ -127,7 +128,7 @@ class VideoScreenComponent(
         val currentEpisode = episode.value
 
         database.burningSeriesQueries.updateEpisodeLength(
-            length = millis,
+            length = max(millis, 0L),
             href = currentEpisode.href,
             number = currentEpisode.number,
             title = currentEpisode.title,

@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import dev.datlag.burningseries.model.Home
@@ -45,7 +46,20 @@ fun HomeScreen(component: HomeComponent) {
             LoadingState(SharedRes.strings.loading_home)
         }
         is HomeState.Error -> {
-            ErrorState(SharedRes.strings.error_loading_home) {
+            val reachable by component.onDeviceReachable.collectAsStateWithLifecycle()
+
+            ErrorState(
+                text = SharedRes.strings.error_loading_home,
+                customText = {
+                    if (!reachable) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(0.85F),
+                            text = stringResource(SharedRes.strings.enable_custom_dns),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            ) {
                 component.retryLoadingHome()
             }
         }
@@ -116,7 +130,7 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             state = state
         ) {
-            DeviceContent(component.release)
+            DeviceContent(component.release, component.onDeviceReachable)
             header {
                 Row(
                     modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),

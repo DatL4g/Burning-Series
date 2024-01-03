@@ -1,5 +1,5 @@
 [versions]
-app = "5.1.0"
+app = "5.2.0"
 aboutlibraries = "10.9.2"
 accompanist = "0.32.0"
 activity = "1.8.2"

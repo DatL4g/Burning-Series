@@ -20,7 +20,7 @@ import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
-fun ErrorState(text: String, onRetry: () -> Unit) {
+fun ErrorState(text: String, customText: (@Composable () -> Unit)? = null, onRetry: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
@@ -43,6 +43,7 @@ fun ErrorState(text: String, onRetry: () -> Unit) {
             softWrap = true,
             textAlign = TextAlign.Center
         )
+        customText?.invoke()
         Button(
             onClick = {
                 onRetry()
@@ -54,4 +55,8 @@ fun ErrorState(text: String, onRetry: () -> Unit) {
 }
 
 @Composable
-fun ErrorState(text: StringResource, onRetry: () -> Unit) = ErrorState(text = stringResource(text), onRetry)
+fun ErrorState(
+    text: StringResource,
+    customText: (@Composable () -> Unit)? = null,
+    onRetry: () -> Unit
+) = ErrorState(text = stringResource(text), customText, onRetry)
