@@ -22,14 +22,18 @@ class SearchStateMachine(
     private val wrapApiKey: String?,
     private val saveToDB: suspend (SearchState.Success) -> Unit,
     private val loadFromDB: suspend () -> List<Genre>
-) : FlowReduxStateMachine<SearchState, SearchAction>(initialState = NetworkStateSaver.initialSearchState) {
+) : FlowReduxStateMachine<SearchState, SearchAction>(initialState = currentState) {
     init {
         spec {
             inState<SearchState.Loading> {
                 onEnterEffect {
-                    NetworkStateSaver.initialSearchState = it
+                    currentState = it
                 }
                 onEnter { state ->
+                    NetworkStateSaver.Cache.search.getAlive()?.let {
+                        return@onEnter state.override { SearchState.Success(it) }
+                    }
+
                     val result = suspendCatchResult {
                         val loadedClient = suspendCatching {
                             BurningSeries.getSearch(client)
@@ -55,10 +59,14 @@ class SearchStateMachine(
                         if (loadedGenres.isEmpty()) {
                             SearchState.Error
                         } else {
-                            SearchState.Success(loadedGenres)
+                            SearchState.Success(loadedGenres.also {
+                                NetworkStateSaver.Cache.search.cache(it)
+                            })
                         }
                     }.asSuccess {
-                        SearchState.Error
+                        NetworkStateSaver.Cache.search.getUnAlive()?.let {
+                            SearchState.Success(it)
+                        } ?: SearchState.Error
                     }
 
                     state.override { result }
@@ -67,19 +75,27 @@ class SearchStateMachine(
 
             inState<SearchState.Success> {
                 onEnterEffect {
-                    NetworkStateSaver.initialSearchState = it
+                    currentState = it
                     saveToDB(it)
                 }
             }
 
             inState<SearchState.Error> {
                 onEnterEffect {
-                    NetworkStateSaver.initialSearchState = it
+                    currentState = it
                 }
                 on<SearchAction.Retry> { _, state ->
                     state.override { SearchState.Loading }
                 }
             }
         }
+    }
+
+    companion object {
+        var currentState: SearchState
+            set(value) {
+                NetworkStateSaver.initialSearchState = value
+            }
+            get() = NetworkStateSaver.initialSearchState
     }
 }

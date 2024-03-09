@@ -1,5 +1,9 @@
 package dev.datlag.burningseries.network.state
 
+import dev.datlag.burningseries.model.Cacheable
+import dev.datlag.burningseries.model.Genre
+import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.model.Release
 import dev.datlag.burningseries.model.state.*
 import dev.gitlive.firebase.auth.FirebaseUser
 
@@ -15,4 +19,10 @@ data object NetworkStateSaver {
     var initialHomeState: HomeState = HomeState.Loading
     var initialReleaseState: ReleaseState = ReleaseState.Loading
     var initialSearchState: SearchState = SearchState.Loading
+
+    internal data object Cache {
+        val home: Cacheable<Pair<Home, Boolean>> = Cacheable()
+        val release: Cacheable<List<Release>> = Cacheable()
+        val search: Cacheable<List<Genre>> = Cacheable()
+    }
 }

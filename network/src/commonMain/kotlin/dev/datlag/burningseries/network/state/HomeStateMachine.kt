@@ -19,14 +19,18 @@ class HomeStateMachine(
     private val json: Json,
     private val wrapApi: WrapAPI,
     private val wrapApiKey: String?
-) : FlowReduxStateMachine<HomeState, HomeAction>(initialState = NetworkStateSaver.initialHomeState) {
+) : FlowReduxStateMachine<HomeState, HomeAction>(initialState = currentState) {
     init {
         spec {
             inState<HomeState.Loading> {
                 onEnterEffect {
-                    NetworkStateSaver.initialHomeState = it
+                    currentState = it
                 }
                 onEnter { state ->
+                    NetworkStateSaver.Cache.home.getAlive()?.let {
+                        return@onEnter state.override { HomeState.Success(it.first, it.second) }
+                    }
+
                     val result = suspendCatchResult {
                         var onDeviceReachable: Boolean = true
                         val loadedHome = BurningSeries.getHome(client) ?: run {
@@ -37,6 +41,7 @@ class HomeStateMachine(
                         }!!
 
                         if (loadedHome.episodes.isNotEmpty() || loadedHome.series.isNotEmpty()) {
+                            NetworkStateSaver.Cache.home.cache(loadedHome to onDeviceReachable)
                             HomeState.Success(loadedHome, onDeviceReachable)
                         } else {
                             HomeState.Error
@@ -45,22 +50,36 @@ class HomeStateMachine(
                     result.onError {
                         Napier.e("HomeStateError", it)
                     }
-                    state.override { result.asSuccess { HomeState.Error } }
+                    state.override {
+                        result.asSuccess {
+                            NetworkStateSaver.Cache.home.getUnAlive()?.let {
+                                HomeState.Success(it.first, it.second)
+                            } ?: HomeState.Error
+                        }
+                    }
                 }
             }
             inState<HomeState.Success> {
                 onEnterEffect {
-                    NetworkStateSaver.initialHomeState = it
+                    currentState = it
                 }
             }
             inState<HomeState.Error> {
                 onEnterEffect {
-                    NetworkStateSaver.initialHomeState = it
+                    currentState = it
                 }
                 on<HomeAction.Retry> { _, state ->
                     state.override { HomeState.Loading }
                 }
             }
         }
+    }
+
+    companion object {
+        var currentState: HomeState
+            set(value) {
+                NetworkStateSaver.initialHomeState = value
+            }
+            get() = NetworkStateSaver.initialHomeState
     }
 }

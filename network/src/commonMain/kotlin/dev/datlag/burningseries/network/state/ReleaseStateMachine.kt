@@ -9,14 +9,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReleaseStateMachine(
     private val gitHub: GitHub
-) : FlowReduxStateMachine<ReleaseState, Nothing>(initialState = NetworkStateSaver.initialReleaseState) {
+) : FlowReduxStateMachine<ReleaseState, Nothing>(initialState = currentState) {
     init {
         spec {
             inState<ReleaseState.Loading> {
                 onEnterEffect {
-                    NetworkStateSaver.initialReleaseState = it
+                    currentState = it
                 }
                 onEnter { state ->
+                    NetworkStateSaver.Cache.release.getAlive()?.let {
+                        return@onEnter state.override { ReleaseState.Success(it) }
+                    }
+
                     val result = suspendCatchResult {
                         val releases = gitHub.getReleases(owner = "DatL4g", repo = "Burning-Series")
                         val filtered = releases.filterNot { it.draft || it.preRelease }
@@ -24,10 +28,14 @@ class ReleaseStateMachine(
                         if (filtered.isEmpty()) {
                             ReleaseState.Error
                         } else {
-                            ReleaseState.Success(filtered)
+                            ReleaseState.Success(filtered.also {
+                                NetworkStateSaver.Cache.release.cache(it)
+                            })
                         }
                     }.asSuccess {
-                        ReleaseState.Error
+                        NetworkStateSaver.Cache.release.getUnAlive()?.let {
+                            ReleaseState.Success(it)
+                        } ?: ReleaseState.Error
                     }
 
                     state.override { result }
@@ -35,14 +43,22 @@ class ReleaseStateMachine(
             }
             inState<ReleaseState.Success> {
                 onEnterEffect {
-                    NetworkStateSaver.initialReleaseState = it
+                    currentState = it
                 }
             }
             inState<ReleaseState.Error> {
                 onEnterEffect {
-                    NetworkStateSaver.initialReleaseState = it
+                    currentState = it
                 }
             }
         }
+    }
+
+    companion object {
+        var currentState: ReleaseState
+            set(value) {
+                NetworkStateSaver.initialReleaseState = value
+            }
+            get() = NetworkStateSaver.initialReleaseState
     }
 }
