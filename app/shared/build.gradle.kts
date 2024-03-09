@@ -52,7 +52,6 @@ kotlin {
                 api(libs.kodein.compose)
 
                 implementation(libs.aboutlibraries)
-                implementation(libs.aboutlibraries.compose)
 
                 api(libs.moko.resources.compose)
                 api(libs.blurhash)

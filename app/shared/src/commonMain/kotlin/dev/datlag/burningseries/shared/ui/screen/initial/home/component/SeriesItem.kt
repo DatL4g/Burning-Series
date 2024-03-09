@@ -54,12 +54,12 @@ fun LazyItemScope.SeriesItem(series: DBSeries, modifier: Modifier = Modifier, on
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SeriesItem(title: String, coverHref: String?, modifier: Modifier = Modifier, onClick: () -> Unit) {
     ElevatedCard(
-        modifier = modifier.focusScale(1.02F).height(150.dp).bounceClick().clip(MaterialTheme.shapes.medium).onClick {
-            onClick()
-        }
+        modifier = modifier.focusScale(1.02F).height(150.dp).bounceClick(),
+        onClick = onClick
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)

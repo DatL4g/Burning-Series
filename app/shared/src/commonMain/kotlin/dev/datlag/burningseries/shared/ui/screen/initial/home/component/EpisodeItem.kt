@@ -23,13 +23,12 @@ import dev.datlag.burningseries.shared.ui.custom.AutoSizeText
 import dev.datlag.burningseries.shared.ui.custom.CountryImage
 import dev.datlag.burningseries.shared.ui.custom.Cover
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LazyGridItemScope.EpisodeItem(episode: Home.Episode, onclick: () -> Unit) {
     ElevatedCard(
-        modifier = Modifier.animateItemPlacement().focusScale(1.02F).height(150.dp).bounceClick().clip(MaterialTheme.shapes.medium).onClick {
-            onclick()
-        }
+        modifier = Modifier.animateItemPlacement().focusScale(1.02F).height(150.dp).bounceClick(),
+        onClick = onclick
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
