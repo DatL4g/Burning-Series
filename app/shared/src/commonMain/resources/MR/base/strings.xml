@@ -74,4 +74,6 @@
     <string name="unmuted">Unmuted</string>
     <string name="loading_intent_series">Loading series</string>
     <string name="enable_custom_dns">You should set a custom DNS to make sure you can access all features.</string>
+    <string name="google_play_pulz">Are you interested in Gaming or E-Sports?</string>
+    <string name="yes">Yes</string>
 </resources>
