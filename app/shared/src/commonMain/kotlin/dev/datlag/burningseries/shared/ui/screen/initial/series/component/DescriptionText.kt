@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.shared.common.onClick
 import dev.datlag.burningseries.shared.ui.custom.ExpandableText
 import dev.icerock.moko.resources.compose.stringResource
 
@@ -22,7 +23,9 @@ fun DescriptionText(description: String) {
         expanded = expanded,
         text = description,
         collapsedMaxLines = 2,
-        modifier = Modifier.fillMaxWidth().animateContentSize(),
+        modifier = Modifier.fillMaxWidth().animateContentSize().onClick {
+            expanded = !expanded
+        },
         toggle = {
             IconButton(
                 onClick = {
