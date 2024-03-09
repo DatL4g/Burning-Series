@@ -4,6 +4,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <queries>
+        <package android:name="dev.datlag.pulz" />
+    </queries>
+
     <uses-feature
         android:name="android.hardware.wifi"
         android:required="false" />
@@ -11,6 +15,14 @@
     <uses-feature
         android:name="android.hardware.ethernet"
         android:required="false" />
+
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false"/>
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false"/>
 
     <application
         android:allowBackup="true"

@@ -26,3 +26,12 @@ fun Context.isTv(): Boolean {
         PackageManager.FEATURE_LEANBACK
     ) || packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK_ONLY)
 }
+
+fun Context.isPackageInstalled(packageName: String): Boolean {
+    return try {
+        packageManager.getPackageInfo(packageName, 0)
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
+    }
+}

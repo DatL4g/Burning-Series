@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.model.Release
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.header
+import dev.datlag.burningseries.shared.common.isPackageInstalled
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.openInBrowser
 import dev.datlag.burningseries.shared.other.Constants
@@ -63,33 +64,37 @@ actual fun LazyGridScope.DeviceContent(release: StateFlow<Release?>, onDeviceRea
         } else {
             val context = LocalContext.current
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    Constants.GOOGLE_PLAY_PULZ.openInBrowser(context)
-                },
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                )
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1F),
-                        text = stringResource(SharedRes.strings.google_play_pulz)
+            if (!context.isPackageInstalled(Constants.PULZ_PACKAGE)) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        Constants.GOOGLE_PLAY_PULZ.openInBrowser(context)
+                    },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                     )
-                    FilledTonalButton(
-                        onClick = {
-                            Constants.GOOGLE_PLAY_PULZ.openInBrowser(context)
-                        }
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(text = stringResource(SharedRes.strings.yes))
+                        Text(
+                            modifier = Modifier.weight(1F),
+                            text = stringResource(SharedRes.strings.google_play_pulz)
+                        )
+                        FilledTonalButton(
+                            onClick = {
+                                Constants.GOOGLE_PLAY_PULZ.openInBrowser(context)
+                            }
+                        ) {
+                            Text(text = stringResource(SharedRes.strings.yes))
+                        }
                     }
                 }
+            } else if (!reachable) {
+                Text(text = stringResource(SharedRes.strings.enable_custom_dns))
             }
         }
     }
