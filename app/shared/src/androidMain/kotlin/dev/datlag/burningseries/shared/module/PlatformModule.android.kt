@@ -4,14 +4,13 @@ import android.content.Context
 import android.os.Build
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
-import coil3.decode.GifDecoder
-import coil3.decode.ImageDecoderDecoder
-import coil3.decode.SvgDecoder
 import coil3.disk.DiskCache
-import coil3.fetch.NetworkFetcher
+import coil3.gif.GifDecoder
 import coil3.memory.MemoryCache
+import coil3.network.ktor.KtorNetworkFetcherFactory
 import coil3.request.allowHardware
 import coil3.request.crossfade
+import coil3.svg.SvgDecoder
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.shared.Sekret
 import dev.datlag.burningseries.shared.getPackageName
@@ -105,12 +104,8 @@ actual object PlatformModule {
         bindSingleton {
             ImageLoader.Builder(instance())
                 .components {
-                    add(NetworkFetcher.Factory(lazyOf(instance<HttpClient>())))
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        add(ImageDecoderDecoder.Factory())
-                    } else {
-                        add(GifDecoder.Factory())
-                    }
+                    add(KtorNetworkFetcherFactory(instance<HttpClient>()))
+                    add(GifDecoder.Factory())
                     add(SvgDecoder.Factory())
                 }
                 .memoryCache {

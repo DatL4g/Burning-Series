@@ -5,8 +5,8 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.annotation.ExperimentalCoilApi
 import coil3.disk.DiskCache
-import coil3.fetch.NetworkFetcher
 import coil3.memory.MemoryCache
+import coil3.network.ktor.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.model.common.canWriteSafely
@@ -125,7 +125,7 @@ actual object PlatformModule {
         bindSingleton {
             ImageLoader.Builder(instance())
                 .components {
-                    add(NetworkFetcher.Factory(lazyOf(instance<HttpClient>())))
+                    add(KtorNetworkFetcherFactory(instance<HttpClient>()))
                 }
                 .memoryCache {
                     MemoryCache.Builder()

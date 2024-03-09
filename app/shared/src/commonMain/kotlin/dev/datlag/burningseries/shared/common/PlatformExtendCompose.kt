@@ -2,7 +2,7 @@ package dev.datlag.burningseries.shared.common
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
-import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.StackAnimation
+import com.arkivanov.decompose.extensions.compose.stack.animation.StackAnimation
 import com.arkivanov.essenty.backhandler.BackHandler
 import com.vanniktech.blurhash.BlurHash
 

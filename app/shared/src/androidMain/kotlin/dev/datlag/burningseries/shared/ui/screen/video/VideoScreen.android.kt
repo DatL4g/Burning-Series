@@ -37,7 +37,7 @@ import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.*
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.DefaultTimeBar
 import androidx.media3.ui.PlayerView
-import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.cast.framework.CastState
 import com.google.android.material.progressindicator.CircularProgressIndicator
