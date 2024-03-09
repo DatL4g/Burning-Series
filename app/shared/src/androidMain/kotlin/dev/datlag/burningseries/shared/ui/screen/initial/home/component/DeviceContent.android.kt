@@ -66,7 +66,7 @@ actual fun LazyGridScope.DeviceContent(release: StateFlow<Release?>, onDeviceRea
 
             if (!context.isPackageInstalled(Constants.PULZ_PACKAGE)) {
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
                     onClick = {
                         Constants.GOOGLE_PLAY_PULZ.openInBrowser(context)
                     },
