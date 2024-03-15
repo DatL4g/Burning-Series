@@ -19,8 +19,10 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.header
@@ -58,20 +60,30 @@ private fun DefaultView(component: FavoriteComponent) {
 @Composable
 private fun ExpandedView(component: FavoriteComponent) {
     val childState by component.child.subscribeAsState()
+    var rowWidth by remember { mutableIntStateOf(-1) }
 
     Row(
+        modifier = Modifier.onSizeChanged {
+            rowWidth = it.width
+        },
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val modifier = if (childState.child?.configuration != null) {
-            Modifier.weight(1F).widthIn(min = 100.dp, max = 700.dp)
+        val colOne = if (rowWidth > 600) {
+            val third = remember(rowWidth) { rowWidth.toFloat() / 3F }
+            if (third >= 200F) {
+                Modifier.widthIn(max = third.dp)
+            } else {
+                Modifier.weight(1F)
+            }
         } else {
-            Modifier.fillMaxWidth()
+            Modifier.weight(1F)
         }
-        MainView(component, modifier)
+
+        MainView(component, colOne)
 
         childState.child?.also { (_, instance) ->
             Box(
-                modifier = Modifier.weight(2F)
+                modifier = Modifier.defaultMinSize(minWidth = 400.dp)
             ) {
                 instance.render()
             }

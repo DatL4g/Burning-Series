@@ -4,6 +4,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
@@ -31,16 +35,19 @@ class InitialScreenComponent(
 
     override val pagerItems: List<InitialComponent.PagerItem> = listOf(
         InitialComponent.PagerItem(
-            SharedRes.strings.home,
-            Icons.Default.Home
+            label = SharedRes.strings.home,
+            unselectedIcon = Icons.Outlined.Home,
+            selectedIcon = Icons.Filled.Home
         ),
         InitialComponent.PagerItem(
-            SharedRes.strings.favorites,
-            Icons.Default.Favorite
+            label = SharedRes.strings.favorites,
+            unselectedIcon = Icons.Outlined.FavoriteBorder,
+            selectedIcon = Icons.Filled.Favorite
         ),
         InitialComponent.PagerItem(
-            SharedRes.strings.search,
-            Icons.Default.Search
+            label = SharedRes.strings.search,
+            unselectedIcon = Icons.Outlined.Search,
+            selectedIcon = Icons.Filled.Search
         )
     )
 

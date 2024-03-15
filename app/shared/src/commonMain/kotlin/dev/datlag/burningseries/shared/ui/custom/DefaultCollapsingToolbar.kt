@@ -22,6 +22,7 @@ import kotlin.math.abs
 @Composable
 fun DefaultCollapsingToolbar(
     state: CollapsingToolbarScaffoldState = rememberCollapsingToolbarScaffoldState(),
+    forceExpand: Boolean = false,
     expandedBody: @Composable CollapsingToolbarScope.(CollapsingToolbarScaffoldState) -> Unit,
     title: @Composable (CollapsingToolbarScaffoldState) -> Unit,
     navigationIcon: (@Composable (CollapsingToolbarScaffoldState) -> Unit)? = null,
@@ -31,7 +32,6 @@ fun DefaultCollapsingToolbar(
     val reversedProgress by remember {
         derivedStateOf { (abs(1F - state.toolbarState.progress)) }
     }
-    var expanded by remember { mutableStateOf(false) }
 
     CollapsingToolbarScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -60,16 +60,9 @@ fun DefaultCollapsingToolbar(
         content()
     }
 
-    if (!expanded) {
-        rememberCoroutineScope().launchMain {
+    LaunchedEffect(forceExpand) {
+        if (forceExpand) {
             state.toolbarState.expand(0)
-            repeat(5) {
-                withIOContext {
-                    delay(20)
-                }
-                state.toolbarState.expand(0)
-            }
-            expanded = true
         }
     }
 }

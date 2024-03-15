@@ -24,6 +24,7 @@ interface InitialComponent : Component {
 
     data class PagerItem(
         val label: StringResource,
-        val icon: ImageVector
+        val unselectedIcon: ImageVector,
+        val selectedIcon: ImageVector
     )
 }

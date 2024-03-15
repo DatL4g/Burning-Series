@@ -55,7 +55,10 @@ private fun CompactScreen(
                     NavigationBarItem(
                         selected = selectedPage == index,
                         icon = {
-                            NavIcon(item)
+                            NavIcon(
+                                selected = selectedPage == index,
+                                item = item
+                            )
                         },
                         onClick = {
                             component.selectPage(index)
@@ -118,7 +121,10 @@ private fun MediumScreen(
                     NavigationRailItem(
                         selected = selectedPage == index,
                         icon = {
-                            NavIcon(item)
+                            NavIcon(
+                                selected = selectedPage == index,
+                                item = item
+                            )
                         },
                         onClick = {
                             component.selectPage(index)
@@ -165,7 +171,10 @@ private fun ExpandedScreen(
                         NavigationDrawerItem(
                             selected = selectedPage == index,
                             icon = {
-                                NavIcon(item)
+                                NavIcon(
+                                    selected = selectedPage == index,
+                                    item = item
+                                )
                             },
                             onClick = {
                                 component.selectPage(index)
@@ -189,9 +198,12 @@ private fun ExpandedScreen(
 }
 
 @Composable
-private fun NavIcon(item: InitialComponent.PagerItem) {
+private fun NavIcon(
+    selected: Boolean,
+    item: InitialComponent.PagerItem
+) {
     Icon(
-        imageVector = item.icon,
+        imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
         contentDescription = stringResource(item.label),
         modifier = Modifier.size(24.dp)
     )

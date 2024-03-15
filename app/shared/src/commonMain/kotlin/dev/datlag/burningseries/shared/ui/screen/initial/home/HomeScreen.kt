@@ -9,11 +9,10 @@ import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -91,20 +90,29 @@ private fun DefaultView(home: Home, component: HomeComponent) {
 @Composable
 private fun ExpandedView(home: Home, component: HomeComponent) {
     val childState by component.child.subscribeAsState()
+    var rowWidth by remember { mutableIntStateOf(-1) }
 
     Row(
+        modifier = Modifier.onSizeChanged {
+            rowWidth = it.width
+        },
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val modifier = if (childState.child?.configuration != null) {
-            Modifier.weight(1F).widthIn(min = 100.dp, max = 700.dp)
+        val colOne = if (rowWidth > 600) {
+            val third = remember(rowWidth) { rowWidth.toFloat() / 3F }
+            if (third >= 200F) {
+                Modifier.widthIn(max = third.dp)
+            } else {
+                Modifier.weight(1F)
+            }
         } else {
-            Modifier.fillMaxWidth()
+            Modifier.weight(1F)
         }
-        MainView(home, component, modifier)
+        MainView(home, component, colOne)
 
         childState.child?.also { (_, instance) ->
             Box(
-                modifier = Modifier.weight(2F)
+                modifier = Modifier.defaultMinSize(minWidth = 400.dp)
             ) {
                 instance.render()
             }

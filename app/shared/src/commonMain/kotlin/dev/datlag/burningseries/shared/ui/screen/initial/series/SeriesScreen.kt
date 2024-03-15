@@ -132,8 +132,10 @@ private fun CompactScreen(component: SeriesComponent) {
     val title by component.title.collectAsStateWithLifecycle()
     val coverHref by component.coverHref.collectAsStateWithLifecycle()
     val commonHref by component.commonHref.collectAsStateWithLifecycle()
+    var expand by remember { mutableStateOf(false) }
 
     DefaultCollapsingToolbar(
+        forceExpand = expand,
         expandedBody = { state ->
             val scope = rememberCoroutineScope()
 
@@ -149,6 +151,7 @@ private fun CompactScreen(component: SeriesComponent) {
                     .parallax(0.5F)
                     .diagonalShape(-10F, DiagonalShape.POSITION.BOTTOM),
                 onSuccess = { success ->
+                    expand = true
                     SchemeTheme.update(commonHref, success.painter, scope)
                 }
             )
