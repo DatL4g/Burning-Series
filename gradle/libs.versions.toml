@@ -24,7 +24,7 @@ firebase-android-crashlytics = "18.6.2"
 firebase-android-firestore = "24.10.3"
 flowredux = "1.2.1"
 grpc = "1.59.0"
-instesx = "0.1.0-alpha10"
+haze = "0.5.4"
 jsunpacker = "1.0.2"
 kcef = "2024.01.07.1"
 kmpalette = "3.1.0"
@@ -92,7 +92,8 @@ firebase-android-crashlytics = { group = "com.google.firebase", name = "firebase
 firebase-android-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebase-android-firestore" }
 flowredux = { group = "com.freeletics.flowredux", name = "flowredux", version.ref = "flowredux" }
 grpc = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
-insetsx = { group = "com.moriatsushi.insetsx", name = "insetsx", version.ref = "instesx" }
+haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
+haze-materials = { group = "dev.chrisbanes.haze", name = "haze-materials", version.ref = "haze" }
 jsunpacker = { group = "dev.datlag.jsunpacker", name = "jsunpacker", version.ref = "jsunpacker" }
 kmpalette = { group = "com.kmpalette", name = "kmpalette-core", version.ref = "kmpalette" }
 kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }

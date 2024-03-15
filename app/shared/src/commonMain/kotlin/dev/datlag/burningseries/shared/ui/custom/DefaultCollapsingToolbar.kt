@@ -1,20 +1,21 @@
 package dev.datlag.burningseries.shared.ui.custom
 
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.TopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.shared.common.LocalPadding
 import dev.datlag.burningseries.shared.common.launchMain
+import dev.datlag.burningseries.shared.common.toWindowInsets
 import dev.datlag.burningseries.shared.common.withIOContext
 import dev.datlag.burningseries.shared.ui.custom.toolbar.*
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import kotlin.math.abs
 
@@ -37,24 +38,45 @@ fun DefaultCollapsingToolbar(
         modifier = Modifier.fillMaxSize(),
         state = state,
         scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
-        toolbarModifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 56.dp).verticalScroll(rememberScrollState()),
+        toolbarModifier = Modifier.fillMaxWidth(),
         toolbarScrollable = true,
         toolbar = {
             expandedBody(state)
 
-            TopAppBar(
+            Surface(
                 modifier = Modifier.pin(),
-                backgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = reversedProgress),
-                contentColor = MaterialTheme.colorScheme.onSurface,
-                title = {
-                    title(state)
-                },
-                navigationIcon = if (navigationIcon == null) null else { { navigationIcon(state) } },
-                actions = {
-                    actions(state)
-                },
-                elevation = 0.dp
-            )
+                color = MaterialTheme.colorScheme.surface.copy(alpha = reversedProgress),
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize().windowInsetsPadding(TopAppBarDefaults.windowInsets),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.padding(start = 4.dp)
+                    ) {
+                        navigationIcon?.invoke(state)
+                    }
+                    Box(
+                        modifier = Modifier.weight(1F),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        CompositionLocalProvider(
+                            LocalTextStyle provides MaterialTheme.typography.titleLarge
+                        ) {
+                            title(state)
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.padding(end = 4.dp),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        actions(state)
+                    }
+                }
+            }
         }
     ) {
         content()

@@ -20,8 +20,10 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.state.HomeState
 import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.shared.common.LocalPadding
 import dev.datlag.burningseries.shared.common.header
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
+import dev.datlag.burningseries.shared.common.localPadding
 import dev.datlag.burningseries.shared.other.StateSaver
 import dev.datlag.burningseries.shared.rememberIsTv
 import dev.datlag.burningseries.shared.ui.custom.VerticalScrollbar
@@ -136,6 +138,7 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
             modifier = Modifier.weight(1F),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = LocalPadding(),
             state = state
         ) {
             DeviceContent(component.release, component.onDeviceReachable)

@@ -36,7 +36,6 @@ kotlin {
             dependencies {
                 api(compose.runtime)
                 api(compose.foundation)
-                api(compose.material)
                 api(compose.material3)
                 api(compose.materialIconsExtended)
                 api(compose.ui)
@@ -59,7 +58,9 @@ kotlin {
                 api(libs.kolor)
 
                 api(libs.windowsize.multiplatform)
-                api(libs.insetsx)
+
+                implementation(libs.haze)
+                implementation(libs.haze.materials)
 
                 api(libs.ktor)
                 api(libs.ktor.content.negotiation)

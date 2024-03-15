@@ -9,13 +9,14 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.pages.Pages
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.moriatsushi.insetsx.ExperimentalSoftwareKeyboardApi
+import dev.datlag.burningseries.shared.LocalPaddingValues
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.rememberIsTv
 import dev.datlag.burningseries.shared.ui.custom.ExpandedPages
@@ -41,7 +42,7 @@ fun InitialScreen(component: InitialComponent) {
     }
 }
 
-@OptIn(ExperimentalSoftwareKeyboardApi::class, ExperimentalDecomposeApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalDecomposeApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun CompactScreen(
     component: InitialComponent
@@ -72,41 +73,45 @@ private fun CompactScreen(
             }
         }
     ) {
-        Box(modifier = Modifier.padding(it)) {
-            val homeScrollEnabled by component.homeScrollEnabled.collectAsStateWithLifecycle()
-            val favoriteScrollEnabled by component.favoriteScrollEnabled.collectAsStateWithLifecycle()
-            val searchScrollEnabled by component.searchScrollEnabled.collectAsStateWithLifecycle()
+        CompositionLocalProvider(
+            LocalPaddingValues provides it
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                val homeScrollEnabled by component.homeScrollEnabled.collectAsStateWithLifecycle()
+                val favoriteScrollEnabled by component.favoriteScrollEnabled.collectAsStateWithLifecycle()
+                val searchScrollEnabled by component.searchScrollEnabled.collectAsStateWithLifecycle()
 
-            Pages(
-                pages = component.pages,
-                onPageSelected = { index ->
-                    if (selectedPage != index) {
-                        component.selectPage(index)
+                Pages(
+                    pages = component.pages,
+                    onPageSelected = { index ->
+                        if (selectedPage != index) {
+                            component.selectPage(index)
+                        }
+                    },
+                    pager = { modifier, state, key, pageContent ->
+                        val scrollEnabled = when (state.currentPage) {
+                            0 -> homeScrollEnabled
+                            1 -> favoriteScrollEnabled
+                            2 -> searchScrollEnabled
+                            else -> homeScrollEnabled && favoriteScrollEnabled && searchScrollEnabled
+                        }
+                        HorizontalPager(
+                            modifier = modifier,
+                            state = state,
+                            key = key,
+                            pageContent = pageContent,
+                            userScrollEnabled = scrollEnabled
+                        )
                     }
-                },
-                pager = { modifier, state, key, pageContent ->
-                    val scrollEnabled = when (state.currentPage) {
-                        0 -> homeScrollEnabled
-                        1 -> favoriteScrollEnabled
-                        2 -> searchScrollEnabled
-                        else -> homeScrollEnabled && favoriteScrollEnabled && searchScrollEnabled
-                    }
-                    HorizontalPager(
-                        modifier = modifier,
-                        state = state,
-                        key = key,
-                        pageContent = pageContent,
-                        userScrollEnabled = scrollEnabled
-                    )
+                ) { _, page ->
+                    page.render()
                 }
-            ) { _, page ->
-                page.render()
             }
         }
     }
 }
 
-@OptIn(ExperimentalSoftwareKeyboardApi::class, ExperimentalDecomposeApi::class)
+@OptIn(ExperimentalDecomposeApi::class)
 @Composable
 private fun MediumScreen(
     component: InitialComponent
@@ -147,7 +152,7 @@ private fun MediumScreen(
     }
 }
 
-@OptIn(ExperimentalSoftwareKeyboardApi::class, ExperimentalDecomposeApi::class)
+@OptIn(ExperimentalDecomposeApi::class)
 @Composable
 private fun ExpandedScreen(
     component: InitialComponent

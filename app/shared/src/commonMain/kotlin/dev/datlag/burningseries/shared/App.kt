@@ -1,20 +1,22 @@
 package dev.datlag.burningseries.shared
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
-import com.moriatsushi.insetsx.rememberWindowInsetsController
+import dev.chrisbanes.haze.HazeState
 import dev.datlag.burningseries.shared.ui.theme.*
 import org.kodein.di.DI
 
 val LocalDarkMode = compositionLocalOf<Boolean> { error("No dark mode state provided") }
 val LocalDI = compositionLocalOf<DI> { error("No dependency injection provided") }
+val LocalHaze = compositionLocalOf<HazeState> { error("No Haze state provided") }
+val LocalPaddingValues = compositionLocalOf<PaddingValues?> { null }
 
 @Composable
 fun App(
@@ -22,15 +24,6 @@ fun App(
     systemDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val windowInsetsController = rememberWindowInsetsController()
-
-    LaunchedEffect(systemDarkTheme) {
-        windowInsetsController?.apply {
-            setStatusBarContentColor(dark = !systemDarkTheme)
-            setNavigationBarsContentColor(dark = !systemDarkTheme)
-        }
-    }
-
     CompositionLocalProvider(
         LocalDarkMode provides systemDarkTheme,
         LocalDI provides di
@@ -39,20 +32,14 @@ fun App(
             colorScheme = if (systemDarkTheme) Colors.getDarkScheme() else Colors.getLightScheme(),
             typography = ManropeTypography()
         ) {
-            androidx.compose.material.MaterialTheme(
-                colors = MaterialTheme.colorScheme.toLegacyColors(systemDarkTheme),
-                shapes = MaterialTheme.shapes.toLegacyShapes(),
-                typography = ManropeTypographyLegacy()
-            ) {
-                SystemProvider {
-                    CommonSchemeTheme {
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            color = MaterialTheme.colorScheme.background,
-                            contentColor = MaterialTheme.colorScheme.onBackground
-                        ) {
-                            content()
-                        }
+            SystemProvider {
+                CommonSchemeTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ) {
+                        content()
                     }
                 }
             }

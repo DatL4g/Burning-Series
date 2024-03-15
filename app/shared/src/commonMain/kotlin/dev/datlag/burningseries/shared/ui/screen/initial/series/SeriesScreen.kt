@@ -26,6 +26,7 @@ import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.shared.common.LocalPadding
 import dev.datlag.burningseries.shared.common.diagonalShape
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.other.StateSaver
@@ -159,7 +160,7 @@ private fun CompactScreen(component: SeriesComponent) {
                 text = title.ifBlank {
                     stringResource(SharedRes.strings.loading_intent_series)
                 },
-                modifier = Modifier.road(Alignment.TopStart, Alignment.BottomStart).padding(16.dp).background(
+                modifier = Modifier.road(Alignment.TopStart, Alignment.BottomStart).padding(horizontal = 16.dp).background(
                     color = Color.Black.copy(alpha = run {
                         val alpha = state.toolbarState.progress
                         if (alpha < 0.5F) {
@@ -193,35 +194,31 @@ private fun CompactScreen(component: SeriesComponent) {
             )
         },
         title = { state ->
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val reversedProgress by remember {
-                    derivedStateOf { (abs(1F - state.toolbarState.progress)) }
-                }
-
-                Text(
-                    text = title.ifBlank {
-                        stringResource(SharedRes.strings.loading_intent_series)
-                    },
-                    color = LocalContentColor.current.copy(alpha = run {
-                        val alpha = reversedProgress
-                        if (alpha < 0.7F) {
-                            if (alpha < 0.3F) {
-                                0F
-                            } else {
-                                alpha
-                            }
-                        } else {
-                            1F
-                        }
-                    }),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    softWrap = true
-                )
+            val reversedProgress by remember {
+                derivedStateOf { (abs(1F - state.toolbarState.progress)) }
             }
+
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = title.ifBlank {
+                    stringResource(SharedRes.strings.loading_intent_series)
+                },
+                color = LocalContentColor.current.copy(alpha = run {
+                    val alpha = reversedProgress
+                    if (alpha < 0.7F) {
+                        if (alpha < 0.3F) {
+                            0F
+                        } else {
+                            alpha
+                        }
+                    } else {
+                        1F
+                    }
+                }),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = true
+            )
         },
         navigationIcon = { state ->
             IconButton(
@@ -274,7 +271,7 @@ private fun CompactScreen(component: SeriesComponent) {
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp)
+                    contentPadding = LocalPadding(horizontal = 16.dp)
                 ) {
                     item(key = current.series.description) {
                         DescriptionText(current.series.description)

@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import com.kmpalette.DominantColorState
 import com.kmpalette.rememberPainterDominantColorState
 import com.materialkolor.AnimatedDynamicMaterialTheme
+import com.materialkolor.DynamicMaterialTheme
 import dev.datlag.burningseries.shared.LocalDarkMode
 import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
@@ -78,15 +79,12 @@ fun SchemeTheme(key: Any?, content: @Composable () -> Unit) {
         SchemeTheme.itemScheme.map { it[key] }
     }.collectAsStateWithLifecycle(SchemeTheme.itemScheme.value[key])
 
-    AnimatedDynamicMaterialTheme(
+    DynamicMaterialTheme(
         seedColor = color ?: MaterialTheme.colorScheme.primary,
-        useDarkTheme = LocalDarkMode.current
+        useDarkTheme = LocalDarkMode.current,
+        animate = true
     ) {
-        androidx.compose.material.MaterialTheme(
-            colors = MaterialTheme.colorScheme.toLegacyColors(LocalDarkMode.current)
-        ) {
-            content()
-        }
+        content()
     }
 }
 

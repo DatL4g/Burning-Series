@@ -1,9 +1,5 @@
 package dev.datlag.burningseries.shared.ui.theme
 
-import androidx.compose.material.Colors
-import androidx.compose.material.Shapes
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -14,44 +10,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import dev.datlag.burningseries.shared.SharedRes
 import dev.icerock.moko.resources.compose.asFont
-
-fun androidx.compose.material3.ColorScheme.toLegacyColors(isDark: Boolean): Colors {
-    return if (isDark) {
-        darkColors(
-            primary = this.primary,
-            primaryVariant = this.primaryContainer,
-            secondary = this.secondary,
-            secondaryVariant = this.secondaryContainer,
-            background = this.background,
-            surface = this.surface,
-            error = this.error,
-            onPrimary = this.onPrimary,
-            onSecondary = this.onSecondary,
-            onBackground = this.onBackground,
-            onSurface = this.onSurface,
-            onError = this.onError
-        )
-    } else {
-        lightColors(
-            primary = this.primary,
-            primaryVariant = this.primaryContainer,
-            secondary = this.secondary,
-            secondaryVariant = this.secondaryContainer,
-            background = this.background,
-            surface = this.surface,
-            error = this.error,
-            onPrimary = this.onPrimary,
-            onSecondary = this.onSecondary,
-            onBackground = this.onBackground,
-            onSurface = this.onSurface,
-            onError = this.onError
-        )
-    }
-}
-
-fun androidx.compose.material3.Shapes.toLegacyShapes(): Shapes {
-    return Shapes(this.small, this.medium, this.large)
-}
 
 @Composable
 fun ManropeFontFamily(): FontFamily {
@@ -192,17 +150,6 @@ fun ManropeTypography(): Typography {
                 lineHeight = 16.0.sp,
                 letterSpacing = 0.5.sp
             )
-        )
-    }
-}
-
-@Composable
-fun ManropeTypographyLegacy(): androidx.compose.material.Typography {
-    val fontFamily = ManropeFontFamily()
-
-    return remember(fontFamily) {
-        androidx.compose.material.Typography(
-            defaultFontFamily = fontFamily
         )
     }
 }

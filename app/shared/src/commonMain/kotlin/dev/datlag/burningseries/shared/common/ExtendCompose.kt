@@ -8,6 +8,7 @@ import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
@@ -20,8 +21,13 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.model.common.collectSafe
+import dev.datlag.burningseries.shared.LocalPaddingValues
 import dev.datlag.burningseries.shared.ui.theme.shape.DiagonalShape
 import kotlin.math.max
 
@@ -201,4 +207,41 @@ fun PathBuilder.drawPathFromSvgData(data: String) {
             "Z", "z" -> close()
         }
     }
+}
+
+@Composable
+operator fun PaddingValues.plus(other: PaddingValues): PaddingValues {
+    val direction = LocalLayoutDirection.current
+
+    return PaddingValues(
+        start = this.calculateStartPadding(direction) + other.calculateStartPadding(direction),
+        top = this.calculateTopPadding() + other.calculateTopPadding(),
+        end = this.calculateEndPadding(direction) + other.calculateEndPadding(direction),
+        bottom = this.calculateBottomPadding() + other.calculateBottomPadding()
+    )
+}
+
+fun Modifier.localPadding(additional: PaddingValues = PaddingValues(0.dp)) = composed {
+    this.padding(LocalPaddingValues.current?.plus(additional) ?: additional)
+}
+
+fun Modifier.localPadding(horizontal: Dp = 0.dp, vertical: Dp = 0.dp) = composed {
+    this.localPadding(PaddingValues(horizontal = horizontal, vertical = vertical))
+}
+
+@Composable
+fun LocalPadding(additional: PaddingValues = PaddingValues(0.dp)): PaddingValues {
+    return LocalPaddingValues.current?.plus(additional) ?: additional
+}
+
+@Composable
+fun LocalPadding(additional: Dp): PaddingValues {
+    return LocalPaddingValues.current?.plus(PaddingValues(additional)) ?: PaddingValues(additional)
+}
+
+@Composable
+fun LocalPadding(horizontal: Dp = 0.dp, vertical: Dp = 0.dp): PaddingValues {
+    return LocalPaddingValues.current?.plus(
+        PaddingValues(horizontal = horizontal, vertical = vertical)
+    ) ?: PaddingValues(horizontal = horizontal, vertical = vertical)
 }

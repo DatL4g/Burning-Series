@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.shared.common.LocalPadding
 import dev.datlag.burningseries.shared.common.header
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.onClick
@@ -94,7 +95,7 @@ private fun ExpandedView(component: FavoriteComponent) {
 @Composable
 private fun MainView(component: FavoriteComponent, modifier: Modifier = Modifier) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         val favorites by component.favorites.collectAsStateWithLifecycle()
@@ -106,7 +107,7 @@ private fun MainView(component: FavoriteComponent, modifier: Modifier = Modifier
             state = listState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(8.dp)
+            contentPadding = LocalPadding()
         ) {
             header {
                 SearchBar(component)
