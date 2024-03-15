@@ -96,7 +96,7 @@ private fun ExpandedView(home: Home, component: HomeComponent) {
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         val modifier = if (childState.child?.configuration != null) {
-            Modifier.widthIn(max = 700.dp)
+            Modifier.weight(1F).widthIn(min = 100.dp, max = 700.dp)
         } else {
             Modifier.fillMaxWidth()
         }
