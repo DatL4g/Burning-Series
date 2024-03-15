@@ -21,6 +21,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
@@ -225,7 +226,11 @@ fun Modifier.localPadding(additional: PaddingValues = PaddingValues(0.dp)) = com
     this.padding(LocalPaddingValues.current?.plus(additional) ?: additional)
 }
 
-fun Modifier.localPadding(horizontal: Dp = 0.dp, vertical: Dp = 0.dp) = composed {
+fun Modifier.localPadding(all: Dp) = composed {
+    this.localPadding(PaddingValues(all))
+}
+
+fun Modifier.localPadding(horizontal: Dp, vertical: Dp = 0.dp) = composed {
     this.localPadding(PaddingValues(horizontal = horizontal, vertical = vertical))
 }
 

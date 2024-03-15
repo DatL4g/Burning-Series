@@ -24,6 +24,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import dev.chrisbanes.haze.haze
+import dev.datlag.burningseries.shared.LocalHaze
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.LocalPadding
 import dev.datlag.burningseries.shared.common.header
@@ -103,7 +105,7 @@ private fun MainView(component: FavoriteComponent, modifier: Modifier = Modifier
 
         LazyVerticalGrid(
             columns = GridCells.Adaptive(400.dp),
-            modifier = Modifier.weight(1F),
+            modifier = Modifier.weight(1F).haze(state = LocalHaze.current),
             state = listState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

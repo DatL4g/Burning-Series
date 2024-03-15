@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Redo
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -21,14 +22,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import dev.chrisbanes.haze.haze
 import dev.datlag.burningseries.database.Episode
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.state.SeriesState
+import dev.datlag.burningseries.shared.LocalHaze
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.LocalPadding
 import dev.datlag.burningseries.shared.common.diagonalShape
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
+import dev.datlag.burningseries.shared.common.localPadding
 import dev.datlag.burningseries.shared.other.StateSaver
 import dev.datlag.burningseries.shared.ui.custom.Cover
 import dev.datlag.burningseries.shared.ui.custom.DefaultCollapsingToolbar
@@ -78,7 +82,7 @@ fun SeriesScreen(component: SeriesComponent) {
                     onClick = {
                         component.itemClicked(next)
                     },
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+                    modifier = Modifier.align(Alignment.BottomEnd).localPadding(16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
@@ -94,7 +98,7 @@ fun SeriesScreen(component: SeriesComponent) {
                     onClick = {
                         component.switchToSeason(next)
                     },
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+                    modifier = Modifier.align(Alignment.BottomEnd).localPadding(16.dp)
                 ) {
                     val seasonText = if (next.title.toIntOrNull() != null) {
                         stringResource(SharedRes.strings.season_placeholder, next.title)
@@ -103,7 +107,7 @@ fun SeriesScreen(component: SeriesComponent) {
                     }
 
                     Icon(
-                        imageVector = Icons.Default.Redo,
+                        imageVector = Icons.AutoMirrored.Default.Redo,
                         contentDescription = next.title,
                         modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
@@ -270,7 +274,7 @@ private fun CompactScreen(component: SeriesComponent) {
                 val dbEpisodes by component.dbEpisodes.collectAsStateWithLifecycle()
 
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
                     contentPadding = LocalPadding(horizontal = 16.dp)
                 ) {
                     item(key = current.series.description) {
@@ -353,7 +357,7 @@ private fun DefaultScreen(component: SeriesComponent) {
 
                 LazyColumn(
                     state = state,
-                    modifier = Modifier.weight(1F),
+                    modifier = Modifier.weight(1F).haze(state = LocalHaze.current),
                     contentPadding = PaddingValues(16.dp)
                 ) {
                     item {

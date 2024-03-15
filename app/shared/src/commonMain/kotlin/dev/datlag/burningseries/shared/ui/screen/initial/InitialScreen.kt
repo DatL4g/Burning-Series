@@ -11,11 +11,18 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.pages.Pages
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
+import dev.datlag.burningseries.shared.LocalHaze
 import dev.datlag.burningseries.shared.LocalPaddingValues
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.rememberIsTv
@@ -25,24 +32,30 @@ import dev.icerock.moko.resources.compose.stringResource
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun InitialScreen(component: InitialComponent) {
-    Box(
-        modifier = Modifier.fillMaxSize()
+    val haze = remember { HazeState() }
+
+    CompositionLocalProvider(
+        LocalHaze provides haze
     ) {
-        when (calculateWindowSizeClass().widthSizeClass) {
-            WindowWidthSizeClass.Compact -> CompactScreen(component)
-            WindowWidthSizeClass.Medium -> MediumScreen(component)
-            WindowWidthSizeClass.Expanded -> {
-                if (rememberIsTv()) {
-                    MediumScreen(component)
-                } else {
-                    ExpandedScreen(component)
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            when (calculateWindowSizeClass().widthSizeClass) {
+                WindowWidthSizeClass.Compact -> CompactScreen(component)
+                WindowWidthSizeClass.Medium -> MediumScreen(component)
+                WindowWidthSizeClass.Expanded -> {
+                    if (rememberIsTv()) {
+                        MediumScreen(component)
+                    } else {
+                        ExpandedScreen(component)
+                    }
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalDecomposeApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalDecomposeApi::class, ExperimentalFoundationApi::class, ExperimentalHazeMaterialsApi::class)
 @Composable
 private fun CompactScreen(
     component: InitialComponent
@@ -51,7 +64,14 @@ private fun CompactScreen(
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                modifier = Modifier.hazeChild(
+                    state = LocalHaze.current,
+                    style = HazeMaterials.thin(NavigationBarDefaults.containerColor)
+                ).fillMaxWidth(),
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.contentColorFor(NavigationBarDefaults.containerColor)
+            ) {
                 component.pagerItems.forEachIndexed { index, item ->
                     NavigationBarItem(
                         selected = selectedPage == index,

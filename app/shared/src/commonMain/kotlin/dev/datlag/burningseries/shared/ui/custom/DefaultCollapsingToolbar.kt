@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.shared.common.LocalPadding
 import dev.datlag.burningseries.shared.common.launchMain
-import dev.datlag.burningseries.shared.common.toWindowInsets
 import dev.datlag.burningseries.shared.common.withIOContext
 import dev.datlag.burningseries.shared.ui.custom.toolbar.*
 import io.github.aakira.napier.Napier
@@ -43,40 +42,24 @@ fun DefaultCollapsingToolbar(
         toolbar = {
             expandedBody(state)
 
-            Surface(
-                modifier = Modifier.pin(),
-                color = MaterialTheme.colorScheme.surface.copy(alpha = reversedProgress),
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize().windowInsetsPadding(TopAppBarDefaults.windowInsets),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Box(
-                        modifier = Modifier.padding(start = 4.dp)
-                    ) {
-                        navigationIcon?.invoke(state)
-                    }
-                    Box(
-                        modifier = Modifier.weight(1F),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        CompositionLocalProvider(
-                            LocalTextStyle provides MaterialTheme.typography.titleLarge
-                        ) {
-                            title(state)
-                        }
-                    }
-                    Row(
-                        modifier = Modifier.padding(end = 4.dp),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        actions(state)
-                    }
+            TopAppBar(
+                modifier = Modifier.fillMaxSize(),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = reversedProgress),
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    actionIconContentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                navigationIcon = {
+                    navigationIcon?.invoke(state)
+                },
+                title = {
+                    title(state)
+                },
+                actions = {
+                    actions(state)
                 }
-            }
+            )
         }
     ) {
         content()

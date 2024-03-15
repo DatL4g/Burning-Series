@@ -17,8 +17,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import dev.chrisbanes.haze.haze
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.state.HomeState
+import dev.datlag.burningseries.shared.LocalHaze
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.LocalPadding
 import dev.datlag.burningseries.shared.common.header
@@ -135,7 +137,7 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
 
         LazyVerticalGrid(
             columns = GridCells.Adaptive(400.dp),
-            modifier = Modifier.weight(1F),
+            modifier = Modifier.weight(1F).haze(state = LocalHaze.current),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = LocalPadding(),
