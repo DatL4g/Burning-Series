@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
@@ -115,6 +116,14 @@ private fun MainView(component: FavoriteComponent, modifier: Modifier = Modifier
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = LocalPadding()
             ) {
+                header {
+                    Text(
+                        modifier = Modifier.padding(top = 16.dp),
+                        text = stringResource(SharedRes.strings.favorites),
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 items(favorites, key = { it.hrefPrimary }) { fav ->
                     SeriesCard(
                         series = fav,

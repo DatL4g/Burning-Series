@@ -3,6 +3,7 @@ package dev.datlag.burningseries.shared.ui.custom
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,7 +18,7 @@ import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 actual fun ProjectCard(project: Project, modifier: Modifier) {
-    Card(
+    ElevatedCard(
         modifier = modifier,
         onClick = {
             (project.github ?: project.googlePlay)?.openInBrowser()

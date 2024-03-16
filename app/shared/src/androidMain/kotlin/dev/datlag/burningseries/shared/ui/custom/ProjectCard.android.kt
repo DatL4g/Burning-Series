@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +25,7 @@ actual fun ProjectCard(project: Project, modifier: Modifier) {
     val context = LocalContext.current
 
     if (context.isPackageInstalled(project.`package`)) {
-        Card(
+        ElevatedCard(
             modifier = modifier,
             onClick = {
                 (project.googlePlay ?: project.github)?.openInBrowser(context)
