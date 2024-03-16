@@ -99,7 +99,6 @@ private fun CompactScreen(
             Box(modifier = Modifier.fillMaxSize()) {
                 val homeScrollEnabled by component.homeScrollEnabled.collectAsStateWithLifecycle()
                 val favoriteScrollEnabled by component.favoriteScrollEnabled.collectAsStateWithLifecycle()
-                val searchScrollEnabled by component.searchScrollEnabled.collectAsStateWithLifecycle()
 
                 Pages(
                     pages = component.pages,
@@ -112,8 +111,7 @@ private fun CompactScreen(
                         val scrollEnabled = when (state.currentPage) {
                             0 -> homeScrollEnabled
                             1 -> favoriteScrollEnabled
-                            2 -> searchScrollEnabled
-                            else -> homeScrollEnabled && favoriteScrollEnabled && searchScrollEnabled
+                            else -> homeScrollEnabled && favoriteScrollEnabled
                         }
                         HorizontalPager(
                             modifier = modifier,

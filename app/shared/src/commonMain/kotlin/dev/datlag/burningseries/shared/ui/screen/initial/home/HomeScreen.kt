@@ -5,6 +5,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -28,6 +32,7 @@ import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecy
 import dev.datlag.burningseries.shared.common.localPadding
 import dev.datlag.burningseries.shared.other.StateSaver
 import dev.datlag.burningseries.shared.rememberIsTv
+import dev.datlag.burningseries.shared.ui.custom.FloatingSearchButton
 import dev.datlag.burningseries.shared.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.shared.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.shared.ui.custom.state.ErrorState
@@ -126,86 +131,98 @@ private fun ExpandedView(home: Home, component: HomeComponent) {
 
 @Composable
 private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(2.dp)
-    ) {
-        val state = rememberLazyGridState(
-            initialFirstVisibleItemIndex = StateSaver.homeGridIndex,
-            initialFirstVisibleItemScrollOffset = StateSaver.homeGridOffset
-        )
-
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(400.dp),
-            modifier = Modifier.weight(1F).haze(state = LocalHaze.current),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = LocalPadding(),
-            state = state
+    Box(modifier = modifier) {
+        Row(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            DeviceContent(component.release, component.onDeviceReachable)
-            header {
-                Row(
-                    modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1F),
-                        text = stringResource(SharedRes.strings.newest_episodes),
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    if (!StateSaver.sekretLibraryLoaded) {
-                        IconButton(
-                            onClick = {
-                                component.showDialog(DialogConfig.Sekret)
-                            },
-                            colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.onErrorContainer
-                            )
-                        ) {
-                            Icon(
-                                imageVector = MaterialSymbols.rememberDeployedCodeAlert(),
-                                contentDescription = stringResource(SharedRes.strings.sekret_unavailable_title)
-                            )
+            val state = rememberLazyGridState(
+                initialFirstVisibleItemIndex = StateSaver.homeGridIndex,
+                initialFirstVisibleItemScrollOffset = StateSaver.homeGridOffset
+            )
+
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(400.dp),
+                modifier = Modifier.weight(1F).haze(state = LocalHaze.current),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = LocalPadding(),
+                state = state
+            ) {
+                DeviceContent(component.release, component.onDeviceReachable)
+                header {
+                    Row(
+                        modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier.weight(1F),
+                            text = stringResource(SharedRes.strings.newest_episodes),
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        if (!StateSaver.sekretLibraryLoaded) {
+                            IconButton(
+                                onClick = {
+                                    component.showDialog(DialogConfig.Sekret)
+                                },
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = MaterialSymbols.rememberDeployedCodeAlert(),
+                                    contentDescription = stringResource(SharedRes.strings.sekret_unavailable_title)
+                                )
+                            }
                         }
                     }
                 }
-            }
-            items(home.episodes, key = {
-                it.href
-            }) { episode ->
-                EpisodeItem(episode) {
-                    component.itemClicked(HomeConfig.Series(episode))
+                items(home.episodes, key = {
+                    it.href
+                }) { episode ->
+                    EpisodeItem(episode) {
+                        component.itemClicked(HomeConfig.Series(episode))
+                    }
+                }
+                header {
+                    Spacer(modifier = Modifier.size(48.dp))
+                }
+                header {
+                    Text(
+                        text = stringResource(SharedRes.strings.newest_series),
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                items(home.series, key = {
+                    it.href
+                }) { series ->
+                    SeriesItem(series) {
+                        component.itemClicked(HomeConfig.Series(series))
+                    }
                 }
             }
-            header {
-                Spacer(modifier = Modifier.size(48.dp))
-            }
-            header {
-                Text(
-                    text = stringResource(SharedRes.strings.newest_series),
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            items(home.series, key = {
-                it.href
-            }) { series ->
-                SeriesItem(series) {
-                    component.itemClicked(HomeConfig.Series(series))
-                }
-            }
-        }
-        VerticalScrollbar(rememberScrollbarAdapter(state))
+            VerticalScrollbar(rememberScrollbarAdapter(state))
 
-        DisposableEffect(state) {
-            onDispose {
-                StateSaver.homeGridIndex = state.firstVisibleItemIndex
-                StateSaver.homeGridOffset = state.firstVisibleItemScrollOffset
+            DisposableEffect(state) {
+                onDispose {
+                    StateSaver.homeGridIndex = state.firstVisibleItemIndex
+                    StateSaver.homeGridOffset = state.firstVisibleItemScrollOffset
+                }
             }
         }
+        FloatingSearchButton(
+            icon = Icons.Default.Search,
+            contentDescription = null,
+            clearIcon = Icons.Default.Clear,
+            closeIcon = Icons.AutoMirrored.Default.KeyboardArrowRight,
+            modifier = Modifier.align(Alignment.BottomEnd).localPadding(16.dp),
+            onTextChange = {
+
+            }
+        )
     }
 }

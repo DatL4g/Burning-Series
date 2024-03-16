@@ -3,10 +3,13 @@ package dev.datlag.burningseries.shared.ui.custom.toolbar
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +29,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import dev.datlag.burningseries.model.common.safeCast
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 @Stable
 class CollapsingToolbarScaffoldState(
@@ -71,6 +75,7 @@ interface CollapsingToolbarScaffoldScope {
     fun Modifier.align(alignment: Alignment): Modifier
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollapsingToolbarScaffold(
     modifier: Modifier,
@@ -78,6 +83,7 @@ fun CollapsingToolbarScaffold(
     scrollStrategy: ScrollStrategy,
     enabled: Boolean = true,
     toolbarModifier: Modifier = Modifier,
+    toolbarPadding: Int = TopAppBarDefaults.windowInsets.asPaddingValues().calculateTopPadding().value.roundToInt(),
     toolbarClipToBounds: Boolean = true,
     toolbarScrollable: Boolean = false,
     toolbar: @Composable CollapsingToolbarScope.() -> Unit,
@@ -131,13 +137,14 @@ fun CollapsingToolbarScaffold(
         )
 
         val toolbarPlaceable = measurables[0].measure(toolbarConstraints)
+        val toolbarHeight = toolbarPlaceable.height + toolbarPadding
 
         val bodyConstraints = constraints.copy(
             minWidth = 0,
             minHeight = 0,
             maxHeight = when (scrollStrategy) {
                 ScrollStrategy.ExitUntilCollapsed ->
-                    (constraints.maxHeight - toolbarState.minHeight).coerceAtLeast(0)
+                    (constraints.maxHeight - toolbarHeight).coerceAtLeast(0)
 
                 ScrollStrategy.EnterAlways, ScrollStrategy.EnterAlwaysCollapsed ->
                     constraints.maxHeight
@@ -151,8 +158,6 @@ fun CollapsingToolbarScaffold(
         val bodyPlaceables = bodyMeasurables.map {
             it.measure(bodyConstraints)
         }
-
-        val toolbarHeight = toolbarPlaceable.height
 
         val width = max(
             toolbarPlaceable.width,

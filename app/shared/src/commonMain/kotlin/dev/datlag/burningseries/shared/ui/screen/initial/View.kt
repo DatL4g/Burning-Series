@@ -13,7 +13,4 @@ sealed class View {
 
     @Serializable
     data object Favorite : View()
-
-    @Serializable
-    data object Search : View()
 }

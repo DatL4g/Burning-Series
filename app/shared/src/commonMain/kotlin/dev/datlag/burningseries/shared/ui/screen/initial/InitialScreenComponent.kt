@@ -43,11 +43,6 @@ class InitialScreenComponent(
             label = SharedRes.strings.favorites,
             unselectedIcon = Icons.Outlined.FavoriteBorder,
             selectedIcon = Icons.Filled.Favorite
-        ),
-        InitialComponent.PagerItem(
-            label = SharedRes.strings.search,
-            unselectedIcon = Icons.Outlined.Search,
-            selectedIcon = Icons.Filled.Search
         )
     )
 
@@ -62,8 +57,7 @@ class InitialScreenComponent(
             Pages(
                 items = listOf(
                     View.Home(shortcutIntent),
-                    View.Favorite,
-                    View.Search
+                    View.Favorite
                 ),
                 selectedIndex = when (shortcutIntent) {
                     is Shortcut.Intent.SEARCH -> 2
@@ -113,14 +107,6 @@ class InitialScreenComponent(
                     watchVideo(schemeKey, series, episode, stream)
                 },
                 scrollEnabled = { favoriteScrollEnabled.value = it }
-            )
-            is View.Search -> SearchScreenComponent(
-                componentContext = componentContext,
-                di = di,
-                watchVideo = { schemeKey, series, episode, stream ->
-                    watchVideo(schemeKey, series, episode, stream)
-                },
-                scrollEnabled = { searchScrollEnabled.value = it }
             )
         }
     }
