@@ -5,6 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,15 +26,16 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun FloatingSearchButton(
-    icon: ImageVector,
-    contentDescription: String?,
-    clearIcon: ImageVector,
-    closeIcon: ImageVector,
+    icon: ImageVector = Icons.Default.Search,
+    contentDescription: String? = stringResource(SharedRes.strings.search),
+    clearIcon: ImageVector = Icons.Default.Clear,
+    closeIcon: ImageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
     modifier: Modifier = Modifier,
     onTextChange: (String) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     var opened by remember { mutableStateOf(false) }
+    val textState = remember { mutableStateOf("") }
 
     Surface(
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -54,6 +59,7 @@ fun FloatingSearchButton(
                     clearIcon = clearIcon,
                     closeIcon = closeIcon,
                     focusRequester = focusRequester,
+                    textState = textState,
                     onTextChange = onTextChange
                 )
 
@@ -81,18 +87,17 @@ fun FloatingSearchButton(
 @Composable
 private fun SearchBar(
     focusRequester: FocusRequester,
+    textState: MutableState<String>,
     close: () -> Unit,
     clearIcon: ImageVector,
     closeIcon: ImageVector,
     onTextChange: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
-
     TextField(
-        value = text,
+        value = textState.value,
         onValueChange = {
-            text = it
-            onTextChange(text)
+            textState.value = it
+            onTextChange(textState.value)
         },
         modifier = Modifier.focusRequester(focusRequester),
         placeholder = {
@@ -117,8 +122,8 @@ private fun SearchBar(
         trailingIcon = {
             IconButton(
                 onClick = {
-                    text = ""
-                    onTextChange(text)
+                    textState.value = ""
+                    onTextChange(textState.value)
                 }
             ) {
                 Icon(

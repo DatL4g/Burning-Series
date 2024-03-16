@@ -95,6 +95,12 @@ val Series.bestTitle
         }
     }
 
+val Series.mainTitle
+    get() = bestTitle.substringBefore('|').trim()
+
+val Series.subTitle
+    get() = bestTitle.substringAfter('|', missingDelimiterValue = "").trim().ifBlank { null }
+
 private val allTitlesCache = mutableMapOf<Series, List<String>>()
 private val bestTitleCache = mutableMapOf<Series, String>()
 

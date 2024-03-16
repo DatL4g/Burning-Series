@@ -15,6 +15,7 @@ import dev.datlag.burningseries.model.common.safeSubList
 import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
+import dev.datlag.burningseries.shared.common.launchIO
 import dev.datlag.burningseries.shared.other.Crashlytics
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.series.SeriesScreenComponent
@@ -43,10 +44,10 @@ class FavoriteScreenComponent(
         .flowOn(ioDispatcher())
         .stateIn(ioScope(), SharingStarted.WhileSubscribed(), emptyList())
 
-    private val searchQuery: MutableStateFlow<String> = MutableStateFlow(String())
+    private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
     override val searchItems: StateFlow<List<Series>> = combine(favorites, searchQuery) { t1, t2 ->
         if (t2.isBlank()) {
-            emptyList()
+            t1
         } else {
             coroutineScope {
                 t1.map {
@@ -107,7 +108,9 @@ class FavoriteScreenComponent(
     }
 
     override fun searchQuery(text: String) {
-        searchQuery.value = text.trim()
+        ioScope().launchIO {
+            searchQuery.emit(text)
+        }
     }
 
     override fun dismissHoldingSeries() {

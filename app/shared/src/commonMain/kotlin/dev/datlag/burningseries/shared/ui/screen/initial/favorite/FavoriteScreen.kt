@@ -17,6 +17,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onSizeChanged
@@ -30,10 +31,13 @@ import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.LocalPadding
 import dev.datlag.burningseries.shared.common.header
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
+import dev.datlag.burningseries.shared.common.localPadding
 import dev.datlag.burningseries.shared.common.onClick
 import dev.datlag.burningseries.shared.rememberIsTv
+import dev.datlag.burningseries.shared.ui.custom.FloatingSearchButton
 import dev.datlag.burningseries.shared.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.shared.ui.custom.rememberScrollbarAdapter
+import dev.datlag.burningseries.shared.ui.screen.initial.favorite.component.SeriesCard
 import dev.datlag.burningseries.shared.ui.screen.initial.home.component.SeriesItem
 import dev.icerock.moko.resources.compose.stringResource
 
@@ -96,92 +100,41 @@ private fun ExpandedView(component: FavoriteComponent) {
 
 @Composable
 private fun MainView(component: FavoriteComponent, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(2.dp)
+    Box(
+        modifier = modifier
     ) {
-        val favorites by component.favorites.collectAsStateWithLifecycle()
-        val listState = rememberLazyGridState()
-
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(400.dp),
-            modifier = Modifier.weight(1F).haze(state = LocalHaze.current),
-            state = listState,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = LocalPadding()
+        Row(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            header {
-                SearchBar(component)
-            }
-            items(favorites, key = { it.hrefPrimary }) { fav ->
-                SeriesItem(fav) {
-                    component.itemClicked(FavoriteConfig.Series(fav))
-                }
-            }
-        }
-        VerticalScrollbar(rememberScrollbarAdapter(listState))
-    }
-}
+            val favorites by component.searchItems.collectAsStateWithLifecycle()
+            val listState = rememberLazyGridState()
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SearchBar(component: FavoriteComponent) {
-    val items by component.searchItems.collectAsStateWithLifecycle()
-    var queryComp by remember { mutableStateOf(String()) }
-
-    DockedSearchBar(
-        query = queryComp,
-        onQueryChange = {
-            queryComp = it
-        },
-        onSearch = {
-            queryComp = it
-        },
-        modifier = Modifier.fillMaxWidth().animateContentSize(),
-        active = queryComp.isNotBlank() && items.isNotEmpty(),
-        onActiveChange = {},
-        placeholder = {
-            Text(text = stringResource(SharedRes.strings.search))
-        },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(SharedRes.strings.search)
-            )
-        },
-        trailingIcon = {
-            AnimatedVisibility(
-                visible = queryComp.isNotBlank(),
-                enter = fadeIn(),
-                exit = fadeOut()
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(150.dp),
+                modifier = Modifier.weight(1F).haze(state = LocalHaze.current),
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = LocalPadding()
             ) {
-                IconButton(
-                    onClick = {
-                        queryComp = String()
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = stringResource(SharedRes.strings.clear)
+                items(favorites, key = { it.hrefPrimary }) { fav ->
+                    SeriesCard(
+                        series = fav,
+                        modifier = Modifier.width(150.dp).height(230.dp),
+                        onClick = {
+                            component.itemClicked(FavoriteConfig.Series(fav))
+                        }
                     )
                 }
             }
+            VerticalScrollbar(rememberScrollbarAdapter(listState))
         }
-    ) {
-        items.forEach { item ->
-            Text(
-                modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.extraSmall).onClick {
-                    component.itemClicked(FavoriteConfig.Series(item))
-                }.padding(12.dp),
-                text = item.title,
-                softWrap = true,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
-
-    LaunchedEffect(queryComp) {
-        component.searchQuery(queryComp)
+        FloatingSearchButton(
+            modifier = Modifier.align(Alignment.BottomEnd).localPadding(16.dp),
+            onTextChange = {
+                component.searchQuery(it)
+            }
+        )
     }
 }

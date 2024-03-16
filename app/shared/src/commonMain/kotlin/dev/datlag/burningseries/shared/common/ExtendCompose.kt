@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.shared.common
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -18,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.input.pointer.pointerInput
@@ -249,4 +252,19 @@ fun LocalPadding(horizontal: Dp = 0.dp, vertical: Dp = 0.dp): PaddingValues {
     return LocalPaddingValues.current?.plus(
         PaddingValues(horizontal = horizontal, vertical = vertical)
     ) ?: PaddingValues(horizontal = horizontal, vertical = vertical)
+}
+
+fun Modifier.bottomShadowBrush(color: Color, alpha: Float = 1F): Modifier {
+    val maxAlpha = kotlin.math.min(alpha, 1F)
+
+    return this.background(
+        brush = Brush.verticalGradient(
+            0.0f to Color.Transparent,
+            0.1f to color.copy(alpha = 0.35f * maxAlpha),
+            0.3f to color.copy(alpha = 0.55f * maxAlpha),
+            0.5f to color.copy(alpha = 0.75f * maxAlpha),
+            0.7f to color.copy(alpha = 0.95f * maxAlpha),
+            0.9f to color.copy(alpha = 1f * maxAlpha)
+        )
+    )
 }
