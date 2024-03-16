@@ -1,4 +1,4 @@
-package dev.datlag.burningseries.shared.ui.screen.initial.search
+package dev.datlag.burningseries.shared.ui.screen.initial.home.search
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize

@@ -7,6 +7,9 @@ import kotlinx.serialization.Serializable
 sealed class View {
 
     @Serializable
+    data object Sponsor : View()
+
+    @Serializable
     data class Home(
         val shortcutIntent: Shortcut.Intent
     ) : View()

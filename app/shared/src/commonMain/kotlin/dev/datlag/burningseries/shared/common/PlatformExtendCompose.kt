@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import com.arkivanov.decompose.extensions.compose.stack.animation.StackAnimation
 import com.arkivanov.essenty.backhandler.BackHandler
 import com.vanniktech.blurhash.BlurHash
+import org.kodein.di.DI
 
 expect fun Modifier.onClick(
     enabled: Boolean = true,
@@ -23,3 +24,5 @@ expect fun BlurHash.decode(
     width: Int,
     height: Int
 ): ImageBitmap?
+
+expect fun String.openInBrowser(di: DI)

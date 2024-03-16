@@ -74,6 +74,15 @@
     <string name="unmuted">Unmuted</string>
     <string name="loading_intent_series">Loading series</string>
     <string name="enable_custom_dns">You should set a custom DNS to make sure you can access all features.</string>
-    <string name="google_play_pulz">Are you interested in Gaming or E-Sports?</string>
     <string name="yes">Yes</string>
+    <string name="sponsor">Sponsor</string>
+    <string name="sponsor_text">Maintaining this project is time and money consuming, please consider contributing financially to support it\'s upkeep.</string>
+    <string name="polar">Polar</string>
+    <string name="patreon">Patreon</string>
+    <string name="paypal">PayPal</string>
+    <string name="amount_text">The amount doesn\'t matter, whether it\'s 1€ or 10€, just choose what you can afford and you\'re most comfortable with :)</string>
+    <string name="free_support">Free Support</string>
+    <string name="free_support_text">You\'re unable to support me financially? No problem, here are some projects you can check out instead.</string>
+    <string name="pulz">PulZ</string>
+    <string name="pulz_subtitle">Gaming and E-Sport content</string>
 </resources>

@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.shared.common
 
+import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.ui.Modifier
@@ -12,6 +13,8 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.essenty.backhandler.BackHandler
 import com.vanniktech.blurhash.BlurHash
+import org.kodein.di.DI
+import org.kodein.di.instance
 import com.vanniktech.blurhash.BlurHash.decode as defaultDecode
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -42,4 +45,10 @@ actual fun <C : Any, T : Any> backAnimation(
 actual fun BlurHash.decode(hash: String, width: Int, height: Int): ImageBitmap? {
     val bitmap = defaultDecode(hash, width, height)
     return bitmap?.asImageBitmap()
+}
+
+actual fun String.openInBrowser(di: DI) {
+    val context by di.instance<Context>()
+
+    this.openInBrowser(context)
 }

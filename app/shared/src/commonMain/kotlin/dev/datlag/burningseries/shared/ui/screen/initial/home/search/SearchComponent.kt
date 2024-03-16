@@ -1,4 +1,4 @@
-package dev.datlag.burningseries.shared.ui.screen.initial.search
+package dev.datlag.burningseries.shared.ui.screen.initial.home.search
 
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value

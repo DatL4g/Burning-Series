@@ -3,11 +3,9 @@ package dev.datlag.burningseries.shared.ui.screen.initial
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.ComponentContext
@@ -19,9 +17,11 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Shortcut
 import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.SharedRes
+import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.favorite.FavoriteScreenComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.home.HomeScreenComponent
-import dev.datlag.burningseries.shared.ui.screen.initial.search.SearchScreenComponent
+import dev.datlag.burningseries.shared.ui.screen.initial.home.search.SearchScreenComponent
+import dev.datlag.burningseries.shared.ui.screen.initial.sponsor.SponsorScreenComponent
 import dev.datlag.skeo.Stream
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.kodein.di.DI
@@ -34,6 +34,11 @@ class InitialScreenComponent(
 ) : InitialComponent, ComponentContext by componentContext {
 
     override val pagerItems: List<InitialComponent.PagerItem> = listOf(
+        InitialComponent.PagerItem(
+            label = SharedRes.strings.sponsor,
+            unselectedIcon = Icons.Outlined.Savings,
+            selectedIcon = Icons.Filled.Savings
+        ),
         InitialComponent.PagerItem(
             label = SharedRes.strings.home,
             unselectedIcon = Icons.Outlined.Home,
@@ -50,19 +55,20 @@ class InitialScreenComponent(
     private val pagesNavigation = PagesNavigation<View>()
 
     @OptIn(ExperimentalDecomposeApi::class)
-    override val pages: Value<ChildPages<View, SeriesHolderComponent>> = childPages(
+    override val pages: Value<ChildPages<View, Component>> = childPages(
         source = pagesNavigation,
         serializer = View.serializer(),
         initialPages = {
             Pages(
                 items = listOf(
+                    View.Sponsor,
                     View.Home(shortcutIntent),
                     View.Favorite
                 ),
                 selectedIndex = when (shortcutIntent) {
-                    is Shortcut.Intent.SEARCH -> 2
-                    is Shortcut.Intent.Series -> 0
-                    else -> 0
+                    is Shortcut.Intent.SEARCH -> 1
+                    is Shortcut.Intent.Series -> 1
+                    else -> 1
                 }
             )
         }
@@ -73,9 +79,9 @@ class InitialScreenComponent(
     @OptIn(ExperimentalDecomposeApi::class)
     override val selectedPage: Value<Int> = pages.map { it.selectedIndex }
 
+    override val sponsorScrollEnabled = MutableStateFlow(true)
     override val homeScrollEnabled = MutableStateFlow(true)
     override val favoriteScrollEnabled = MutableStateFlow(true)
-    override val searchScrollEnabled = MutableStateFlow(true)
 
     @Composable
     override fun render() {
@@ -89,8 +95,12 @@ class InitialScreenComponent(
     private fun createChild(
         view: View,
         componentContext: ComponentContext
-    ) : SeriesHolderComponent {
+    ) : Component {
         return when (view) {
+            is View.Sponsor -> SponsorScreenComponent(
+                componentContext = componentContext,
+                di = di
+            )
             is View.Home -> HomeScreenComponent(
                 componentContext = componentContext,
                 di = di,
@@ -115,7 +125,7 @@ class InitialScreenComponent(
     override fun selectPage(index: Int) {
         pagesNavigation.select(index = index) { new, old ->
             if (new.items[new.selectedIndex] == old.items[old.selectedIndex]) {
-                pages.value.items[pages.value.selectedIndex].instance?.dismissHoldingSeries()
+                (pages.value.items[pages.value.selectedIndex].instance as? SeriesHolderComponent)?.dismissHoldingSeries()
             }
         }
     }

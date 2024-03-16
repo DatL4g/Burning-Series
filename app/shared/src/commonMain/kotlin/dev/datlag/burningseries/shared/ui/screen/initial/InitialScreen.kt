@@ -97,6 +97,7 @@ private fun CompactScreen(
             LocalPaddingValues provides it
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
+                val sponsorScrollEnabled by component.sponsorScrollEnabled.collectAsStateWithLifecycle()
                 val homeScrollEnabled by component.homeScrollEnabled.collectAsStateWithLifecycle()
                 val favoriteScrollEnabled by component.favoriteScrollEnabled.collectAsStateWithLifecycle()
 
@@ -109,9 +110,10 @@ private fun CompactScreen(
                     },
                     pager = { modifier, state, key, pageContent ->
                         val scrollEnabled = when (state.currentPage) {
-                            0 -> homeScrollEnabled
-                            1 -> favoriteScrollEnabled
-                            else -> homeScrollEnabled && favoriteScrollEnabled
+                            0 -> sponsorScrollEnabled
+                            1 -> homeScrollEnabled
+                            2 -> favoriteScrollEnabled
+                            else -> sponsorScrollEnabled && homeScrollEnabled && favoriteScrollEnabled
                         }
                         HorizontalPager(
                             modifier = modifier,

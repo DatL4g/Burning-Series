@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -28,6 +30,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.*
 import dev.datlag.burningseries.model.common.collectSafe
+import dev.datlag.burningseries.shared.LocalDarkMode
 import dev.datlag.burningseries.shared.LocalPaddingValues
 import dev.datlag.burningseries.shared.ui.theme.shape.DiagonalShape
 import kotlin.math.max
@@ -284,4 +287,50 @@ fun Modifier.bottomShadowBrush(color: Color, alpha: Float = 1F): Modifier {
             0.9f to color.copy(alpha = 1f * maxAlpha)
         )
     )
+}
+
+@Composable
+fun ButtonDefaults.githubColors(): ButtonColors {
+    return if (LocalDarkMode.current) {
+        ButtonDefaults.buttonColors(
+            containerColor = Color.White,
+            contentColor = Color(0xFF121212)
+        )
+    } else {
+        ButtonDefaults.buttonColors(
+            containerColor = Color.Black,
+            contentColor = Color(0xFFFAFAFA)
+        )
+    }
+}
+
+@Composable
+fun ButtonDefaults.polarColors(): ButtonColors {
+    return ButtonDefaults.buttonColors(
+        containerColor = Color(0xFF0062FF),
+        contentColor = Color(0xFFFAFAFA)
+    )
+}
+
+@Composable
+fun ButtonDefaults.patreonColors(): ButtonColors {
+    return ButtonDefaults.buttonColors(
+        containerColor = Color(0xFFF96854),
+        contentColor = Color(0xFFFAFAFA)
+    )
+}
+
+@Composable
+fun ButtonDefaults.paypalColors(): ButtonColors {
+    return if (LocalDarkMode.current) {
+        ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF009CDE),
+            contentColor = Color(0xFFFAFAFA)
+        )
+    } else {
+        ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF003087),
+            contentColor = Color(0xFFFAFAFA)
+        )
+    }
 }

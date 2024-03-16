@@ -1,4 +1,4 @@
-package dev.datlag.burningseries.shared.ui.screen.initial.search
+package dev.datlag.burningseries.shared.ui.screen.initial.home.search
 
 import dev.datlag.burningseries.model.Genre
 import kotlinx.serialization.Serializable

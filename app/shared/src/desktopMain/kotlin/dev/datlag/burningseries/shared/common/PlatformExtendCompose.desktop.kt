@@ -13,6 +13,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.essenty.backhandler.BackHandler
 import com.vanniktech.blurhash.BlurHash
+import org.kodein.di.DI
 import com.vanniktech.blurhash.BlurHash.decode as defaultDecode
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -48,4 +49,8 @@ actual fun BlurHash.decode(
 ): ImageBitmap? {
     val image = defaultDecode(hash, width, height)
     return image?.toComposeImageBitmap()
+}
+
+actual fun String.openInBrowser(di: DI) {
+    this.openInBrowser()
 }
