@@ -85,4 +85,6 @@
     <string name="free_support_text">Du kannst dir eine finanzielle Unterstützung nicht leisten? Kein Problem, sieh dir stattdessen doch einfach diese Projekte an.</string>
     <string name="pulz">PulZ</string>
     <string name="pulz_subtitle">Gaming und E-Sport Infos</string>
+    <string name="aniflow">AniFlow</string>
+    <string name="aniflow_subtitle">Synchronisier deinen Anime Fortschritt mit AniList oder MyAnimeList. (Momentan in der Entwicklung)</string>
 </resources>

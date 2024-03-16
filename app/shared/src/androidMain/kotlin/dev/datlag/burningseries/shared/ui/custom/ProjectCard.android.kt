@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -24,7 +25,7 @@ import dev.icerock.moko.resources.compose.stringResource
 actual fun ProjectCard(project: Project, modifier: Modifier) {
     val context = LocalContext.current
 
-    if (context.isPackageInstalled(project.`package`)) {
+    if (!context.isPackageInstalled(project.`package`)) {
         ElevatedCard(
             modifier = modifier,
             onClick = {
@@ -38,9 +39,9 @@ actual fun ProjectCard(project: Project, modifier: Modifier) {
             ) {
                 project.icon?.let {
                     Image(
-                        modifier = Modifier.size(64.dp),
+                        modifier = Modifier.size(64.dp).clip(MaterialTheme.shapes.medium),
                         painter = painterResource(it),
-                        contentDescription = stringResource(project.title)
+                        contentDescription = stringResource(project.title),
                     )
                 }
                 Column(

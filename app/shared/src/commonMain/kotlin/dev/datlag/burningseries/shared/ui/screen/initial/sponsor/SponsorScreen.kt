@@ -132,5 +132,8 @@ fun SponsorScreen(component: SponsorComponent) {
         item {
             ProjectCard(Project.PULZ, modifier = Modifier.fillParentMaxWidth())
         }
+        item {
+            ProjectCard(Project.AniFlow, modifier = Modifier.fillParentMaxWidth())
+        }
     }
 }
