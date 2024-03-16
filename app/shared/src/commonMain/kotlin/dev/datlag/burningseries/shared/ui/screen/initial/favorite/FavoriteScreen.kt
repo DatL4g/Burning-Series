@@ -28,11 +28,8 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import dev.chrisbanes.haze.haze
 import dev.datlag.burningseries.shared.LocalHaze
 import dev.datlag.burningseries.shared.SharedRes
-import dev.datlag.burningseries.shared.common.LocalPadding
-import dev.datlag.burningseries.shared.common.header
+import dev.datlag.burningseries.shared.common.*
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
-import dev.datlag.burningseries.shared.common.localPadding
-import dev.datlag.burningseries.shared.common.onClick
 import dev.datlag.burningseries.shared.rememberIsTv
 import dev.datlag.burningseries.shared.ui.custom.FloatingSearchButton
 import dev.datlag.burningseries.shared.ui.custom.VerticalScrollbar
@@ -131,7 +128,7 @@ private fun MainView(component: FavoriteComponent, modifier: Modifier = Modifier
             VerticalScrollbar(rememberScrollbarAdapter(listState))
         }
         FloatingSearchButton(
-            modifier = Modifier.align(Alignment.BottomEnd).localPadding(16.dp),
+            modifier = Modifier.align(Alignment.BottomEnd).mergedLocalPadding(WindowInsets.ime.asPaddingValues(), 16.dp),
             onTextChange = {
                 component.searchQuery(it)
             }

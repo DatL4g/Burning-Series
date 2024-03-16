@@ -26,10 +26,7 @@ import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.*
 import dev.datlag.burningseries.model.common.collectSafe
 import dev.datlag.burningseries.shared.LocalPaddingValues
 import dev.datlag.burningseries.shared.ui.theme.shape.DiagonalShape
@@ -225,6 +222,18 @@ operator fun PaddingValues.plus(other: PaddingValues): PaddingValues {
     )
 }
 
+@Composable
+fun PaddingValues.merge(other: PaddingValues): PaddingValues {
+    val direction = LocalLayoutDirection.current
+
+    return PaddingValues(
+        start = max(this.calculateStartPadding(direction), other.calculateStartPadding(direction)),
+        top = max(this.calculateTopPadding(), other.calculateTopPadding()),
+        end = max(this.calculateEndPadding(direction), other.calculateEndPadding(direction)),
+        bottom = max(this.calculateBottomPadding(), other.calculateBottomPadding())
+    )
+}
+
 fun Modifier.localPadding(additional: PaddingValues = PaddingValues(0.dp)) = composed {
     this.padding(LocalPaddingValues.current?.plus(additional) ?: additional)
 }
@@ -252,6 +261,14 @@ fun LocalPadding(horizontal: Dp = 0.dp, vertical: Dp = 0.dp): PaddingValues {
     return LocalPaddingValues.current?.plus(
         PaddingValues(horizontal = horizontal, vertical = vertical)
     ) ?: PaddingValues(horizontal = horizontal, vertical = vertical)
+}
+
+fun Modifier.mergedLocalPadding(other: PaddingValues, additional: PaddingValues = PaddingValues(0.dp)) = composed {
+    this.padding((LocalPaddingValues.current?.merge(other) ?: other).plus(additional))
+}
+
+fun Modifier.mergedLocalPadding(other: PaddingValues, additional: Dp) = composed {
+    this.mergedLocalPadding(other, PaddingValues(additional))
 }
 
 fun Modifier.bottomShadowBrush(color: Color, alpha: Float = 1F): Modifier {
