@@ -90,7 +90,10 @@ fun SeriesScreen(component: SeriesComponent) {
                         )
                     }
                     Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = next.episodeTitle)
+                    Text(
+                        text = next.episodeTitle,
+                        maxLines = 2
+                    )
                 }
             }
             nextSeason?.let { next ->
