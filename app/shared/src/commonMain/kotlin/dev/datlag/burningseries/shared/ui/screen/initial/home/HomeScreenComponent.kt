@@ -6,16 +6,18 @@ import androidx.compose.runtime.SideEffect
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
+import dev.datlag.burningseries.model.Genre
 import dev.datlag.burningseries.model.Release
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Shortcut
+import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.common.getDigitsOrNull
 import dev.datlag.burningseries.model.common.safeCast
-import dev.datlag.burningseries.model.state.HomeAction
-import dev.datlag.burningseries.model.state.HomeState
-import dev.datlag.burningseries.model.state.ReleaseState
+import dev.datlag.burningseries.model.common.safeSubList
+import dev.datlag.burningseries.model.state.*
 import dev.datlag.burningseries.network.state.HomeStateMachine
 import dev.datlag.burningseries.network.state.ReleaseStateMachine
+import dev.datlag.burningseries.network.state.SearchStateMachine
 import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.ioDispatcher
 import dev.datlag.burningseries.shared.common.ioScope
@@ -26,6 +28,9 @@ import dev.datlag.burningseries.shared.ui.navigation.DialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.home.dialog.sekret.SekretDialogComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.series.SeriesScreenComponent
 import dev.datlag.skeo.Stream
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import org.kodein.di.DI
 import org.kodein.di.instance
@@ -44,6 +49,37 @@ class HomeScreenComponent(
     override val onDeviceReachable = homeState.map {
         it.safeCast<HomeState.Success>()?.onDeviceReachable ?: (it is HomeState.Loading)
     }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), true)
+
+    private val searchStateMachine by di.instance<SearchStateMachine>()
+    override val searchState = searchStateMachine.state.flowOn(
+        context = ioDispatcher()
+    ).stateIn(
+        scope = ioScope(),
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = SearchState.Loading
+    )
+    private val allSearchItems = searchState.mapNotNull { it.safeCast<SearchState.Success>() }.map { it.genres.flatMap { g -> g.items } }
+    private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
+    override val searchItems: StateFlow<List<Genre.Item>> = combine(allSearchItems, searchQuery) { t1, t2 ->
+        if (t2.isBlank()) {
+            emptyList()
+        } else {
+            coroutineScope {
+                t1.map {
+                    async {
+                        when {
+                            it.title.trim().equals(t2.trim(), true) -> it to 1.0
+                            it.title.trim().startsWith(t2.trim(), true) -> it to 0.95
+                            it.title.trim().contains(t2.trim(), true) -> it to 0.9
+                            else -> it to JaroWinkler.distance(it.title.trim(), t2.trim())
+                        }
+                    }
+                }.awaitAll().filter {
+                    it.second > 0.85
+                }.sortedByDescending { it.second }.map { it.first }.safeSubList(0, 10)
+            }
+        }
+    }.flowOn(ioDispatcher()).stateIn(ioScope(), SharingStarted.WhileSubscribed(), emptyList())
 
     private val appVersion: String? by di.instanceOrNull("APP_VERSION")
     private val releaseStateMachine: ReleaseStateMachine by di.instance()
@@ -133,6 +169,30 @@ class HomeScreenComponent(
 
     override fun dismissHoldingSeries() {
         shortcutIntent = Shortcut.Intent.NONE
-        navigation.dismiss(scrollEnabled)
+        navigation.dismiss { success ->
+            scrollEnabled(success)
+
+            if (!success) {
+                searchQuery.getAndUpdate {
+                    if (it.isBlank()) {
+                        it
+                    } else {
+                        ""
+                    }
+                }
+            }
+        }
+    }
+
+    override fun searchQuery(text: String) {
+        ioScope().launchIO {
+            searchQuery.emit(text)
+        }
+    }
+
+    override fun retryLoadingSearch() {
+        ioScope().launchIO {
+            searchStateMachine.dispatch(SearchAction.Retry)
+        }
     }
 }

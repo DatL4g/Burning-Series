@@ -6,9 +6,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.material.icons.filled.YoutubeSearchedFor
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -24,12 +24,12 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import dev.chrisbanes.haze.haze
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.state.HomeState
+import dev.datlag.burningseries.model.state.SearchState
 import dev.datlag.burningseries.shared.LocalHaze
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.LocalPadding
 import dev.datlag.burningseries.shared.common.header
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
-import dev.datlag.burningseries.shared.common.localPadding
 import dev.datlag.burningseries.shared.common.mergedLocalPadding
 import dev.datlag.burningseries.shared.other.StateSaver
 import dev.datlag.burningseries.shared.rememberIsTv
@@ -38,9 +38,7 @@ import dev.datlag.burningseries.shared.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.shared.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.shared.ui.custom.state.ErrorState
 import dev.datlag.burningseries.shared.ui.custom.state.LoadingState
-import dev.datlag.burningseries.shared.ui.screen.initial.home.component.DeviceContent
-import dev.datlag.burningseries.shared.ui.screen.initial.home.component.EpisodeItem
-import dev.datlag.burningseries.shared.ui.screen.initial.home.component.SeriesItem
+import dev.datlag.burningseries.shared.ui.screen.initial.home.component.*
 import dev.datlag.burningseries.shared.ui.theme.MaterialSymbols
 import dev.icerock.moko.resources.compose.stringResource
 
@@ -133,93 +131,36 @@ private fun ExpandedView(home: Home, component: HomeComponent) {
 @Composable
 private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
+        val searchState by component.searchState.collectAsStateWithLifecycle()
+
         Row(
             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            val state = rememberLazyGridState(
-                initialFirstVisibleItemIndex = StateSaver.homeGridIndex,
-                initialFirstVisibleItemScrollOffset = StateSaver.homeGridOffset
-            )
+            val searchItems by component.searchItems.collectAsStateWithLifecycle()
 
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(400.dp),
-                modifier = Modifier.weight(1F).haze(state = LocalHaze.current),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = LocalPadding(),
-                state = state
-            ) {
-                DeviceContent(component.release, component.onDeviceReachable)
-                header {
-                    Row(
-                        modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Text(
-                            modifier = Modifier.weight(1F),
-                            text = stringResource(SharedRes.strings.newest_episodes),
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        if (!StateSaver.sekretLibraryLoaded) {
-                            IconButton(
-                                onClick = {
-                                    component.showDialog(DialogConfig.Sekret)
-                                },
-                                colors = IconButtonDefaults.filledIconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                            ) {
-                                Icon(
-                                    imageVector = MaterialSymbols.rememberDeployedCodeAlert(),
-                                    contentDescription = stringResource(SharedRes.strings.sekret_unavailable_title)
-                                )
-                            }
-                        }
-                    }
-                }
-                items(home.episodes, key = {
-                    it.href
-                }) { episode ->
-                    EpisodeItem(episode) {
-                        component.itemClicked(HomeConfig.Series(episode))
-                    }
-                }
-                header {
-                    Spacer(modifier = Modifier.size(48.dp))
-                }
-                header {
-                    Text(
-                        text = stringResource(SharedRes.strings.newest_series),
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                items(home.series, key = {
-                    it.href
-                }) { series ->
-                    SeriesItem(series) {
-                        component.itemClicked(HomeConfig.Series(series))
-                    }
-                }
-            }
-            VerticalScrollbar(rememberScrollbarAdapter(state))
-
-            DisposableEffect(state) {
-                onDispose {
-                    StateSaver.homeGridIndex = state.firstVisibleItemIndex
-                    StateSaver.homeGridOffset = state.firstVisibleItemScrollOffset
-                }
+            if (searchItems.isEmpty()) {
+                HomeOverview(home, component)
+            } else {
+                SearchOverview(searchItems, component)
             }
         }
         FloatingSearchButton(
             modifier = Modifier.align(Alignment.BottomEnd).mergedLocalPadding(WindowInsets.ime.asPaddingValues(), 16.dp),
             onTextChange = {
-
+                component.searchQuery(it)
+            },
+            enabled = searchState !is SearchState.Loading,
+            icon = when (searchState) {
+                is SearchState.Loading -> Icons.Default.YoutubeSearchedFor
+                is SearchState.Success -> Icons.Default.Search
+                is SearchState.Error -> Icons.Default.SearchOff
+            },
+            overrideOnClick = searchState !is SearchState.Success,
+            onClick = {
+                component.retryLoadingSearch()
             }
         )
     }
 }
+

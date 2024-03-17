@@ -13,6 +13,7 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.pages.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.operator.map
+import com.arkivanov.essenty.backhandler.BackCallback
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.Shortcut
 import dev.datlag.burningseries.shared.LocalDI
@@ -20,7 +21,6 @@ import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.ui.navigation.Component
 import dev.datlag.burningseries.shared.ui.screen.initial.favorite.FavoriteScreenComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.home.HomeScreenComponent
-import dev.datlag.burningseries.shared.ui.screen.initial.home.search.SearchScreenComponent
 import dev.datlag.burningseries.shared.ui.screen.initial.sponsor.SponsorScreenComponent
 import dev.datlag.skeo.Stream
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +30,8 @@ class InitialScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
     shortcutIntent: Shortcut.Intent,
-    private val watchVideo: (String, Series, Series.Episode, Collection<Stream>) -> Unit
+    private val watchVideo: (String, Series, Series.Episode, Collection<Stream>) -> Unit,
+    private val onBack: () -> Unit
 ) : InitialComponent, ComponentContext by componentContext {
 
     override val pagerItems: List<InitialComponent.PagerItem> = listOf(
@@ -83,6 +84,14 @@ class InitialScreenComponent(
     override val homeScrollEnabled = MutableStateFlow(true)
     override val favoriteScrollEnabled = MutableStateFlow(true)
 
+    private val backCallback = BackCallback {
+        pageBack()
+    }
+
+    init {
+        backHandler.register(backCallback)
+    }
+
     @Composable
     override fun render() {
         CompositionLocalProvider(
@@ -125,8 +134,15 @@ class InitialScreenComponent(
     override fun selectPage(index: Int) {
         pagesNavigation.select(index = index) { new, old ->
             if (new.items[new.selectedIndex] == old.items[old.selectedIndex]) {
-                (pages.value.items[pages.value.selectedIndex].instance as? SeriesHolderComponent)?.dismissHoldingSeries()
+                pageBack()
             }
         }
+    }
+
+    @OptIn(ExperimentalDecomposeApi::class)
+    private fun pageBack() {
+        (pages.value.items[pages.value.selectedIndex].instance as? SeriesHolderComponent)
+                ?.dismissHoldingSeries()
+                ?: onBack()
     }
 }

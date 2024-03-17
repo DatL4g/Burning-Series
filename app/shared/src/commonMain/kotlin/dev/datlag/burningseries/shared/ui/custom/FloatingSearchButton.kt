@@ -1,6 +1,8 @@
 package dev.datlag.burningseries.shared.ui.custom
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,27 +30,44 @@ import kotlinx.coroutines.delay
 fun FloatingSearchButton(
     icon: ImageVector = Icons.Default.Search,
     contentDescription: String? = stringResource(SharedRes.strings.search),
+    enabled: Boolean = true,
     clearIcon: ImageVector = Icons.Default.Clear,
     closeIcon: ImageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = { },
+    overrideOnClick: Boolean = false,
     onTextChange: (String) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     var opened by remember { mutableStateOf(false) }
     val textState = remember { mutableStateOf("") }
+    val enabledColor = if (enabled) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.tertiaryContainer
+    }
+    val animatedColor by animateColorAsState(
+        targetValue = enabledColor,
+        animationSpec = tween()
+    )
 
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = animatedColor,
         modifier = modifier,
         shape = FloatingActionButtonDefaults.shape,
         shadowElevation = 6.dp,
         onClick = {
-            if (!opened) {
-                opened = true
+            if (overrideOnClick) {
+                onClick()
             } else {
-                focusRequester.requestFocus()
+                if (!opened) {
+                    opened = true
+                } else {
+                    focusRequester.requestFocus()
+                }
             }
-        }
+        },
+        enabled = enabled
     ) {
         AnimatedContent(targetState = opened) { expand ->
             if (expand) {

@@ -13,6 +13,7 @@ import dev.datlag.burningseries.shared.LocalDI
 import dev.datlag.burningseries.shared.common.backAnimation
 import dev.datlag.burningseries.shared.ui.screen.initial.InitialScreenComponent
 import dev.datlag.burningseries.shared.ui.screen.video.VideoScreenComponent
+import io.github.aakira.napier.Napier
 import org.kodein.di.DI
 
 class NavHostComponent(
@@ -49,7 +50,8 @@ class NavHostComponent(
                             stream.toList()
                         )
                     )
-                }
+                },
+                onBack = navigation::pop
             )
             is ScreenConfig.Video -> VideoScreenComponent(
                 componentContext = componentContext,
