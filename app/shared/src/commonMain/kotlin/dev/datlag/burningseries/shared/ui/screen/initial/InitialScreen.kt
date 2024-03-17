@@ -28,7 +28,6 @@ import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecy
 import dev.datlag.burningseries.shared.rememberIsTv
 import dev.datlag.burningseries.shared.ui.custom.ExpandedPages
 import dev.icerock.moko.resources.compose.stringResource
-import io.realm.kotlin.internal.platform.isWindows
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable

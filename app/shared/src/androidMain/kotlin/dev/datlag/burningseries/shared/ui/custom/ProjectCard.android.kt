@@ -1,9 +1,7 @@
 package dev.datlag.burningseries.shared.ui.custom
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,7 +12,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import dev.datlag.burningseries.shared.common.isPackageInstalled
 import dev.datlag.burningseries.shared.common.openInBrowser
 import dev.datlag.burningseries.shared.other.Project

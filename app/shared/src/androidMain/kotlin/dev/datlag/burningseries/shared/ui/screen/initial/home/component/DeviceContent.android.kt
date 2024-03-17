@@ -13,10 +13,8 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.model.Release
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.header
-import dev.datlag.burningseries.shared.common.isPackageInstalled
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.openInBrowser
-import dev.datlag.burningseries.shared.other.Constants
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.StateFlow

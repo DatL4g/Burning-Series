@@ -8,7 +8,10 @@ import kotlinx.browser.window
 import kotlinx.dom.hasClass
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.w3c.dom.*
+import org.w3c.dom.Element
+import org.w3c.dom.MutationObserver
+import org.w3c.dom.MutationObserverInit
+import org.w3c.dom.get
 
 @OptIn(ExperimentalStdlibApi::class)
 fun main() {

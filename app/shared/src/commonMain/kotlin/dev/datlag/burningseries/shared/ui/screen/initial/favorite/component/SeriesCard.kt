@@ -15,7 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.database.Series
-import dev.datlag.burningseries.database.common.allTitles
 import dev.datlag.burningseries.database.common.bestTitle
 import dev.datlag.burningseries.database.common.mainTitle
 import dev.datlag.burningseries.database.common.subTitle

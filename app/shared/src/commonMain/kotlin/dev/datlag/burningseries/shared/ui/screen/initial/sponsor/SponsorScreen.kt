@@ -11,15 +11,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.haze
 import dev.datlag.burningseries.shared.LocalDI
-import dev.datlag.burningseries.shared.LocalDarkMode
 import dev.datlag.burningseries.shared.LocalHaze
-import dev.icerock.moko.resources.compose.stringResource
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.*
 import dev.datlag.burningseries.shared.other.Constants
 import dev.datlag.burningseries.shared.other.Project
 import dev.datlag.burningseries.shared.ui.custom.ProjectCard
 import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
-import android.os.Build
 import android.view.Window
 
 tailrec fun Context.findWindow(): Window? = when (this) {

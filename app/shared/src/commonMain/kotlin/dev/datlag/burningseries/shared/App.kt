@@ -10,7 +10,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import dev.chrisbanes.haze.HazeState
-import dev.datlag.burningseries.shared.ui.theme.*
+import dev.datlag.burningseries.shared.ui.theme.Colors
+import dev.datlag.burningseries.shared.ui.theme.CommonSchemeTheme
+import dev.datlag.burningseries.shared.ui.theme.ManropeTypography
 import org.kodein.di.DI
 
 val LocalDarkMode = compositionLocalOf<Boolean> { error("No dark mode state provided") }

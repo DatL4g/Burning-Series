@@ -17,7 +17,6 @@ import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.shared.common.bounceClick
 import dev.datlag.burningseries.shared.common.focusScale
-import dev.datlag.burningseries.shared.common.onClick
 import dev.datlag.burningseries.shared.ui.custom.Cover
 import dev.datlag.burningseries.database.Series as DBSeries
 

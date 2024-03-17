@@ -21,9 +21,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import dev.icerock.moko.resources.compose.stringResource
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.withIOContext
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 
 @Composable

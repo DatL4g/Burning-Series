@@ -1,7 +1,6 @@
 package dev.datlag.burningseries.shared.common
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.onClick as defaultClick
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -14,6 +13,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.essenty.backhandler.BackHandler
 import com.vanniktech.blurhash.BlurHash
 import org.kodein.di.DI
+import androidx.compose.foundation.onClick as defaultClick
 import com.vanniktech.blurhash.BlurHash.decode as defaultDecode
 
 @OptIn(ExperimentalFoundationApi::class)

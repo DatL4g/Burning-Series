@@ -1,7 +1,7 @@
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.api.artifacts.VersionCatalog as VCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension as VCatalogEx
-import org.gradle.kotlin.dsl.getByType
 
 class VersionCatalog(project: Project) {
     private val libs: VCatalog = project.extensions.getByType<VCatalogEx>().named("libs")

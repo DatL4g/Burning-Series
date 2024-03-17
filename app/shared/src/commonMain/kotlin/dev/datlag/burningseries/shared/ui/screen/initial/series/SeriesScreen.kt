@@ -6,15 +6,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Redo
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,12 +31,10 @@ import dev.datlag.burningseries.model.state.SeriesState
 import dev.datlag.burningseries.shared.LocalHaze
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.LocalPadding
-import dev.datlag.burningseries.shared.common.diagonalShape
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.localPadding
 import dev.datlag.burningseries.shared.other.StateSaver
 import dev.datlag.burningseries.shared.ui.custom.Cover
-import dev.datlag.burningseries.shared.ui.custom.DefaultCollapsingToolbar
 import dev.datlag.burningseries.shared.ui.custom.VerticalScrollbar
 import dev.datlag.burningseries.shared.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.shared.ui.custom.state.ErrorState
@@ -47,9 +44,7 @@ import dev.datlag.burningseries.shared.ui.screen.initial.series.component.Episod
 import dev.datlag.burningseries.shared.ui.screen.initial.series.component.SeasonAndLanguageButtons
 import dev.datlag.burningseries.shared.ui.theme.SchemeTheme
 import dev.datlag.burningseries.shared.ui.theme.TopLeftBottomRightRoundedShape
-import dev.datlag.burningseries.shared.ui.theme.shape.DiagonalShape
 import dev.icerock.moko.resources.compose.stringResource
-import kotlin.math.abs
 
 @Composable
 fun SeriesScreen(component: SeriesComponent) {

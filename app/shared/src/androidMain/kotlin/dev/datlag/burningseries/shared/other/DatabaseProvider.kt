@@ -80,8 +80,8 @@ class DatabaseProvider : ContentProvider() {
 
     override fun getType(uri: Uri): String? {
         return when (uriMatcher.match(uri)) {
-            SERIES_URI_CODE -> "vnd.android.cursor.dir/series"
-            EPISODES_URI_CODE -> "vnd.android.cursor.dir/episodes"
+            SERIES_URI_CODE -> "vnd.android.cursor.dir/vnd.$PROVIDER_NAME.series"
+            EPISODES_URI_CODE -> "vnd.android.cursor.dir/vnd.$PROVIDER_NAME.episodes"
             else -> null
         }
     }
