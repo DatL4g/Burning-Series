@@ -13,9 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +27,8 @@ import dev.chrisbanes.haze.haze
 import dev.datlag.burningseries.shared.LocalHaze
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.*
+import dev.datlag.burningseries.shared.common.lifecycle.WindowSize
+import dev.datlag.burningseries.shared.common.lifecycle.calculateWindowWidthSize
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.rememberIsTv
 import dev.datlag.burningseries.shared.ui.custom.FloatingSearchButton
@@ -39,11 +38,10 @@ import dev.datlag.burningseries.shared.ui.screen.initial.favorite.component.Seri
 import dev.datlag.burningseries.shared.ui.screen.initial.home.component.SeriesItem
 import dev.icerock.moko.resources.compose.stringResource
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun FavoriteScreen(component: FavoriteComponent) {
-    when (calculateWindowSizeClass().widthSizeClass) {
-        WindowWidthSizeClass.Expanded -> {
+    when (calculateWindowWidthSize()) {
+        is WindowSize.Expanded -> {
             if (rememberIsTv()) {
                 DefaultView(component)
             } else {

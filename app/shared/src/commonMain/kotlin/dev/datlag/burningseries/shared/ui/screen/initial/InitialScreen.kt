@@ -6,8 +6,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -24,10 +22,13 @@ import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.datlag.burningseries.shared.LocalHaze
 import dev.datlag.burningseries.shared.LocalPaddingValues
+import dev.datlag.burningseries.shared.common.lifecycle.WindowSize
+import dev.datlag.burningseries.shared.common.lifecycle.calculateWindowWidthSize
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.rememberIsTv
 import dev.datlag.burningseries.shared.ui.custom.ExpandedPages
 import dev.icerock.moko.resources.compose.stringResource
+import io.realm.kotlin.internal.platform.isWindows
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -40,10 +41,10 @@ fun InitialScreen(component: InitialComponent) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            when (calculateWindowSizeClass().widthSizeClass) {
-                WindowWidthSizeClass.Compact -> CompactScreen(component)
-                WindowWidthSizeClass.Medium -> MediumScreen(component)
-                WindowWidthSizeClass.Expanded -> {
+            when (calculateWindowWidthSize()) {
+                is WindowSize.Compact -> CompactScreen(component)
+                is WindowSize.Medium -> MediumScreen(component)
+                is WindowSize.Expanded -> {
                     if (rememberIsTv()) {
                         MediumScreen(component)
                     } else {

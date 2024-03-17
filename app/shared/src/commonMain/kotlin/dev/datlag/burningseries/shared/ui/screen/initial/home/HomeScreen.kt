@@ -10,10 +10,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.YoutubeSearchedFor
 import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +26,8 @@ import dev.datlag.burningseries.shared.LocalHaze
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.LocalPadding
 import dev.datlag.burningseries.shared.common.header
+import dev.datlag.burningseries.shared.common.lifecycle.WindowSize
+import dev.datlag.burningseries.shared.common.lifecycle.calculateWindowWidthSize
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.burningseries.shared.common.mergedLocalPadding
 import dev.datlag.burningseries.shared.other.StateSaver
@@ -43,7 +41,6 @@ import dev.datlag.burningseries.shared.ui.screen.initial.home.component.*
 import dev.datlag.burningseries.shared.ui.theme.MaterialSymbols
 import dev.icerock.moko.resources.compose.stringResource
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun HomeScreen(component: HomeComponent) {
     val homeState by component.homeState.collectAsStateWithLifecycle()
@@ -91,15 +88,12 @@ fun HomeScreen(component: HomeComponent) {
             }
         }
         is HomeState.Success -> {
-            when (calculateWindowSizeClass().widthSizeClass) {
-                WindowWidthSizeClass.Expanded -> {
+            when (calculateWindowWidthSize()) {
+                is WindowSize.Expanded -> {
                     if (rememberIsTv()) {
                         DefaultView(currentState.home, component)
                     } else {
-                        when (calculateWindowSizeClass().heightSizeClass) {
-                            WindowHeightSizeClass.Compact -> DefaultView(currentState.home, component)
-                            else -> ExpandedView(currentState.home, component)
-                        }
+                        ExpandedView(currentState.home, component)
                     }
                 }
                 else -> DefaultView(currentState.home, component)
@@ -121,19 +115,16 @@ private fun DefaultView(home: Home, component: HomeComponent) {
 @Composable
 private fun ExpandedView(home: Home, component: HomeComponent) {
     val childState by component.child.subscribeAsState()
-    var rowWidth by remember { mutableIntStateOf(-1) }
 
     Row(
-        modifier = Modifier.onSizeChanged {
-            rowWidth = it.width
-        },
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        MainView(home, component, Modifier.weight(1F))
+        MainView(home, component, Modifier.weight(1.5F))
 
         childState.child?.also { (_, instance) ->
             Box(
-                modifier = Modifier.defaultMinSize(minWidth = 400.dp)
+                modifier = Modifier.weight(2F)
             ) {
                 instance.render()
             }
@@ -145,7 +136,7 @@ private fun ExpandedView(home: Home, component: HomeComponent) {
 private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
         Row(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             val searchItems by component.searchItems.collectAsStateWithLifecycle()
