@@ -29,6 +29,7 @@ kotlin {
 
         androidMain.get().dependencies {
             implementation(libs.sqldelight.android)
+            api(libs.android.sqlite.framework)
         }
 
         jvmMain.get().dependencies {

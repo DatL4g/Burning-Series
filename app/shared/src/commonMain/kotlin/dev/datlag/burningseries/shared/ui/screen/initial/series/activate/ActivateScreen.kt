@@ -48,7 +48,8 @@ fun ActivateScreen(component: ActivateComponent) {
             Text(
                 modifier = Modifier.weight(1F),
                 text = stringResource(SharedRes.strings.activate_hint),
-                maxLines = 2
+                maxLines = 2,
+                style = MaterialTheme.typography.titleMedium
             )
             if (isSaving) {
                 Box(

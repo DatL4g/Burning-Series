@@ -3,6 +3,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <permission android:name="dev.datlag.burningseries.READ_DATABASE" />
 
     <queries>
         <package android:name="dev.datlag.pulz" />
@@ -92,6 +93,13 @@
         <receiver
             android:name="androidx.mediarouter.media.MediaTransferReceiver"
             android:exported="true" />
+
+        <provider
+            android:authorities="dev.datlag.burningseries.provider"
+            android:name=".shared.other.DatabaseProvider"
+            android:enabled="true"
+            android:exported="true"
+            android:readPermission="dev.datlag.burningseries.READ_DATABASE"/>
     </application>
 
 </manifest>

@@ -48,7 +48,7 @@ fun HomeScreen(component: HomeComponent) {
 
     when (val currentState = homeState) {
         is HomeState.Loading -> {
-            Box {
+            Box(Modifier.fillMaxHeight()) {
                 val searchItems by component.searchItems.collectAsStateWithLifecycle()
 
                 if (searchItems.isEmpty()) {
@@ -61,7 +61,7 @@ fun HomeScreen(component: HomeComponent) {
             }
         }
         is HomeState.Error -> {
-            Box {
+            Box(Modifier.fillMaxHeight()) {
                 val reachable by component.onDeviceReachable.collectAsStateWithLifecycle()
                 val searchItems by component.searchItems.collectAsStateWithLifecycle()
 
@@ -107,9 +107,7 @@ fun HomeScreen(component: HomeComponent) {
 @Composable
 private fun DefaultView(home: Home, component: HomeComponent) {
     val childState by component.child.subscribeAsState()
-    childState.child?.also { (_, instance) ->
-        instance.render()
-    } ?: MainView(home, component, Modifier.fillMaxWidth())
+    childState.child?.instance?.render() ?: MainView(home, component, Modifier.fillMaxWidth())
 }
 
 @Composable
@@ -134,7 +132,7 @@ private fun ExpandedView(home: Home, component: HomeComponent) {
 
 @Composable
 private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
+    Box(modifier = modifier.fillMaxHeight()) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp)
