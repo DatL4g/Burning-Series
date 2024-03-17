@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.YoutubeSearchedFor
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
@@ -50,24 +51,43 @@ fun HomeScreen(component: HomeComponent) {
 
     when (val currentState = homeState) {
         is HomeState.Loading -> {
-            LoadingState(SharedRes.strings.loading_home)
+            Box {
+                val searchItems by component.searchItems.collectAsStateWithLifecycle()
+
+                if (searchItems.isEmpty()) {
+                    LoadingState(SharedRes.strings.loading_home)
+                } else {
+                    SearchOverview(searchItems, component, Modifier.fillMaxSize(), 16.dp)
+                }
+
+                SearchFAB(component)
+            }
         }
         is HomeState.Error -> {
-            val reachable by component.onDeviceReachable.collectAsStateWithLifecycle()
+            Box {
+                val reachable by component.onDeviceReachable.collectAsStateWithLifecycle()
+                val searchItems by component.searchItems.collectAsStateWithLifecycle()
 
-            ErrorState(
-                text = SharedRes.strings.error_loading_home,
-                customText = {
-                    if (!reachable) {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(0.85F),
-                            text = stringResource(SharedRes.strings.enable_custom_dns),
-                            textAlign = TextAlign.Center
-                        )
+                if (searchItems.isEmpty()) {
+                    ErrorState(
+                        text = SharedRes.strings.error_loading_home,
+                        customText = {
+                            if (!reachable) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(0.85F),
+                                    text = stringResource(SharedRes.strings.enable_custom_dns),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    ) {
+                        component.retryLoadingHome()
                     }
+                } else {
+                    SearchOverview(searchItems, component, Modifier.fillMaxSize(), 16.dp)
                 }
-            ) {
-                component.retryLoadingHome()
+
+                SearchFAB(component)
             }
         }
         is HomeState.Success -> {
@@ -76,7 +96,10 @@ fun HomeScreen(component: HomeComponent) {
                     if (rememberIsTv()) {
                         DefaultView(currentState.home, component)
                     } else {
-                        ExpandedView(currentState.home, component)
+                        when (calculateWindowSizeClass().heightSizeClass) {
+                            WindowHeightSizeClass.Compact -> DefaultView(currentState.home, component)
+                            else -> ExpandedView(currentState.home, component)
+                        }
                     }
                 }
                 else -> DefaultView(currentState.home, component)
@@ -106,17 +129,7 @@ private fun ExpandedView(home: Home, component: HomeComponent) {
         },
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val colOne = if (rowWidth > 600) {
-            val third = remember(rowWidth) { rowWidth.toFloat() / 3F }
-            if (third >= 200F) {
-                Modifier.widthIn(max = third.dp)
-            } else {
-                Modifier.weight(1F)
-            }
-        } else {
-            Modifier.weight(1F)
-        }
-        MainView(home, component, colOne)
+        MainView(home, component, Modifier.weight(1F))
 
         childState.child?.also { (_, instance) ->
             Box(
@@ -131,8 +144,6 @@ private fun ExpandedView(home: Home, component: HomeComponent) {
 @Composable
 private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
-        val searchState by component.searchState.collectAsStateWithLifecycle()
-
         Row(
             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp)
@@ -142,25 +153,11 @@ private fun MainView(home: Home, component: HomeComponent, modifier: Modifier = 
             if (searchItems.isEmpty()) {
                 HomeOverview(home, component)
             } else {
-                SearchOverview(searchItems, component)
+                SearchOverview(searchItems, component, Modifier.weight(1F))
             }
         }
-        FloatingSearchButton(
-            modifier = Modifier.align(Alignment.BottomEnd).mergedLocalPadding(WindowInsets.ime.asPaddingValues(), 16.dp),
-            onTextChange = {
-                component.searchQuery(it)
-            },
-            enabled = searchState !is SearchState.Loading,
-            icon = when (searchState) {
-                is SearchState.Loading -> Icons.Default.YoutubeSearchedFor
-                is SearchState.Success -> Icons.Default.Search
-                is SearchState.Error -> Icons.Default.SearchOff
-            },
-            overrideOnClick = searchState !is SearchState.Success,
-            onClick = {
-                component.retryLoadingSearch()
-            }
-        )
+
+        SearchFAB(component)
     }
 }
 

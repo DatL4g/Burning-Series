@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.haze
 import dev.datlag.burningseries.model.Genre
@@ -27,14 +28,19 @@ import dev.datlag.burningseries.shared.ui.screen.initial.home.HomeConfig
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
-fun RowScope.SearchOverview(items: List<Genre.Item>, component: HomeComponent) {
+fun SearchOverview(
+    items: List<Genre.Item>,
+    component: HomeComponent,
+    modifier: Modifier = Modifier,
+    contentPadding: Dp = 0.dp
+) {
     val listState = rememberLazyListState()
 
     LazyColumn(
         state = listState,
-        modifier = Modifier.weight(1F).haze(state = LocalHaze.current),
+        modifier = modifier.haze(state = LocalHaze.current),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = LocalPadding(),
+        contentPadding = LocalPadding(contentPadding),
     ) {
         item {
             Text(
