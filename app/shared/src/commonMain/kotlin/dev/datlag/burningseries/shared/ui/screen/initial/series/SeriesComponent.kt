@@ -18,6 +18,7 @@ interface SeriesComponent : Component {
     val dialog: Value<ChildSlot<DialogConfig, DialogComponent>>
 
     val title: StateFlow<String>
+    val subTitle: StateFlow<String?>
     val href: StateFlow<String>
     val commonHref: StateFlow<String>
     val coverHref: StateFlow<String?>

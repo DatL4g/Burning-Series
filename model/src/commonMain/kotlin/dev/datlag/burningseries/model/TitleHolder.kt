@@ -34,4 +34,12 @@ abstract class TitleHolder {
             }
         }
     }
+
+    val mainTitle by lazy {
+        bestTitle.substringBefore('|').trim()
+    }
+
+    val subTitle by lazy {
+        bestTitle.substringAfter('|', missingDelimiterValue = "").trim().ifBlank { null }
+    }
 }

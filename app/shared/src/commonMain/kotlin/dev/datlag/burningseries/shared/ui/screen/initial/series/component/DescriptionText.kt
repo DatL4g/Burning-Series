@@ -2,6 +2,7 @@ package dev.datlag.burningseries.shared.ui.screen.initial.series.component
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -10,6 +11,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.onClick
 import dev.datlag.burningseries.shared.ui.custom.ExpandableText
@@ -23,7 +25,7 @@ fun DescriptionText(description: String) {
         expanded = expanded,
         text = description,
         collapsedMaxLines = 2,
-        modifier = Modifier.fillMaxWidth().animateContentSize().onClick {
+        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp).animateContentSize().onClick {
             expanded = !expanded
         },
         toggle = {

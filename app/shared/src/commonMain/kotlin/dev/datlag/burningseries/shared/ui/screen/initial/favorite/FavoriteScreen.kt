@@ -63,30 +63,15 @@ private fun DefaultView(component: FavoriteComponent) {
 @Composable
 private fun ExpandedView(component: FavoriteComponent) {
     val childState by component.child.subscribeAsState()
-    var rowWidth by remember { mutableIntStateOf(-1) }
 
     Row(
-        modifier = Modifier.onSizeChanged {
-            rowWidth = it.width
-        },
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val colOne = if (rowWidth > 600) {
-            val third = remember(rowWidth) { rowWidth.toFloat() / 3F }
-            if (third >= 200F) {
-                Modifier.widthIn(max = third.dp)
-            } else {
-                Modifier.weight(1F)
-            }
-        } else {
-            Modifier.weight(1F)
-        }
-
-        MainView(component, colOne)
+        MainView(component, Modifier.weight(1F))
 
         childState.child?.also { (_, instance) ->
             Box(
-                modifier = Modifier.defaultMinSize(minWidth = 400.dp)
+                modifier = Modifier.weight(2F)
             ) {
                 instance.render()
             }

@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.shared.ui.screen.initial.favorite
 
+import dev.datlag.burningseries.database.common.mainTitle
 import kotlinx.serialization.Serializable
 import dev.datlag.burningseries.database.Series as DBSeries
 
@@ -11,6 +12,6 @@ sealed class FavoriteConfig {
         val href: String,
         val coverHref: String?
     ) : FavoriteConfig() {
-        constructor(item: DBSeries) : this(item.title, item.href, item.coverHref)
+        constructor(item: DBSeries) : this(item.mainTitle, item.href, item.coverHref)
     }
 }
