@@ -15,68 +15,64 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.lifecycle.collectAsStateWithLifecycle
+import dev.datlag.burningseries.shared.common.localPadding
 import dev.datlag.burningseries.shared.ui.custom.state.UnreachableState
 import dev.datlag.burningseries.shared.ui.screen.initial.series.activate.component.WebView
 import dev.icerock.moko.resources.compose.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActivateScreen(component: ActivateComponent) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = stringResource(SharedRes.strings.activate_hint))
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            component.back()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBackIosNew,
-                            contentDescription = stringResource(SharedRes.strings.back)
-                        )
-                    }
-                },
-                actions = {
-                    Box(
-                        contentAlignment = Alignment.Center
-                    ) {
-                        val isSaving by component.isSaving.collectAsStateWithLifecycle()
+    val dialogState by component.dialog.subscribeAsState()
+    val onDeviceReachable = remember { component.onDeviceReachable }
 
-                        if (isSaving) {
-                            Icon(
-                                imageVector = Icons.Default.Save,
-                                contentDescription = stringResource(SharedRes.strings.saving)
-                            )
-                            CircularProgressIndicator()
-                        }
-                    }
+    Column(
+        modifier = Modifier.localPadding(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 56.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val isSaving by component.isSaving.collectAsStateWithLifecycle()
+
+            IconButton(
+                onClick = {
+                    component.back()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = stringResource(SharedRes.strings.back)
+                )
+            }
+            Text(
+                modifier = Modifier.weight(1F),
+                text = stringResource(SharedRes.strings.activate_hint),
+                maxLines = 2
+            )
+            if (isSaving) {
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Save,
+                        contentDescription = stringResource(SharedRes.strings.saving)
+                    )
+                    CircularProgressIndicator()
+                }
+            }
+        }
+        if (onDeviceReachable) {
+            dialogState.child?.instance?.render()
+            WebView(
+                url = BSUtil.getBurningSeriesLink(component.episode.href),
+                modifier = Modifier.fillMaxSize(),
+                onScraped = { data ->
+                    component.onScraped(data)
                 }
             )
-        }
-    ) {
-        val dialogState by component.dialog.subscribeAsState()
-        val onDeviceReachable = remember { component.onDeviceReachable }
-
-        Column(
-            modifier = Modifier.padding(it),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (onDeviceReachable) {
-                dialogState.child?.instance?.render()
-                WebView(
-                    url = BSUtil.getBurningSeriesLink(component.episode.href),
-                    modifier = Modifier.fillMaxSize(),
-                    onScraped = { data ->
-                        component.onScraped(data)
-                    }
-                )
-            } else {
-                UnreachableState(SharedRes.strings.activate_unreachable)
-            }
+        } else {
+            UnreachableState(SharedRes.strings.activate_unreachable)
         }
     }
 }

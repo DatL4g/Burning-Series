@@ -65,8 +65,7 @@ fun SeriesScreen(component: SeriesComponent) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            DefaultScreen(component)
-
+            val loadingEpisode by component.loadingEpisodeHref.collectAsStateWithLifecycle()
             val nextEpisode by component.nextEpisodeToWatch.collectAsStateWithLifecycle(initialValue = null)
             val nextSeason by component.nextSeasonToWatch.collectAsStateWithLifecycle(initialValue = null)
             val availableEpisode = if (nextEpisode?.hosters?.isNotEmpty() == true) {
@@ -74,6 +73,9 @@ fun SeriesScreen(component: SeriesComponent) {
             } else {
                 null
             }
+
+            DefaultScreen(component, loadingEpisode)
+
             availableEpisode?.let { next ->
                 ExtendedFloatingActionButton(
                     onClick = {
@@ -81,11 +83,17 @@ fun SeriesScreen(component: SeriesComponent) {
                     },
                     modifier = Modifier.align(Alignment.BottomEnd).localPadding(16.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = next.episodeTitle,
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
+                    if (loadingEpisode.equals(next.href, ignoreCase = true)) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = next.episodeTitle,
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                    }
                     Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                     Text(text = next.episodeTitle)
                 }
@@ -130,7 +138,7 @@ expect fun EnterSeriesScreen()
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DefaultScreen(component: SeriesComponent) {
+private fun DefaultScreen(component: SeriesComponent, loadingEpisode: String?) {
     val seriesState by component.seriesState.collectAsStateWithLifecycle()
     val title by component.title.collectAsStateWithLifecycle()
     val coverHref by component.coverHref.collectAsStateWithLifecycle()
@@ -150,7 +158,6 @@ private fun DefaultScreen(component: SeriesComponent) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                val loadingEpisode by component.loadingEpisodeHref.collectAsStateWithLifecycle()
                 val state = rememberLazyListState(
                     initialFirstVisibleItemIndex = StateSaver.seriesListIndex,
                     initialFirstVisibleItemScrollOffset = StateSaver.seriesListOffset
