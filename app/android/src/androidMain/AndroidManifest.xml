@@ -78,6 +78,7 @@
                 <!-- Fake domains, but can still be redirected -->
                 <data android:host="burning-series.io" />
                 <data android:host="burning-series.net" />
+                <data android:host="burning-seri.es" />
             </intent-filter>
             <intent-filter>
                 <action android:name="com.google.android.gms.actions.SEARCH_ACTION" />
