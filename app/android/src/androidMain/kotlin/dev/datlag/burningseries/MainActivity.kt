@@ -25,6 +25,7 @@ import dev.datlag.burningseries.model.common.safeCast
 import dev.datlag.burningseries.shared.App
 import dev.datlag.burningseries.shared.SharedRes
 import dev.datlag.burningseries.shared.common.lifecycle.LocalLifecycleOwner
+import dev.datlag.burningseries.shared.other.DomainVerifier
 import dev.datlag.burningseries.shared.ui.*
 import dev.datlag.burningseries.shared.ui.custom.Permission
 import dev.datlag.burningseries.shared.ui.navigation.NavHostComponent
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity() {
 
         Kast.setup(this)
         SmallIcon = R.drawable.ic_launcher_foreground
+        DomainVerifier.verify(this)
 
         setContent {
             CompositionLocalProvider(
@@ -117,6 +119,18 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
 
         Kast.dispose()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        DomainVerifier.verify(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        DomainVerifier.verify(this)
     }
 
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {

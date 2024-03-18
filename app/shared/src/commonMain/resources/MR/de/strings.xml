@@ -87,4 +87,9 @@
     <string name="pulz_subtitle">Gaming und E-Sport Infos</string>
     <string name="aniflow">AniFlow</string>
     <string name="aniflow_subtitle">Synchronisier deinen Anime Fortschritt mit AniList oder MyAnimeList. (Momentan in der Entwicklung)</string>
+    <string name="enable">Aktivieren</string>
+    <string name="open_domains_title">Links öffnen</string>
+    <string name="open_domains_text_1">Du bist momentan nicht vor Fake-Seiten geschützt!</string>
+    <string name="open_domains_text_2">Zusätzlich kannst du dann Burning-Series Suchergebnisse in der App sehen.</string>
+    <string name="open_domains_text_3">Aktiviere einfach die Option unterstützte Links zu öffnen und füge diese darunter hinzu.</string>
 </resources>
