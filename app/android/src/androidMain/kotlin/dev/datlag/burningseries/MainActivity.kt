@@ -119,6 +119,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
 
         Kast.dispose()
+        DomainVerifier.verify(this)
     }
 
     override fun onStart() {
@@ -129,6 +130,24 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        DomainVerifier.verify(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        DomainVerifier.verify(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        DomainVerifier.verify(this)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
 
         DomainVerifier.verify(this)
     }

@@ -10,6 +10,7 @@ import android.provider.Settings
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 data object DomainVerifier {
 
@@ -25,7 +26,7 @@ data object DomainVerifier {
             val unapprovedDomains = userState?.hostToStateMap?.filterValues { it == DomainVerificationUserState.DOMAIN_STATE_NONE }
 
             unapprovedDomains?.let { count ->
-                verified.compareAndSet(false, count.isEmpty())
+                verified.update { count.isEmpty() }
             }
         }
     }
