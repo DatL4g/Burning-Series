@@ -14,7 +14,7 @@ sealed interface Project {
     val googlePlay: String?
     val github: String?
 
-    data object PULZ : Project {
+    data object PulZ : Project {
         override val icon: ImageResource = SharedRes.images.PulZ
         override val title: StringResource = SharedRes.strings.pulz
         override val subTitle: StringResource = SharedRes.strings.pulz_subtitle
