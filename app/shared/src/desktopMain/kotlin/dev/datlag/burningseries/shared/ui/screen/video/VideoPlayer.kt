@@ -2,7 +2,75 @@ package dev.datlag.burningseries.shared.ui.screen.video
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.comimport androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import org.jetbrains.compose.web.attributes.InputType
+import org.jetbrains.compose.web.attributes.checked
+import org.jetbrains.compose.web.css.padding
+import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.dom.*
+import org.jetbrains.compose.web.renderComposable
+import org.w3c.dom.events.KeyboardEvent
+
+fun main() {
+    renderComposable(rootElementId = "app") {
+        var fullscreenEnabled by remember { mutableStateOf(false) }
+
+        Div {
+            Input(
+                type = InputType.Checkbox,
+                attrs = {
+                    checked(fullscreenEnabled)
+                    onChange {
+                        fullscreenEnabled = it.value == "on"
+                    }
+                }
+            )
+
+            Label(attrs = {
+                style {
+                    marginLeft(5.px)
+                }
+            }) {
+                Text("Enable Fullscreen")
+            }
+
+            VideoPlayer(component = VideoComponent(), modifier = Modifier, fullscreenEnabled = fullscreenEnabled)
+        }
+
+        WindowEvents(keyboardEvents = {
+            on { e ->
+                if (e.type == KeyEventType.KeyDown && e.sourceEvent is KeyboardEvent) {
+                    val keyEvent = e.sourceEvent as KeyboardEvent
+                    if (keyEvent.key == Key.F11) {
+                        if (fullscreenEnabled) {
+                            // Call exitFullscreen method
+                        } else {
+                            // Call enterFullscreen method
+                        }
+                        fullscreenEnabled = !fullscreenEnabled
+                        e.consume()
+                    }
+                }
+            }
+        })
+    }
+}
+
+fun VideoPlayer(component: VideoComponent, modifier: Modifier, fullscreenEnabled: Boolean): VideoComponent? {
+    // Existing VideoPlayer code with modifications for fullscreenEnabled parameter
+    // Ensure to update the VideoPlayer function based on the existing code
+    // Implement logic to handle entering and exiting fullscreen mode based on the fullscreenEnabled flag
+    return component
+}
+
+fun enterFullscreen() {
+    // Logic to enter fullscreen mode
+}
+
+fun exitFullscreen() {
+    // Logic to exit fullscreen mode
+}pose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.graphics.Color
