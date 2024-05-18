@@ -22,6 +22,8 @@ import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.shared.common.bottomShadowBrush
 import dev.datlag.burningseries.shared.ui.custom.Cover
 import dev.datlag.burningseries.shared.ui.theme.SchemeTheme
+import dev.datlag.burningseries.shared.ui.theme.onPrimary
+import dev.datlag.burningseries.shared.ui.theme.primary
 import dev.datlag.burningseries.shared.ui.theme.rememberSchemeThemeDominantColorState
 
 @Composable
@@ -32,7 +34,7 @@ fun SeriesCard(
 ) {
     SchemeTheme(
         key = series.hrefPrimary
-    ) {
+    ) { updater ->
         Card(
             modifier = modifier,
             onClick = {
@@ -42,14 +44,10 @@ fun SeriesCard(
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
-                val scope = rememberCoroutineScope()
                 val colorState = rememberSchemeThemeDominantColorState(
                     key = series.hrefPrimary,
                     applyMinContrast = true,
                     minContrastBackgroundColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-                val animatedColor by animateColorAsState(
-                    targetValue = colorState.color
                 )
 
                 Cover(
@@ -59,11 +57,7 @@ fun SeriesCard(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
                     onSuccess = { state ->
-                        SchemeTheme.update(
-                            key = series.hrefPrimary,
-                            input = state.painter,
-                            scope = scope
-                        )
+                        updater?.update(state.painter)
                     }
                 )
 
@@ -71,7 +65,7 @@ fun SeriesCard(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .fillMaxWidth()
-                        .bottomShadowBrush(animatedColor)
+                        .bottomShadowBrush(colorState.primary)
                         .padding(16.dp)
                         .padding(top = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
@@ -83,13 +77,13 @@ fun SeriesCard(
                         fontWeight = FontWeight.Bold,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.fillMaxWidth(),
-                        color = colorState.onColor
+                        color = colorState.onPrimary
                     )
                     series.subTitle?.let {
                         Text(
                             text = it,
                             modifier = Modifier.fillMaxWidth(),
-                            color = colorState.onColor,
+                            color = colorState.onPrimary,
                             maxLines = 2
                         )
                     }

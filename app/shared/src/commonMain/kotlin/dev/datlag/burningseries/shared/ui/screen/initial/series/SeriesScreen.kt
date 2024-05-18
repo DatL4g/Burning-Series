@@ -180,7 +180,7 @@ private fun DefaultScreen(component: SeriesComponent, loadingEpisode: String?) {
                                     .clip(MaterialTheme.shapes.medium)
                                     .align(Alignment.CenterVertically)
                             ) {
-                                val scope = rememberCoroutineScope()
+                                val updater = SchemeTheme.create(commonHref)
 
                                 Cover(
                                     modifier = Modifier.fillMaxSize(),
@@ -190,7 +190,7 @@ private fun DefaultScreen(component: SeriesComponent, loadingEpisode: String?) {
                                         stringResource(SharedRes.strings.loading_intent_series)
                                     },
                                     onSuccess = { success ->
-                                        SchemeTheme.update(commonHref, success.painter, scope)
+                                        updater?.update(success.painter)
                                     }
                                 )
                                 IconButton(

@@ -61,6 +61,7 @@ kotlin {
 
                 implementation(libs.haze)
                 implementation(libs.haze.materials)
+                implementation(libs.kache)
 
                 api(libs.ktor)
                 api(libs.ktor.content.negotiation)

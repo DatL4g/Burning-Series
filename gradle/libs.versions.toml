@@ -27,6 +27,7 @@ flowredux = "1.2.1"
 grpc = "1.59.0"
 haze = "0.6.2"
 jsunpacker = "1.0.2"
+kache = "2.1.0"
 kcef = "2024.01.07.1"
 kmpalette = "3.1.0"
 kodein = "7.21.2"
@@ -97,6 +98,7 @@ grpc = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
 haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
 haze-materials = { group = "dev.chrisbanes.haze", name = "haze-materials", version.ref = "haze" }
 jsunpacker = { group = "dev.datlag.jsunpacker", name = "jsunpacker", version.ref = "jsunpacker" }
+kache = { group = "com.mayakapps.kache", name = "kache", version.ref = "kache" }
 kmpalette = { group = "com.kmpalette", name = "kmpalette-core", version.ref = "kmpalette" }
 kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }
 kodein-compose = { group = "org.kodein.di", name = "kodein-di-framework-compose", version.ref = "kodein" }
