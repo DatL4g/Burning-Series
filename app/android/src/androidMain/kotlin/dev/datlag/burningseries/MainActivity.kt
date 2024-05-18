@@ -157,7 +157,7 @@ class MainActivity : AppCompatActivity() {
         DomainVerifier.verify(this)
     }
 
-    override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         return (KeyEventDispatcher.invoke(event) ?: false) || super.dispatchKeyEvent(event)
     }
 
