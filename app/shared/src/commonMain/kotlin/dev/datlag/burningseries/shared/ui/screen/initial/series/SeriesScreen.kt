@@ -42,6 +42,7 @@ import dev.datlag.burningseries.shared.ui.custom.state.LoadingState
 import dev.datlag.burningseries.shared.ui.screen.initial.series.component.DescriptionText
 import dev.datlag.burningseries.shared.ui.screen.initial.series.component.EpisodeItem
 import dev.datlag.burningseries.shared.ui.screen.initial.series.component.SeasonAndLanguageButtons
+import dev.datlag.burningseries.shared.ui.screen.initial.series.component.AniFlowCard
 import dev.datlag.burningseries.shared.ui.theme.SchemeTheme
 import dev.datlag.burningseries.shared.ui.theme.TopLeftBottomRightRoundedShape
 import dev.icerock.moko.resources.compose.stringResource
@@ -268,6 +269,13 @@ private fun DefaultScreen(component: SeriesComponent, loadingEpisode: String?) {
                                     component.showDialog(DialogConfig.Language(it, current.series.languages))
                                 }
                             }
+                        )
+                    }
+
+                    item {
+                        AniFlowCard(
+                            isAnime = component.isAnime,
+                            modifier = Modifier.fillParentMaxWidth().padding(vertical = 8.dp)
                         )
                     }
 

@@ -1,0 +1,3 @@
+import kotlin.Boolean;
+
+ALTER TABLE Series ADD COLUMN anime INTEGER AS Boolean NOT NULL DEFAULT 0;

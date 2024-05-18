@@ -89,7 +89,7 @@ firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "
 firebase-crashlytics = { group = "dev.gitlive", name = "firebase-crashlytics", version.ref = "firebase" }
 firebase-store = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "firebase" }
 firebase-android = { group = "com.google.firebase", name = "firebase-common", version.ref = "firebase-android" }
-firebase-android-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebase-android-auth" }
+firebase-android-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebase-android-auth" }
 firebase-android-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebase-android-crashlytics" }
 firebase-android-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebase-android-firestore" }
 flowredux = { group = "com.freeletics.flowredux", name = "flowredux", version.ref = "flowredux" }
@@ -143,6 +143,7 @@ sqldelight-coroutines = { group = "app.cash.sqldelight", name = "coroutines-exte
 sqldelight-android = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
 sqldelight-jvm = { group = "app.cash.sqldelight", name = "sqlite-driver", version.ref = "sqldelight" }
 sqldelight-native = { group = "app.cash.sqldelight", name = "native-driver", version.ref = "sqldelight" }
+sqldelight-adapter-bool = { group = "app.cash.sqldelight", name = "primitive-adapters", version.ref = "sqldelight" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 vlcj = { group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }

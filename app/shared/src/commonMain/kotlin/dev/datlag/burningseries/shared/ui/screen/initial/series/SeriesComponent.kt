@@ -31,6 +31,8 @@ interface SeriesComponent : Component {
 
     val nextSeasonToWatch: Flow<Series.Season?>
 
+    val isAnime: StateFlow<Boolean>
+
     fun retryLoadingSeries(): Any?
 
     fun goBack()

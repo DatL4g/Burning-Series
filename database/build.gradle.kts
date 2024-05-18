@@ -24,6 +24,7 @@ kotlin {
             dependencies {
                 api(libs.sqldelight.coroutines)
                 api(project(":model"))
+                implementation(libs.sqldelight.adapter.bool)
             }
         }
 

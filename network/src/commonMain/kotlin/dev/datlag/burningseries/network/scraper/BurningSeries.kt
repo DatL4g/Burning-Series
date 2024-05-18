@@ -164,6 +164,30 @@ data object BurningSeries {
             }
         }
 
+        val infoHeaders = doc.querySelector(".serie")?.querySelector(".infos")?.querySelectorAll("div > span").orEmpty().map {
+            it.textContent().trim()
+        }
+        val infoData = doc.querySelector(".serie")?.querySelector(".infos")?.querySelectorAll("p").orEmpty().map {
+            it.textContent().trim()
+        }.toMutableList()
+        val infoList: MutableList<Series.Info> = mutableListOf()
+
+        if (infoData.contains(description)) {
+            infoData.removeAt(infoData.indexOf(description))
+        } else if (infoData.contains(description.trim())) {
+            infoData.removeAt(infoData.indexOf(description.trim()))
+        }
+
+        for (i in infoHeaders.indices) {
+            val data = if (infoData.size > i && infoData[i].isNotEmpty()) {
+                infoData[i].replace(Regex("(?:(\\n)*\\t)+", setOf(RegexOption.MULTILINE, RegexOption.IGNORE_CASE)), "\t")
+            } else {
+                ""
+            }
+
+            infoList.add(Series.Info(infoHeaders[i], data))
+        }
+
         val episodesDoc = doc.querySelector(".serie")?.querySelector(".episodes")?.querySelectorAll("tr") ?: emptyList()
         val episodeInfoList = episodesDoc.mapNotNull { episodesElement ->
             val episodeList = episodesElement.querySelectorAll("td").flatMap { it.querySelectorAll("a") }.map { data ->
@@ -215,6 +239,7 @@ data object BurningSeries {
             seasons = seasons,
             selectedLanguage = selectedLanguage?.trim(),
             languages = languages,
+            infos = infoList,
             episodes = episodeInfoList
         )
     }

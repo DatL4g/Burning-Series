@@ -170,6 +170,14 @@ class SeriesScreenComponent(
         }
     }.flowOn(ioDispatcher())
 
+    override val isAnime: StateFlow<Boolean> = currentSeries.filterNotNull().map { it.isAnime }.flowOn(
+        ioDispatcher()
+    ).stateIn(
+        scope = ioScope(),
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = database.burningSeriesQueries.isSeriesAnime(commonHref.value).executeAsOneOrNull() ?: false
+    )
+
     override val nextSeasonToWatch = combine(
         currentSeries.map { it?.seasons },
         currentSeries.map { it?.currentSeason },
@@ -289,6 +297,18 @@ class SeriesScreenComponent(
                 }
             }
         }
+        ioScope().launchIO {
+            currentSeries.filterNotNull().collectSafe { series ->
+                val isAnime = series.isAnime
+                val hrefPrimary = BSUtil.commonSeriesHref(series.href)
+
+                if (isAnime) {
+                    database.burningSeriesQueries.setSeriesAnime(hrefPrimary)
+                } else {
+                    database.burningSeriesQueries.unsetSeriesAnime(hrefPrimary)
+                }
+            }
+        }
     }
 
     @Composable
@@ -323,7 +343,8 @@ class SeriesScreenComponent(
             hrefPrimary = commonHref.value,
             href = href.value,
             title = title.value,
-            coverHref = coverHref.value
+            coverHref = coverHref.value,
+            anime = currentSeries.firstOrNull()?.isAnime ?: false
         )
     }
 
@@ -333,7 +354,8 @@ class SeriesScreenComponent(
             href = href.value,
             title = title.value,
             coverHref = coverHref.value,
-            favoriteSince = if (isFavorite.value) 0L else Clock.System.now().epochSeconds
+            favoriteSince = if (isFavorite.value) 0L else Clock.System.now().epochSeconds,
+            anime = currentSeries.firstOrNull()?.isAnime ?: false
         )
 
         database.burningSeriesQueries.transaction {

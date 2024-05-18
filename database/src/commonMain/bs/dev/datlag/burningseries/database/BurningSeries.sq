@@ -1,9 +1,12 @@
+import kotlin.Boolean;
+
 CREATE TABLE IF NOT EXISTS Series(
     hrefPrimary TEXT NOT NULL PRIMARY KEY,
     href TEXT NOT NULL,
     title TEXT NOT NULL,
     coverHref TEXT,
-    favoriteSince INTEGER NOT NULL
+    favoriteSince INTEGER NOT NULL,
+    anime INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS Episode(
@@ -30,10 +33,10 @@ CREATE TABLE IF NOT EXISTS SearchItem(
 );
 
 insertSeries:
-INSERT OR REPLACE INTO Series(hrefPrimary, href, title, coverHref, favoriteSince) VALUES (?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO Series(hrefPrimary, href, title, coverHref, favoriteSince, anime) VALUES (?, ?, ?, ?, ?, ?);
 
 insertSeriesOrIgnore:
-INSERT OR IGNORE INTO Series(hrefPrimary, href, title, coverHref, favoriteSince) VALUES (?, ?, ?, ?, ?);
+INSERT OR IGNORE INTO Series(hrefPrimary, href, title, coverHref, favoriteSince, anime) VALUES (?, ?, ?, ?, ?, ?);
 
 favoriteSeries:
 SELECT * FROM Series WHERE favoriteSince > 0 ORDER BY favoriteSince DESC;
@@ -47,7 +50,7 @@ UPDATE Series SET href = :href WHERE hrefPrimary = :commonHref OR hrefPrimary LI
 updateSeriesFavoriteSince {
     UPDATE Series SET favoriteSince = :since WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
 
-    INSERT OR IGNORE INTO Series (hrefPrimary, href, title, coverHref, favoriteSince) VALUES (:hrefPrimary, :href, :title, :coverHref, :since);
+    INSERT OR IGNORE INTO Series (hrefPrimary, href, title, coverHref, favoriteSince, anime) VALUES (:hrefPrimary, :href, :title, :coverHref, :since, :anime);
 }
 
 insertEpisode:
@@ -82,3 +85,12 @@ INSERT OR IGNORE INTO SearchItem (href, title, genre) VALUES ?;
 
 selectAllSearchItems:
 SELECT * FROM SearchItem;
+
+setSeriesAnime:
+UPDATE Series SET anime = 1 WHERE hrefPrimary = :href;
+
+unsetSeriesAnime:
+UPDATE Series SET anime = 0 WHERE hrefPrimary = :href;
+
+isSeriesAnime:
+SELECT anime FROM Series WHERE hrefPrimary = :href;

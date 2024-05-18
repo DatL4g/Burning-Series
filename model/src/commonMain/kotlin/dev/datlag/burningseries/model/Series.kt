@@ -3,6 +3,7 @@ package dev.datlag.burningseries.model
 import dev.datlag.burningseries.model.common.getDigitsOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 data class Series(
@@ -14,8 +15,16 @@ data class Series(
     @SerialName("selectedLanguage") val selectedLanguage: String?,
     @SerialName("seasons") val seasons: List<Season>,
     @SerialName("languages") val languages: List<Language>,
+    @SerialName("infos") val infos: List<Info> = emptyList(),
     @SerialName("episodes") val episodes: List<Episode>
 ) : TitleHolder() {
+
+    @Transient
+    val isAnime: Boolean = infos.filter {
+        it.header.equals("Genre", ignoreCase = true) || it.header.equals("Genres", ignoreCase = true)
+    }.any {
+        it.data.contains("Anime", ignoreCase = true)
+    }
 
     val currentSeason: Season? by lazy {
         seasons.firstOrNull {
@@ -71,6 +80,12 @@ data class Series(
     data class Language(
         @SerialName("value") val value: String,
         @SerialName("title") val title: String
+    )
+
+    @Serializable
+    data class Info(
+        @SerialName("header") val header: String = String(),
+        @SerialName("data") val data: String = String(),
     )
 
     @Serializable

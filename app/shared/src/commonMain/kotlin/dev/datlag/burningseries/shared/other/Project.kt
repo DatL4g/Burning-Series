@@ -25,7 +25,7 @@ sealed interface Project {
     }
 
     data object AniFlow : Project {
-        override val icon: ImageResource = SharedRes.images.ayaya
+        override val icon: ImageResource = SharedRes.images.AniFlow
         override val title: StringResource = SharedRes.strings.aniflow
         override val subTitle: StringResource = SharedRes.strings.aniflow_subtitle
         override val `package`: String = "dev.datlag.aniflow"

@@ -31,6 +31,8 @@ import dev.datlag.burningseries.shared.ui.custom.Permission
 import dev.datlag.burningseries.shared.ui.navigation.NavHostComponent
 import dev.datlag.kast.Kast
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.runBlocking
+import dev.datlag.burningseries.network.state.NetworkStateSaver
 
 class MainActivity : AppCompatActivity() {
 
@@ -120,6 +122,9 @@ class MainActivity : AppCompatActivity() {
 
         Kast.dispose()
         DomainVerifier.verify(this)
+        runBlocking {
+            NetworkStateSaver.firebaseUser?.delete()
+        }
     }
 
     override fun onStart() {
