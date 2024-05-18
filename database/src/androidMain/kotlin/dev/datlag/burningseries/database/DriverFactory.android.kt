@@ -7,12 +7,22 @@ import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import dev.datlag.burningseries.model.common.scopeCatching
 
 actual class DriverFactory(
     private val context: Context
 ) {
     actual fun createBurningSeriesDriver(): SqlDriver {
-        return AndroidSqliteDriver(BurningSeries.Schema, context, "bs.db")
+        val driver = AndroidSqliteDriver(BurningSeries.Schema, context, "bs.db")
+
+        scopeCatching {
+            BurningSeries.Schema.migrate(
+                driver = driver,
+                oldVersion = 0,
+                newVersion = BurningSeries.Schema.version
+            )
+        }
+        return driver
     }
 
     fun createBurningSeriesNativeDriver(): SupportSQLiteOpenHelper {
