@@ -29,7 +29,7 @@ sealed interface Project {
         override val title: StringResource = SharedRes.strings.aniflow
         override val subTitle: StringResource = SharedRes.strings.aniflow_subtitle
         override val `package`: String = "dev.datlag.aniflow"
-        override val googlePlay: String? = null
+        override val googlePlay: String = "https://play.google.com/store/apps/details?id=$`package`"
         override val github: String = "https://github.com/DatL4g/AniFlow"
     }
 }

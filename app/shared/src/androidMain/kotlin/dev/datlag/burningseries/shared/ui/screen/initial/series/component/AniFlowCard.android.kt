@@ -38,40 +38,38 @@ actual fun AniFlowCard(
     val project = Project.AniFlow
 
     if (!context.isPackageInstalled(project.`package`)) {
-        if (!project.googlePlay.isNullOrBlank()) {
-            val anime by isAnime.collectAsStateWithLifecycle()
+        val anime by isAnime.collectAsStateWithLifecycle()
 
-            if (anime) {
-                val uriHandler = LocalUriHandler.current
+        if (anime) {
+            val uriHandler = LocalUriHandler.current
 
-                Card(
-                    modifier = modifier,
-                    onClick = {
-                        uriHandler.openUri(project.googlePlay ?: project.github)
-                    }
+            Card(
+                modifier = modifier,
+                onClick = {
+                    uriHandler.openUri(project.googlePlay ?: project.github)
+                }
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    project.icon?.let {
+                        Image(
+                            modifier = Modifier.size(48.dp).clip(MaterialTheme.shapes.medium),
+                            painter = painterResource(it),
+                            contentDescription = stringResource(project.title),
+                        )
+                    }
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        project.icon?.let {
-                            Image(
-                                modifier = Modifier.size(48.dp).clip(MaterialTheme.shapes.medium),
-                                painter = painterResource(it),
-                                contentDescription = stringResource(project.title),
-                            )
-                        }
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(
-                                text = stringResource(project.title),
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            Text(text = stringResource(project.subTitle))
-                        }
+                        Text(
+                            text = stringResource(project.title),
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(text = stringResource(project.subTitle))
                     }
                 }
             }
