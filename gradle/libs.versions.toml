@@ -1,0 +1,79 @@
+[versions]
+app = "6.0.0"
+aboutlibraries = "11.2.0"
+activity = "1.9.0"
+android = "8.4.1"
+android-core = "1.13.1"
+coil = "3.0.0-alpha06"
+compose = "1.6.10"
+coroutines = "1.8.1"
+datastore = "1.1.1"
+datetime = "0.6.0"
+decompose = "3.0.0"
+desugar = "2.0.4"
+haze = "0.7.1"
+immutable = "0.3.7"
+kache = "2.1.0"
+kmpalette = "3.1.0"
+kodein = "7.22.0"
+kolor = "1.6.0"
+konfig = "0.15.1"
+kotlin = "2.0.0"
+ktor = "2.3.11"
+multidex = "2.0.1"
+napier = "2.7.1"
+serialization = "1.6.3"
+tooling = "1.5.1"
+versions = "0.51.0"
+windowsize = "0.5.0"
+
+[libraries]
+aboutlibraries = { group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutlibraries" }
+android = { group = "androidx.core", name = "core-ktx", version.ref = "android-core" }
+activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
+coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
+coil-network = { group = "io.coil-kt.coil3", name = "coil-network-ktor", version.ref = "coil" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil" }
+coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
+datastore = { group = "androidx.datastore", name = "datastore-core-okio", version.ref = "datastore" }
+datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "datetime" }
+decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
+decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-compose", version.ref = "decompose" }
+desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
+haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
+haze-materials = { group = "dev.chrisbanes.haze", name = "haze-materials", version.ref = "haze" }
+immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "immutable" }
+kache = { group = "com.mayakapps.kache", name = "kache", version.ref = "kache" }
+kmpalette = { group = "com.kmpalette", name = "kmpalette-core", version.ref = "kmpalette" }
+kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }
+kodein-compose = { group = "org.kodein.di", name = "kodein-di-framework-compose", version.ref = "kodein" }
+kolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "kolor" }
+ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-jvm = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-js = { group = "io.ktor", name = "ktor-client-js", version.ref = "ktor" }
+ktor-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
+napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
+serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "serialization" }
+serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serialization" }
+tooling = { group = "dev.datlag.tooling", name = "tooling-async", version.ref = "tooling" }
+tooling-country = { group = "dev.datlag.tooling", name = "tooling-country", version.ref = "tooling" }
+tooling-decompose = { group = "dev.datlag.tooling", name = "tooling-decompose", version.ref = "tooling" }
+windowsize = { group = "dev.chrisbanes.material3", name = "material3-window-size-class-multiplatform", version.ref = "windowsize" }
+
+[plugins]
+aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }
+android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "android" }
+android-library = { id = "com.android.library", version.ref = "android" }
+cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
+compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+konfig = { id = "com.codingfeline.buildkonfig", version.ref = "konfig" }
+multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
