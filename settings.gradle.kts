@@ -2,6 +2,7 @@ rootProject.name = "Burning-Series"
 include(":composeApp")
 include(":settings")
 include(":model")
+include(":network")
 
 pluginManagement {
     repositories {

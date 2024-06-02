@@ -21,25 +21,38 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.app_name
 import dev.datlag.burningseries.module.NetworkModule
+import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.ui.navigation.RootComponent
 import dev.datlag.tooling.Tooling
 import dev.datlag.tooling.applicationTitle
 import dev.datlag.tooling.decompose.lifecycle.LocalLifecycleOwner
 import dev.datlag.tooling.scopeCatching
 import dev.datlag.tooling.systemProperty
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
+import org.kodein.di.instance
 import javax.swing.SwingUtilities
 
 fun main(vararg args: String) {
+    Napier.base(DebugAntilog())
     val di = DI {
         systemProperty("jpackage.app-version")?.let {
             bindSingleton("APP_VERSION") { it }
         }
 
         import(NetworkModule.di)
+    }
+    val client by di.instance<HttpClient>()
+
+    runBlocking {
+        BurningSeries.home(client).let {
+            Napier.e(it.toString())
+        }
     }
 
     runWindow(di)

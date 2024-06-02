@@ -14,8 +14,15 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.serialization)
+            api(libs.coroutines)
+            implementation(libs.datetime)
+            api(libs.napier)
+            implementation(libs.ksoup)
+            implementation(libs.ktor)
+            implementation(libs.tooling)
             implementation(libs.immutable)
+
+            api(project(":model"))
         }
     }
 }

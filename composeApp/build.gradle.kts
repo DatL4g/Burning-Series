@@ -70,8 +70,10 @@ kotlin {
             implementation(libs.tooling.decompose)
 
             implementation(libs.windowsize)
+            implementation(libs.ktor)
 
             implementation(project(":settings"))
+            implementation(project(":network"))
         }
 
         val androidMain by getting {
@@ -86,13 +88,16 @@ kotlin {
 
                 implementation(libs.ktor.jvm)
                 implementation(libs.coroutines.android)
+                implementation(libs.okhttp.doh)
             }
         }
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
 
+            implementation(libs.ktor.jvm)
             implementation(libs.coroutines.swing)
+            implementation(libs.okhttp.doh)
         }
     }
 }

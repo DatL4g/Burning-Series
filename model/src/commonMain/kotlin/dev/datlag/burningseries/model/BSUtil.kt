@@ -54,7 +54,7 @@ data object BSUtil {
             } else if (language != null) {
                 "serie/${source}/${language}"
             } else {
-                "serie/$source}"
+                "serie/$source"
             }
         }
 

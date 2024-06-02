@@ -19,9 +19,11 @@ kodein = "7.22.0"
 kolor = "1.6.0"
 konfig = "0.15.1"
 kotlin = "2.0.0"
+ksoup = "0.1.2"
 ktor = "2.3.11"
 multidex = "2.0.1"
 napier = "2.7.1"
+okhttp = "4.12.0"
 serialization = "1.6.3"
 tooling = "1.5.1"
 versions = "0.51.0"
@@ -53,12 +55,14 @@ kmpalette = { group = "com.kmpalette", name = "kmpalette-core", version.ref = "k
 kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }
 kodein-compose = { group = "org.kodein.di", name = "kodein-di-framework-compose", version.ref = "kodein" }
 kolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "kolor" }
+ksoup = { group = "com.fleeksoft.ksoup", name = "ksoup", version.ref = "ksoup" }
 ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-jvm = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-js = { group = "io.ktor", name = "ktor-client-js", version.ref = "ktor" }
 ktor-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
+okhttp-doh = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttp" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "serialization" }
 serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serialization" }
 tooling = { group = "dev.datlag.tooling", name = "tooling-async", version.ref = "tooling" }
