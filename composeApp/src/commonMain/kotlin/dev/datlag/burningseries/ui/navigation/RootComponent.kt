@@ -10,19 +10,35 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.replaceAll
+import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeScreenComponent
+import dev.datlag.burningseries.ui.navigation.screen.welcome.WelcomeScreenComponent
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 import org.kodein.di.DI
+import org.kodein.di.instance
 
 class RootComponent(
     componentContext: ComponentContext,
     override val di: DI
 ) : Component, ComponentContext by componentContext {
 
+    private val settings by instance<Settings.PlatformAppSettings>()
+
     private val navigation = StackNavigation<RootConfig>()
     private val stack = childStack(
         source = navigation,
         serializer = RootConfig.serializer(),
-        initialConfiguration = RootConfig.Home,
+        initialConfiguration = runBlocking {
+            settings.language.firstOrNull()
+        }.let {
+            if (it == null) {
+                RootConfig.Welcome
+            } else {
+                RootConfig.Home
+            }
+        },
         childFactory = ::createScreenComponent
     )
 
@@ -31,6 +47,13 @@ class RootComponent(
         componentContext: ComponentContext
     ): Component {
         return when (rootConfig) {
+            is RootConfig.Welcome -> WelcomeScreenComponent(
+                componentContext = componentContext,
+                di = di,
+                onHome = {
+                    navigation.replaceAll(RootConfig.Home)
+                }
+            )
             is RootConfig.Home -> HomeScreenComponent(
                 componentContext = componentContext,
                 di = di

@@ -35,6 +35,8 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.merge
 import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
+import dev.datlag.burningseries.ui.navigation.screen.component.HidingNavigationBar
+import dev.datlag.burningseries.ui.navigation.screen.component.NavigationBarState
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -66,41 +68,13 @@ fun CompactScreen(component: HomeComponent) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            NavigationBar(
-                modifier = Modifier.hazeChild(
-                    state = LocalHaze.current,
-                    style = HazeMaterials.thin(NavigationBarDefaults.containerColor)
-                ).fillMaxWidth(),
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.contentColorFor(NavigationBarDefaults.containerColor),
-            ) {
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Savings,
-                            contentDescription = null
-                        )
-                    },
-                    label = {
-                        Text(text = "Sponsor")
-                    }
-                )
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Home,
-                            contentDescription = null
-                        )
-                    },
-                    label = {
-                        Text(text = "Home")
-                    }
-                )
-            }
+            HidingNavigationBar(
+                visible = true,
+                selected = NavigationBarState.Home,
+                onSponsor = { },
+                onHome = { },
+                onFavorite = { }
+            )
         }
     ) { padding ->
         ContentView(padding, component)

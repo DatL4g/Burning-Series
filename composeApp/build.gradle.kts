@@ -70,6 +70,8 @@ kotlin {
             implementation(libs.tooling.decompose)
 
             implementation(libs.windowsize)
+
+            implementation(project(":settings"))
         }
 
         val androidMain by getting {

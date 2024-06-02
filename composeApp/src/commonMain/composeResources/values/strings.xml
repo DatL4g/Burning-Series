@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">Burning-Series</string>
     <string name="home">Home</string>
+    <string name="sponsor">Sponsor</string>
+    <string name="favorite">Favorite</string>
+    <string name="select_default_language">Default Language</string>
+    <string name="select_default_language_text">This language will be preferred when you watch series</string>
+    <string name="english">English</string>
+    <string name="german">German</string>
+    <string name="german_subtitle">German Subtitle</string>
+    <string name="japanese_subtitle">Japanese Subtitle</string>
+    <string name="welcome_to">Welcome to</string>
+    <string name="lets_go">Let's Go</string>
 </resources>

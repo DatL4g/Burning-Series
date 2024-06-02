@@ -1,5 +1,6 @@
 rootProject.name = "Burning-Series"
 include(":composeApp")
+include(":settings")
 
 pluginManagement {
     repositories {

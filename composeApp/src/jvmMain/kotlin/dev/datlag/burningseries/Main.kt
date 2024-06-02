@@ -20,6 +20,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.app_name
+import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.ui.navigation.RootComponent
 import dev.datlag.tooling.Tooling
 import dev.datlag.tooling.applicationTitle
@@ -37,6 +38,8 @@ fun main(vararg args: String) {
         systemProperty("jpackage.app-version")?.let {
             bindSingleton("APP_VERSION") { it }
         }
+
+        import(NetworkModule.di)
     }
 
     runWindow(di)
