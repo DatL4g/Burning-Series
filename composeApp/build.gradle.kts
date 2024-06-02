@@ -68,6 +68,8 @@ kotlin {
             implementation(libs.decompose.compose)
 
             implementation(libs.tooling.decompose)
+
+            implementation(libs.windowsize)
         }
 
         val androidMain by getting {
@@ -78,6 +80,7 @@ kotlin {
                 implementation(libs.activity)
                 implementation(libs.activity.compose)
                 implementation(libs.multidex)
+                implementation(libs.androidx.window)
 
                 implementation(libs.ktor.jvm)
                 implementation(libs.coroutines.android)
