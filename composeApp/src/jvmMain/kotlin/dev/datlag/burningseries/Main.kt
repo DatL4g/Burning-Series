@@ -24,11 +24,13 @@ import dev.datlag.burningseries.ui.navigation.RootComponent
 import dev.datlag.tooling.Tooling
 import dev.datlag.tooling.applicationTitle
 import dev.datlag.tooling.decompose.lifecycle.LocalLifecycleOwner
+import dev.datlag.tooling.scopeCatching
 import dev.datlag.tooling.systemProperty
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
+import javax.swing.SwingUtilities
 
 fun main(vararg args: String) {
     val di = DI {
@@ -53,13 +55,15 @@ private fun runWindow(di: DI) {
         override val lifecycle: Lifecycle = lifecycle
     }
     val backDispatcher = BackDispatcher()
-    val root = RootComponent(
-        componentContext = DefaultComponentContext(
-            lifecycle = lifecycle,
-            backHandler = backDispatcher
-        ),
-        di = di
-    )
+    val root = runOnUiThread {
+        RootComponent(
+            componentContext = DefaultComponentContext(
+                lifecycle = lifecycle,
+                backHandler = backDispatcher
+            ),
+            di = di
+        )
+    }
 
     singleWindowApplication(
         state = windowState,
@@ -89,4 +93,24 @@ private fun runWindow(di: DI) {
             }
         }
     }
+}
+
+@Suppress("UNCHECKED_CAST")
+private fun <T> runOnUiThread(block: () -> T): T {
+    if (SwingUtilities.isEventDispatchThread()) {
+        return block()
+    }
+
+    var error: Throwable? = null
+    var result: T? = null
+
+    SwingUtilities.invokeAndWait {
+        val res = scopeCatching(block)
+        error = res.exceptionOrNull()
+        result = res.getOrNull()
+    }
+
+    error?.also { throw it }
+
+    return result as T
 }
