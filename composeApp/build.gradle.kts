@@ -72,6 +72,15 @@ kotlin {
             implementation(libs.windowsize)
             implementation(libs.ktor)
 
+            implementation(libs.kmpalette)
+            implementation(libs.kolor)
+            implementation(libs.kache)
+
+            implementation(libs.coil)
+            implementation(libs.coil.network)
+            implementation(libs.coil.svg)
+            implementation(libs.coil.compose)
+
             implementation(project(":settings"))
             implementation(project(":network"))
         }

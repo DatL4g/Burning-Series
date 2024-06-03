@@ -9,6 +9,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.annotation.DelicateCoilApi
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.lifecycle.LifecycleController
@@ -21,7 +24,6 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.app_name
 import dev.datlag.burningseries.module.NetworkModule
-import dev.datlag.burningseries.network.BurningSeries
 import dev.datlag.burningseries.ui.navigation.RootComponent
 import dev.datlag.tooling.Tooling
 import dev.datlag.tooling.applicationTitle
@@ -47,23 +49,19 @@ fun main(vararg args: String) {
 
         import(NetworkModule.di)
     }
-    val client by di.instance<HttpClient>()
-
-    runBlocking {
-        BurningSeries.home(client).let {
-            Napier.e(it.toString())
-        }
-    }
 
     runWindow(di)
 }
 
-@OptIn(ExperimentalDecomposeApi::class)
+@OptIn(ExperimentalDecomposeApi::class, DelicateCoilApi::class)
 private fun runWindow(di: DI) {
     val appTitle = runBlocking {
         getString(Res.string.app_name)
     }
     Tooling.applicationTitle(appTitle)
+
+    val imageLoader by di.instance<ImageLoader>()
+    SingletonImageLoader.setUnsafe(imageLoader)
 
     val windowState = WindowState()
     val lifecycle = LifecycleRegistry()

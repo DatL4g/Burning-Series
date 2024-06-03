@@ -17,7 +17,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
-data object BurningSeries {
+internal data object BurningSeries {
 
     private suspend fun document(client: HttpClient, url: String): Document? = suspendCatching {
         return@suspendCatching suspendCatching {
@@ -41,6 +41,7 @@ data object BurningSeries {
 
                 if (!seriesTitle.isNullOrBlank() && !seriesHref.isNullOrBlank()) {
                     val coverHref = cover(client, seriesHref)
+                    Napier.e("Create Series Item: $seriesTitle")
 
                     Home.Series(
                         title = seriesTitle,
@@ -54,7 +55,7 @@ data object BurningSeries {
         }?.awaitAll()?.filterNotNull() ?: persistentListOf()
     }
 
-    suspend fun home(client: HttpClient): Home? {
+    internal suspend fun home(client: HttpClient): Home? {
         val homeDoc = document(client, "") ?: return null
         val series = latestSeries(client, homeDoc)
 
@@ -68,8 +69,16 @@ data object BurningSeries {
     }
 
     private suspend fun cover(client: HttpClient, url: String): String? {
-        val commonUrl = BSUtil.commonSeriesHref(url)
-        val coverDoc = document(client, commonUrl)
+        val coverDoc = document(
+            client,
+            BSUtil.commonSeriesHref(url)
+        ) ?: document(
+            client,
+            BSUtil.fixSeriesHref(url)
+        ) ?: document(
+            client,
+            url
+        )
 
         return coverDoc?.let { cover(it) }
     }
@@ -82,6 +91,6 @@ data object BurningSeries {
             it.attr("alt").equals("Cover", ignoreCase = true)
         } ?: allImages?.firstOrNull())?.src()
 
-        return cover
+        return cover?.let(BSUtil::getBurningSeriesLink)
     }
 }

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.serialization)
+    id("kotlinx-atomicfu")
 }
 
 kotlin {
@@ -16,6 +17,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.serialization)
             implementation(libs.immutable)
+            implementation(libs.coroutines)
         }
     }
 }

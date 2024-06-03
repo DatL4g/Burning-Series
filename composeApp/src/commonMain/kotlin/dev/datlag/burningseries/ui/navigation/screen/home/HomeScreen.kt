@@ -7,12 +7,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Savings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -26,7 +34,10 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.hazeChild
@@ -34,9 +45,13 @@ import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.merge
+import dev.datlag.burningseries.network.state.HomeState
 import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
 import dev.datlag.burningseries.ui.navigation.screen.component.HidingNavigationBar
+import dev.datlag.burningseries.ui.navigation.screen.component.HomeCard
 import dev.datlag.burningseries.ui.navigation.screen.component.NavigationBarState
+import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
+import kotlinx.collections.immutable.toImmutableList
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -51,31 +66,50 @@ fun HomeScreen(component: HomeComponent) {
 
 @Composable
 fun ContentView(paddingValues: PaddingValues, component: HomeComponent) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = paddingValues.merge(16.dp)
-    ) {
-        items(5) {
-            Text(text = "Item $it")
+    val homeState by component.home.collectAsStateWithLifecycle()
+
+    when (val current = homeState) {
+        is HomeState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(0.2F).clip(CircleShape)
+                )
+            }
+        }
+        is HomeState.Failure -> {
+            Text(text = "Error please try again")
+        }
+        is HomeState.Success -> {
+            LazyVerticalGrid(
+                modifier = Modifier.fillMaxSize(),
+                columns = GridCells.FixedSize(200.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = paddingValues.merge(16.dp)
+            ) {
+                items(current.home.series.toImmutableList(), key = { it.href }) {
+                    HomeCard(
+                        series = it,
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(280.dp),
+                        onClick = { }
+                    )
+                }
+            }
         }
     }
+
 }
 
 @OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
 fun CompactScreen(component: HomeComponent) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            HidingNavigationBar(
-                visible = true,
-                selected = NavigationBarState.Home,
-                onSponsor = { },
-                onHome = { },
-                onFavorite = { }
-            )
-        }
+        modifier = Modifier.fillMaxSize()
     ) { padding ->
         ContentView(padding, component)
     }
@@ -86,40 +120,6 @@ fun BigScreen(component: HomeComponent) {
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) {
-        Row(
-            modifier = Modifier.padding(it)
-        ) {
-            NavigationRail {
-                Spacer(modifier = Modifier.weight(1F))
-                NavigationRailItem(
-                    selected = false,
-                    onClick = { },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Savings,
-                            contentDescription = null
-                        )
-                    },
-                    label = {
-                        Text(text = "Sponsor")
-                    }
-                )
-                NavigationRailItem(
-                    selected = true,
-                    onClick = { },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Home,
-                            contentDescription = null
-                        )
-                    },
-                    label = {
-                        Text(text = "Home")
-                    }
-                )
-                Spacer(modifier = Modifier.weight(1F))
-            }
-            ContentView(PaddingValues(), component)
-        }
+        ContentView(PaddingValues(), component)
     }
 }

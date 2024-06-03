@@ -3,6 +3,7 @@ package dev.datlag.burningseries.module
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.okio.OkioStorage
+import coil3.PlatformContext
 import dev.datlag.burningseries.settings.DataStoreAppSettings
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.AppSettings
@@ -29,6 +30,9 @@ actual object PlatformModule {
     private const val APP_NAME = "Burning-Series"
 
     actual val di: DI.Module = DI.Module(NAME) {
+        bindSingleton<PlatformContext> {
+            PlatformContext.INSTANCE
+        }
         bindSingleton<OkHttpClient> {
             OkHttpClient.Builder()
                 .followRedirects(true)

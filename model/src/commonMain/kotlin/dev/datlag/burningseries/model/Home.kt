@@ -12,8 +12,8 @@ data class Home(
 
     @Serializable
     data class Series(
-        @SerialName("title") val title: String,
-        @SerialName("href") val href: String,
+        @SerialName("title") override val title: String,
+        @SerialName("href") override val href: String,
         @SerialName("coverHref") val coverHref: String? = null
-    )
+    ) : SeriesData()
 }

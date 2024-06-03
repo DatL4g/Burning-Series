@@ -21,6 +21,7 @@ kotlin {
             implementation(libs.ktor)
             implementation(libs.tooling)
             implementation(libs.immutable)
+            api(libs.flowredux)
 
             api(project(":model"))
         }
