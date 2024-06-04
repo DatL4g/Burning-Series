@@ -9,6 +9,7 @@ data object BSUtil {
     const val SEARCH = "andere-serien"
 
     val episodeNumberRegex = "[|({]\\s*Ep([.]|isode)?\\s*(\\d+)\\s*[|)}]".toRegex(RegexOption.IGNORE_CASE)
+    val banner = BSUtil.getBurningSeriesLink("public/images/header.png")
 
     fun getBurningSeriesLink(href: String, http: Boolean = false, host: String = HOST_BS_TO): String {
         return if (!href.matches("^\\w+?://.*".toRegex())) {

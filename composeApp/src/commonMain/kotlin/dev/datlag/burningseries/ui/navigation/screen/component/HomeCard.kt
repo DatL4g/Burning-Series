@@ -26,6 +26,77 @@ import io.github.aakira.napier.Napier
 
 @Composable
 fun HomeCard(
+    episode: Home.Episode,
+    modifier: Modifier = Modifier,
+    onClick: (Home.Episode) -> Unit
+) {
+    SchemeTheme(
+        key = episode.source
+    ) { updater ->
+        Card(
+            modifier = modifier,
+            onClick = {
+                onClick(episode)
+            }
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                val colorState = rememberSchemeThemeDominantColorState(
+                    key = episode.source,
+                    applyMinContrast = true,
+                    minContrastBackgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+
+                AsyncImage(
+                    model = episode.coverHref,
+                    modifier = Modifier.fillMaxSize(),
+                    contentDescription = episode.title,
+                    contentScale = ContentScale.Crop,
+                    onSuccess = { state ->
+                        updater?.update(state.painter)
+                    }
+                )
+
+                LanguageChip(
+                    flag = episode.flags.firstOrNull(),
+                    modifier = Modifier.padding(16.dp).align(Alignment.TopEnd)
+                )
+
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .bottomShadowBrush(colorState.primary)
+                        .padding(16.dp)
+                        .padding(top = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = episode.mainTitle,
+                        style = MaterialTheme.typography.titleLarge,
+                        maxLines = if (episode.hasSubtitle) 1 else 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = colorState.onPrimary
+                    )
+                    episode.subTitle?.let { sub ->
+                        Text(
+                            text = sub,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.fillMaxWidth(),
+                            color = colorState.onPrimary,
+                            maxLines = 4
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeCard(
     series: Home.Series,
     modifier: Modifier = Modifier,
     onClick: (Home.Series) -> Unit
@@ -80,7 +151,8 @@ fun HomeCard(
                             text = sub,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.fillMaxWidth(),
-                            color = colorState.onPrimary
+                            color = colorState.onPrimary,
+                            maxLines = 4
                         )
                     }
                 }

@@ -7,6 +7,12 @@ sealed interface HomeState {
     val isLoading: Boolean
         get() = this !is PostLoading
 
+    val isEpisodeError: Boolean
+        get() = this is Failure || (this is Success && this.home.episodes.isEmpty())
+
+    val isSeriesError: Boolean
+        get() = this is Failure || (this is Success && this.home.series.isEmpty())
+
     data object Loading : HomeState
 
     sealed interface PostLoading : HomeState

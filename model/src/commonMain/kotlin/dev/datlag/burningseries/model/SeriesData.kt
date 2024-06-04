@@ -63,11 +63,11 @@ abstract class SeriesData {
         }
     }
 
-    val mainTitle by lazy {
+    open val mainTitle by lazy {
         bestTitle.substringBefore('|').trim()
     }
 
-    val subTitle by lazy {
+    open val subTitle by lazy {
         bestTitle.substringAfter('|', missingDelimiterValue = "").trim().ifBlank { null }
     }
 
@@ -145,12 +145,12 @@ abstract class SeriesData {
     companion object {
         fun fromHref(href: String) = object : SeriesData() {
             override val href: String = href
-            override val title: String = "Empty"
+            override val title: String = ""
         }
 
         fun commonHref(href: String) = object : SeriesData() {
             override val href: String = href
-            override val title: String = "Empty"
+            override val title: String = ""
 
             override val season: Int? = null
             override val language: String? = null

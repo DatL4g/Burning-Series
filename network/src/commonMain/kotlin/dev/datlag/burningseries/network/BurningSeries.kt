@@ -4,6 +4,8 @@ import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.network.common.firstClass
+import dev.datlag.burningseries.network.common.firstTag
 import dev.datlag.burningseries.network.common.href
 import dev.datlag.burningseries.network.common.parseGet
 import dev.datlag.burningseries.network.common.src
@@ -33,6 +35,48 @@ internal data object BurningSeries {
         }.getOrNull()
     }.getOrNull()
 
+    private suspend fun latestEpisodes(client: HttpClient, document: Document) = coroutineScope {
+        document.getElementById("newest_episodes")?.getElementsByTag("li")?.map { li ->
+            async {
+                val episodeLinkElement = li.firstTag("a")
+                val episodeTitle = episodeLinkElement?.title()
+                val episodeHref = episodeLinkElement?.href()?.let(BSUtil::fixSeriesHref)
+                val episodeInfoElement = li.firstClass("info")
+                val episodeInfo = episodeInfoElement?.text()
+                val episodeFlagElements = episodeInfoElement?.getElementsByTag("i")
+
+                val episodeInfoFlags: MutableList<Home.Episode.Flag> = mutableListOf()
+                episodeFlagElements?.forEach { infoFlags ->
+                    val flagClass = infoFlags.className()
+                    val flagTitle = infoFlags.title()
+
+                    if (flagClass.isNotBlank()) {
+                        episodeInfoFlags.add(
+                            Home.Episode.Flag(
+                                clazz = flagClass,
+                                title = flagTitle
+                            )
+                        )
+                    }
+                }
+
+                if (!episodeTitle.isNullOrBlank() && !episodeHref.isNullOrBlank()) {
+                    val coverHref = cover(client, episodeHref)
+
+                    Home.Episode(
+                        fullTitle = episodeTitle,
+                        href = episodeHref,
+                        info = episodeInfo?.ifBlank { null },
+                        flags = episodeInfoFlags.toImmutableSet(),
+                        coverHref = coverHref
+                    )
+                } else {
+                    null
+                }
+            }
+        }?.awaitAll()?.filterNotNull() ?: persistentListOf()
+    }
+
     private suspend fun latestSeries(client: HttpClient, document: Document) = coroutineScope {
         document.getElementById("newest_series")?.select("li")?.map {
             async {
@@ -41,7 +85,6 @@ internal data object BurningSeries {
 
                 if (!seriesTitle.isNullOrBlank() && !seriesHref.isNullOrBlank()) {
                     val coverHref = cover(client, seriesHref)
-                    Napier.e("Create Series Item: $seriesTitle")
 
                     Home.Series(
                         title = seriesTitle,
@@ -57,10 +100,12 @@ internal data object BurningSeries {
 
     internal suspend fun home(client: HttpClient): Home? {
         val homeDoc = document(client, "") ?: return null
+        val episodes = latestEpisodes(client, homeDoc)
         val series = latestSeries(client, homeDoc)
 
         return if (series.isNotEmpty()) {
             Home(
+                episodes = episodes.toImmutableSet(),
                 series = series.toImmutableSet()
             )
         } else {
@@ -84,7 +129,7 @@ internal data object BurningSeries {
     }
 
     private suspend fun cover(document: Document): String? {
-        val seriesElement = document.getElementsByClass("serie").firstOrNull() ?: document.selectFirst(".serie")
+        val seriesElement = document.firstClass("serie")
         val allImages = seriesElement?.getElementsByTag("img")
 
         val cover = (allImages?.firstOrNull {

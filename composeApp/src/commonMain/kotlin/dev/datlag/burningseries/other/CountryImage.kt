@@ -70,6 +70,29 @@ data object CountryImage {
 
     @Composable
     fun showFlags(
+        code: String?,
+        description: String? = null,
+        iconSize: Dp? = null,
+        showBorder: Boolean = false,
+        shape: Shape = MaterialTheme.shapes.extraSmall
+    ) {
+        code?.let {
+            val flags = getByFlag(code)
+
+            if (flags.isNotEmpty()) {
+                showFlags(
+                    collection = flags,
+                    description = description,
+                    iconSize = iconSize,
+                    showBorder = showBorder,
+                    shape = shape
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun showFlags(
         collection: ImmutableCollection<DrawableResource>,
         description: String? = null,
         iconSize: Dp? = null,
