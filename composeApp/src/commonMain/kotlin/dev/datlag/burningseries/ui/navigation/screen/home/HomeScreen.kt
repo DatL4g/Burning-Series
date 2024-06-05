@@ -66,13 +66,29 @@ import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.toImmutableList
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(component: HomeComponent) {
     AndroidFixWindowSize {
-        when (calculateWindowSizeClass().widthSizeClass) {
-            WindowWidthSizeClass.Compact -> CompactScreen(component)
-            else -> WideScreen(component)
+        val appBarState = rememberTopAppBarState()
+        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+            state = appBarState
+        )
+
+        Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                CollapsingToolbar(
+                    state = appBarState,
+                    scrollBehavior = scrollBehavior,
+                    onSettingsClick = { }
+                )
+            }
+        ) { padding ->
+            when (calculateWindowSizeClass().widthSizeClass) {
+                WindowWidthSizeClass.Compact -> CompactScreen(padding, component)
+                else -> WideScreen(padding, component)
+            }
         }
     }
 }

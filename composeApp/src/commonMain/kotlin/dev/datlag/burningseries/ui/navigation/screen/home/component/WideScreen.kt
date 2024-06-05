@@ -2,9 +2,11 @@ package dev.datlag.burningseries.ui.navigation.screen.home.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -41,95 +43,80 @@ import kotlinx.collections.immutable.toImmutableList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun WideScreen(component: HomeComponent) {
-    val appBarState = rememberTopAppBarState()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-        state = appBarState
-    )
+internal fun WideScreen(padding: PaddingValues, component: HomeComponent) {
+    val state by component.home.collectAsStateWithLifecycle()
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            CollapsingToolbar(
-                state = appBarState,
-                scrollBehavior = scrollBehavior,
-                onSettingsClick = { }
+    LazyVerticalGrid(
+        modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
+        columns = GridCells.FixedSize(200.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = padding.merge(16.dp)
+    ) {
+        fullRow {
+            Text(
+                modifier = Modifier.padding(top = 16.dp),
+                text = "Episodes",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
             )
         }
-    ) { padding ->
-        val state by component.home.collectAsStateWithLifecycle()
-
-        LazyVerticalGrid(
-            modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
-            columns = GridCells.FixedSize(200.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = padding.merge(16.dp)
-        ) {
-            fullRow {
-                Text(
-                    text = "Episodes",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
+        when {
+            state.isLoading -> fullRow {
+                Loading()
             }
-            when {
-                state.isLoading -> fullRow {
-                    Loading()
-                }
-                state.isEpisodeError -> fullRow {
-                    Text(text = "Error loading episodes")
-                }
-                state is HomeState.Success -> {
-                    items(
-                        items = (state as? HomeState.Success)
-                            ?.home
-                            ?.episodes
-                            .orEmpty()
-                            .toImmutableList(),
-                        key = { it.href }
-                    ) {
-                        HomeCard(
-                            episode = it,
-                            modifier = Modifier
-                                .width(200.dp)
-                                .height(280.dp),
-                            onClick = { }
-                        )
-                    }
+            state.isEpisodeError -> fullRow {
+                Text(text = "Error loading episodes")
+            }
+            state is HomeState.Success -> {
+                items(
+                    items = (state as? HomeState.Success)
+                        ?.home
+                        ?.episodes
+                        .orEmpty()
+                        .toImmutableList(),
+                    key = { it.href }
+                ) {
+                    HomeCard(
+                        episode = it,
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(280.dp),
+                        onClick = { }
+                    )
                 }
             }
-            fullRow {
-                Text(
-                    text = "Series",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
+        }
+        fullRow {
+            Text(
+                text = "Series",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        when {
+            state.isLoading -> fullRow {
+                Loading()
             }
-            when {
-                state.isLoading -> fullRow {
-                    Loading()
-                }
-                state.isSeriesError -> fullRow {
-                    Text(text = "Error loading series")
-                }
-                state is HomeState.Success -> {
-                    items(
-                        items = (state as? HomeState.Success)
-                            ?.home
-                            ?.series
-                            .orEmpty()
-                            .toImmutableList(),
-                        key = { it.href }
-                    ) {
-                        HomeCard(
-                            series = it,
-                            modifier = Modifier
-                                .width(200.dp)
-                                .height(280.dp),
-                            onClick = { }
-                        )
-                    }
+            state.isSeriesError -> fullRow {
+                Text(text = "Error loading series")
+            }
+            state is HomeState.Success -> {
+                items(
+                    items = (state as? HomeState.Success)
+                        ?.home
+                        ?.series
+                        .orEmpty()
+                        .toImmutableList(),
+                    key = { it.href }
+                ) {
+                    HomeCard(
+                        series = it,
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(280.dp),
+                        onClick = { }
+                    )
                 }
             }
         }
