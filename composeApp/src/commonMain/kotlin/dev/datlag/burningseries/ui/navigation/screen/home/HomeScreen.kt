@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,6 +26,7 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Savings
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SearchOff
+import androidx.compose.material.icons.rounded.YoutubeSearchedFor
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -60,7 +64,9 @@ import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.merge
 import dev.datlag.burningseries.network.state.HomeState
+import dev.datlag.burningseries.network.state.SearchState
 import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
+import dev.datlag.burningseries.ui.custom.FloatingSearchButton
 import dev.datlag.burningseries.ui.custom.scrollbar.LazyColumnScrollbar
 import dev.datlag.burningseries.ui.custom.scrollbar.ScrollbarSettings
 import dev.datlag.burningseries.ui.navigation.screen.component.CollapsingToolbar
@@ -90,32 +96,18 @@ fun HomeScreen(component: HomeComponent) {
                 )
             },
             floatingActionButton = {
-                ExtendedFloatingActionButton(
+                FloatingSearchButton(
+                    modifier = Modifier.padding(WindowInsets.ime.asPaddingValues()),
+                    onTextChange = { },
+                    enabled = !searchState.isLoading,
+                    icon = when (searchState) {
+                        is SearchState.Loading -> Icons.Rounded.YoutubeSearchedFor
+                        is SearchState.Success -> Icons.Rounded.Search
+                        is SearchState.Failure -> Icons.Rounded.SearchOff
+                    },
+                    overrideOnClick = searchState !is SearchState.Success,
                     onClick = {
-
-                    },
-                    icon = {
-                        when {
-                            searchState.isLoading -> {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                                    strokeWidth = 2.dp
-                                )
-                            }
-                            else -> {
-                                Icon(
-                                    imageVector = if (searchState.isError) {
-                                        Icons.Rounded.SearchOff
-                                    } else {
-                                        Icons.Rounded.Search
-                                    },
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    },
-                    text = {
-                        Text(text = "Search")
+                        // overwritten click
                     }
                 )
             }

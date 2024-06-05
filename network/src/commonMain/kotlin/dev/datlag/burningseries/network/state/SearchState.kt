@@ -8,7 +8,7 @@ import kotlinx.collections.immutable.toImmutableSet
 sealed interface SearchState {
 
     val isLoading: Boolean
-        get() = this !is HomeState.PostLoading
+        get() = this !is PostLoading
 
     val isError: Boolean
         get() = this is Failure
