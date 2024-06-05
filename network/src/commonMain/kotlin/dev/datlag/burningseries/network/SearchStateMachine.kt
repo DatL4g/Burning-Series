@@ -35,9 +35,7 @@ class SearchStateMachine(
                     }
 
                     state.override {
-                        SearchState.fromResult(result).also {
-                            Napier.e("New state: $it")
-                        }
+                        SearchState.fromResult(result)
                     }
                 }
             }

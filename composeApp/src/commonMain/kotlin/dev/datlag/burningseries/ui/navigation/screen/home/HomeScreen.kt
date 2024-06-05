@@ -108,6 +108,7 @@ fun HomeScreen(component: HomeComponent) {
                     overrideOnClick = searchState !is SearchState.Success,
                     onClick = {
                         // overwritten click
+                        component.retryLoadingSearch()
                     }
                 )
             }

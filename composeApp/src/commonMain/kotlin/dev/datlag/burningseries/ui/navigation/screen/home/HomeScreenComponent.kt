@@ -12,6 +12,7 @@ import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.network.HomeStateMachine
 import dev.datlag.burningseries.network.SearchStateMachine
 import dev.datlag.burningseries.network.state.HomeState
+import dev.datlag.burningseries.network.state.SearchAction
 import dev.datlag.burningseries.network.state.SearchState
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.decompose.ioScope
@@ -63,5 +64,11 @@ class HomeScreenComponent(
 
     override fun details(data: SeriesData) {
         onMedium(data)
+    }
+
+    override fun retryLoadingSearch() {
+        launchIO {
+            searchStateMachine.dispatch(SearchAction.Retry)
+        }
     }
 }

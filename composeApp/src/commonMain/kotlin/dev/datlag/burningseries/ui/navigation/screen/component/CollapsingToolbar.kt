@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.ui.navigation.screen.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,6 +37,8 @@ import dev.datlag.tooling.compose.ifFalse
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.max
 import kotlin.math.min
+import dev.datlag.burningseries.MokoRes
+import dev.icerock.moko.resources.compose.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
@@ -56,12 +59,12 @@ fun CollapsingToolbar(
             }
         }
 
-        AsyncImage(
+        Image(
             modifier = Modifier.fillMaxWidth().matchParentSize(),
-            model = BSUtil.banner,
+            painter = painterResource(MokoRes.images.banner),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            alignment = Alignment.CenterStart,
+            alignment = Alignment.Center,
             alpha = imageAlpha
         )
 

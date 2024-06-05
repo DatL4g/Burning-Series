@@ -13,4 +13,5 @@ interface HomeComponent : Component {
     val search: StateFlow<SearchState>
 
     fun details(data: SeriesData)
+    fun retryLoadingSearch()
 }
