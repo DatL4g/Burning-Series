@@ -4,6 +4,8 @@ import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.model.SearchItem
+import dev.datlag.burningseries.network.common.allClass
 import dev.datlag.burningseries.network.common.firstClass
 import dev.datlag.burningseries.network.common.firstTag
 import dev.datlag.burningseries.network.common.href
@@ -13,7 +15,9 @@ import dev.datlag.burningseries.network.common.title
 import dev.datlag.tooling.async.suspendCatching
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -111,6 +115,27 @@ internal data object BurningSeries {
         } else {
             null
         }
+    }
+
+    internal suspend fun search(client: HttpClient): ImmutableSet<SearchItem> {
+        val doc = document(client, BSUtil.SEARCH) ?: return persistentSetOf()
+
+        return doc.getElementById("seriesContainer")?.allClass("genre")?.map { element ->
+            element.getElementsByTag("li").mapNotNull { li ->
+                val linkElement = li.firstTag("a")
+                val title = linkElement?.text()?.ifBlank { null }
+                val href = linkElement?.href()?.ifBlank { null }?.let(BSUtil::fixSeriesHref)
+
+                if (!title.isNullOrBlank() && !href.isNullOrBlank()) {
+                    SearchItem(
+                        title = title,
+                        href = href
+                    )
+                } else {
+                    null
+                }
+            }
+        }?.flatten()?.toImmutableSet() ?: persistentSetOf()
     }
 
     private suspend fun cover(client: HttpClient, url: String): String? {

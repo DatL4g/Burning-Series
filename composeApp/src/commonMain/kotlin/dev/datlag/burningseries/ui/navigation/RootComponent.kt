@@ -8,11 +8,13 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.predictiveBackAnimation
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.replaceAll
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeScreenComponent
+import dev.datlag.burningseries.ui.navigation.screen.medium.MediumScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.welcome.WelcomeScreenComponent
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
@@ -56,7 +58,15 @@ class RootComponent(
             )
             is RootConfig.Home -> HomeScreenComponent(
                 componentContext = componentContext,
-                di = di
+                di = di,
+                onMedium = {
+                    navigation.bringToFront(RootConfig.Medium(it))
+                }
+            )
+            is RootConfig.Medium -> MediumScreenComponent(
+                componentContext = componentContext,
+                di = di,
+                initialSeriesData = rootConfig.seriesData
             )
         }
     }

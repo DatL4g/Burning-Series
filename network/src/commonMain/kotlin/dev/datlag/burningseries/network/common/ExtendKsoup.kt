@@ -48,6 +48,10 @@ fun Element.firstClass(noDotKey: String) : Element? {
     return this.getElementsByClass(noDotKey).firstOrNull() ?: this.selectFirst(".$noDotKey")
 }
 
+fun Element.allClass(noDotKey: String): List<Element> {
+    return this.getElementsByClass(noDotKey).ifEmpty { this.select(".$noDotKey") }
+}
+
 fun Element.firstTag(key: String): Element? {
     return this.getElementsByTag(key).firstOrNull() ?: this.selectFirst(key)
 }

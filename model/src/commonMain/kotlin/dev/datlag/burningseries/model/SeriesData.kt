@@ -3,10 +3,13 @@ package dev.datlag.burningseries.model
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.common.moreThan
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.serialization.Serializable
 
+@Serializable
 abstract class SeriesData {
     abstract val href: String
     abstract val title: String
+    abstract val coverHref: String?
 
     private val defaultValues by lazy {
         createDefaultValues()
@@ -146,11 +149,13 @@ abstract class SeriesData {
         fun fromHref(href: String) = object : SeriesData() {
             override val href: String = href
             override val title: String = ""
+            override val coverHref: String? = null
         }
 
         fun commonHref(href: String) = object : SeriesData() {
             override val href: String = href
             override val title: String = ""
+            override val coverHref: String? = null
 
             override val season: Int? = null
             override val language: String? = null

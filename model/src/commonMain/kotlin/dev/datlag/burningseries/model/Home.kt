@@ -19,7 +19,7 @@ data class Home(
         @SerialName("href") override val href: String,
         @SerialName("infoText") val info: String? = null,
         @SerialName("infoFlags") val flags: SerializableImmutableSet<Flag> = persistentSetOf(),
-        @SerialName("cover") val coverHref: String? = null
+        @SerialName("cover") override val coverHref: String? = null
     ) : SeriesData() {
 
         @Transient
@@ -59,6 +59,6 @@ data class Home(
     data class Series(
         @SerialName("title") override val title: String,
         @SerialName("href") override val href: String,
-        @SerialName("coverHref") val coverHref: String? = null
+        @SerialName("cover") override val coverHref: String? = null
     ) : SeriesData()
 }

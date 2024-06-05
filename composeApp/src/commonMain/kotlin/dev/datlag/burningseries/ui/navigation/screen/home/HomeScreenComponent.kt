@@ -7,11 +7,16 @@ import com.arkivanov.decompose.ComponentContext
 import dev.chrisbanes.haze.HazeState
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.model.SearchItem
+import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.network.HomeStateMachine
+import dev.datlag.burningseries.network.SearchStateMachine
 import dev.datlag.burningseries.network.state.HomeState
+import dev.datlag.burningseries.network.state.SearchState
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.decompose.ioScope
 import io.ktor.client.HttpClient
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
@@ -21,7 +26,8 @@ import org.kodein.di.instance
 
 class HomeScreenComponent(
     componentContext: ComponentContext,
-    override val di: DI
+    override val di: DI,
+    private val onMedium: (SeriesData) -> Unit
 ): HomeComponent, ComponentContext by componentContext {
 
     private val homeStateMachine by instance<HomeStateMachine>()
@@ -31,6 +37,15 @@ class HomeScreenComponent(
         scope = ioScope(),
         started = SharingStarted.WhileSubscribed(),
         initialValue = homeStateMachine.currentState
+    )
+
+    private val searchStateMachine by instance<SearchStateMachine>()
+    override val search: StateFlow<SearchState> = searchStateMachine.state.flowOn(
+        context = ioDispatcher()
+    ).stateIn(
+        scope = ioScope(),
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = searchStateMachine.currentState
     )
 
     @Composable
@@ -44,5 +59,9 @@ class HomeScreenComponent(
                 HomeScreen(this)
             }
         }
+    }
+
+    override fun details(data: SeriesData) {
+        onMedium(data)
     }
 }

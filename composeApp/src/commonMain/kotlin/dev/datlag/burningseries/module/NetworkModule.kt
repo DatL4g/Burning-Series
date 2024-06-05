@@ -8,6 +8,7 @@ import coil3.network.ktor.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import coil3.svg.SvgDecoder
 import dev.datlag.burningseries.network.HomeStateMachine
+import dev.datlag.burningseries.network.SearchStateMachine
 import io.ktor.client.HttpClient
 import okio.FileSystem
 import org.kodein.di.DI
@@ -44,6 +45,11 @@ data object NetworkModule {
         }
         bindProvider<HomeStateMachine> {
             HomeStateMachine(
+                client = instance()
+            )
+        }
+        bindProvider<SearchStateMachine> {
+            SearchStateMachine(
                 client = instance()
             )
         }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -20,7 +21,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Savings
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.SearchOff
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -59,8 +65,6 @@ import dev.datlag.burningseries.ui.custom.scrollbar.LazyColumnScrollbar
 import dev.datlag.burningseries.ui.custom.scrollbar.ScrollbarSettings
 import dev.datlag.burningseries.ui.navigation.screen.component.CollapsingToolbar
 import dev.datlag.burningseries.ui.navigation.screen.home.component.CompactScreen
-import dev.datlag.burningseries.ui.navigation.screen.home.component.EpisodeSection
-import dev.datlag.burningseries.ui.navigation.screen.home.component.SeriesSection
 import dev.datlag.burningseries.ui.navigation.screen.home.component.WideScreen
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
@@ -74,6 +78,7 @@ fun HomeScreen(component: HomeComponent) {
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             state = appBarState
         )
+        val searchState by component.search.collectAsStateWithLifecycle()
 
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -82,6 +87,36 @@ fun HomeScreen(component: HomeComponent) {
                     state = appBarState,
                     scrollBehavior = scrollBehavior,
                     onSettingsClick = { }
+                )
+            },
+            floatingActionButton = {
+                ExtendedFloatingActionButton(
+                    onClick = {
+
+                    },
+                    icon = {
+                        when {
+                            searchState.isLoading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(ButtonDefaults.IconSize),
+                                    strokeWidth = 2.dp
+                                )
+                            }
+                            else -> {
+                                Icon(
+                                    imageVector = if (searchState.isError) {
+                                        Icons.Rounded.SearchOff
+                                    } else {
+                                        Icons.Rounded.Search
+                                    },
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    },
+                    text = {
+                        Text(text = "Search")
+                    }
                 )
             }
         ) { padding ->

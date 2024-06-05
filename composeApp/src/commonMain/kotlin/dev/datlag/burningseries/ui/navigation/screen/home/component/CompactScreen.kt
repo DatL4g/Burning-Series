@@ -77,7 +77,7 @@ internal fun CompactScreen(padding: PaddingValues, component: HomeComponent) {
                                 modifier = Modifier
                                     .width(200.dp)
                                     .height(280.dp),
-                                onClick = { }
+                                onClick = component::details
                             )
                         }
                     }
@@ -118,7 +118,7 @@ internal fun CompactScreen(padding: PaddingValues, component: HomeComponent) {
                                 modifier = Modifier
                                     .width(200.dp)
                                     .height(280.dp),
-                                onClick = { }
+                                onClick = component::details
                             )
                         }
                     }
