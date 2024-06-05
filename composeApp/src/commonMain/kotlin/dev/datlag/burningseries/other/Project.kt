@@ -1,14 +1,14 @@
 package dev.datlag.burningseries.other
 
-import dev.datlag.burningseries.composeapp.generated.resources.AniFlow
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.aniflow
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
+import dev.icerock.moko.resources.ImageResource
+import dev.datlag.burningseries.MokoRes
 
 sealed interface Project {
 
-    val image: DrawableResource?
+    val image: ImageResource?
     val title: StringResource
     val subTitle: StringResource?
 
@@ -17,7 +17,7 @@ sealed interface Project {
     val github: String?
 
     data object AniFlow : Project {
-        override val image: DrawableResource = Res.drawable.AniFlow
+        override val image: ImageResource = MokoRes.images.AniFlow
         override val title: StringResource = Res.string.aniflow
         override val subTitle: StringResource? = null
 

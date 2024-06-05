@@ -40,7 +40,7 @@ import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
 import dev.datlag.burningseries.ui.navigation.screen.welcome.component.CompactScreen
 import dev.datlag.burningseries.ui.navigation.screen.welcome.component.LanguageSelection
 import dev.datlag.burningseries.ui.navigation.screen.welcome.component.WideScreen
-import org.jetbrains.compose.resources.painterResource
+import dev.icerock.moko.resources.compose.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)

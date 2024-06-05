@@ -19,21 +19,17 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.datlag.burningseries.composeapp.generated.resources.COUNTRY_UNKNOWN
-import dev.datlag.burningseries.composeapp.generated.resources.DE
-import dev.datlag.burningseries.composeapp.generated.resources.JP
-import dev.datlag.burningseries.composeapp.generated.resources.Res
-import dev.datlag.burningseries.composeapp.generated.resources.US
 import dev.datlag.tooling.compose.ifTrue
+import dev.icerock.moko.resources.ImageResource
 import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.painterResource
+import dev.icerock.moko.resources.compose.painterResource
+import dev.datlag.burningseries.MokoRes
 
 data object CountryImage {
 
-    fun getByCode(code: String): DrawableResource {
+    fun getByCode(code: String): ImageResource {
         val bestCode = code.split("[-_]".toRegex()).firstOrNull() ?: code
 
         return when {
@@ -43,26 +39,26 @@ data object CountryImage {
             ) || bestCode.equals(
                 "US",
                 ignoreCase = true
-            ) -> Res.drawable.US
+            ) -> MokoRes.images.US
 
-            bestCode.equals("DE", ignoreCase = true) -> Res.drawable.DE
-            bestCode.equals("JP", ignoreCase = true) -> Res.drawable.JP
-            else -> Res.drawable.COUNTRY_UNKNOWN
+            bestCode.equals("DE", ignoreCase = true) -> MokoRes.images.DE
+            bestCode.equals("JP", ignoreCase = true) -> MokoRes.images.JP
+            else -> MokoRes.images.COUNTRY_UNKNOWN
         }
     }
 
-    fun getByFlag(code: String?): ImmutableSet<DrawableResource> {
+    fun getByFlag(code: String?): ImmutableSet<ImageResource> {
         return when {
             code == null -> persistentSetOf(
-                Res.drawable.COUNTRY_UNKNOWN
+                MokoRes.images.COUNTRY_UNKNOWN
             )
             code.equals("DES", ignoreCase = true) -> persistentSetOf(
-                Res.drawable.US,
-                Res.drawable.DE
+                MokoRes.images.US,
+                MokoRes.images.DE
             )
             code.equals("JPS", ignoreCase = true) -> persistentSetOf(
-                Res.drawable.JP,
-                Res.drawable.US
+                MokoRes.images.JP,
+                MokoRes.images.US
             )
             else -> persistentSetOf(getByCode(code))
         }
@@ -93,7 +89,7 @@ data object CountryImage {
 
     @Composable
     fun showFlags(
-        collection: ImmutableCollection<DrawableResource>,
+        collection: ImmutableCollection<ImageResource>,
         description: String? = null,
         iconSize: Dp? = null,
         showBorder: Boolean = false,

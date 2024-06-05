@@ -9,6 +9,7 @@ import dev.datlag.burningseries.composeapp.generated.resources.japanese_subtitle
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.other.CountryImage
 import dev.datlag.burningseries.settings.model.Language
+import dev.icerock.moko.resources.ImageResource
 import kotlinx.collections.immutable.ImmutableSet
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
@@ -31,5 +32,5 @@ val Home.Episode.Flag.languageByCode: StringResource?
         else -> null
     }
 
-val Language?.flags: ImmutableSet<DrawableResource>
+val Language?.flags: ImmutableSet<ImageResource>
     get() = CountryImage.getByFlag(this?.code)

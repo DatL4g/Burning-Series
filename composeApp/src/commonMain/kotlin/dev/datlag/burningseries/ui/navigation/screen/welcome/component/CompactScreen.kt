@@ -14,11 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalDarkMode
-import dev.datlag.burningseries.composeapp.generated.resources.Res
-import dev.datlag.burningseries.composeapp.generated.resources.movie_dark
-import dev.datlag.burningseries.composeapp.generated.resources.movie_light
 import dev.datlag.burningseries.ui.navigation.screen.welcome.WelcomeComponent
-import org.jetbrains.compose.resources.painterResource
+import dev.icerock.moko.resources.compose.painterResource
+import dev.datlag.burningseries.MokoRes
 
 @Composable
 internal fun CompactScreen(content: LazyListScope.() -> Unit) {
@@ -30,9 +28,9 @@ internal fun CompactScreen(content: LazyListScope.() -> Unit) {
     ) {
         item {
             val res = if (LocalDarkMode.current) {
-                Res.drawable.movie_dark
+                MokoRes.images.movie_dark
             } else {
-                Res.drawable.movie_light
+                MokoRes.images.movie_light
             }
 
             Image(

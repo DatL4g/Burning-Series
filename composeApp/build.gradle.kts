@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.konfig)
+    alias(libs.plugins.moko.resources)
     alias(libs.plugins.serialization)
 }
 
@@ -17,6 +18,11 @@ val appVersionCode = 600
 
 group = artifact
 version = appVersion
+
+multiplatformResources {
+    resourcesPackage.set(artifact)
+    resourcesClassName.set("MokoRes")
+}
 
 composeCompiler {
     enableStrongSkippingMode.set(true)
@@ -57,6 +63,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.moko.resources.compose)
 
             implementation(libs.kodein)
             implementation(libs.kodein.compose)

@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.konfig) apply false
+    alias(libs.plugins.moko.resources) apply false
     alias(libs.plugins.multiplatform) apply false
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.versions)
@@ -30,6 +31,7 @@ buildscript {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
     dependencies {
+        classpath(libs.moko.resources.generator)
         classpath(libs.atomicfu)
     }
 }

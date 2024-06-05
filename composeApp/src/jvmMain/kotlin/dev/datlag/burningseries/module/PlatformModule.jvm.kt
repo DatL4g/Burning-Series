@@ -3,6 +3,7 @@ package dev.datlag.burningseries.module
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.okio.OkioStorage
+import coil3.ImageLoader
 import coil3.PlatformContext
 import dev.datlag.burningseries.settings.DataStoreAppSettings
 import dev.datlag.burningseries.settings.Settings
@@ -86,3 +87,5 @@ actual object PlatformModule {
         }
     }
 }
+
+actual fun ImageLoader.Builder.extendImageLoader(): ImageLoader.Builder = this

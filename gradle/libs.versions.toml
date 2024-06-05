@@ -6,7 +6,7 @@ android = "8.4.1"
 android-core = "1.13.1"
 atomicfu = "0.24.0"
 coil = "3.0.0-alpha06"
-compose = "1.6.10"
+compose = "1.6.11"
 coroutines = "1.8.1"
 datastore = "1.1.1"
 datetime = "0.6.0"
@@ -23,6 +23,7 @@ konfig = "0.15.1"
 kotlin = "2.0.0"
 ksoup = "0.1.2"
 ktor = "2.3.11"
+moko-resources = "0.24.0-beta-5"
 multidex = "2.0.1"
 napier = "2.7.1"
 okhttp = "4.12.0"
@@ -64,6 +65,8 @@ ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-jvm = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-js = { group = "io.ktor", name = "ktor-client-js", version.ref = "ktor" }
 ktor-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+moko-resources-compose = { group = "dev.icerock.moko", name = "resources-compose", version.ref = "moko-resources" }
+moko-resources-generator = { group = "dev.icerock.moko", name = "resources-generator", version.ref = "moko-resources" }
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 okhttp-doh = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttp" }
@@ -83,6 +86,7 @@ cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotli
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 konfig = { id = "com.codingfeline.buildkonfig", version.ref = "konfig" }
+moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

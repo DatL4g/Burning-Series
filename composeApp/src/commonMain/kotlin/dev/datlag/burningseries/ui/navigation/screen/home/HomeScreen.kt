@@ -58,8 +58,10 @@ import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
 import dev.datlag.burningseries.ui.custom.scrollbar.LazyColumnScrollbar
 import dev.datlag.burningseries.ui.custom.scrollbar.ScrollbarSettings
 import dev.datlag.burningseries.ui.navigation.screen.component.CollapsingToolbar
+import dev.datlag.burningseries.ui.navigation.screen.home.component.CompactScreen
 import dev.datlag.burningseries.ui.navigation.screen.home.component.EpisodeSection
 import dev.datlag.burningseries.ui.navigation.screen.home.component.SeriesSection
+import dev.datlag.burningseries.ui.navigation.screen.home.component.WideScreen
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.toImmutableList
@@ -70,95 +72,7 @@ fun HomeScreen(component: HomeComponent) {
     AndroidFixWindowSize {
         when (calculateWindowSizeClass().widthSizeClass) {
             WindowWidthSizeClass.Compact -> CompactScreen(component)
-            else -> BigScreen(component)
+            else -> WideScreen(component)
         }
-    }
-}
-
-@Composable
-fun ContentView(paddingValues: PaddingValues, component: HomeComponent) {
-    val homeState by component.home.collectAsStateWithLifecycle()
-
-    when (val current = homeState) {
-        is HomeState.Loading -> {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth(0.2F).clip(CircleShape)
-                )
-            }
-        }
-        is HomeState.Failure -> {
-            Text(text = "Error please try again")
-        }
-        is HomeState.Success -> {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = paddingValues.merge(16.dp)
-            ) {
-                item {
-                    EpisodeSection(
-                        modifier = Modifier.fillParentMaxWidth().padding(top = 16.dp),
-                        state = current,
-                        onClick = { }
-                    )
-                }
-                item {
-                    SeriesSection(
-                        modifier = Modifier.fillParentMaxWidth(),
-                        state = current,
-                        onClick = { }
-                    )
-                }
-            }
-        }
-    }
-
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CompactScreen(component: HomeComponent) {
-    val appBarState = rememberTopAppBarState()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-        state = appBarState
-    )
-
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            CollapsingToolbar(
-                state = appBarState,
-                scrollBehavior = scrollBehavior,
-                onSettingsClick = { }
-            )
-        }
-    ) { padding ->
-        ContentView(padding, component)
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BigScreen(component: HomeComponent) {
-    val appBarState = rememberTopAppBarState()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-        state = appBarState
-    )
-
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            CollapsingToolbar(
-                state = appBarState,
-                scrollBehavior = scrollBehavior,
-                onSettingsClick = { }
-            )
-        }
-    ) { padding ->
-        ContentView(padding, component)
     }
 }
