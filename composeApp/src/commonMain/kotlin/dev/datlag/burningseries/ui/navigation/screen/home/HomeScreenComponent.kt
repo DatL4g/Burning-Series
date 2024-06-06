@@ -18,8 +18,12 @@ import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.decompose.ioScope
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import org.kodein.di.DI
@@ -64,6 +68,12 @@ class HomeScreenComponent(
 
     override fun details(data: SeriesData) {
         onMedium(data)
+    }
+
+    override fun search(query: String?) {
+        launchIO {
+            searchStateMachine.dispatch(SearchAction.Query(query?.ifBlank { null }))
+        }
     }
 
     override fun retryLoadingSearch() {

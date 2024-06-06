@@ -1,12 +1,16 @@
 package dev.datlag.burningseries.ui.navigation.screen.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,13 +26,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Savings
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material.icons.rounded.YoutubeSearchedFor
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -43,6 +51,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -54,9 +63,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import coil3.compose.AsyncImage
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
@@ -98,7 +110,9 @@ fun HomeScreen(component: HomeComponent) {
             floatingActionButton = {
                 FloatingSearchButton(
                     modifier = Modifier.padding(WindowInsets.ime.asPaddingValues()),
-                    onTextChange = { },
+                    onTextChange = {
+                        component.search(it)
+                    },
                     enabled = !searchState.isLoading,
                     icon = when (searchState) {
                         is SearchState.Loading -> Icons.Rounded.YoutubeSearchedFor
@@ -113,9 +127,63 @@ fun HomeScreen(component: HomeComponent) {
                 )
             }
         ) { padding ->
-            when (calculateWindowSizeClass().widthSizeClass) {
-                WindowWidthSizeClass.Compact -> CompactScreen(padding, component)
-                else -> WideScreen(padding, component)
+            if (searchState.hasQueryItems) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
+                    verticalArrangement = Arrangement.spacedBy(1.dp),
+                    contentPadding = padding
+                ) {
+                    items(
+                        items = (searchState as? SearchState.Success)?.queriedItems
+                            .orEmpty()
+                            .toImmutableList(),
+                        key = { it.href }
+                    ) {
+                        ElevatedCard(
+                            modifier = Modifier.fillParentMaxWidth(),
+                            onClick = { component.details(it) },
+                            shape = MaterialTheme.shapes.extraSmall,
+                            elevation = CardDefaults.elevatedCardElevation(0.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .defaultMinSize(minHeight = 48.dp)
+                                    .padding(8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.fillMaxHeight().weight(1F),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
+                                ) {
+                                    Text(
+                                        text = it.mainTitle,
+                                        fontWeight = FontWeight.SemiBold,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        maxLines = if (it.hasSubtitle) 1 else 2
+                                    )
+                                    it.subTitle?.let { sub ->
+                                        Text(
+                                            text = sub,
+                                            maxLines = 1
+                                        )
+                                    }
+                                }
+                                // display if is favorite
+                                Icon(
+                                    imageVector = Icons.Rounded.FavoriteBorder,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    }
+                }
+            } else {
+                when (calculateWindowSizeClass().widthSizeClass) {
+                    WindowWidthSizeClass.Compact -> CompactScreen(padding, component)
+                    else -> WideScreen(padding, component)
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.common.moreThan
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 abstract class SeriesData {
