@@ -34,9 +34,11 @@ import kotlinx.collections.immutable.toImmutableList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun CompactScreen(padding: PaddingValues, component: HomeComponent) {
-    val state by component.home.collectAsStateWithLifecycle()
-
+internal fun CompactScreen(
+    state: HomeState,
+    padding: PaddingValues,
+    component: HomeComponent
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
         verticalArrangement = Arrangement.spacedBy(8.dp),

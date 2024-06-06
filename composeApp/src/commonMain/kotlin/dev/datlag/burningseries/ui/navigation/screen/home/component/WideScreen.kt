@@ -43,9 +43,11 @@ import kotlinx.collections.immutable.toImmutableList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun WideScreen(padding: PaddingValues, component: HomeComponent) {
-    val state by component.home.collectAsStateWithLifecycle()
-
+internal fun WideScreen(
+    state: HomeState,
+    padding: PaddingValues,
+    component: HomeComponent
+) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
         columns = GridCells.FixedSize(200.dp),

@@ -127,6 +127,8 @@ fun HomeScreen(component: HomeComponent) {
                 )
             }
         ) { padding ->
+            val state by component.home.collectAsStateWithLifecycle()
+
             if (searchState.hasQueryItems) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
@@ -181,8 +183,8 @@ fun HomeScreen(component: HomeComponent) {
                 }
             } else {
                 when (calculateWindowSizeClass().widthSizeClass) {
-                    WindowWidthSizeClass.Compact -> CompactScreen(padding, component)
-                    else -> WideScreen(padding, component)
+                    WindowWidthSizeClass.Compact -> CompactScreen(state, padding, component)
+                    else -> WideScreen(state, padding, component)
                 }
             }
         }
