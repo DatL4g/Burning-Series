@@ -48,6 +48,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
@@ -172,11 +174,23 @@ fun HomeScreen(component: HomeComponent) {
                                         )
                                     }
                                 }
-                                // display if is favorite
-                                Icon(
-                                    imageVector = Icons.Rounded.FavoriteBorder,
-                                    contentDescription = null
-                                )
+                                it.genre?.let { genre ->
+                                    SuggestionChip(
+                                        onClick = { },
+                                        label = {
+                                            Text(text = genre)
+                                        },
+                                        colors = SuggestionChipDefaults.suggestionChipColors(
+                                            containerColor = if (it.isAnime) {
+                                                MaterialTheme.colorScheme.primary
+                                            } else Color.Unspecified,
+                                            labelColor = if (it.isAnime) {
+                                                MaterialTheme.colorScheme.onPrimary
+                                            } else Color.Unspecified
+                                        ),
+                                        border = if (it.isAnime) null else SuggestionChipDefaults.suggestionChipBorder(true)
+                                    )
+                                }
                             }
                         }
                     }

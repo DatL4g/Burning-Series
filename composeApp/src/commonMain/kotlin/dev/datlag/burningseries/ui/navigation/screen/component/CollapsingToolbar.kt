@@ -1,9 +1,12 @@
 package dev.datlag.burningseries.ui.navigation.screen.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -25,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import coil3.compose.AsyncImage
 import dev.chrisbanes.haze.hazeChild
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
@@ -58,14 +63,43 @@ fun CollapsingToolbar(
                 max(min(1F - state.collapsedFraction, 1F), 0F)
             }
         }
+        val girlAlpha = remember(isCollapsed, imageAlpha) {
+            if (isCollapsed) 0F else min(imageAlpha * 2F, 1F)
+        }
 
         Image(
             modifier = Modifier.fillMaxWidth().matchParentSize(),
-            painter = painterResource(MokoRes.images.banner),
+            painter = painterResource(MokoRes.images.background),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             alignment = Alignment.Center,
             alpha = imageAlpha
+        )
+
+        Image(
+            modifier = Modifier.fillMaxWidth().matchParentSize(),
+            painter = painterResource(MokoRes.images.lighting),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.TopStart,
+            alpha = imageAlpha
+        )
+
+        Image(
+            modifier = Modifier.matchParentSize(),
+            painter = painterResource(MokoRes.images.title),
+            contentDescription = null,
+            alignment = Alignment.Center,
+            contentScale = ContentScale.Inside,
+            alpha = girlAlpha
+        )
+
+        Image(
+            modifier = Modifier.matchParentSize(),
+            painter = painterResource(MokoRes.images.girl_floating),
+            contentDescription = null,
+            alignment = Alignment.BottomEnd,
+            alpha = girlAlpha
         )
 
         LargeTopAppBar(

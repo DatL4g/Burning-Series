@@ -121,6 +121,8 @@ internal data object BurningSeries {
         val doc = document(client, BSUtil.SEARCH) ?: return persistentSetOf()
 
         return doc.getElementById("seriesContainer")?.allClass("genre")?.map { element ->
+            val genre = element.firstTag("strong")?.text()?.ifBlank { null }
+
             element.getElementsByTag("li").mapNotNull { li ->
                 val linkElement = li.firstTag("a")
                 val title = linkElement?.text()?.ifBlank { null }
@@ -129,7 +131,8 @@ internal data object BurningSeries {
                 if (!title.isNullOrBlank() && !href.isNullOrBlank()) {
                     SearchItem(
                         title = title,
-                        href = href
+                        href = href,
+                        genre = genre
                     )
                 } else {
                     null
