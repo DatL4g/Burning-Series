@@ -6,10 +6,16 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.okio.OkioStorage
 import coil3.ImageLoader
 import coil3.request.allowHardware
+import dev.datlag.burningseries.BuildKonfig
+import dev.datlag.burningseries.Sekret
+import dev.datlag.burningseries.firebase.FirebaseFactory
+import dev.datlag.burningseries.firebase.initialize
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.settings.DataStoreAppSettings
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.AppSettings
 import dev.datlag.tooling.createAsFileSafely
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import okhttp3.Dns
@@ -83,6 +89,31 @@ actual object PlatformModule {
         }
         bindSingleton<Settings.PlatformAppSettings> {
             DataStoreAppSettings(instance())
+        }
+        bindSingleton<FirebaseFactory> {
+            if (StateSaver.sekretLibraryLoaded) {
+                FirebaseFactory.initialize(
+                    context = instance(),
+                    projectId = Sekret.firebaseProject(BuildKonfig.packageName),
+                    applicationId = Sekret.firebaseApplication(BuildKonfig.packageName)!!,
+                    apiKey = Sekret.firebaseApiKey(BuildKonfig.packageName)!!,
+                    localLogger = object : FirebaseFactory.Crashlytics.LocalLogger {
+                        override fun warn(message: String?) {
+                            message?.let { Napier.w(it) }
+                        }
+
+                        override fun error(message: String?) {
+                            message?.let { Napier.e(it) }
+                        }
+
+                        override fun error(throwable: Throwable?) {
+                            throwable?.let { Napier.e("", it) }
+                        }
+                    }
+                )
+            } else {
+                FirebaseFactory.Empty
+            }
         }
     }
 }

@@ -12,6 +12,11 @@ datastore = "1.1.1"
 datetime = "0.6.0"
 decompose = "3.0.0"
 desugar = "2.0.4"
+firebase = "1.12.0"
+firebase-android = "21.0.0"
+firebase-android-analytics = "22.0.1"
+firebase-android-auth = "23.0.0"
+firebase-android-crashlytics = "19.0.1"
 flowredux = "1.2.1"
 haze = "0.7.1"
 immutable = "0.3.7"
@@ -27,6 +32,7 @@ moko-resources = "0.24.0-beta-5"
 multidex = "2.0.1"
 napier = "2.7.1"
 okhttp = "4.12.0"
+sekret = "2.0.0-alpha-05"
 serialization = "1.6.3"
 tooling = "1.5.1"
 versions = "0.51.0"
@@ -51,6 +57,14 @@ datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version
 decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
 decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-compose", version.ref = "decompose" }
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
+firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "firebase" }
+firebase-crashlytics = { group = "dev.gitlive", name = "firebase-crashlytics", version.ref = "firebase" }
+firebase-java = { group = "dev.gitlive", name = "firebase-java-sdk", version.strictly = "0.4.3" }
+firebase-store = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "firebase" }
+firebase-android = { group = "com.google.firebase", name = "firebase-common", version.ref = "firebase-android" }
+firebase-android-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebase-android-analytics" }
+firebase-android-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebase-android-auth" }
+firebase-android-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebase-android-crashlytics" }
 flowredux = { group = "com.freeletics.flowredux", name = "flowredux", version.ref = "flowredux" }
 haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
 haze-materials = { group = "dev.chrisbanes.haze", name = "haze-materials", version.ref = "haze" }
@@ -70,6 +84,7 @@ moko-resources-generator = { group = "dev.icerock.moko", name = "resources-gener
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 okhttp-doh = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttp" }
+sekret = { group = "dev.datlag.sekret", name = "sekret", version.ref = "sekret" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "serialization" }
 serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serialization" }
 tooling = { group = "dev.datlag.tooling", name = "tooling-async", version.ref = "tooling" }
@@ -88,5 +103,6 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 konfig = { id = "com.codingfeline.buildkonfig", version.ref = "konfig" }
 moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+sekret = { id = "dev.datlag.sekret", version.ref = "sekret" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

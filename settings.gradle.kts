@@ -1,8 +1,9 @@
 rootProject.name = "Burning-Series"
-include(":composeApp")
+include(":composeApp", ":composeApp:sekret")
 include(":settings")
 include(":model")
 include(":network")
+include(":firebase")
 
 pluginManagement {
     repositories {

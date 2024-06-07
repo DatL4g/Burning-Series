@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.konfig)
     alias(libs.plugins.moko.resources)
+    alias(libs.plugins.sekret)
     alias(libs.plugins.serialization)
 }
 
@@ -34,6 +35,18 @@ buildkonfig {
 
     defaultConfigs {
         buildConfigField(FieldSpec.Type.STRING, "packageName", artifact)
+    }
+}
+
+sekret {
+    properties {
+        enabled.set(true)
+        packageName.set(artifact)
+
+        nativeCopy {
+            androidJNIFolder.set(project.layout.projectDirectory.dir("src/androidMain/jniLibs"))
+            desktopComposeResourcesFolder.set(project.layout.projectDirectory.dir("src").dir("jvmMain").dir("resources"))
+        }
     }
 }
 
@@ -90,6 +103,7 @@ kotlin {
 
             implementation(project(":settings"))
             implementation(project(":network"))
+            implementation(project(":firebase"))
         }
 
         val androidMain by getting {
@@ -132,7 +146,7 @@ android {
     defaultConfig {
         applicationId = artifact
         minSdk = 23
-        targetSdk = 43
+        targetSdk = 34
         versionCode = appVersionCode
         versionName = appVersion
 
@@ -160,6 +174,10 @@ compose {
     desktop {
         application {
             mainClass = "$artifact.MainKt"
+
+            nativeDistributions {
+                appResourcesRootDir.set(project.layout.projectDirectory.dir("src").dir("jvmMain").dir("resources"))
+            }
         }
     }
     web { }
