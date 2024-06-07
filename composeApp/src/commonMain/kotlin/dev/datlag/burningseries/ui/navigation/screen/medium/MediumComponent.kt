@@ -1,12 +1,26 @@
 package dev.datlag.burningseries.ui.navigation.screen.medium
 
+import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.network.state.SeriesState
 import dev.datlag.burningseries.ui.navigation.Component
+import kotlinx.collections.immutable.ImmutableCollection
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface MediumComponent : Component {
     val initialSeriesData: SeriesData
+    val initialIsAnime: Boolean
 
     val seriesState: StateFlow<SeriesState>
+    val seriesTitle: Flow<String>
+    val seriesSubTitle: Flow<String?>
+    val seriesCover: Flow<String?>
+    val seriesInfo: Flow<ImmutableCollection<Series.Info>>
+    val seriesDescription: Flow<String>
+    val seriesIsAnime: Flow<Boolean>
+    val episodes: Flow<ImmutableCollection<Series.Episode>>
+
+    fun back()
 }

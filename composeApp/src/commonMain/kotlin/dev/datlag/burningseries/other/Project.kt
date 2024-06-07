@@ -1,10 +1,12 @@
 package dev.datlag.burningseries.other
 
+import androidx.compose.runtime.Composable
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.aniflow
 import org.jetbrains.compose.resources.StringResource
 import dev.icerock.moko.resources.ImageResource
 import dev.datlag.burningseries.MokoRes
+import dev.datlag.tooling.Platform
 
 sealed interface Project {
 
@@ -26,3 +28,6 @@ sealed interface Project {
         override val github: String = "https://github.com/DatL4g/AniFlow"
     }
 }
+
+@Composable
+expect fun Platform.rememberIsTv(): Boolean

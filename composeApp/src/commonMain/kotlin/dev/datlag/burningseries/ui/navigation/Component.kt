@@ -7,6 +7,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import dev.datlag.burningseries.LocalDI
+import dev.datlag.burningseries.ui.theme.SchemeTheme
 import dev.datlag.tooling.compose.launchDefault
 import dev.datlag.tooling.compose.launchIO
 import dev.datlag.tooling.compose.launchMain
@@ -38,6 +39,13 @@ interface Component : DIAware, ComponentContext {
         }
         SideEffect {
             // nullableFirebaseInstance()?.crashlytics?.screen(this)
+        }
+    }
+
+    @Composable
+    fun Component.onRenderWithScheme(key: Any?, content: @Composable (SchemeTheme.Updater?) -> Unit) {
+        onRender {
+            SchemeTheme(key = key, content = content)
         }
     }
 }

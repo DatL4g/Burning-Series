@@ -12,4 +12,5 @@
     <string name="welcome_to">Welcome to</string>
     <string name="lets_go">Let's Go</string>
     <string name="aniflow">AniFlow</string>
+    <string name="description">Description</string>
 </resources>

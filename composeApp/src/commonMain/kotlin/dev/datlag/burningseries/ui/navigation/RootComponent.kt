@@ -66,7 +66,9 @@ class RootComponent(
             is RootConfig.Medium -> MediumScreenComponent(
                 componentContext = componentContext,
                 di = di,
-                initialSeriesData = rootConfig.seriesData
+                initialSeriesData = rootConfig.seriesData,
+                initialIsAnime = rootConfig.isAnime,
+                onBack = navigation::pop
             )
         }
     }

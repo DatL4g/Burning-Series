@@ -3,6 +3,7 @@ package dev.datlag.burningseries.model
 import dev.datlag.burningseries.model.serializer.SerializableImmutableSet
 import dev.datlag.tooling.getDigitsOrNull
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -27,6 +28,11 @@ data class Series(
     }.any {
         it.data.contains("Anime", ignoreCase = true)
     }
+
+    @Transient
+    val infoWithoutGenre = info.filterNot {
+        it.header.equals("Genre", ignoreCase = true) || it.header.equals("Genres", ignoreCase = true)
+    }.toImmutableSet()
 
     @Serializable
     data class Season(
