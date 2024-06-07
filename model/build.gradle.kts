@@ -18,6 +18,7 @@ kotlin {
             implementation(libs.serialization)
             implementation(libs.immutable)
             implementation(libs.coroutines)
+            implementation(libs.tooling)
         }
     }
 }

@@ -4,6 +4,7 @@ import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
 import com.fleeksoft.ksoup.nodes.Element
 import com.fleeksoft.ksoup.parser.Parser
+import com.fleeksoft.ksoup.select.Elements
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -54,4 +55,8 @@ fun Element.allClass(noDotKey: String): List<Element> {
 
 fun Element.firstTag(key: String): Element? {
     return this.getElementsByTag(key).firstOrNull() ?: this.selectFirst(key)
+}
+
+fun Element.allTag(key: String): Elements {
+    return this.getElementsByTag(key).ifEmpty { this.select(key) }
 }

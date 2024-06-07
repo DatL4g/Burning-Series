@@ -9,6 +9,7 @@ import coil3.request.crossfade
 import coil3.svg.SvgDecoder
 import dev.datlag.burningseries.network.HomeStateMachine
 import dev.datlag.burningseries.network.SearchStateMachine
+import dev.datlag.burningseries.network.SeriesStateMachine
 import io.ktor.client.HttpClient
 import okio.FileSystem
 import org.kodein.di.DI
@@ -50,6 +51,11 @@ data object NetworkModule {
         }
         bindProvider<SearchStateMachine> {
             SearchStateMachine(
+                client = instance()
+            )
+        }
+        bindProvider<SeriesStateMachine> {
+            SeriesStateMachine(
                 client = instance()
             )
         }

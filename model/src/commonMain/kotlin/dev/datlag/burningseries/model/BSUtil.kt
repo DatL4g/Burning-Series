@@ -35,4 +35,8 @@ data object BSUtil {
     fun commonSeriesHref(href: String): String {
         return SeriesData.commonHref(fixSeriesHref(href)).toHref()
     }
+
+    fun seasonFrom(href: String): Int? {
+        return SeriesData.fromHref(href).season
+    }
 }
