@@ -16,4 +16,6 @@
     <string name="season_placeholder">Season %1$d</string>
     <string name="select_season">Select Season</string>
     <string name="select_language">Select Language</string>
+    <string name="cast">Cast</string>
+    <string name="casting_not_supported">Casting is not supported on this device yet.</string>
 </resources>

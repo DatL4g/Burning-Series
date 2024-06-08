@@ -30,6 +30,7 @@ import dev.datlag.burningseries.firebase.initializePlatform
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.navigation.RootComponent
+import dev.datlag.kast.Kast
 import dev.datlag.sekret.NativeLoader
 import dev.datlag.tooling.Tooling
 import dev.datlag.tooling.applicationTitle
@@ -53,6 +54,7 @@ fun main(vararg args: String) {
         path = systemProperty("compose.application.resources.dir")?.let(::File)
     )
     FirebaseFactory.initializePlatform()
+    Kast.restartDiscovery()
 
     val di = DI {
         systemProperty("jpackage.app-version")?.let {
@@ -63,6 +65,8 @@ fun main(vararg args: String) {
     }
 
     runWindow(di)
+
+    Kast.dispose()
 }
 
 @OptIn(ExperimentalDecomposeApi::class, DelicateCoilApi::class)

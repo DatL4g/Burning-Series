@@ -5,6 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
+import androidx.compose.material.icons.rounded.Cast
+import androidx.compose.material.icons.rounded.CastConnected
+import androidx.compose.material.icons.rounded.Devices
+import androidx.compose.material.icons.rounded.Speaker
+import androidx.compose.material.icons.rounded.Tv
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,12 +24,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.maxkeppeker.sheets.core.models.base.Header
+import com.maxkeppeker.sheets.core.models.base.IconSource
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+import com.maxkeppeler.sheets.option.OptionDialog
+import com.maxkeppeler.sheets.option.models.DisplayMode
+import com.maxkeppeler.sheets.option.models.Option
+import com.maxkeppeler.sheets.option.models.OptionBody
+import com.maxkeppeler.sheets.option.models.OptionConfig
+import com.maxkeppeler.sheets.option.models.OptionSelection
 import dev.chrisbanes.haze.hazeChild
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.datlag.burningseries.LocalHaze
+import dev.datlag.burningseries.common.icon
+import dev.datlag.burningseries.common.isConnectedOrConnecting
+import dev.datlag.burningseries.composeapp.generated.resources.Res
+import dev.datlag.burningseries.composeapp.generated.resources.cast
+import dev.datlag.burningseries.composeapp.generated.resources.casting_not_supported
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumComponent
+import dev.datlag.kast.ConnectionState
+import dev.datlag.kast.DeviceType
+import dev.datlag.kast.Kast
+import dev.datlag.kast.UnselectReason
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
@@ -65,6 +89,79 @@ internal fun Toolbar(
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                         style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
+        },
+        actions = {
+            val kastDevices by Kast.allAvailableDevices.collectAsStateWithLifecycle()
+            val kastState by Kast.connectionState.collectAsStateWithLifecycle()
+            val kastDialog = rememberUseCaseState()
+
+            OptionDialog(
+                state = kastDialog,
+                selection = OptionSelection.Single(
+                    options = kastDevices.map { device ->
+                        Option(
+                            icon = IconSource(
+                                imageVector = when (device.type) {
+                                    is DeviceType.TV -> Icons.Rounded.Tv
+                                    is DeviceType.SPEAKER -> Icons.Rounded.Speaker
+                                    else -> Icons.Rounded.Devices
+                                }
+                            ),
+                            titleText = device.name,
+                            selected = device.isSelected
+                        )
+                    },
+                    onSelectOption = { option, _ ->
+                        val device = kastDevices.toList()[option]
+
+                        if (device.isSelected) {
+                            Kast.unselect(UnselectReason.disconnected)
+                        } else {
+                            Kast.select(device)
+                        }
+                    }
+                ),
+                config = OptionConfig(
+                    mode = DisplayMode.LIST
+                ),
+                header = Header.Default(
+                    icon = IconSource(
+                        imageVector = Icons.Rounded.Cast
+                    ),
+                    title = stringResource(Res.string.cast)
+                ),
+                body = if (Kast.isSupported) {
+                    null
+                } else {
+                    OptionBody.Default(
+                        bodyText = stringResource(Res.string.casting_not_supported)
+                    )
+                }
+            )
+
+            if (kastDevices.isNotEmpty()) {
+                IconButton(
+                    onClick = {
+                        kastDialog.show()
+                    }
+                ) {
+                    Icon(
+                        imageVector = kastState.icon,
+                        contentDescription = null
+                    )
+                }
+            } else if (kastState.isConnectedOrConnecting) {
+                IconButton(
+                    onClick = {
+                        Kast.unselect(UnselectReason.disconnected)
+                    }
+                ) {
+                    Icon(
+                        imageVector = kastState.icon,
+                        contentDescription = null
                     )
                 }
             }

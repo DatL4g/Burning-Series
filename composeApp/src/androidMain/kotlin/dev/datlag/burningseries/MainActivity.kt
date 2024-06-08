@@ -12,6 +12,7 @@ import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import dev.datlag.burningseries.ui.navigation.RootComponent
+import dev.datlag.kast.Kast
 import dev.datlag.tooling.decompose.lifecycle.LocalLifecycleOwner
 import dev.datlag.tooling.safeCast
 import org.kodein.di.DIAware
@@ -37,6 +38,8 @@ class MainActivity : ComponentActivity() {
             di = di
         )
 
+        Kast.setup(this)
+
         setContent {
             CompositionLocalProvider(
                 LocalLifecycleOwner provides lifecycleOwner,
@@ -49,5 +52,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        Kast.dispose()
     }
 }

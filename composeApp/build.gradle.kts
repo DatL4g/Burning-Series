@@ -101,6 +101,7 @@ kotlin {
             implementation(libs.coil.svg)
             implementation(libs.coil.compose)
 
+            implementation(libs.kast)
             implementation("dev.datlag.sheets-compose-dialogs:option:2.0.0-SNAPSHOT")
 
             implementation(project(":settings"))
