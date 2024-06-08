@@ -14,4 +14,6 @@
     <string name="aniflow">AniFlow</string>
     <string name="description">Description</string>
     <string name="season_placeholder">Season %1$d</string>
+    <string name="select_season">Select Season</string>
+    <string name="select_language">Select Language</string>
 </resources>

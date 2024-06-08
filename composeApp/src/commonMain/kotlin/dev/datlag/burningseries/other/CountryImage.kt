@@ -67,6 +67,7 @@ data object CountryImage {
     @Composable
     fun showFlags(
         code: String?,
+        modifier: Modifier = Modifier,
         description: String? = null,
         iconSize: Dp? = null,
         showBorder: Boolean = false,
@@ -90,6 +91,7 @@ data object CountryImage {
     @Composable
     fun showFlags(
         collection: ImmutableCollection<ImageResource>,
+        modifier: Modifier = Modifier,
         description: String? = null,
         iconSize: Dp? = null,
         showBorder: Boolean = false,
@@ -99,7 +101,7 @@ data object CountryImage {
         var iconHeight by remember { mutableFloatStateOf(iconSize?.value ?: 24.dp.value) }
 
         Box(
-            modifier = Modifier.ifTrue(iconSize == null) {
+            modifier = modifier.ifTrue(iconSize == null) {
                 this.onSizeChanged {
                     val thirdWidth = it.width.toFloat() - (it.width.toFloat() / 2F)
                     val thirdHeight = it.height.toFloat() - (it.height.toFloat() / 2F)

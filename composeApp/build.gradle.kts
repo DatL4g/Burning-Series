@@ -101,6 +101,8 @@ kotlin {
             implementation(libs.coil.svg)
             implementation(libs.coil.compose)
 
+            implementation("dev.datlag.sheets-compose-dialogs:option:2.0.0-SNAPSHOT")
+
             implementation(project(":settings"))
             implementation(project(":network"))
             implementation(project(":firebase"))
