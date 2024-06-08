@@ -102,6 +102,7 @@ kotlin {
             implementation(libs.coil.compose)
 
             implementation(libs.kast)
+            implementation(libs.nanoid)
             implementation("dev.datlag.sheets-compose-dialogs:option:2.0.0-SNAPSHOT")
 
             implementation(project(":settings"))
@@ -122,6 +123,8 @@ kotlin {
                 implementation(libs.ktor.jvm)
                 implementation(libs.coroutines.android)
                 implementation(libs.okhttp.doh)
+
+                implementation(libs.bundles.android.media)
             }
         }
 
