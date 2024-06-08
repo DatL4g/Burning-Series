@@ -163,7 +163,7 @@ internal data object BurningSeries {
 
                 Series.Season(
                     value = value,
-                    title = seasonTitle
+                    title = seasonTitle.trim()
                 )
         }?.toImmutableSet() ?: persistentSetOf()
 
@@ -181,7 +181,7 @@ internal data object BurningSeries {
             }
             if (!value.isNullOrBlank() && text.isNotBlank()) {
                 Series.Language(
-                    value = value,
+                    value = value.trim(),
                     title = text
                 )
             } else {

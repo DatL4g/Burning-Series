@@ -49,6 +49,10 @@ class MediumScreenComponent(
     override val seriesSubTitle: Flow<String?> = successState.map { it.series.subTitle }
     override val seriesCover: Flow<String?> = successState.map { it.series.coverHref ?: initialSeriesData.coverHref }
     override val seriesInfo: Flow<ImmutableCollection<Series.Info>> = successState.map { it.series.infoWithoutGenre }
+    override val seriesSeason: Flow<Series.Season?> = successState.map { it.series.currentSeason }
+    override val seriesSeasonList: Flow<ImmutableCollection<Series.Season>> = successState.map { it.series.seasons }
+    override val seriesLanguage: Flow<Series.Language?> = successState.map { it.series.currentLanguage }
+    override val seriesLanguageList: Flow<ImmutableCollection<Series.Language>> = successState.map { it.series.languages }
     override val seriesDescription: Flow<String> = successState.map { it.series.description }
     override val seriesIsAnime: Flow<Boolean> = successState.map { it.series.isAnime }
     override val episodes: Flow<ImmutableCollection<Series.Episode>> = successState.map { it.series.episodes }
@@ -72,5 +76,13 @@ class MediumScreenComponent(
 
     override fun back() {
         onBack()
+    }
+
+    override fun season(value: Series.Season) {
+        seriesStateMachine.href(initialSeriesData.toHref(newSeason = value.value))
+    }
+
+    override fun language(value: Series.Language) {
+        seriesStateMachine.href(initialSeriesData.toHref(newLanguage = value.value))
     }
 }

@@ -18,9 +18,15 @@ interface MediumComponent : Component {
     val seriesSubTitle: Flow<String?>
     val seriesCover: Flow<String?>
     val seriesInfo: Flow<ImmutableCollection<Series.Info>>
+    val seriesSeason: Flow<Series.Season?>
+    val seriesSeasonList: Flow<ImmutableCollection<Series.Season>>
+    val seriesLanguage: Flow<Series.Language?>
+    val seriesLanguageList: Flow<ImmutableCollection<Series.Language>>
     val seriesDescription: Flow<String>
     val seriesIsAnime: Flow<Boolean>
     val episodes: Flow<ImmutableCollection<Series.Episode>>
 
     fun back()
+    fun season(value: Series.Season)
+    fun language(value: Series.Language)
 }

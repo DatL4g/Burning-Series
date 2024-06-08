@@ -48,7 +48,10 @@ import java.io.File
 
 fun main(vararg args: String) {
     Napier.base(DebugAntilog())
-    StateSaver.sekretLibraryLoaded = NativeLoader.loadLibrary("sekret", systemProperty("compose.application.resources.dir")?.let(::File))
+    StateSaver.sekretLibraryLoaded = NativeLoader.loadLibrary(
+        name = "sekret",
+        path = systemProperty("compose.application.resources.dir")?.let(::File)
+    )
     FirebaseFactory.initializePlatform()
 
     val di = DI {

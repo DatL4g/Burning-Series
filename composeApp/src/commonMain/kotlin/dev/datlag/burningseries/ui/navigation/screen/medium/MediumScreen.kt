@@ -54,6 +54,7 @@ import dev.datlag.burningseries.other.rememberIsTv
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.CoverSection
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.DescriptionSection
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.EpisodeItem
+import dev.datlag.burningseries.ui.navigation.screen.medium.component.SeasonLanguageSection
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.Toolbar
 import dev.datlag.burningseries.ui.theme.SchemeTheme
 import dev.datlag.tooling.Platform
@@ -90,9 +91,15 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
                 )
             }
             item {
+                SeasonLanguageSection(
+                    component = component,
+                    modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp)
+                )
+            }
+            item {
                 DescriptionSection(
                     component = component,
-                    modifier = Modifier.fillParentMaxWidth()
+                    modifier = Modifier.fillParentMaxWidth().padding(vertical = 8.dp)
                 )
             }
             if (isAndroidPhone && isAnime) {

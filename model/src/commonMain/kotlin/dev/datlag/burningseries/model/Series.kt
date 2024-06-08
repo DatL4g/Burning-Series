@@ -34,6 +34,35 @@ data class Series(
         it.header.equals("Genre", ignoreCase = true) || it.header.equals("Genres", ignoreCase = true)
     }.toImmutableSet()
 
+    val currentSeason: Season? by lazy {
+        seasons.firstOrNull {
+            it.value == season
+        } ?: seasons.firstOrNull {
+            it.title.equals(seasonTitle, true)
+        } ?: seasons.firstOrNull {
+            it.title.equals(seasonTitle.toIntOrNull()?.toString(), true)
+        } ?: seasons.firstOrNull {
+            val titleInt = it.title.toIntOrNull()
+            val seasonInt = season
+
+            titleInt != null && seasonInt != null && titleInt == seasonInt
+        } ?: seasons.firstOrNull {
+            it.title.equals(seasonTitle.getDigitsOrNull(), true)
+        } ?: seasons.firstOrNull {
+            it.title.getDigitsOrNull().equals(seasonTitle, true)
+        } ?: seasons.firstOrNull {
+            it.title.getDigitsOrNull().equals(seasonTitle.getDigitsOrNull(), true)
+        }
+    }
+
+    val currentLanguage: Language? by lazy {
+        languages.firstOrNull {
+            it.value.equals(language, true)
+        } ?: languages.firstOrNull {
+            it.value.equals(selectedLanguage, true)
+        }
+    }
+
     @Serializable
     data class Season(
         @SerialName("value") val value: Int,

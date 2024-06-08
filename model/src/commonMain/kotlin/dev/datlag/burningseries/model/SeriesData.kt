@@ -5,6 +5,7 @@ import dev.datlag.burningseries.model.common.moreThan
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlin.jvm.JvmOverloads
 
 @Serializable
 abstract class SeriesData {
@@ -134,13 +135,14 @@ abstract class SeriesData {
         )
     }
 
-    fun toHref(): String {
-        return if (season != null && language != null) {
-            "serie/${source}/${season}/${language}"
-        } else if (season != null) {
-            "serie/${source}/${season}"
+    @JvmOverloads
+    fun toHref(newSeason: Int? = season, newLanguage: String? = language): String {
+        return if (newSeason != null && newLanguage != null) {
+            "serie/${source}/${newSeason}/${newLanguage}"
+        } else if (newSeason != null) {
+            "serie/${source}/${newSeason}"
         } else if (language != null) {
-            "serie/${source}/${language}"
+            "serie/${source}/${newLanguage}"
         } else {
             "serie/$source"
         }
