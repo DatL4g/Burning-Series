@@ -35,7 +35,7 @@ internal fun CoverSection(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val cover by component.seriesCover.collectAsStateWithLifecycle(component.initialSeriesData.coverHref)
+        val cover by component.seriesCover.collectAsStateWithLifecycle(component.seriesData.coverHref)
 
         AsyncImage(
             modifier = Modifier

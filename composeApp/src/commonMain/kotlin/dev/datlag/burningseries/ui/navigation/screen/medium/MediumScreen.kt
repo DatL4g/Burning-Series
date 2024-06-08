@@ -93,7 +93,7 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
             item {
                 SeasonLanguageSection(
                     component = component,
-                    modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp)
+                    modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp).padding(top = 8.dp)
                 )
             }
             item {

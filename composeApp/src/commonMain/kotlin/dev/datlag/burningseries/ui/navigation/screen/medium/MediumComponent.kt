@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface MediumComponent : Component {
-    val initialSeriesData: SeriesData
+    val seriesData: SeriesData
     val initialIsAnime: Boolean
 
     val seriesState: StateFlow<SeriesState>

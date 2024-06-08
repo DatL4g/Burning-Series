@@ -49,8 +49,8 @@ internal fun Toolbar(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
             ) {
-                val seriesTitle by component.seriesTitle.collectAsStateWithLifecycle(component.initialSeriesData.mainTitle)
-                val seriesSubTitle by component.seriesSubTitle.collectAsStateWithLifecycle(component.initialSeriesData.subTitle)
+                val seriesTitle by component.seriesTitle.collectAsStateWithLifecycle(component.seriesData.mainTitle)
+                val seriesSubTitle by component.seriesSubTitle.collectAsStateWithLifecycle(component.seriesData.subTitle)
 
                 Text(
                     text = seriesTitle,

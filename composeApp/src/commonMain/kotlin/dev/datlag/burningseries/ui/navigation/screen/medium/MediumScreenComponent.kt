@@ -27,7 +27,7 @@ import org.kodein.di.instance
 class MediumScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    override val initialSeriesData: SeriesData,
+    private val initialSeriesData: SeriesData,
     override val initialIsAnime: Boolean,
     private val onBack: () -> Unit
 ) : MediumComponent, ComponentContext by componentContext {
@@ -42,8 +42,13 @@ class MediumScreenComponent(
     )
 
     private val successState = seriesState.mapNotNull {
-        it.safeCast<SeriesState.Success>()
+        it.safeCast<SeriesState.Success>().also { success ->
+            seriesData = success?.series ?: seriesData
+        }
     }
+
+    override var seriesData: SeriesData = initialSeriesData
+        private set
 
     override val seriesTitle: Flow<String> = successState.map { it.series.mainTitle }
     override val seriesSubTitle: Flow<String?> = successState.map { it.series.subTitle }
@@ -58,7 +63,7 @@ class MediumScreenComponent(
     override val episodes: Flow<ImmutableCollection<Series.Episode>> = successState.map { it.series.episodes }
 
     init {
-        seriesStateMachine.href(initialSeriesData.toHref())
+        seriesStateMachine.href(seriesData.toHref())
     }
 
     @Composable
@@ -79,10 +84,10 @@ class MediumScreenComponent(
     }
 
     override fun season(value: Series.Season) {
-        seriesStateMachine.href(initialSeriesData.toHref(newSeason = value.value))
+        seriesStateMachine.href(seriesData.toHref(newSeason = value.value))
     }
 
     override fun language(value: Series.Language) {
-        seriesStateMachine.href(initialSeriesData.toHref(newLanguage = value.value))
+        seriesStateMachine.href(seriesData.toHref(newLanguage = value.value))
     }
 }
