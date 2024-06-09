@@ -29,4 +29,9 @@ sealed class RootConfig {
         val episode: Series.Episode,
         val streams: SerializableImmutableSet<Stream>
     ) : RootConfig()
+
+    @Serializable
+    data class Activate(
+        val episode: Series.Episode
+    ) : RootConfig()
 }

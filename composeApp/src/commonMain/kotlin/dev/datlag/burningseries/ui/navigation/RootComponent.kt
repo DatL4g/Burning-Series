@@ -13,10 +13,12 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.replaceAll
 import dev.datlag.burningseries.settings.Settings
+import dev.datlag.burningseries.ui.navigation.screen.activate.ActivateScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.video.VideoScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.welcome.WelcomeScreenComponent
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
@@ -73,6 +75,9 @@ class RootComponent(
                 onBack = navigation::pop,
                 onWatch = { episode, streams ->
                     navigation.bringToFront(RootConfig.Video(episode, streams.toImmutableSet()))
+                },
+                onActivate = {
+                    navigation.bringToFront(RootConfig.Activate(it))
                 }
             )
             is RootConfig.Video -> VideoScreenComponent(
@@ -81,6 +86,15 @@ class RootComponent(
                 episode = rootConfig.episode,
                 streams = rootConfig.streams,
                 onBack = navigation::pop
+            )
+            is RootConfig.Activate -> ActivateScreenComponent(
+                componentContext = componentContext,
+                di = di,
+                episode = rootConfig.episode,
+                onBack = navigation::pop,
+                onWatch = { episode, stream ->
+                    navigation.bringToFront(RootConfig.Video(episode, persistentSetOf(stream)))
+                }
             )
         }
     }

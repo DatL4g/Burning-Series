@@ -4,6 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.value.Value
 import dev.chrisbanes.haze.HazeState
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.model.Series
@@ -13,6 +19,8 @@ import dev.datlag.burningseries.network.SeriesStateMachine
 import dev.datlag.burningseries.network.state.EpisodeAction
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
+import dev.datlag.burningseries.ui.navigation.DialogComponent
+import dev.datlag.burningseries.ui.navigation.screen.medium.dialog.activate.ActivateDialogComponent
 import dev.datlag.skeo.Stream
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.compose.withMainContext
@@ -35,7 +43,8 @@ class MediumScreenComponent(
     private val initialSeriesData: SeriesData,
     override val initialIsAnime: Boolean,
     private val onBack: () -> Unit,
-    private val onWatch: (Series.Episode, ImmutableCollection<Stream>) -> Unit
+    private val onWatch: (Series.Episode, ImmutableCollection<Stream>) -> Unit,
+    private val onActivate: (Series.Episode) -> Unit
 ) : MediumComponent, ComponentContext by componentContext {
 
     private val seriesStateMachine by instance<SeriesStateMachine>()
@@ -77,6 +86,25 @@ class MediumScreenComponent(
         initialValue = EpisodeState.None
     )
 
+    private val dialogNavigation = SlotNavigation<DialogConfig>()
+    override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = childSlot(
+        source = dialogNavigation,
+        serializer = DialogConfig.serializer()
+    ) { config, context ->
+        when (config) {
+            is DialogConfig.Activate -> ActivateDialogComponent(
+                componentContext = context,
+                di = di,
+                onDismiss = dialogNavigation::dismiss,
+                onActivate = {
+                    dialogNavigation.dismiss {
+                        onActivate(config.episode)
+                    }
+                }
+            )
+        }
+    }
+
     init {
         seriesStateMachine.href(seriesData.toHref())
     }
@@ -106,17 +134,26 @@ class MediumScreenComponent(
         seriesStateMachine.href(seriesData.toHref(newLanguage = value.value))
     }
 
-    override fun episode(value: Series.Episode) {
+    override fun episode(episode: Series.Episode) {
         launchIO {
-            episodeStateMachine.dispatch(EpisodeAction.Load(value))
+            episodeStateMachine.dispatch(EpisodeAction.Load(episode))
         }
     }
 
-    override fun watch(value: Series.Episode, streams: ImmutableCollection<Stream>) {
+    override fun watch(episode: Series.Episode, streams: ImmutableCollection<Stream>) {
         launchIO {
             episodeStateMachine.dispatch(EpisodeAction.Clear)
             withMainContext {
-                onWatch(value, streams)
+                onWatch(episode, streams)
+            }
+        }
+    }
+
+    override fun activate(episode: Series.Episode) {
+        launchIO {
+            episodeStateMachine.dispatch(EpisodeAction.Clear)
+            withMainContext {
+                dialogNavigation.activate(DialogConfig.Activate(episode))
             }
         }
     }

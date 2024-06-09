@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.firebase
 
+import dev.datlag.burningseries.model.HosterScraping
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseApp
 import dev.gitlive.firebase.auth.auth
@@ -51,6 +52,18 @@ open class CommonFirebase(
             }.get().documents.map {
                 it.get<String>("url")
             }
+        }
+
+        override suspend fun addStream(data: HosterScraping.FireStore): Boolean {
+            val fireStore = Firebase.firestore(app)
+            val document = fireStore.collection("stream").where {
+                "id" equalTo data.id
+            }.get().documents.firstOrNull()?.reference?: fireStore.collection("stream").document
+
+            fireStore.runTransaction {
+                set(document, data = data, merge = true)
+            }
+            return true
         }
     }
 

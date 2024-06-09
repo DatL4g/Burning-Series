@@ -1,10 +1,13 @@
 package dev.datlag.burningseries.ui.navigation.screen.medium
 
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
 import dev.datlag.burningseries.ui.navigation.Component
+import dev.datlag.burningseries.ui.navigation.DialogComponent
 import dev.datlag.skeo.Stream
 import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.collections.immutable.ImmutableSet
@@ -30,9 +33,12 @@ interface MediumComponent : Component {
 
     val episodeState: StateFlow<EpisodeState>
 
+    val dialog: Value<ChildSlot<DialogConfig, DialogComponent>>
+
     fun back()
     fun season(value: Series.Season)
     fun language(value: Series.Language)
-    fun episode(value: Series.Episode)
-    fun watch(value: Series.Episode, streams: ImmutableCollection<Stream>)
+    fun episode(episode: Series.Episode)
+    fun watch(episode: Series.Episode, streams: ImmutableCollection<Stream>)
+    fun activate(episode: Series.Episode)
 }

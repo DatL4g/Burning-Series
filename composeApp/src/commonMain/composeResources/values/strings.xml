@@ -21,4 +21,17 @@
     <string name="back">Back</string>
     <string name="vlc_required">VLC is required to play videos on your PC.\nMake sure to only download and install the official package from videolan.org or your system package manager.</string>
     <string name="download">Download</string>
+    <string name="activate_episode_title">Activate Episode</string>
+    <string name="activate_episode_text">Do you want to activate this episode now?</string>
+    <string name="activate">Activate</string>
+    <string name="later">Later</string>
+    <string name="activate_on_desktop">Activating on Desktop is no longer supported.\nEnable (Google) DoH in your browser and use the extension instead.</string>
+    <string name="load_to_activate_episode">Load to activate Episode</string>
+    <string name="activate_success_text">You can go back now or continue browsing and activate some more.</string>
+    <string name="activate_error_text">Could not activate hoster, please try again later.</string>
+    <string name="success">Success</string>
+    <string name="error">Error</string>
+    <string name="warning">Warning</string>
+    <string name="watch">Watch</string>
+    <string name="close">Close</string>
 </resources>

@@ -41,6 +41,7 @@ skeo = "0.1.1"
 tooling = "1.5.1"
 versions = "0.51.0"
 vlcj = "4.8.3"
+webview = "0.33.6"
 windowsize = "0.5.0"
 
 [libraries]
@@ -101,12 +102,14 @@ napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 okhttp-doh = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttp" }
 sekret = { group = "dev.datlag.sekret", name = "sekret", version.ref = "sekret" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "serialization" }
+serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serialization" }
 skeo = { group = "dev.datlag.skeo", name = "skeo", version.ref = "skeo" }
 tooling = { group = "dev.datlag.tooling", name = "tooling-async", version.ref = "tooling" }
 tooling-country = { group = "dev.datlag.tooling", name = "tooling-country", version.ref = "tooling" }
 tooling-decompose = { group = "dev.datlag.tooling", name = "tooling-decompose", version.ref = "tooling" }
 vlcj = { group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
+webview = { group = "io.github.kevinnzou", name = "compose-webview", version.ref = "webview" }
 windowsize = { group = "dev.chrisbanes.material3", name = "material3-window-size-class-multiplatform", version.ref = "windowsize" }
 
 [bundles]

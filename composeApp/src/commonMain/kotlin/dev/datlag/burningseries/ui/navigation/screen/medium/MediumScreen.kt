@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.materialkolor.ktx.darken
 import com.materialkolor.ktx.lighten
 import dev.chrisbanes.haze.haze
@@ -70,10 +71,17 @@ import kotlinx.collections.immutable.toImmutableList
 fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
     val listState = rememberLazyListState()
     val episodeState by component.episodeState.collectAsStateWithLifecycle()
+    val dialogState by component.dialog.subscribeAsState()
 
     when (val current = episodeState) {
         is EpisodeState.SuccessStream -> {
             component.watch(current.episode, current.results)
+        }
+        is EpisodeState.ErrorHoster -> {
+            component.activate(current.episode)
+        }
+        is EpisodeState.ErrorStream -> {
+            component.activate(current.episode)
         }
         else -> { }
     }
@@ -84,6 +92,8 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
             else -> null
         }
     }
+
+    dialogState.child?.instance?.render()
 
     Scaffold(
         topBar = {

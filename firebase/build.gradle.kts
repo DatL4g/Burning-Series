@@ -31,6 +31,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.tooling)
+            implementation(project(":model"))
         }
 
         val firebaseMain by creating {

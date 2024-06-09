@@ -1,5 +1,7 @@
 package dev.datlag.burningseries.firebase
 
+import dev.datlag.burningseries.model.HosterScraping
+
 interface FirebaseFactory {
 
     val auth: Auth
@@ -26,6 +28,7 @@ interface FirebaseFactory {
 
     interface Store {
         suspend fun streams(hrefList: List<String>): List<String> = emptyList()
+        suspend fun addStream(data: HosterScraping.FireStore): Boolean = false
 
         companion object
     }

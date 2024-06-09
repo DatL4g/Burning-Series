@@ -10,9 +10,11 @@ import coil3.svg.SvgDecoder
 import dev.datlag.burningseries.common.nullableFirebaseInstance
 import dev.datlag.burningseries.network.EpisodeStateMachine
 import dev.datlag.burningseries.network.HomeStateMachine
+import dev.datlag.burningseries.network.SaveStateMachine
 import dev.datlag.burningseries.network.SearchStateMachine
 import dev.datlag.burningseries.network.SeriesStateMachine
 import io.ktor.client.HttpClient
+import kotlinx.serialization.json.Json
 import okio.FileSystem
 import org.kodein.di.DI
 import org.kodein.di.bindProvider
@@ -26,6 +28,12 @@ data object NetworkModule {
     val di = DI.Module(NAME) {
         import(PlatformModule.di)
 
+        bindSingleton<Json> {
+            Json {
+                ignoreUnknownKeys = true
+                isLenient = true
+            }
+        }
         bindSingleton<ImageLoader> {
             ImageLoader.Builder(instance<PlatformContext>())
                 .components {
@@ -63,6 +71,13 @@ data object NetworkModule {
         }
         bindProvider<EpisodeStateMachine> {
             EpisodeStateMachine(
+                client = instance(),
+                firebaseAuth = nullableFirebaseInstance()?.auth,
+                fireStore = nullableFirebaseInstance()?.store
+            )
+        }
+        bindProvider<SaveStateMachine> {
+            SaveStateMachine(
                 client = instance(),
                 firebaseAuth = nullableFirebaseInstance()?.auth,
                 fireStore = nullableFirebaseInstance()?.store
