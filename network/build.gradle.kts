@@ -22,8 +22,10 @@ kotlin {
             implementation(libs.tooling)
             implementation(libs.immutable)
             api(libs.flowredux)
+            api(libs.skeo)
 
             api(project(":model"))
+            implementation(project(":firebase"))
         }
     }
 }

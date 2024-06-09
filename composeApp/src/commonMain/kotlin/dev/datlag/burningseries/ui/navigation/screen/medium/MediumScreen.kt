@@ -35,6 +35,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +51,7 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.datlag.burningseries.LocalDarkMode
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.plus
+import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.other.rememberIsTv
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.CoverSection
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.DescriptionSection
@@ -67,6 +69,21 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
     val listState = rememberLazyListState()
+    val episodeState by component.episodeState.collectAsStateWithLifecycle()
+
+    when (val current = episodeState) {
+        is EpisodeState.SuccessStream -> {
+            component.watch(current.episode, current.results)
+        }
+        else -> { }
+    }
+    val loadingEpisode = remember(episodeState) {
+        when (val current = episodeState) {
+            is EpisodeState.Loading -> current.episode
+            is EpisodeState.SuccessHoster -> current.episode
+            else -> null
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -110,7 +127,9 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
             items(episodes.toImmutableList(), key = { it.href }) {
                 EpisodeItem(
                     item = it,
-                    modifier = Modifier.fillParentMaxWidth()
+                    isLoading = it == loadingEpisode,
+                    modifier = Modifier.fillParentMaxWidth(),
+                    onClick = component::episode
                 )
             }
         }

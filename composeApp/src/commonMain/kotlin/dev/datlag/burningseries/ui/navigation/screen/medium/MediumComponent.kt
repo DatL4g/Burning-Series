@@ -2,8 +2,10 @@ package dev.datlag.burningseries.ui.navigation.screen.medium
 
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesData
+import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
 import dev.datlag.burningseries.ui.navigation.Component
+import dev.datlag.skeo.Stream
 import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +28,11 @@ interface MediumComponent : Component {
     val seriesIsAnime: Flow<Boolean>
     val episodes: Flow<ImmutableCollection<Series.Episode>>
 
+    val episodeState: StateFlow<EpisodeState>
+
     fun back()
     fun season(value: Series.Season)
     fun language(value: Series.Language)
+    fun episode(value: Series.Episode)
+    fun watch(value: Series.Episode, streams: ImmutableCollection<Stream>)
 }

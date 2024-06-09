@@ -134,6 +134,7 @@ kotlin {
             implementation(libs.ktor.jvm)
             implementation(libs.coroutines.swing)
             implementation(libs.okhttp.doh)
+            implementation(libs.vlcj)
         }
     }
 }

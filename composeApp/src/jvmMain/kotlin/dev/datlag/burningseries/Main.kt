@@ -1,12 +1,15 @@
 package dev.datlag.burningseries
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 import coil3.ImageLoader
@@ -21,6 +24,7 @@ import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import dev.datlag.burningseries.common.nullableFirebaseInstance
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.app_name
 import dev.datlag.burningseries.firebase.FirebaseFactory
@@ -47,6 +51,8 @@ import org.kodein.di.instance
 import javax.swing.SwingUtilities
 import java.io.File
 
+val LocalWindow = staticCompositionLocalOf<ComposeWindow> { error("No Window provided") }
+
 fun main(vararg args: String) {
     Napier.base(DebugAntilog())
     StateSaver.sekretLibraryLoaded = NativeLoader.loadLibrary(
@@ -63,10 +69,22 @@ fun main(vararg args: String) {
 
         import(NetworkModule.di)
     }
+    val firebase = di.nullableFirebaseInstance()?.auth
+
+    Runtime.getRuntime().addShutdownHook(Thread {
+        Kast.dispose()
+
+        runBlocking {
+            firebase?.delete()
+        }
+    })
 
     runWindow(di)
 
     Kast.dispose()
+    runBlocking {
+        firebase?.delete()
+    }
 }
 
 @OptIn(ExperimentalDecomposeApi::class, DelicateCoilApi::class)
@@ -103,7 +121,8 @@ private fun runWindow(di: DI) {
         LifecycleController(lifecycle, windowState)
 
         CompositionLocalProvider(
-            LocalLifecycleOwner provides lifecycleOwner
+            LocalLifecycleOwner provides lifecycleOwner,
+            LocalWindow provides window
         ) {
             App(di) {
                 PredictiveBackGestureOverlay(

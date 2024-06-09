@@ -8,9 +8,14 @@ import dev.chrisbanes.haze.HazeState
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesData
+import dev.datlag.burningseries.network.EpisodeStateMachine
 import dev.datlag.burningseries.network.SeriesStateMachine
+import dev.datlag.burningseries.network.state.EpisodeAction
+import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
+import dev.datlag.skeo.Stream
 import dev.datlag.tooling.compose.ioDispatcher
+import dev.datlag.tooling.compose.withMainContext
 import dev.datlag.tooling.decompose.ioScope
 import dev.datlag.tooling.safeCast
 import kotlinx.collections.immutable.ImmutableCollection
@@ -29,7 +34,8 @@ class MediumScreenComponent(
     override val di: DI,
     private val initialSeriesData: SeriesData,
     override val initialIsAnime: Boolean,
-    private val onBack: () -> Unit
+    private val onBack: () -> Unit,
+    private val onWatch: (Series.Episode, ImmutableCollection<Stream>) -> Unit
 ) : MediumComponent, ComponentContext by componentContext {
 
     private val seriesStateMachine by instance<SeriesStateMachine>()
@@ -62,6 +68,15 @@ class MediumScreenComponent(
     override val seriesIsAnime: Flow<Boolean> = successState.map { it.series.isAnime }
     override val episodes: Flow<ImmutableCollection<Series.Episode>> = successState.map { it.series.episodes }
 
+    private val episodeStateMachine by instance<EpisodeStateMachine>()
+    override val episodeState: StateFlow<EpisodeState> = episodeStateMachine.state.flowOn(
+        context = ioDispatcher()
+    ).stateIn(
+        scope = ioScope(),
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = EpisodeState.None
+    )
+
     init {
         seriesStateMachine.href(seriesData.toHref())
     }
@@ -89,5 +104,20 @@ class MediumScreenComponent(
 
     override fun language(value: Series.Language) {
         seriesStateMachine.href(seriesData.toHref(newLanguage = value.value))
+    }
+
+    override fun episode(value: Series.Episode) {
+        launchIO {
+            episodeStateMachine.dispatch(EpisodeAction.Load(value))
+        }
+    }
+
+    override fun watch(value: Series.Episode, streams: ImmutableCollection<Stream>) {
+        launchIO {
+            episodeStateMachine.dispatch(EpisodeAction.Clear)
+            withMainContext {
+                onWatch(value, streams)
+            }
+        }
     }
 }

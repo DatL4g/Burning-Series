@@ -37,8 +37,10 @@ napier = "2.7.1"
 okhttp = "4.12.0"
 sekret = "2.0.0-alpha-05"
 serialization = "1.7.0"
+skeo = "0.1.1"
 tooling = "1.5.1"
 versions = "0.51.0"
+vlcj = "4.8.3"
 windowsize = "0.5.0"
 
 [libraries]
@@ -100,9 +102,11 @@ okhttp-doh = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", ver
 sekret = { group = "dev.datlag.sekret", name = "sekret", version.ref = "sekret" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "serialization" }
 serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serialization" }
+skeo = { group = "dev.datlag.skeo", name = "skeo", version.ref = "skeo" }
 tooling = { group = "dev.datlag.tooling", name = "tooling-async", version.ref = "tooling" }
 tooling-country = { group = "dev.datlag.tooling", name = "tooling-country", version.ref = "tooling" }
 tooling-decompose = { group = "dev.datlag.tooling", name = "tooling-decompose", version.ref = "tooling" }
+vlcj = { group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
 windowsize = { group = "dev.chrisbanes.material3", name = "material3-window-size-class-multiplatform", version.ref = "windowsize" }
 
 [bundles]

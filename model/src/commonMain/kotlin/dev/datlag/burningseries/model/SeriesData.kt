@@ -141,7 +141,7 @@ abstract class SeriesData {
             "serie/${source}/${newSeason}/${newLanguage}"
         } else if (newSeason != null) {
             "serie/${source}/${newSeason}"
-        } else if (language != null) {
+        } else if (newLanguage != null) {
             "serie/${source}/${newLanguage}"
         } else {
             "serie/$source"

@@ -7,6 +7,8 @@ import coil3.memory.MemoryCache
 import coil3.network.ktor.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import coil3.svg.SvgDecoder
+import dev.datlag.burningseries.common.nullableFirebaseInstance
+import dev.datlag.burningseries.network.EpisodeStateMachine
 import dev.datlag.burningseries.network.HomeStateMachine
 import dev.datlag.burningseries.network.SearchStateMachine
 import dev.datlag.burningseries.network.SeriesStateMachine
@@ -57,6 +59,13 @@ data object NetworkModule {
         bindProvider<SeriesStateMachine> {
             SeriesStateMachine(
                 client = instance()
+            )
+        }
+        bindProvider<EpisodeStateMachine> {
+            EpisodeStateMachine(
+                client = instance(),
+                firebaseAuth = nullableFirebaseInstance()?.auth,
+                fireStore = nullableFirebaseInstance()?.store
             )
         }
     }

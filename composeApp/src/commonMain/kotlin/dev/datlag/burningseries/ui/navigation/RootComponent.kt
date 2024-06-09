@@ -15,7 +15,9 @@ import com.arkivanov.decompose.router.stack.replaceAll
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumScreenComponent
+import dev.datlag.burningseries.ui.navigation.screen.video.VideoScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.welcome.WelcomeScreenComponent
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import org.kodein.di.DI
@@ -68,6 +70,16 @@ class RootComponent(
                 di = di,
                 initialSeriesData = rootConfig.seriesData,
                 initialIsAnime = rootConfig.isAnime,
+                onBack = navigation::pop,
+                onWatch = { episode, streams ->
+                    navigation.bringToFront(RootConfig.Video(episode, streams.toImmutableSet()))
+                }
+            )
+            is RootConfig.Video -> VideoScreenComponent(
+                componentContext = componentContext,
+                di = di,
+                episode = rootConfig.episode,
+                streams = rootConfig.streams,
                 onBack = navigation::pop
             )
         }

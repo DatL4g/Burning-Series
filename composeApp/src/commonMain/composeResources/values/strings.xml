@@ -18,4 +18,7 @@
     <string name="select_language">Select Language</string>
     <string name="cast">Cast</string>
     <string name="casting_not_supported">Casting is not supported on this device yet.</string>
+    <string name="back">Back</string>
+    <string name="vlc_required">VLC is required to play videos on your PC.\nMake sure to only download and install the official package from videolan.org or your system package manager.</string>
+    <string name="download">Download</string>
 </resources>

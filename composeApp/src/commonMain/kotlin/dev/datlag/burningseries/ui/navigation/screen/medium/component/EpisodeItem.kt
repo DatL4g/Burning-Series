@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -37,13 +38,16 @@ import dev.datlag.burningseries.model.Series
 @Composable
 internal fun EpisodeItem(
     item: Series.Episode,
-    modifier: Modifier = Modifier
+    isLoading: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: (Series.Episode) -> Unit
 ) {
     ElevatedCard(
         modifier = modifier,
         onClick = {
-
+            onClick(item)
         },
+        enabled = !isLoading,
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
     ) {
         Row(
@@ -67,6 +71,9 @@ internal fun EpisodeItem(
                     imageVector = Icons.Rounded.PlayCircle,
                     contentDescription = null
                 )
+                if (isLoading) {
+                    CircularProgressIndicator()
+                }
             }
             Column(
                 modifier = Modifier
