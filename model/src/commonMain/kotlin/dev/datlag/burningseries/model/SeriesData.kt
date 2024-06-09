@@ -115,6 +115,8 @@ abstract class SeriesData {
         }
         val hrefSplit = newHref.split('/')
         val season = if (hrefSplit.size >= 2) hrefSplit[1] else null
+        val convertedSeason = season?.ifBlank { null }?.trim()?.toIntOrNull()
+        val missingSeasonLanguage = if (convertedSeason == null && hrefSplit.size == 2) hrefSplit[1] else null
         val language = if (hrefSplit.size >= 3) hrefSplit[2] else null
         val fallbackLanguage = if (hrefSplit.size >= 4) hrefSplit[3] else null
         var title = hrefSplit[0].ifBlank {
@@ -126,11 +128,11 @@ abstract class SeriesData {
 
         return Triple(
             first = title,
-            second = season?.ifBlank { null }?.toIntOrNull(),
+            second = convertedSeason,
             third = if (!fallbackLanguage.isNullOrBlank()) {
                 fallbackLanguage
             } else {
-                if (language.isNullOrBlank()) null else language
+                if (language.isNullOrBlank()) missingSeasonLanguage else language
             }
         )
     }

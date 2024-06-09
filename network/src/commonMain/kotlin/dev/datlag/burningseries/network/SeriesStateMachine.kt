@@ -29,7 +29,11 @@ class SeriesStateMachine(
                 onEnterEffect {
                     currentState = it
                 }
-                collectWhileInState(seriesHref.filterNotNull()) { href, state ->
+                collectWhileInState(seriesHref) { href, state ->
+                    if (href.isNullOrBlank()) {
+                        return@collectWhileInState state.override { SeriesState.Loading }
+                    }
+
                     val result = suspendCatching {
                         BurningSeries.series(client, href)
                     }

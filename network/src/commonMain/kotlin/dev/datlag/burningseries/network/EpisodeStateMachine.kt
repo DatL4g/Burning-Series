@@ -26,7 +26,9 @@ class EpisodeStateMachine(
         spec {
             inState<EpisodeState> {
                 onEnterEffect {
-                    StateSaver.firebaseLoggedIn = firebaseAuth?.signInAnonymously() ?: false
+                    if (firebaseAuth?.isSignedIn != true) {
+                        firebaseAuth?.signInAnonymously()
+                    }
                 }
                 on<EpisodeAction.Load> { action, state ->
                     state.override { EpisodeState.Loading(action.episode) }

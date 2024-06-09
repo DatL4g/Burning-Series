@@ -6,5 +6,4 @@ import dev.datlag.burningseries.network.state.SearchState
 internal data object StateSaver {
     var homeState: HomeState = HomeState.Loading
     var searchState: SearchState = SearchState.Loading
-    var firebaseLoggedIn: Boolean = false
 }
