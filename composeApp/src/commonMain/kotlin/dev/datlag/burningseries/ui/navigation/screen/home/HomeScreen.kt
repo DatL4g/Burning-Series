@@ -48,6 +48,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
@@ -85,6 +86,7 @@ import dev.datlag.burningseries.ui.custom.scrollbar.LazyColumnScrollbar
 import dev.datlag.burningseries.ui.custom.scrollbar.ScrollbarSettings
 import dev.datlag.burningseries.ui.navigation.screen.component.CollapsingToolbar
 import dev.datlag.burningseries.ui.navigation.screen.home.component.CompactScreen
+import dev.datlag.burningseries.ui.navigation.screen.home.component.HomeSearchBar
 import dev.datlag.burningseries.ui.navigation.screen.home.component.WideScreen
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
@@ -98,108 +100,18 @@ fun HomeScreen(component: HomeComponent) {
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             state = appBarState
         )
-        val searchState by component.search.collectAsStateWithLifecycle()
 
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
-                CollapsingToolbar(
-                    state = appBarState,
-                    scrollBehavior = scrollBehavior,
-                    onSettingsClick = { }
-                )
+                HomeSearchBar(component)
             },
-            floatingActionButton = {
-                FloatingSearchButton(
-                    modifier = Modifier.padding(WindowInsets.ime.asPaddingValues()),
-                    onTextChange = {
-                        component.search(it)
-                    },
-                    enabled = !searchState.isLoading,
-                    icon = when (searchState) {
-                        is SearchState.Loading -> Icons.Rounded.YoutubeSearchedFor
-                        is SearchState.Success -> Icons.Rounded.Search
-                        is SearchState.Failure -> Icons.Rounded.SearchOff
-                    },
-                    overrideOnClick = searchState !is SearchState.Success,
-                    onClick = {
-                        // overwritten click
-                        component.retryLoadingSearch()
-                    }
-                )
-            }
         ) { padding ->
             val state by component.home.collectAsStateWithLifecycle()
 
-            if (searchState.hasQueryItems) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
-                    verticalArrangement = Arrangement.spacedBy(1.dp),
-                    contentPadding = padding
-                ) {
-                    items(
-                        items = (searchState as? SearchState.Success)?.queriedItems
-                            .orEmpty()
-                            .toImmutableList(),
-                        key = { it.href }
-                    ) {
-                        ElevatedCard(
-                            modifier = Modifier.fillParentMaxWidth(),
-                            onClick = { component.details(it) },
-                            shape = MaterialTheme.shapes.extraSmall,
-                            elevation = CardDefaults.elevatedCardElevation(0.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .defaultMinSize(minHeight = 48.dp)
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                Column(
-                                    modifier = Modifier.fillMaxHeight().weight(1F),
-                                    verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
-                                ) {
-                                    Text(
-                                        text = it.mainTitle,
-                                        fontWeight = FontWeight.SemiBold,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        maxLines = if (it.hasSubtitle) 1 else 2
-                                    )
-                                    it.subTitle?.let { sub ->
-                                        Text(
-                                            text = sub,
-                                            maxLines = 1
-                                        )
-                                    }
-                                }
-                                it.genre?.let { genre ->
-                                    SuggestionChip(
-                                        onClick = { },
-                                        label = {
-                                            Text(text = genre)
-                                        },
-                                        colors = SuggestionChipDefaults.suggestionChipColors(
-                                            containerColor = if (it.isAnime) {
-                                                MaterialTheme.colorScheme.primary
-                                            } else Color.Unspecified,
-                                            labelColor = if (it.isAnime) {
-                                                MaterialTheme.colorScheme.onPrimary
-                                            } else Color.Unspecified
-                                        ),
-                                        border = if (it.isAnime) null else SuggestionChipDefaults.suggestionChipBorder(true)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                when (calculateWindowSizeClass().widthSizeClass) {
-                    WindowWidthSizeClass.Compact -> CompactScreen(state, padding, component)
-                    else -> WideScreen(state, padding, component)
-                }
+            when (calculateWindowSizeClass().widthSizeClass) {
+                WindowWidthSizeClass.Compact -> CompactScreen(state, padding, component)
+                else -> WideScreen(state, padding, component)
             }
         }
     }

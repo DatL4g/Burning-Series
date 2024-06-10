@@ -34,4 +34,5 @@
     <string name="warning">Warning</string>
     <string name="watch">Watch</string>
     <string name="close">Close</string>
+    <string name="search">Search</string>
 </resources>
