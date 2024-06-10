@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <permission android:name="dev.datlag.burningseries.READ_DATABASE" />
+
+    <queries>
+        <package android:name="dev.datlag.aniflow" />
+    </queries>
+
     <application
         android:icon="@android:drawable/ic_menu_compass"
         android:label="Burning-Series"
         android:name=".App"
+        android:networkSecurityConfig="@xml/network_security"
+        android:usesCleartextTraffic="true"
         android:theme="@android:style/Theme.Material.NoActionBar">
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
@@ -17,6 +28,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="dev.datlag.burningseries.other.CastOptionsProvider" />
+
+        <meta-data
+            android:name="instantapps.clients.allowed"
+            android:value="true" />
+
+        <meta-data
+            android:name="open_source"
+            android:value="true" />
+
+        <meta-data
+            android:name="open_source_license"
+            android:value="GNU GENERAL PUBLIC LICENSE Version 3" />
+
+        <receiver
+            android:name="androidx.mediarouter.media.MediaTransferReceiver"
+            android:exported="true" />
     </application>
 
 </manifest>

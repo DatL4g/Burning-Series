@@ -1,7 +1,5 @@
 package dev.datlag.burningseries.firebase
 
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseApp
 import dev.gitlive.firebase.crashlytics.crashlytics
