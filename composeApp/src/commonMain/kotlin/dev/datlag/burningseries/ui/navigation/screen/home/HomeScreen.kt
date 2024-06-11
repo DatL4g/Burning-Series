@@ -82,8 +82,6 @@ import dev.datlag.burningseries.network.state.HomeState
 import dev.datlag.burningseries.network.state.SearchState
 import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
 import dev.datlag.burningseries.ui.custom.FloatingSearchButton
-import dev.datlag.burningseries.ui.custom.scrollbar.LazyColumnScrollbar
-import dev.datlag.burningseries.ui.custom.scrollbar.ScrollbarSettings
 import dev.datlag.burningseries.ui.navigation.screen.component.CollapsingToolbar
 import dev.datlag.burningseries.ui.navigation.screen.home.component.CompactScreen
 import dev.datlag.burningseries.ui.navigation.screen.home.component.HomeSearchBar

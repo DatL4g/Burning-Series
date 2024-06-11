@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.navigation.screen.home.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
@@ -31,6 +33,9 @@ import dev.datlag.burningseries.ui.navigation.screen.component.HomeCard
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeComponent
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.toImmutableList
+import dev.datlag.burningseries.ui.custom.HorizontalScrollbar
+import dev.datlag.burningseries.ui.custom.rememberScrollbarAdapter
+import dev.datlag.burningseries.ui.custom.localScrollbarStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,11 +47,11 @@ internal fun CompactScreen(
     LazyColumn(
         modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = padding.merge(16.dp)
+        contentPadding = padding
     ) {
         item {
             Text(
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(16.dp),
                 text = "Episodes",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
@@ -61,33 +66,52 @@ internal fun CompactScreen(
                     Text(text = "Error loading episodes")
                 }
                 state is HomeState.Success -> {
-                    LazyRow(
+                    val rowState = rememberLazyListState()
+
+                    Column(
                         modifier = Modifier.fillParentMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        items(
-                            items = (state as? HomeState.Success)
-                                ?.home
-                                ?.episodes
-                                .orEmpty()
-                                .toImmutableList(),
-                            key = { it.href }
+                        LazyRow(
+                            state = rowState,
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp)
                         ) {
-                            HomeCard(
-                                episode = it,
-                                modifier = Modifier
-                                    .width(200.dp)
-                                    .height(280.dp),
-                                onClick = component::details
-                            )
+                            items(
+                                items = (state as? HomeState.Success)
+                                    ?.home
+                                    ?.episodes
+                                    .orEmpty()
+                                    .toImmutableList(),
+                                key = { it.href }
+                            ) {
+                                HomeCard(
+                                    episode = it,
+                                    modifier = Modifier
+                                        .width(200.dp)
+                                        .height(280.dp),
+                                    onClick = component::details
+                                )
+                            }
                         }
+
+                        HorizontalScrollbar(
+                            adapter = rememberScrollbarAdapter(rowState),
+                            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                            style = localScrollbarStyle().copy(
+                                unhoverColor = MaterialTheme.colorScheme.secondary,
+                                hoverColor = MaterialTheme.colorScheme.primary
+                            )
+                        )
                     }
                 }
             }
         }
         item {
             Text(
+                modifier = Modifier.padding(16.dp),
                 text = "Series",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
@@ -102,27 +126,45 @@ internal fun CompactScreen(
                     Text(text = "Error loading series")
                 }
                 state is HomeState.Success -> {
-                    LazyRow(
+                    val rowState = rememberLazyListState()
+
+                    Column(
                         modifier = Modifier.fillParentMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        items(
-                            items = (state as? HomeState.Success)
-                                ?.home
-                                ?.series
-                                .orEmpty()
-                                .toImmutableList(),
-                            key = { it.href }
+                        LazyRow(
+                            state = rowState,
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp)
                         ) {
-                            HomeCard(
-                                series = it,
-                                modifier = Modifier
-                                    .width(200.dp)
-                                    .height(280.dp),
-                                onClick = component::details
-                            )
+                            items(
+                                items = (state as? HomeState.Success)
+                                    ?.home
+                                    ?.series
+                                    .orEmpty()
+                                    .toImmutableList(),
+                                key = { it.href }
+                            ) {
+                                HomeCard(
+                                    series = it,
+                                    modifier = Modifier
+                                        .width(200.dp)
+                                        .height(280.dp),
+                                    onClick = component::details
+                                )
+                            }
                         }
+
+                        HorizontalScrollbar(
+                            adapter = rememberScrollbarAdapter(rowState),
+                            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                            style = localScrollbarStyle().copy(
+                                unhoverColor = MaterialTheme.colorScheme.secondary,
+                                hoverColor = MaterialTheme.colorScheme.primary
+                            )
+                        )
                     }
                 }
             }
