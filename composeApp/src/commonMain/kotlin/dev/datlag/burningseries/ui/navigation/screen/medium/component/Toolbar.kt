@@ -8,6 +8,8 @@ import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.Cast
 import androidx.compose.material.icons.rounded.CastConnected
 import androidx.compose.material.icons.rounded.Devices
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Speaker
 import androidx.compose.material.icons.rounded.Tv
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -97,6 +99,7 @@ internal fun Toolbar(
             val kastDevices by Kast.allAvailableDevices.collectAsStateWithLifecycle()
             val kastState by Kast.connectionState.collectAsStateWithLifecycle()
             val kastDialog = rememberUseCaseState()
+            val isFavorite by component.isFavorite.collectAsStateWithLifecycle()
 
             OptionDialog(
                 state = kastDialog,
@@ -162,6 +165,31 @@ internal fun Toolbar(
                     Icon(
                         imageVector = kastState.icon,
                         contentDescription = null
+                    )
+                }
+            }
+
+            if (isFavorite) {
+                IconButton(
+                    onClick = {
+                        component.unsetFavorite()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Favorite,
+                        contentDescription = null,
+                        tint = Color.Red
+                    )
+                }
+            } else {
+                IconButton(
+                    onClick = {
+                        component.setFavorite()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.FavoriteBorder,
+                        contentDescription = null,
                     )
                 }
             }

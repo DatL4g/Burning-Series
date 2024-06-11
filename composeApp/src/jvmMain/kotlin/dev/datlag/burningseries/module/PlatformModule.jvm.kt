@@ -7,6 +7,7 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import dev.datlag.burningseries.BuildKonfig
 import dev.datlag.burningseries.Sekret
+import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.firebase.FirebaseFactory
 import dev.datlag.burningseries.firebase.initialize
 // import dev.datlag.burningseries.firebase.FirebaseFactory
@@ -18,6 +19,7 @@ import dev.datlag.burningseries.settings.model.AppSettings
 import dev.datlag.tooling.Tooling
 import dev.datlag.tooling.createAsFileSafely
 import dev.datlag.tooling.getRWUserConfigFile
+import dev.datlag.tooling.getRWUserDataFile
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -94,7 +96,7 @@ actual object PlatformModule {
         bindSingleton<Settings.PlatformAppSettings> {
             DataStoreAppSettings(instance())
         }
-        bindEagerSingleton<FirebaseFactory> {
+        bindSingleton<FirebaseFactory> {
             if (StateSaver.sekretLibraryLoaded) {
                 FirebaseFactory.initialize(
                     projectId = Sekret.firebaseProject(BuildKonfig.packageName),
@@ -117,6 +119,15 @@ actual object PlatformModule {
             } else {
                 FirebaseFactory.Empty
             }
+        }
+        bindSingleton<DriverFactory> {
+            DriverFactory(
+                file = Tooling.getRWUserDataFile(
+                    child = "bs.db",
+                    appName = APP_NAME,
+                    appVersion = "v6"
+                )
+            )
         }
     }
 }

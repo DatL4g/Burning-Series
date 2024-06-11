@@ -4,6 +4,7 @@ aboutlibraries = "11.2.0"
 activity = "1.9.0"
 android = "8.4.1"
 android-core = "1.13.1"
+android-sqlite = "2.4.0"
 atomicfu = "0.24.0"
 coil = "3.0.0-alpha06"
 compose = "1.6.11"
@@ -38,6 +39,7 @@ okhttp = "4.12.0"
 sekret = "2.0.0-alpha-05"
 serialization = "1.7.0"
 skeo = "0.1.1"
+sqldelight = "2.0.2"
 tooling = "1.5.1"
 versions = "0.51.0"
 vlcj = "4.8.3"
@@ -47,6 +49,7 @@ windowsize = "0.5.0"
 [libraries]
 aboutlibraries = { group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutlibraries" }
 android = { group = "androidx.core", name = "core-ktx", version.ref = "android-core" }
+android-sqlite-framework = { group = "androidx.sqlite", name = "sqlite-framework", version.ref = "android-sqlite" }
 activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
 androidx-window = { module = "androidx.window:window", version.require = "1.3.0" }
@@ -105,6 +108,11 @@ serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serialization" }
 skeo = { group = "dev.datlag.skeo", name = "skeo", version.ref = "skeo" }
+sqldelight-coroutines = { group = "app.cash.sqldelight", name = "coroutines-extensions", version.ref = "sqldelight" }
+sqldelight-android = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
+sqldelight-jvm = { group = "app.cash.sqldelight", name = "sqlite-driver", version.ref = "sqldelight" }
+sqldelight-native = { group = "app.cash.sqldelight", name = "native-driver", version.ref = "sqldelight" }
+sqldelight-adapter = { group = "app.cash.sqldelight", name = "primitive-adapters", version.ref = "sqldelight" }
 tooling = { group = "dev.datlag.tooling", name = "tooling-async", version.ref = "tooling" }
 tooling-country = { group = "dev.datlag.tooling", name = "tooling-country", version.ref = "tooling" }
 tooling-decompose = { group = "dev.datlag.tooling", name = "tooling-decompose", version.ref = "tooling" }
@@ -128,4 +136,5 @@ moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.re
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 sekret = { id = "dev.datlag.sekret", version.ref = "sekret" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

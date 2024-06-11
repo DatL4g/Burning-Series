@@ -109,6 +109,7 @@ kotlin {
             implementation(project(":settings"))
             implementation(project(":network"))
             implementation(project(":firebase"))
+            implementation(project(":database"))
         }
 
         val androidMain by getting {

@@ -35,10 +35,14 @@ interface MediumComponent : Component {
 
     val dialog: Value<ChildSlot<DialogConfig, DialogComponent>>
 
+    val isFavorite: StateFlow<Boolean>
+
     fun back()
     fun season(value: Series.Season)
     fun language(value: Series.Language)
     fun episode(episode: Series.Episode)
     fun watch(episode: Series.Episode, streams: ImmutableCollection<Stream>)
     fun activate(episode: Series.Episode)
+    fun setFavorite()
+    fun unsetFavorite()
 }

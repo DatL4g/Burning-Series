@@ -4,6 +4,7 @@ include(":settings")
 include(":model")
 include(":network")
 include(":firebase")
+include(":database")
 
 pluginManagement {
     repositories {

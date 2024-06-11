@@ -12,6 +12,11 @@ import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.value.Value
 import dev.chrisbanes.haze.HazeState
 import dev.datlag.burningseries.LocalHaze
+import dev.datlag.burningseries.database.BurningSeries
+import dev.datlag.burningseries.database.common.isFavorite
+import dev.datlag.burningseries.database.common.isFavoriteOneShot
+import dev.datlag.burningseries.database.common.setSeriesFavorite
+import dev.datlag.burningseries.database.common.unsetSeriesFavorite
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.network.EpisodeStateMachine
@@ -28,6 +33,7 @@ import dev.datlag.tooling.decompose.ioScope
 import dev.datlag.tooling.safeCast
 import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
@@ -36,6 +42,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import org.kodein.di.DI
 import org.kodein.di.instance
+import kotlinx.coroutines.flow.firstOrNull
 
 class MediumScreenComponent(
     componentContext: ComponentContext,
@@ -105,6 +112,16 @@ class MediumScreenComponent(
         }
     }
 
+    private val database by instance<BurningSeries>()
+    override val isFavorite: StateFlow<Boolean> = database.isFavorite(
+        seriesData,
+        ioDispatcher()
+    ).stateIn(
+        scope = ioScope(),
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = database.isFavoriteOneShot(seriesData)
+    )
+
     init {
         seriesStateMachine.href(seriesData.toHref())
     }
@@ -155,6 +172,22 @@ class MediumScreenComponent(
             withMainContext {
                 dialogNavigation.activate(DialogConfig.Activate(episode))
             }
+        }
+    }
+
+    override fun setFavorite() {
+        launchIO {
+            val series = successState.firstOrNull()?.series
+
+            series?.let { database.setSeriesFavorite(it) }
+        }
+    }
+
+    override fun unsetFavorite() {
+        launchIO {
+            val series = successState.firstOrNull()?.series
+
+            series?.let { database.unsetSeriesFavorite(it) }
         }
     }
 }

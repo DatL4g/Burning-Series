@@ -8,6 +8,7 @@ import coil3.ImageLoader
 import coil3.request.allowHardware
 import dev.datlag.burningseries.BuildKonfig
 import dev.datlag.burningseries.Sekret
+import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.firebase.FirebaseFactory
 import dev.datlag.burningseries.firebase.initialize
 import dev.datlag.burningseries.other.StateSaver
@@ -114,6 +115,11 @@ actual object PlatformModule {
             } else {
                 FirebaseFactory.Empty
             }
+        }
+        bindSingleton<DriverFactory> {
+            DriverFactory(
+                context = instance()
+            )
         }
     }
 }

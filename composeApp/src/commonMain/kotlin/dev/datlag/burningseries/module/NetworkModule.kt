@@ -26,7 +26,7 @@ data object NetworkModule {
     const val NAME = "NetworkModule"
 
     val di = DI.Module(NAME) {
-        import(PlatformModule.di)
+        import(DatabaseModule.di)
 
         bindSingleton<Json> {
             Json {
