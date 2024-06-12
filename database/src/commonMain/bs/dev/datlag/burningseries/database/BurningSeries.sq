@@ -1,6 +1,7 @@
 import kotlin.Boolean;
 import kotlin.Int;
 import kotlin.collections.List;
+import kotlinx.datetime.Instant;
 
 CREATE TABLE IF NOT EXISTS Series(
     hrefPrimary TEXT NOT NULL PRIMARY KEY,
@@ -13,6 +14,20 @@ CREATE TABLE IF NOT EXISTS Series(
     subTitle TEXT DEFAULT NULL,
     isAnime INTEGER AS Boolean NOT NULL DEFAULT 0,
     favoriteSince INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS Episode(
+    href TEXT NOT NULL PRIMARY KEY,
+    number INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    length INTEGER NOT NULL DEFAULT 0,
+    progress INTEGER NOT NULL DEFAULT 0,
+    watching INTEGER AS Boolean NOT NULL DEFAULT 0,
+    finished INTEGER AS Boolean NOT NULL DEFAULT 0,
+    blurHash TEXT DEFAULT NULL,
+    updatedAt INTEGER AS Instant NOT NULL DEFAULT 0,
+    seriesHref TEXT NOT NULL,
+    FOREIGN KEY (seriesHref) REFERENCES Series(hrefPrimary) ON DELETE NO ACTION
 );
 
 insertSeriesOrIgnore:
