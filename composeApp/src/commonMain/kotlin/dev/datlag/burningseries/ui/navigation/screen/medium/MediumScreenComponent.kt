@@ -175,19 +175,11 @@ class MediumScreenComponent(
         }
     }
 
-    override fun setFavorite() {
-        launchIO {
-            val series = successState.firstOrNull()?.series
-
-            series?.let { database.setSeriesFavorite(it) }
-        }
+    override fun setFavorite(series: Series) {
+        database.setSeriesFavorite(series)
     }
 
-    override fun unsetFavorite() {
-        launchIO {
-            val series = successState.firstOrNull()?.series
-
-            series?.let { database.unsetSeriesFavorite(it) }
-        }
+    override fun unsetFavorite(series: Series) {
+        database.unsetSeriesFavorite(series)
     }
 }

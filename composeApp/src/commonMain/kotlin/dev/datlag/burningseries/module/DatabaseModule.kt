@@ -31,6 +31,21 @@ data object DatabaseModule {
                         override fun encode(value: Int): Long {
                             return value.toLong()
                         }
+                    },
+                    seasonsAdapter = object : ColumnAdapter<List<Int>, String> {
+                        override fun decode(databaseValue: String): List<Int> {
+                            return if (databaseValue.isBlank()) {
+                                emptyList()
+                            } else {
+                                databaseValue.split(',').mapNotNull {
+                                    it.trim().toIntOrNull()
+                                }
+                            }
+                        }
+
+                        override fun encode(value: List<Int>): String {
+                            return value.joinToString(separator = ",")
+                        }
                     }
                 )
             )

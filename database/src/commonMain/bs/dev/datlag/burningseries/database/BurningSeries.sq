@@ -1,10 +1,12 @@
 import kotlin.Boolean;
 import kotlin.Int;
+import kotlin.collections.List;
 
 CREATE TABLE IF NOT EXISTS Series(
     hrefPrimary TEXT NOT NULL PRIMARY KEY,
     href TEXT NOT NULL,
     season INTEGER AS Int,
+    seasons TEXT AS List<Int> NOT NULL,
     coverHref TEXT DEFAULT NULL,
     fullTitle TEXT NOT NULL,
     mainTitle TEXT DEFAULT NULL,
@@ -18,13 +20,14 @@ INSERT OR IGNORE INTO Series(
     hrefPrimary,
     href,
     season,
+    seasons,
     coverHref,
     fullTitle,
     mainTitle,
     subTitle,
     isAnime,
     favoriteSince
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 favoriteSeries:
 SELECT * FROM Series WHERE favoriteSince > 0 ORDER BY favoriteSince DESC;
@@ -32,7 +35,7 @@ SELECT * FROM Series WHERE favoriteSince > 0 ORDER BY favoriteSince DESC;
 upsertSeriesFavoriteSince {
     UPDATE Series SET favoriteSince = :since WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
 
-    INSERT OR IGNORE INTO Series(hrefPrimary, href, season, coverHref, fullTitle, mainTitle, subTitle, isAnime, favoriteSince) VALUES (:hrefPrimary, :href, :season, :coverHref, :fullTitle, :mainTitle, :subTitle, :isAnime, :since);
+    INSERT OR IGNORE INTO Series(hrefPrimary, href, season, seasons, coverHref, fullTitle, mainTitle, subTitle, isAnime, favoriteSince) VALUES (:hrefPrimary, :href, :season, :seasons, :coverHref, :fullTitle, :mainTitle, :subTitle, :isAnime, :since);
 }
 
 seriesIsFavoriteByHref:

@@ -44,6 +44,7 @@ import dev.datlag.burningseries.common.isConnectedOrConnecting
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.cast
 import dev.datlag.burningseries.composeapp.generated.resources.casting_not_supported
+import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumComponent
 import dev.datlag.kast.ConnectionState
 import dev.datlag.kast.DeviceType
@@ -55,7 +56,8 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
 internal fun Toolbar(
-    component: MediumComponent
+    component: MediumComponent,
+    series: Series?
 ) {
     TopAppBar(
         navigationIcon = {
@@ -169,28 +171,30 @@ internal fun Toolbar(
                 }
             }
 
-            if (isFavorite) {
-                IconButton(
-                    onClick = {
-                        component.unsetFavorite()
+            if (series != null) {
+                if (isFavorite) {
+                    IconButton(
+                        onClick = {
+                            component.unsetFavorite(series)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Favorite,
+                            contentDescription = null,
+                            tint = Color.Red
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Favorite,
-                        contentDescription = null,
-                        tint = Color.Red
-                    )
-                }
-            } else {
-                IconButton(
-                    onClick = {
-                        component.setFavorite()
+                } else {
+                    IconButton(
+                        onClick = {
+                            component.setFavorite(series)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.FavoriteBorder,
+                            contentDescription = null,
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.FavoriteBorder,
-                        contentDescription = null,
-                    )
                 }
             }
         },

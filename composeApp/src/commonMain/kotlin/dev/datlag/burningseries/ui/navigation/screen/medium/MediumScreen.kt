@@ -53,6 +53,7 @@ import dev.datlag.burningseries.LocalDarkMode
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.plus
 import dev.datlag.burningseries.network.state.EpisodeState
+import dev.datlag.burningseries.network.state.SeriesState
 import dev.datlag.burningseries.other.rememberIsTv
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.CoverSection
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.DescriptionSection
@@ -72,6 +73,7 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
     val listState = rememberLazyListState()
     val episodeState by component.episodeState.collectAsStateWithLifecycle()
     val dialogState by component.dialog.subscribeAsState()
+    val seriesState by component.seriesState.collectAsStateWithLifecycle()
 
     when (val current = episodeState) {
         is EpisodeState.SuccessStream -> {
@@ -97,7 +99,10 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
 
     Scaffold(
         topBar = {
-            Toolbar(component)
+            Toolbar(
+                component = component,
+                series = (seriesState as? SeriesState.Success)?.series
+            )
         }
     ) { padding ->
         val isAnime by component.seriesIsAnime.collectAsStateWithLifecycle(component.initialIsAnime)

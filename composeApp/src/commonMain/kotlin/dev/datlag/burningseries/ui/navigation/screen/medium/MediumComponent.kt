@@ -43,6 +43,6 @@ interface MediumComponent : Component {
     fun episode(episode: Series.Episode)
     fun watch(episode: Series.Episode, streams: ImmutableCollection<Stream>)
     fun activate(episode: Series.Episode)
-    fun setFavorite()
-    fun unsetFavorite()
+    fun setFavorite(series: Series)
+    fun unsetFavorite(series: Series)
 }

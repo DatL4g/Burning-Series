@@ -17,12 +17,13 @@ fun BurningSeries.isFavoriteOneShot(seriesData: SeriesData): Boolean {
     return this.burningSeriesQueries.seriesIsFavoriteByHref(seriesData.source).executeAsOneOrNull() ?: false
 }
 
-suspend fun BurningSeries.setSeriesFavorite(series: Series) {
+fun BurningSeries.setSeriesFavorite(series: Series) {
     this.burningSeriesQueries.upsertSeriesFavoriteSince(
         since = Clock.System.now().epochSeconds,
         hrefPrimary = series.source,
         href = series.href,
         season = series.season,
+        seasons = series.seasons.map { it.value },
         coverHref = series.coverHref,
         fullTitle = series.title,
         mainTitle = series.mainTitle,
@@ -31,12 +32,13 @@ suspend fun BurningSeries.setSeriesFavorite(series: Series) {
     )
 }
 
-suspend fun BurningSeries.unsetSeriesFavorite(series: Series) {
+fun BurningSeries.unsetSeriesFavorite(series: Series) {
     this.burningSeriesQueries.upsertSeriesFavoriteSince(
         since = 0L,
         hrefPrimary = series.source,
         href = series.href,
         season = series.season,
+        seasons = series.seasons.map { it.value },
         coverHref = series.coverHref,
         fullTitle = series.title,
         mainTitle = series.mainTitle,

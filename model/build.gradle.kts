@@ -30,7 +30,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.serialization)
-            implementation(libs.immutable)
+            api(libs.immutable)
             implementation(libs.coroutines)
             implementation(libs.tooling)
         }
