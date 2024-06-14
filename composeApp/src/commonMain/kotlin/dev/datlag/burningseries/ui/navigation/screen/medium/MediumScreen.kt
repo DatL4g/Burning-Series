@@ -77,13 +77,23 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
 
     when (val current = episodeState) {
         is EpisodeState.SuccessStream -> {
-            component.watch(current.episode, current.results)
+            component.watch(
+                series = (seriesState as SeriesState.Success).series,
+                episode = current.episode,
+                streams = current.results
+            )
         }
         is EpisodeState.ErrorHoster -> {
-            component.activate(current.episode)
+            component.activate(
+                series = (seriesState as SeriesState.Success).series,
+                episode = current.episode
+            )
         }
         is EpisodeState.ErrorStream -> {
-            component.activate(current.episode)
+            component.activate(
+                series = (seriesState as SeriesState.Success).series,
+                episode = current.episode
+            )
         }
         else -> { }
     }

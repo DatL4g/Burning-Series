@@ -7,6 +7,9 @@ import org.kodein.di.bindSingleton
 import org.kodein.di.instance
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.database.BurningSeries
+import dev.datlag.burningseries.database.Episode
+import dev.datlag.burningseries.database.InstantAdapter
+import dev.datlag.burningseries.database.IntAdapter
 import dev.datlag.burningseries.database.Series
 
 data object DatabaseModule {
@@ -23,15 +26,7 @@ data object DatabaseModule {
             BurningSeries(
                 driver = instance<SqlDriver>(),
                 SeriesAdapter = Series.Adapter(
-                    seasonAdapter = object : ColumnAdapter<Int, Long> {
-                        override fun decode(databaseValue: Long): Int {
-                            return databaseValue.toInt()
-                        }
-
-                        override fun encode(value: Int): Long {
-                            return value.toLong()
-                        }
-                    },
+                    seasonAdapter = IntAdapter,
                     seasonsAdapter = object : ColumnAdapter<List<Int>, String> {
                         override fun decode(databaseValue: String): List<Int> {
                             return if (databaseValue.isBlank()) {
@@ -47,6 +42,10 @@ data object DatabaseModule {
                             return value.joinToString(separator = ",")
                         }
                     }
+                ),
+                EpisodeAdapter = Episode.Adapter(
+                    numberAdapter = IntAdapter,
+                    updatedAtAdapter = InstantAdapter
                 )
             )
         }

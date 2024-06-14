@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPlacement
 import dev.datlag.burningseries.LocalWindow
 import dev.datlag.burningseries.common.toDuration
+import dev.datlag.tooling.async.scopeCatching
 
 @Composable
 fun VideoControls(mediaPlayer: MediaPlayer) {
@@ -45,7 +46,7 @@ fun VideoControls(mediaPlayer: MediaPlayer) {
         }
         val isMuted by mediaPlayer.isMuted
         val window = LocalWindow.current
-        var originalWindowPlacement = remember { window.placement }
+        var originalWindowPlacement = remember { window?.placement ?: WindowPlacement.Floating }
 
         IconButton(
             onClick = {
@@ -106,7 +107,7 @@ fun VideoControls(mediaPlayer: MediaPlayer) {
             text = length.toDuration(),
             textAlign = TextAlign.Center
         )
-        if (window.placement == WindowPlacement.Fullscreen) {
+        if (window?.placement == WindowPlacement.Fullscreen) {
             IconButton(
                 onClick = {
                     window.placement = originalWindowPlacement
@@ -120,8 +121,8 @@ fun VideoControls(mediaPlayer: MediaPlayer) {
         } else {
             IconButton(
                 onClick = {
-                    originalWindowPlacement = window.placement
-                    window.placement = WindowPlacement.Fullscreen
+                    originalWindowPlacement = window?.placement ?: originalWindowPlacement
+                    window?.placement = WindowPlacement.Fullscreen
                 }
             ) {
                 Icon(
@@ -160,7 +161,9 @@ fun VideoControls(mediaPlayer: MediaPlayer) {
 
         DisposableEffect(window) {
             onDispose {
-                window.placement = originalWindowPlacement
+                scopeCatching {
+                    window?.placement = originalWindowPlacement
+                }
             }
         }
     }

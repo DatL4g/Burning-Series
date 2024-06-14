@@ -35,9 +35,10 @@ import org.kodein.di.instance
 class ActivateScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
+    private val series: Series,
     override val episode: Series.Episode,
     private val onBack: () -> Unit,
-    private val onWatch: (Series.Episode, Stream) -> Unit
+    private val onWatch: (Series, Series.Episode, Stream) -> Unit
 ) : ActivateComponent, ComponentContext by componentContext {
 
     private val json by instance<Json>()
@@ -70,7 +71,7 @@ class ActivateScreenComponent(
                 },
                 onWatch = { stream ->
                     dialogNavigation.dismiss {
-                        onWatch(episode, stream)
+                        onWatch(series, episode, stream)
                     }
                 }
             )
@@ -86,7 +87,7 @@ class ActivateScreenComponent(
                 },
                 onWatch = { stream ->
                     dialogNavigation.dismiss {
-                        onWatch(episode, stream)
+                        onWatch(series, episode, stream)
                     }
                 }
             )

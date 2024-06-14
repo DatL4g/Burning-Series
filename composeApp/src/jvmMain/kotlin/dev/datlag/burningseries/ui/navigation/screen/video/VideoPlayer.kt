@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.graphics.Color
 import dev.datlag.tooling.Platform
+import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import uk.co.caprica.vlcj.player.base.MediaPlayer
@@ -85,20 +86,20 @@ internal fun VideoPlayer(
         override fun lengthChanged(mediaPlayer: MediaPlayer?, newLength: Long) {
             super.lengthChanged(mediaPlayer, newLength)
 
-            // component.lengthUpdate(newLength)
+            component.length(newLength)
             length.value = newLength
         }
 
         override fun finished(mediaPlayer: MediaPlayer?) {
             super.finished(mediaPlayer)
 
-            // component.ended()
+            component.ended()
         }
 
         override fun timeChanged(mediaPlayer: MediaPlayer?, newTime: Long) {
             super.timeChanged(mediaPlayer, newTime)
 
-            // component.progressUpdate(newTime)
+            component.progress(newTime)
             time.value = newTime
         }
 
@@ -117,7 +118,7 @@ internal fun VideoPlayer(
         override fun opening(mediaPlayer: MediaPlayer?) {
             super.opening(mediaPlayer)
 
-            // (mediaPlayer ?: mediaPlayerComponent.mediaPlayer())?.controls()?.setTime(startingPos)
+            (mediaPlayer ?: mediaPlayerComponent.mediaPlayer())?.controls()?.setTime(component.startingPos)
         }
 
         override fun muted(mediaPlayer: MediaPlayer?, muted: Boolean) {
@@ -135,6 +136,11 @@ internal fun VideoPlayer(
 
     LaunchedEffect(mediaPlayerComponent, eventListener) {
         mediaPlayerComponent.mediaPlayer()?.events()?.addMediaPlayerEventListener(eventListener)
+    }
+
+    SideEffect {
+        mediaPlayerComponent.mediaPlayer().applyHeaders(headers)
+        mediaPlayerComponent.mediaPlayer()?.media()?.prepare(url)
     }
 
     DisposableEffect(mediaPlayerComponent) {
@@ -184,7 +190,6 @@ internal fun VideoPlayer(
         }
 
         override fun startPlaying() {
-            mediaPlayerComponent.mediaPlayer().applyHeaders(headers)
             mediaPlayerComponent.mediaPlayer()?.media()?.play(url)
         }
     } }

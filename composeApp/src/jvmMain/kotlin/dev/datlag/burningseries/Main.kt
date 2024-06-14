@@ -51,7 +51,7 @@ import org.kodein.di.instance
 import javax.swing.SwingUtilities
 import java.io.File
 
-val LocalWindow = staticCompositionLocalOf<ComposeWindow> { error("No Window provided") }
+val LocalWindow = staticCompositionLocalOf<ComposeWindow?> { null }
 
 fun main(vararg args: String) {
     Napier.base(DebugAntilog())

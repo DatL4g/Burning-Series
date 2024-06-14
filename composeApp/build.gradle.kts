@@ -95,6 +95,7 @@ kotlin {
             implementation(libs.kmpalette)
             implementation(libs.kolor)
             implementation(libs.kache)
+            implementation(libs.blurhash)
 
             implementation(libs.coil)
             implementation(libs.coil.network)

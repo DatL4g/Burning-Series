@@ -50,8 +50,8 @@ class MediumScreenComponent(
     private val initialSeriesData: SeriesData,
     override val initialIsAnime: Boolean,
     private val onBack: () -> Unit,
-    private val onWatch: (Series.Episode, ImmutableCollection<Stream>) -> Unit,
-    private val onActivate: (Series.Episode) -> Unit
+    private val onWatch: (Series, Series.Episode, ImmutableCollection<Stream>) -> Unit,
+    private val onActivate: (Series, Series.Episode) -> Unit
 ) : MediumComponent, ComponentContext by componentContext {
 
     private val seriesStateMachine by instance<SeriesStateMachine>()
@@ -105,7 +105,10 @@ class MediumScreenComponent(
                 onDismiss = dialogNavigation::dismiss,
                 onActivate = {
                     dialogNavigation.dismiss {
-                        onActivate(config.episode)
+                        onActivate(
+                            config.series,
+                            config.episode
+                        )
                     }
                 }
             )
@@ -157,20 +160,24 @@ class MediumScreenComponent(
         }
     }
 
-    override fun watch(episode: Series.Episode, streams: ImmutableCollection<Stream>) {
+    override fun watch(
+        series: Series,
+        episode: Series.Episode,
+        streams: ImmutableCollection<Stream>
+    ) {
         launchIO {
             episodeStateMachine.dispatch(EpisodeAction.Clear)
             withMainContext {
-                onWatch(episode, streams)
+                onWatch(series, episode, streams)
             }
         }
     }
 
-    override fun activate(episode: Series.Episode) {
+    override fun activate(series: Series, episode: Series.Episode) {
         launchIO {
             episodeStateMachine.dispatch(EpisodeAction.Clear)
             withMainContext {
-                dialogNavigation.activate(DialogConfig.Activate(episode))
+                dialogNavigation.activate(DialogConfig.Activate(series, episode))
             }
         }
     }

@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS Series(
 
 CREATE TABLE IF NOT EXISTS Episode(
     href TEXT NOT NULL PRIMARY KEY,
-    number INTEGER NOT NULL,
+    number INTEGER AS Int NOT NULL,
     title TEXT NOT NULL,
     length INTEGER NOT NULL DEFAULT 0,
     progress INTEGER NOT NULL DEFAULT 0,
@@ -55,3 +55,29 @@ upsertSeriesFavoriteSince {
 
 seriesIsFavoriteByHref:
 SELECT favoriteSince > 0 FROM Series WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
+
+insertEpisodeOrIgnore:
+INSERT OR IGNORE INTO Episode(
+    href,
+    number,
+    title,
+    length,
+    progress,
+    watching,
+    finished,
+    blurHash,
+    updatedAt,
+    seriesHref
+) VALUES (?, ?, ?, 0, 0, 0, 0, NULL, ?, ?);
+
+updateEpisodeLength:
+UPDATE Episode SET length = :value WHERE href = :href OR href LIKE :href;
+
+updateEpisodeProgress:
+UPDATE Episode SET progress = :value, watching = :value > 0, finished = (CAST(:value AS REAL) / CAST(length AS REAL) * 100.0) >= 85.0, updatedAt = :updated WHERE href = :href OR href LIKE :href;
+
+updateEpisodeBlurHash:
+UPDATE Episode SET blurHash = :value WHERE href = :href OR href LIKE :href;
+
+episodeProgress:
+SELECT progress FROM Episode WHERE href = :href OR href LIKE :href;

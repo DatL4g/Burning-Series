@@ -7,5 +7,8 @@ import kotlinx.serialization.Serializable
 sealed interface DialogConfig {
 
     @Serializable
-    data class Activate(val episode: Series.Episode) : DialogConfig
+    data class Activate(
+        val series: Series,
+        val episode: Series.Episode
+    ) : DialogConfig
 }

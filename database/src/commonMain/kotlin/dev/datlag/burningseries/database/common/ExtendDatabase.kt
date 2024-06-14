@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.database.common
 
+import app.cash.sqldelight.Query
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrDefault
 import dev.datlag.burningseries.database.BurningSeries
@@ -45,4 +46,37 @@ fun BurningSeries.unsetSeriesFavorite(series: Series) {
         subTitle = series.subTitle,
         isAnime = series.isAnime
     )
+}
+
+fun BurningSeries.updateLength(value: Long, episode: Series.Episode) {
+    this.burningSeriesQueries.updateEpisodeLength(
+        value = value,
+        href = episode.href
+    )
+}
+
+fun BurningSeries.updateProgress(value: Long, episode: Series.Episode) {
+    this.burningSeriesQueries.updateEpisodeProgress(
+        value = value,
+        href = episode.href,
+        updated = Clock.System.now()
+    )
+}
+
+fun BurningSeries.insertEpisodeOrIgnore(
+    episode: Series.Episode,
+    fallbackNumber: Int,
+    seriesHref: String,
+) {
+    this.burningSeriesQueries.insertEpisodeOrIgnore(
+        href = episode.href,
+        number = episode.convertedNumber ?: fallbackNumber,
+        title = episode.fullTitle,
+        seriesHref = seriesHref,
+        updatedAt = Clock.System.now()
+    )
+}
+
+fun BurningSeries.episodeProgress(episode: Series.Episode): Query<Long> {
+    return this.burningSeriesQueries.episodeProgress(episode.href)
 }

@@ -73,16 +73,17 @@ class RootComponent(
                 initialSeriesData = rootConfig.seriesData,
                 initialIsAnime = rootConfig.isAnime,
                 onBack = navigation::pop,
-                onWatch = { episode, streams ->
-                    navigation.bringToFront(RootConfig.Video(episode, streams.toImmutableSet()))
+                onWatch = { series, episode, streams ->
+                    navigation.bringToFront(RootConfig.Video(series, episode, streams.toImmutableSet()))
                 },
-                onActivate = {
-                    navigation.bringToFront(RootConfig.Activate(it))
+                onActivate = { series, episode ->
+                    navigation.bringToFront(RootConfig.Activate(series, episode))
                 }
             )
             is RootConfig.Video -> VideoScreenComponent(
                 componentContext = componentContext,
                 di = di,
+                series = rootConfig.series,
                 episode = rootConfig.episode,
                 streams = rootConfig.streams,
                 onBack = navigation::pop
@@ -90,10 +91,11 @@ class RootComponent(
             is RootConfig.Activate -> ActivateScreenComponent(
                 componentContext = componentContext,
                 di = di,
+                series = rootConfig.series,
                 episode = rootConfig.episode,
                 onBack = navigation::pop,
-                onWatch = { episode, stream ->
-                    navigation.bringToFront(RootConfig.Video(episode, persistentSetOf(stream)))
+                onWatch = { series, episode, stream ->
+                    navigation.bringToFront(RootConfig.Video(series, episode, persistentSetOf(stream)))
                 }
             )
         }
