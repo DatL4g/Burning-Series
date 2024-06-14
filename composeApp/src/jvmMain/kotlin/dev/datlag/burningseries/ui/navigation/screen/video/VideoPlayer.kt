@@ -190,7 +190,7 @@ internal fun VideoPlayer(
         }
 
         override fun startPlaying() {
-            mediaPlayerComponent.mediaPlayer()?.media()?.play(url)
+            mediaPlayerComponent.mediaPlayer()?.controls()?.play()
         }
     } }
 }

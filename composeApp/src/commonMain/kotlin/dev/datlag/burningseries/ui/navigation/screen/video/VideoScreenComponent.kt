@@ -32,9 +32,7 @@ class VideoScreenComponent(
 ) : VideoComponent, ComponentContext by componentContext {
 
     private val database by instance<BurningSeries>()
-    override val startingPos: Long = max(database.episodeProgress(episode).executeAsOneOrNull() ?: 0L, 0L).also {
-        println("Starting Pos: $it")
-    }
+    override val startingPos: Long = max(database.episodeProgress(episode).executeAsOneOrNull() ?: 0L, 0L)
 
     init {
         database.insertEpisodeOrIgnore(
