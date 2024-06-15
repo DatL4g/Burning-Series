@@ -37,8 +37,7 @@ class VideoScreenComponent(
     init {
         database.insertEpisodeOrIgnore(
             episode = episode,
-            seriesHref = series.source,
-            fallbackNumber = series.episodes.indexOf(episode)
+            series = series,
         )
     }
 

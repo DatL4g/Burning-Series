@@ -98,7 +98,7 @@ data class Series(
         override val title: String = BSUtil.episodeNumberRegex.replaceFirst(fullTitle, String()).trim().ifBlank { fullTitle }
 
         @Transient
-        val convertedNumber: Int? = number.toIntOrNull() ?: number.getDigitsOrNull()?.toIntOrNull()
+        val convertedNumber: Int? = episodeNumber.toIntOrNull() ?: episodeNumber.getDigitsOrNull()?.toIntOrNull()
 
         @Serializable
         data class Hoster(

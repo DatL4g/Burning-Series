@@ -12,6 +12,7 @@ interface MediaPlayer {
     val length: MutableLongState
     val isMuted: MutableState<Boolean>
     val volume: MutableFloatState
+
     fun play()
     fun pause()
     fun rewind()

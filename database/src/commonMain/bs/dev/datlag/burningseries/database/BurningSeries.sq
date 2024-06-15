@@ -81,3 +81,27 @@ UPDATE Episode SET blurHash = :value WHERE href = :href OR href LIKE :href;
 
 episodeProgress:
 SELECT progress FROM Episode WHERE href = :href OR href LIKE :href;
+
+episodeMarkWatched:
+UPDATE Episode SET finished = 1, updatedAt = :updated WHERE href = :href OR href LIKE :href;
+
+episodeMarkUnwatched:
+UPDATE Episode SET progress = 0, finished = 0, updatedAt = :updated WHERE href = :href OR href LIKE :href;
+
+selectEpisodeBySeriesHref:
+SELECT * FROM Episode WHERE seriesHref = :href OR seriesHref LIKE :href;
+
+selectEpisodeWatchingByHref:
+SELECT watching FROM Episode WHERE href = :href OR href LIKE :href;
+
+selectEpisodeFinishedByHref:
+SELECT finished FROM Episode WHERE href = :href OR href LIKE :href;
+
+selectEpisodeBlurHashByHref:
+SELECT blurHash FROM Episode WHERE href = :href OR href LIKE :href;
+
+selectEpisodeNumberByHref:
+SELECT number FROM Episode WHERE href = :href OR href LIKE :href;
+
+selectEpisodeByHref:
+SELECT * FROM Episode WHERE href = :href OR href LIKE :href;

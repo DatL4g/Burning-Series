@@ -3,6 +3,8 @@ package dev.datlag.burningseries.ui.navigation.screen.medium
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.router.slot.SlotNavigation
@@ -13,8 +15,15 @@ import com.arkivanov.decompose.value.Value
 import dev.chrisbanes.haze.HazeState
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.database.BurningSeries
+import dev.datlag.burningseries.database.CombinedEpisode
+import dev.datlag.burningseries.database.common.combinedEpisodesForSeries
+import dev.datlag.burningseries.database.common.episodeForSeries
+import dev.datlag.burningseries.database.common.episodeRefreshingData
+import dev.datlag.burningseries.database.common.insertEpisodeOrIgnore
 import dev.datlag.burningseries.database.common.isFavorite
 import dev.datlag.burningseries.database.common.isFavoriteOneShot
+import dev.datlag.burningseries.database.common.setEpisodeUnwatched
+import dev.datlag.burningseries.database.common.setEpisodeWatched
 import dev.datlag.burningseries.database.common.setSeriesFavorite
 import dev.datlag.burningseries.database.common.unsetSeriesFavorite
 import dev.datlag.burningseries.model.Series
@@ -32,10 +41,16 @@ import dev.datlag.tooling.compose.withMainContext
 import dev.datlag.tooling.decompose.ioScope
 import dev.datlag.tooling.safeCast
 import kotlinx.collections.immutable.ImmutableCollection
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -43,6 +58,10 @@ import kotlinx.coroutines.flow.stateIn
 import org.kodein.di.DI
 import org.kodein.di.instance
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.transformLatest
 
 class MediumScreenComponent(
     componentContext: ComponentContext,
@@ -82,7 +101,7 @@ class MediumScreenComponent(
     override val seriesLanguageList: Flow<ImmutableCollection<Series.Language>> = successState.map { it.series.languages }
     override val seriesDescription: Flow<String> = successState.map { it.series.description }
     override val seriesIsAnime: Flow<Boolean> = successState.map { it.series.isAnime }
-    override val episodes: Flow<ImmutableCollection<Series.Episode>> = successState.map { it.series.episodes }
+    private val episodes: Flow<ImmutableCollection<Series.Episode>> = successState.map { it.series.episodes }
 
     private val episodeStateMachine by instance<EpisodeStateMachine>()
     override val episodeState: StateFlow<EpisodeState> = episodeStateMachine.state.flowOn(
@@ -124,6 +143,18 @@ class MediumScreenComponent(
         started = SharingStarted.WhileSubscribed(),
         initialValue = database.isFavoriteOneShot(seriesData)
     )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val combinedEpisodes: Flow<ImmutableCollection<CombinedEpisode>> = episodes.transformLatest { collection ->
+        emit(database.combinedEpisodesForSeries(collection, seriesData))
+
+        val allFlows = collection.map { database.episodeRefreshingData(it, currentCoroutineContext()) }
+        emitAll(
+            combine(allFlows) { all ->
+                all.toList().toImmutableSet()
+            }
+        )
+    }
 
     init {
         seriesStateMachine.href(seriesData.toHref())
@@ -188,5 +219,15 @@ class MediumScreenComponent(
 
     override fun unsetFavorite(series: Series) {
         database.unsetSeriesFavorite(series)
+    }
+
+    override fun watched(series: Series, episode: Series.Episode) {
+        database.insertEpisodeOrIgnore(episode, series)
+        database.setEpisodeWatched(episode)
+    }
+
+    override fun unwatched(series: Series, episode: Series.Episode) {
+        database.insertEpisodeOrIgnore(episode, series)
+        database.setEpisodeUnwatched(episode)
     }
 }

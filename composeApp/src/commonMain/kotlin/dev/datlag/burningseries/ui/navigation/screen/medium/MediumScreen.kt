@@ -117,7 +117,7 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
     ) { padding ->
         val isAnime by component.seriesIsAnime.collectAsStateWithLifecycle(component.initialIsAnime)
         val isAndroidPhone = Platform.isAndroidJvm && Platform.rememberIsTv()
-        val episodes by component.episodes.collectAsStateWithLifecycle(persistentListOf())
+        val episodes by component.combinedEpisodes.collectAsStateWithLifecycle(persistentListOf())
 
         LazyColumn(
             modifier = Modifier.fillMaxSize().haze(LocalHaze.current),
@@ -152,9 +152,21 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
             items(episodes.toImmutableList(), key = { it.href }) {
                 EpisodeItem(
                     item = it,
-                    isLoading = it == loadingEpisode,
+                    isLoading = it.isSame(loadingEpisode),
                     modifier = Modifier.fillParentMaxWidth(),
-                    onClick = component::episode
+                    onClick = component::episode,
+                    onMarkWatched = { c ->
+                        component.watched(
+                            series = (seriesState as SeriesState.Success).series,
+                            combinedEpisode = c
+                        )
+                    },
+                    onMarkUnwatched = { c ->
+                        component.unwatched(
+                            series = (seriesState as SeriesState.Success).series,
+                            combinedEpisode = c
+                        )
+                    }
                 )
             }
         }
