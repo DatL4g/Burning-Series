@@ -2,11 +2,13 @@ package dev.datlag.burningseries.database.common
 
 import app.cash.sqldelight.Query
 import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrDefault
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.database.CombinedEpisode
 import dev.datlag.burningseries.database.Episode
+import dev.datlag.burningseries.database.ExtendedSeries
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesData
 import kotlinx.collections.immutable.ImmutableCollection
@@ -64,6 +66,16 @@ fun BurningSeries.unsetSeriesFavorite(series: Series) {
         subTitle = series.subTitle,
         isAnime = series.isAnime
     )
+}
+
+fun BurningSeries.favoritesSeries(context: CoroutineContext): Flow<ImmutableCollection<ExtendedSeries>> {
+    return this.burningSeriesQueries.favoriteSeries().asFlow().mapToList(context).map { collection ->
+        collection.map(::ExtendedSeries).toImmutableSet()
+    }
+}
+
+fun BurningSeries.favoritesSeriesOneShot(): ImmutableCollection<ExtendedSeries> {
+    return this.burningSeriesQueries.favoriteSeries().executeAsList().map(::ExtendedSeries).toImmutableSet()
 }
 
 fun BurningSeries.insertSeriesOrIgnore(series: Series) {

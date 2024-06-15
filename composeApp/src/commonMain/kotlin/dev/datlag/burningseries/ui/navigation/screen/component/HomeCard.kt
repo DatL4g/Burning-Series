@@ -19,7 +19,10 @@ import coil3.compose.AsyncImage
 import dev.datlag.burningseries.common.bottomShadowBrush
 import dev.datlag.burningseries.common.onPrimary
 import dev.datlag.burningseries.common.primary
+import dev.datlag.burningseries.database.ExtendedSeries
+import dev.datlag.burningseries.database.Series
 import dev.datlag.burningseries.model.Home
+import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.ui.theme.SchemeTheme
 import dev.datlag.burningseries.ui.theme.rememberSchemeThemeDominantColorState
 import io.github.aakira.napier.Napier
@@ -97,9 +100,9 @@ fun HomeCard(
 
 @Composable
 fun HomeCard(
-    series: Home.Series,
+    series: SeriesData,
     modifier: Modifier = Modifier,
-    onClick: (Home.Series) -> Unit
+    onClick: (SeriesData) -> Unit
 ) {
     SchemeTheme(
         key = series.source

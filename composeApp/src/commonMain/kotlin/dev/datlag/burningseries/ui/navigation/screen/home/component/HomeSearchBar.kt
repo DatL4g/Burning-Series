@@ -17,6 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.DockedSearchBar
@@ -53,7 +56,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun HomeSearchBar(component: HomeComponent) {
+internal fun HomeSearchBar(component: HomeComponent, showFavorites: Boolean) {
     var query by remember { mutableStateOf("") }
     val searchState by component.search.collectAsStateWithLifecycle()
     val windowInsets = SearchBarDefaults.windowInsets.asPaddingValues().merge(16.dp)
@@ -103,7 +106,33 @@ internal fun HomeSearchBar(component: HomeComponent) {
             Text(text = stringResource(Res.string.search))
         },
         trailingIcon = {
-
+            if (isActive) {
+                IconButton(
+                    onClick = {
+                        query = ""
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Clear,
+                        contentDescription = null
+                    )
+                }
+            } else {
+                IconButton(
+                    onClick = {
+                        component.toggleFavorites()
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (showFavorites) {
+                            Icons.Rounded.Favorite
+                        } else {
+                            Icons.Rounded.FavoriteBorder
+                        },
+                        contentDescription = null
+                    )
+                }
+            }
         },
         content = {
             when (val current = searchState) {

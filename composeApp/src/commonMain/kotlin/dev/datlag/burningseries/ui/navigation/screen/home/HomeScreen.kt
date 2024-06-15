@@ -84,6 +84,7 @@ import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
 import dev.datlag.burningseries.ui.custom.FloatingSearchButton
 import dev.datlag.burningseries.ui.navigation.screen.component.CollapsingToolbar
 import dev.datlag.burningseries.ui.navigation.screen.home.component.CompactScreen
+import dev.datlag.burningseries.ui.navigation.screen.home.component.FavoritesScreen
 import dev.datlag.burningseries.ui.navigation.screen.home.component.HomeSearchBar
 import dev.datlag.burningseries.ui.navigation.screen.home.component.WideScreen
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
@@ -98,18 +99,23 @@ fun HomeScreen(component: HomeComponent) {
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             state = appBarState
         )
+        val showFavorites by component.showFavorites.collectAsStateWithLifecycle()
 
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
-                HomeSearchBar(component)
+                HomeSearchBar(component, showFavorites)
             },
         ) { padding ->
             val state by component.home.collectAsStateWithLifecycle()
 
-            when (calculateWindowSizeClass().widthSizeClass) {
-                WindowWidthSizeClass.Compact -> CompactScreen(state, padding, component)
-                else -> WideScreen(state, padding, component)
+            if (showFavorites) {
+                FavoritesScreen(padding, component)
+            } else {
+                when (calculateWindowSizeClass().widthSizeClass) {
+                    WindowWidthSizeClass.Compact -> CompactScreen(state, padding, component)
+                    else -> WideScreen(state, padding, component)
+                }
             }
         }
     }
