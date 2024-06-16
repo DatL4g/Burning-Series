@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.cocoapods) apply false
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.crashlytics) apply false
     alias(libs.plugins.konfig) apply false
     alias(libs.plugins.moko.resources) apply false
     alias(libs.plugins.multiplatform) apply false

@@ -37,6 +37,7 @@ import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.fullRow
 import dev.datlag.burningseries.common.merge
 import dev.datlag.burningseries.network.state.HomeState
+import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.navigation.screen.component.CollapsingToolbar
 import dev.datlag.burningseries.ui.navigation.screen.component.HomeCard
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeComponent
@@ -53,11 +54,12 @@ internal fun WideScreen(
     padding: PaddingValues,
     component: HomeComponent
 ) {
-    val listState = rememberLazyGridState()
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+        val listState = rememberLazyGridState()
+        val language by component.language.collectAsStateWithLifecycle(null)
+
         LazyVerticalGrid(
             state = listState,
             modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
@@ -87,6 +89,7 @@ internal fun WideScreen(
                             ?.home
                             ?.episodes
                             .orEmpty()
+                            .sortedBy { Language.fromString(it.language)?.compareToNullable(language) }
                             .toImmutableList(),
                         key = { it.href }
                     ) {
@@ -128,7 +131,9 @@ internal fun WideScreen(
                             modifier = Modifier
                                 .width(200.dp)
                                 .height(280.dp),
-                            onClick = component::details
+                            onClick = { data ->
+                                component.details(data, language)
+                            }
                         )
                     }
                 }

@@ -12,8 +12,25 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 @Serializable(with = Language.LanguageSerializer::class)
-sealed interface Language {
+sealed interface Language : Comparable<Language> {
     val code: String
+
+    override fun compareTo(other: Language): Int {
+        return when {
+            this.code.equals(other.code, ignoreCase = true) -> 0
+            this.code.startsWith(other.code, ignoreCase = true) -> 1
+            other.code.startsWith(this.code, ignoreCase = true) -> 1
+            else -> 2
+        }
+    }
+
+    fun compareToNullable(other: Language?): Int {
+        if (other == null) {
+            return 0
+        }
+
+        return compareTo(other)
+    }
 
     @Serializable
     sealed interface German : Language {

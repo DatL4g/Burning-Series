@@ -29,6 +29,7 @@ import dev.chrisbanes.haze.haze
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.merge
 import dev.datlag.burningseries.network.state.HomeState
+import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.navigation.screen.component.HomeCard
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeComponent
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
@@ -44,6 +45,8 @@ internal fun CompactScreen(
     padding: PaddingValues,
     component: HomeComponent
 ) {
+    val language by component.language.collectAsStateWithLifecycle(null)
+
     LazyColumn(
         modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -84,6 +87,7 @@ internal fun CompactScreen(
                                     ?.home
                                     ?.episodes
                                     .orEmpty()
+                                    .sortedBy { Language.fromString(it.language)?.compareToNullable(language) }
                                     .toImmutableList(),
                                 key = { it.href }
                             ) {
@@ -152,7 +156,9 @@ internal fun CompactScreen(
                                     modifier = Modifier
                                         .width(200.dp)
                                         .height(280.dp),
-                                    onClick = component::details
+                                    onClick = { data ->
+                                        component.details(data, language)
+                                    }
                                 )
                             }
                         }

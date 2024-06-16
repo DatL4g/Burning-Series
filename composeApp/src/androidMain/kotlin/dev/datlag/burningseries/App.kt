@@ -7,6 +7,8 @@ import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.annotation.DelicateCoilApi
 import dev.datlag.burningseries.module.NetworkModule
+import dev.datlag.burningseries.other.StateSaver
+import dev.datlag.sekret.NativeLoader
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import org.kodein.di.DI
@@ -42,6 +44,7 @@ class App : MultiDexApplication(), DIAware {
                     .build()
             )
         }
+        StateSaver.sekretLibraryLoaded = NativeLoader.loadLibrary("sekret")
 
         val imageLoader by di.instance<ImageLoader>()
         SingletonImageLoader.setUnsafe(imageLoader)

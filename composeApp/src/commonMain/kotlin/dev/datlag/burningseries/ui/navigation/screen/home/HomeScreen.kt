@@ -95,14 +95,9 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun HomeScreen(component: HomeComponent) {
     AndroidFixWindowSize {
-        val appBarState = rememberTopAppBarState()
-        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-            state = appBarState
-        )
         val showFavorites by component.showFavorites.collectAsStateWithLifecycle()
 
         Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 HomeSearchBar(component, showFavorites)
             },

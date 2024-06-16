@@ -135,6 +135,8 @@ internal fun HomeSearchBar(component: HomeComponent, showFavorites: Boolean) {
             }
         },
         content = {
+            val language by component.language.collectAsStateWithLifecycle(null)
+
             when (val current = searchState) {
                 is SearchState.Loading -> {
                     Box(
@@ -158,7 +160,9 @@ internal fun HomeSearchBar(component: HomeComponent, showFavorites: Boolean) {
                             SearchResult(
                                 item = it,
                                 modifier = Modifier.fillParentMaxWidth(),
-                                onClick = component::details
+                                onClick = { data ->
+                                    component.details(data, language)
+                                }
                             )
                         }
                     }

@@ -52,6 +52,7 @@ data object NetworkModule {
                         .build()
                 }
                 .crossfade(true)
+                .extendImageLoader()
                 .build()
         }
         bindProvider<HomeStateMachine> {

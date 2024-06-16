@@ -19,6 +19,8 @@ import dev.datlag.burningseries.network.SearchStateMachine
 import dev.datlag.burningseries.network.state.HomeState
 import dev.datlag.burningseries.network.state.SearchAction
 import dev.datlag.burningseries.network.state.SearchState
+import dev.datlag.burningseries.settings.Settings
+import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.decompose.ioScope
 import io.ktor.client.HttpClient
@@ -39,7 +41,7 @@ import org.kodein.di.instance
 class HomeScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val onMedium: (SeriesData) -> Unit
+    private val onMedium: (SeriesData, Language?) -> Unit
 ): HomeComponent, ComponentContext by componentContext {
 
     private val homeStateMachine by instance<HomeStateMachine>()
@@ -70,6 +72,9 @@ class HomeScreenComponent(
         initialValue = database.favoritesSeriesOneShot()
     )
 
+    private val settings by instance<Settings.PlatformAppSettings>()
+    override val language = settings.language.flowOn(ioDispatcher())
+
     @Composable
     override fun render() {
         val haze = remember { HazeState() }
@@ -83,8 +88,8 @@ class HomeScreenComponent(
         }
     }
 
-    override fun details(data: SeriesData) {
-        onMedium(data)
+    override fun details(data: SeriesData, language: Language?) {
+        onMedium(data, language)
     }
 
     override fun search(query: String?) {

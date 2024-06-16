@@ -63,8 +63,8 @@ class RootComponent(
             is RootConfig.Home -> HomeScreenComponent(
                 componentContext = componentContext,
                 di = di,
-                onMedium = {
-                    navigation.bringToFront(RootConfig.Medium(it))
+                onMedium = { data, lang ->
+                    navigation.bringToFront(RootConfig.Medium(data, lang))
                 }
             )
             is RootConfig.Medium -> MediumScreenComponent(
@@ -72,6 +72,7 @@ class RootComponent(
                 di = di,
                 initialSeriesData = rootConfig.seriesData,
                 initialIsAnime = rootConfig.isAnime,
+                initialLanguage = rootConfig.language,
                 onBack = navigation::pop,
                 onWatch = { series, episode, streams ->
                     navigation.bringToFront(RootConfig.Video(series, episode, streams.toImmutableSet()))

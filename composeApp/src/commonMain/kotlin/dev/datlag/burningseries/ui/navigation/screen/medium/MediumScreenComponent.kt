@@ -33,6 +33,7 @@ import dev.datlag.burningseries.network.SeriesStateMachine
 import dev.datlag.burningseries.network.state.EpisodeAction
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
+import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.navigation.DialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.medium.dialog.activate.ActivateDialogComponent
 import dev.datlag.skeo.Stream
@@ -40,6 +41,7 @@ import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.compose.withMainContext
 import dev.datlag.tooling.decompose.ioScope
 import dev.datlag.tooling.safeCast
+import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
@@ -68,6 +70,7 @@ class MediumScreenComponent(
     override val di: DI,
     private val initialSeriesData: SeriesData,
     override val initialIsAnime: Boolean,
+    private val initialLanguage: Language?,
     private val onBack: () -> Unit,
     private val onWatch: (Series, Series.Episode, ImmutableCollection<Stream>) -> Unit,
     private val onActivate: (Series, Series.Episode) -> Unit
@@ -157,7 +160,13 @@ class MediumScreenComponent(
     }
 
     init {
-        seriesStateMachine.href(seriesData.toHref())
+        val hrefWithLanguage = if (initialLanguage != null) {
+            seriesData.toHref(newLanguage = initialLanguage.code)
+        } else {
+            seriesData.toHref()
+        }
+
+        seriesStateMachine.href(hrefWithLanguage)
     }
 
     @Composable

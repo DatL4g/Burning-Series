@@ -115,6 +115,7 @@ kotlin {
 
         val androidMain by getting {
             apply(plugin = "kotlin-parcelize")
+            apply(plugin = libs.plugins.crashlytics.get().pluginId)
 
             dependencies {
                 implementation(libs.android)

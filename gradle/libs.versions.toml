@@ -10,6 +10,7 @@ blurhash = "0.3.0"
 coil = "3.0.0-alpha06"
 compose = "1.6.11"
 coroutines = "1.8.1"
+crashlytics-plugin = "3.0.1"
 datastore = "1.1.1"
 datetime = "0.6.0"
 decompose = "3.0.0"
@@ -133,6 +134,7 @@ android-library = { id = "com.android.library", version.ref = "android" }
 cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics-plugin" }
 konfig = { id = "com.codingfeline.buildkonfig", version.ref = "konfig" }
 moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
