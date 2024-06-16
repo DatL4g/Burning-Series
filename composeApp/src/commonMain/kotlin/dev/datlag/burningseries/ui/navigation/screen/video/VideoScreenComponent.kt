@@ -5,6 +5,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import com.arkivanov.decompose.ComponentContext
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.database.common.episodeProgress
+import dev.datlag.burningseries.database.common.episodeProgressOneShot
 import dev.datlag.burningseries.database.common.insertEpisodeOrIgnore
 import dev.datlag.burningseries.database.common.updateLength
 import dev.datlag.burningseries.database.common.updateProgress
@@ -32,7 +33,7 @@ class VideoScreenComponent(
 ) : VideoComponent, ComponentContext by componentContext {
 
     private val database by instance<BurningSeries>()
-    override val startingPos: Long = max(database.episodeProgress(episode).executeAsOneOrNull() ?: 0L, 0L)
+    override val startingPos: Long = max(database.episodeProgressOneShot(episode), 0L)
 
     init {
         database.insertEpisodeOrIgnore(
@@ -54,6 +55,7 @@ class VideoScreenComponent(
 
     override fun ended() {
         // ToDo("load next")
+        // Maybe navigate to same view with replace?
     }
 
     override fun length(value: Long) {

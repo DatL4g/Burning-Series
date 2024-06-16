@@ -135,8 +135,12 @@ fun BurningSeries.insertEpisodeOrIgnore(
     )
 }
 
-fun BurningSeries.episodeProgress(episode: Series.Episode): Query<Long> {
-    return this.burningSeriesQueries.episodeProgress(episode.href)
+fun BurningSeries.episodeProgress(episode: Series.Episode, context: CoroutineContext): Flow<Long> {
+    return this.burningSeriesQueries.selectEpisodeProgress(episode.href).asFlow().mapToOneOrDefault(0L, context)
+}
+
+fun BurningSeries.episodeProgressOneShot(episode: Series.Episode): Long {
+    return this.burningSeriesQueries.selectEpisodeProgress(episode.href).executeAsOneOrNull() ?: 0L
 }
 
 fun BurningSeries.updateEpisodeBlurHash(episode: Series.Episode, hash: String?) {
@@ -223,12 +227,14 @@ fun BurningSeries.episodeRefreshingData(episode: Series.Episode, context: Corout
             combine(
                 episodeFinished(episode, context),
                 episodeWatching(episode, context),
-            ) { finished, watching ->
+                episodeProgress(episode, context),
+            ) { finished, watching, progress ->
                 CombinedEpisode(
                     default = episode,
                     database = databaseEpisode?.copy(
                         watching = watching,
-                        finished = finished
+                        finished = finished,
+                        progress = progress
                     ) ?: this@episodeRefreshingData.burningSeriesQueries.selectEpisodeByHref(
                         episode.href
                     ).executeAsOneOrNull()

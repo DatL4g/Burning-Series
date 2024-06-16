@@ -79,14 +79,17 @@ UPDATE Episode SET progress = :value, watching = :value > 0, finished = (CAST(:v
 updateEpisodeBlurHash:
 UPDATE Episode SET blurHash = :value WHERE href = :href OR href LIKE :href;
 
-episodeProgress:
+selectEpisodeProgress:
+SELECT progress FROM Episode WHERE href = :href OR href LIKE :href;
+
+selectEpisodeLength:
 SELECT progress FROM Episode WHERE href = :href OR href LIKE :href;
 
 episodeMarkWatched:
 UPDATE Episode SET finished = 1, updatedAt = :updated WHERE href = :href OR href LIKE :href;
 
 episodeMarkUnwatched:
-UPDATE Episode SET progress = 0, finished = 0, updatedAt = :updated WHERE href = :href OR href LIKE :href;
+UPDATE Episode SET progress = CASE WHEN (CAST(progress AS REAL) / CAST(length AS REAL) * 100.0) >= 85.0 THEN 0 ELSE progress END, finished = 0, updatedAt = :updated WHERE href = :href OR href LIKE :href;
 
 selectEpisodeBySeriesHref:
 SELECT * FROM Episode WHERE seriesHref = :href OR seriesHref LIKE :href;
