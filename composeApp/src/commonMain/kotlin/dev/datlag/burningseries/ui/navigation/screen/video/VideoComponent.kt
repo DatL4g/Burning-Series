@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface VideoComponent : Component {
 
+    val series: Series
     val episode: Series.Episode
     val streams: ImmutableCollection<Stream>
     val startingPos: Long

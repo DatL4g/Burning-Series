@@ -26,7 +26,7 @@ import kotlin.math.max
 class VideoScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val series: Series,
+    override val series: Series,
     override val episode: Series.Episode,
     override val streams: ImmutableCollection<Stream>,
     private val onBack: () -> Unit

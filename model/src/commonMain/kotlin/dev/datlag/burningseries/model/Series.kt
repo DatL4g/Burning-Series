@@ -23,9 +23,15 @@ data class Series(
 ) : SeriesData() {
 
     @Transient
-    val isAnime: Boolean = info.filter {
+    val genres = info.filter {
         it.header.equals("Genre", ignoreCase = true) || it.header.equals("Genres", ignoreCase = true)
-    }.any {
+    }.toImmutableSet()
+
+    @Transient
+    val firstGenre = genres.firstNotNullOfOrNull { it.data.ifBlank { null } }
+
+    @Transient
+    val isAnime: Boolean = genres.any {
         it.data.contains("Anime", ignoreCase = true)
     }
 
