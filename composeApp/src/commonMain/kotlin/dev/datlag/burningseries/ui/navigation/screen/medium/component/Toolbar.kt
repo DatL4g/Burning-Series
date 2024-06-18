@@ -1,5 +1,13 @@
 package dev.datlag.burningseries.ui.navigation.screen.medium.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.TwoWayConverter
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.animateValueAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +29,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -147,54 +158,71 @@ internal fun Toolbar(
                 }
             )
 
-            if (kastDevices.isNotEmpty()) {
-                IconButton(
-                    onClick = {
-                        kastDialog.show()
+            when (kastState) {
+                is ConnectionState.CONNECTED -> {
+                    IconButton(
+                        onClick = {
+                            Kast.unselect(UnselectReason.disconnected)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = kastState.icon,
+                            contentDescription = null
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = kastState.icon,
-                        contentDescription = null
-                    )
                 }
-            } else if (kastState.isConnectedOrConnecting) {
-                IconButton(
-                    onClick = {
-                        Kast.unselect(UnselectReason.disconnected)
+                is ConnectionState.CONNECTING -> {
+                    IconButton(
+                        onClick = {
+                            Kast.unselect(UnselectReason.disconnected)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = kastState.icon,
+                            contentDescription = null
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = kastState.icon,
-                        contentDescription = null
-                    )
+                }
+                else -> {
+                    IconButton(
+                        onClick = {
+                            kastDialog.show()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = kastState.icon,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
 
-            if (series != null) {
-                if (isFavorite) {
-                    IconButton(
-                        onClick = {
+            if (isFavorite) {
+                IconButton(
+                    onClick = {
+                        if (series != null) {
                             component.unsetFavorite(series)
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Favorite,
-                            contentDescription = null,
-                            tint = Color.Red
-                        )
                     }
-                } else {
-                    IconButton(
-                        onClick = {
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Favorite,
+                        contentDescription = null,
+                        tint = Color.Red
+                    )
+                }
+            } else {
+                IconButton(
+                    onClick = {
+                        if (series != null) {
                             component.setFavorite(series)
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.FavoriteBorder,
-                            contentDescription = null,
-                        )
                     }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.FavoriteBorder,
+                        contentDescription = null,
+                    )
                 }
             }
         },

@@ -13,6 +13,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import dev.datlag.burningseries.ui.navigation.RootComponent
 import dev.datlag.kast.Kast
+import dev.datlag.kast.UnselectReason
 import dev.datlag.tooling.decompose.lifecycle.LocalLifecycleOwner
 import dev.datlag.tooling.safeCast
 import org.kodein.di.DIAware
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
+        Kast.unselect(UnselectReason.disconnected)
         Kast.dispose()
     }
 }

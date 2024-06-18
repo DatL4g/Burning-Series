@@ -3,15 +3,21 @@ package dev.datlag.burningseries.ui.navigation.screen.video
 import android.view.WindowManager
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -50,12 +56,10 @@ import dev.datlag.tooling.compose.withMainContext
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlin.random.Random
-
-private val PseudoRandom = Random((10000..12345).random())
-private val Alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -83,129 +87,104 @@ actual fun VideoScreen(component: VideoComponent) {
                 metadata
             ).build()
     }
-    val startingPos = component.startingPos
-
-    val playListener = remember { object : Player.Listener {
-        override fun onPlayerError(error: PlaybackException) {
-            super.onPlayerError(error)
-
-            if (streamList[streamIndex].sources.size -1 > sourceIndex) {
-                sourceIndex++
-            } else {
-                streamIndex++
-            }
-        }
-    } }
 
     val context = LocalContext.current
-    val castContext = Kast.castContext
-    val castState by remember(castContext) { mutableStateOf(castContext?.castState) }
-    val casting by remember(castState) { mutableStateOf(castState == CastState.CONNECTED) }
-    var cast by remember(casting) { mutableStateOf(casting) }
-    val useCastPlayer = remember(cast) { cast }
 
-    val sessionListener = remember { object : SessionAvailabilityListener {
-        override fun onCastSessionAvailable() {
-            cast = true
-        }
-
-        override fun onCastSessionUnavailable() {
-            cast = false
-        }
-    } }
-    val castPlayer = remember(castContext) {
-        if (castContext != null) {
-            CastPlayer(castContext)
-        } else {
-            null
-        }
-    }
-
-    LaunchedEffect(castPlayer) {
-        castPlayer?.playWhenReady = true
-        castPlayer?.setSessionAvailabilityListener(sessionListener)
-        castPlayer?.addListener(playListener)
-    }
-
-    DisposableEffect(castPlayer) {
-        onDispose {
-            castPlayer?.release()
-        }
-    }
-
-    val localPlayer = remember(context) {
-        ExoPlayer.Builder(context).apply {
-            setSeekBackIncrementMs(10000)
-            setSeekForwardIncrementMs(10000)
-        }.build()
-    }
-
-    LaunchedEffect(localPlayer) {
-        localPlayer.playWhenReady = true
-        localPlayer.addListener(playListener)
-    }
-
-    DisposableEffect(localPlayer) {
-        onDispose {
-            localPlayer.release()
-        }
-    }
-
-    val usingPlayer = remember(castPlayer, localPlayer, useCastPlayer) {
-        if (useCastPlayer) {
-            castPlayer ?: localPlayer
-        } else {
-            localPlayer
-        }
-    }
-
-    val mediaSession = remember(context, usingPlayer) {
-        MediaSession.Builder(
-            context,
-            ForwardingPlayer(usingPlayer)
-        ).setId(
-            NanoIdUtils.randomNanoId(
-                random = PseudoRandom,
-                alphabet = Alphabet.toCharArray()
-            )
-        ).build()
-    }
-
-    DisposableEffect(mediaSession) {
-        onDispose {
-            mediaSession.release()
-        }
-    }
-
-    LaunchedEffect(usingPlayer, mediaItem) {
-        val media = if (usingPlayer is CastPlayer) {
-            val mimeType = mediaItem.localConfiguration?.mimeType?.ifBlank { null } ?: MimeTypes.VIDEO_UNKNOWN
-            mediaItem.buildUpon().setMimeType(mimeType).build()
-        } else {
-            mediaItem
-        }
-
-        usingPlayer.setMediaItem(media, startingPos)
-        usingPlayer.prepare()
-
-        withIOContext {
-            do {
-                delay(3000)
-                withMainContext {
-                    component.length(usingPlayer.duration)
-                    component.progress(usingPlayer.currentPosition)
+    val playerWrapper = remember {
+        PlayerWrapper(
+            context = context,
+            castContext = Kast.castContext,
+            startingPos = component.startingPos,
+            onError = {
+                if (streamList[streamIndex].sources.size -1 > sourceIndex) {
+                    sourceIndex++
+                } else if (streamList.size - 1 > streamIndex) {
+                    streamIndex++
                 }
-            } while (isActive)
+            }
+        )
+    }
+
+    LaunchedEffect(playerWrapper, mediaItem) {
+        playerWrapper.play(mediaItem)
+    }
+
+    DisposableEffect(playerWrapper) {
+        onDispose {
+            playerWrapper.release()
         }
     }
 
-    AndroidView(
-        modifier = Modifier.fillMaxSize().background(Color.Black),
-        factory = { viewContext ->
-            PlayerView(viewContext)
-        },
-        update = { playerView ->
-            playerView.player = usingPlayer
+    LaunchedEffect(playerWrapper) {
+        playerWrapper.pollPosition()
+    }
+
+    var showControls by remember { mutableStateOf(false) }
+    LaunchedEffect(showControls) {
+        withIOContext {
+            if (showControls) {
+                delay(3000)
+                if (currentCoroutineContext().isActive && showControls) {
+                    showControls = false
+                }
+            }
         }
-    )
+    }
+
+    Scaffold(
+        topBar = {
+            TopControls(
+                isVisible = showControls,
+                mainTitle = component.episode.mainTitle,
+                subTitle = component.episode.subTitle ?: component.episode.convertedNumber?.let { "Episode: $it" },
+                onBack = component::back
+            )
+        },
+        bottomBar = {
+            BottomControls(
+                isVisible = showControls,
+                progressFlow = playerWrapper.progress,
+                lengthFlow = playerWrapper.length,
+                onSeekChanged = {
+                    playerWrapper.seekTo(it)
+                }
+            )
+        }
+    ) { padding ->
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            val isPlaying by playerWrapper.isPlaying.collectAsStateWithLifecycle()
+
+            AndroidView(
+                modifier = Modifier.fillMaxSize().background(Color.Black),
+                factory = { viewContext ->
+                    PlayerView(viewContext)
+                },
+                update = { playerView ->
+                    playerView.setOnClickListener {
+                        showControls = !showControls
+                    }
+                    playerView.useController = false
+                    playerView.keepScreenOn = true
+                    playerView.player = playerWrapper.player
+                }
+            )
+            CenterControls(
+                modifier = Modifier.padding(padding).fillMaxWidth(),
+                isVisible = showControls,
+                isPlaying = isPlaying,
+                onReplayClick = {
+                    playerWrapper.rewind()
+                },
+                onPauseToggle = {
+                    playerWrapper.togglePlay()
+                },
+                onForwardClick = {
+                    playerWrapper.forward()
+                }
+            )
+        }
+    }
 }
