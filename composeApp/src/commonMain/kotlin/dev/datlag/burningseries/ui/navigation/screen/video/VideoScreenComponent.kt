@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import app.cash.sqldelight.coroutines.asFlow
 import com.arkivanov.decompose.ComponentContext
 import dev.datlag.burningseries.database.BurningSeries
+import dev.datlag.burningseries.database.common.episodeLengthOneShot
 import dev.datlag.burningseries.database.common.episodeProgress
 import dev.datlag.burningseries.database.common.episodeProgressOneShot
 import dev.datlag.burningseries.database.common.insertEpisodeOrIgnore
@@ -34,6 +35,7 @@ class VideoScreenComponent(
 
     private val database by instance<BurningSeries>()
     override val startingPos: Long = max(database.episodeProgressOneShot(episode), 0L)
+    override val startingLength: Long = max(database.episodeLengthOneShot(episode), 0L)
 
     init {
         database.insertEpisodeOrIgnore(
@@ -59,10 +61,14 @@ class VideoScreenComponent(
     }
 
     override fun length(value: Long) {
-        database.updateLength(value, episode)
+        if (value > 0) {
+            database.updateLength(value, episode)
+        }
     }
 
     override fun progress(value: Long) {
-        database.updateProgress(value, episode)
+        if (value > 0) {
+            database.updateProgress(value, episode)
+        }
     }
 }

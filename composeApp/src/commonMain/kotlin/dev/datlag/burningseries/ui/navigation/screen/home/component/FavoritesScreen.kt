@@ -41,7 +41,7 @@ fun FavoritesScreen(
         LazyVerticalGrid(
             state = listState,
             modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
-            columns = GridCells.FixedSize(200.dp),
+            columns = GridCells.FixedSize(140.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = padding.merge(16.dp)
@@ -58,8 +58,8 @@ fun FavoritesScreen(
                 HomeCard(
                     series = it,
                     modifier = Modifier
-                        .width(200.dp)
-                        .height(280.dp),
+                        .width(140.dp)
+                        .height(200.dp),
                     onClick = component::details
                 )
             }

@@ -26,6 +26,7 @@ import dev.datlag.burningseries.database.common.setEpisodeUnwatched
 import dev.datlag.burningseries.database.common.setEpisodeWatched
 import dev.datlag.burningseries.database.common.setSeriesFavorite
 import dev.datlag.burningseries.database.common.unsetSeriesFavorite
+import dev.datlag.burningseries.database.common.updateSeriesHref
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.network.EpisodeStateMachine
@@ -92,7 +93,11 @@ class MediumScreenComponent(
     }
 
     override var seriesData: SeriesData = initialSeriesData
-        private set
+        private set(value) {
+            field = value
+
+            database.updateSeriesHref(seriesData)
+        }
 
     override val seriesTitle: Flow<String> = successState.map { it.series.mainTitle }
     override val seriesSubTitle: Flow<String?> = successState.map { it.series.subTitle }

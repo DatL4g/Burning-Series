@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.PauseCircle
 import androidx.compose.material.icons.rounded.PlayCircle
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -56,11 +57,13 @@ internal fun EpisodeItem(
     onMarkWatched: (CombinedEpisode) -> Unit,
     onMarkUnwatched: (CombinedEpisode) -> Unit
 ) {
+    val colors = CardDefaults.elevatedCardColors()
+
     ElevatedCard(
         modifier = modifier
             .clip(MaterialTheme.shapes.medium)
             .onClick(
-                enabled = !isLoading,
+                enabled = !isLoading && item.hasHoster,
                 onClick = {
                     onClick(item)
                 },
@@ -72,6 +75,12 @@ internal fun EpisodeItem(
                     }
                 }
             ),
+        colors = CardColors(
+            containerColor = if (item.hasHoster) colors.containerColor else colors.disabledContainerColor,
+            contentColor = if (item.hasHoster) colors.contentColor else colors.disabledContentColor,
+            disabledContainerColor = colors.disabledContainerColor,
+            disabledContentColor = colors.disabledContentColor
+        ),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
     ) {
         Row(

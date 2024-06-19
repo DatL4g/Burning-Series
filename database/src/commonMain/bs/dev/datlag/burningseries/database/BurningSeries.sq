@@ -56,6 +56,9 @@ upsertSeriesFavoriteSince {
 seriesIsFavoriteByHref:
 SELECT favoriteSince > 0 FROM Series WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
 
+updateSeriesHref:
+UPDATE Series SET href = :value WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
+
 insertEpisodeOrIgnore:
 INSERT OR IGNORE INTO Episode(
     href,

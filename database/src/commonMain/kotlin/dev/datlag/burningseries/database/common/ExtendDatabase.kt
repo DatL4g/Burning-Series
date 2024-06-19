@@ -93,6 +93,13 @@ fun BurningSeries.insertSeriesOrIgnore(series: Series) {
     )
 }
 
+fun BurningSeries.updateSeriesHref(seriesData: SeriesData, value: String = seriesData.toHref()) {
+    this.burningSeriesQueries.updateSeriesHref(
+        value = value,
+        hrefPrimary = seriesData.source
+    )
+}
+
 fun BurningSeries.updateLength(value: Long, episode: Series.Episode) {
     this.burningSeriesQueries.updateEpisodeLength(
         value = value,
@@ -141,6 +148,10 @@ fun BurningSeries.episodeProgress(episode: Series.Episode, context: CoroutineCon
 
 fun BurningSeries.episodeProgressOneShot(episode: Series.Episode): Long {
     return this.burningSeriesQueries.selectEpisodeProgress(episode.href).executeAsOneOrNull() ?: 0L
+}
+
+fun BurningSeries.episodeLengthOneShot(episode: Series.Episode): Long {
+    return this.burningSeriesQueries.selectEpisodeLength(episode.href).executeAsOneOrNull() ?: 0L
 }
 
 fun BurningSeries.updateEpisodeBlurHash(episode: Series.Episode, hash: String?) {

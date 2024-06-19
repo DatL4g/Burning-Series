@@ -23,6 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.isActive
 import kotlin.math.max
 import kotlin.random.Random
@@ -32,7 +33,10 @@ class PlayerWrapper(
     private val context: Context,
     castContext: CastContext?,
     private val startingPos: Long,
+    private val startingLength: Long,
     private val onError: (PlaybackException) -> Unit = { },
+    private val onProgressChange: (Long) -> Unit = { },
+    private val onLengthChange: (Long) -> Unit = { },
 ): SessionAvailabilityListener, Player.Listener {
 
     private val castPlayer = castContext?.let(::CastPlayer)
@@ -109,7 +113,7 @@ class PlayerWrapper(
     private val _progress = MutableStateFlow(startingPos)
     val progress: StateFlow<Long> = _progress
 
-    private val _length = MutableStateFlow(max(progress.value, player.duration))
+    private val _length = MutableStateFlow(max(max(progress.value, player.duration), startingLength))
     val length: StateFlow<Long> = _length
 
     private val localPlayerListener = object : Player.Listener {
@@ -125,7 +129,6 @@ class PlayerWrapper(
         castPlayer?.addListener(this)
         localPlayer.addListener(localPlayerListener)
         localPlayer.addListener(this)
-
 
         castPlayer?.setSessionAvailabilityListener(this)
 
@@ -152,25 +155,18 @@ class PlayerWrapper(
 
         _isPlaying.update { isPlaying }
 
-        val newProgress = player.currentPosition
-        if (!_progress.tryEmit(newProgress)) {
-            _progress.value = newProgress
-        }
+        onProgressChange(_progress.updateAndGet { player.currentPosition })
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
         super.onTimelineChanged(timeline, reason)
 
-        val newProgress = player.currentPosition
-        if (!_progress.tryEmit(newProgress)) {
-            _progress.value = newProgress
-        }
+        onProgressChange(_progress.updateAndGet { player.currentPosition })
 
         val newLength = player.duration
         if (newLength > 0) {
-            if (!_length.tryEmit(newLength)) {
-                _length.value = newLength
-            }
+            _length.value = newLength
+            onLengthChange(newLength)
         }
     }
 
@@ -202,16 +198,11 @@ class PlayerWrapper(
     suspend fun pollPosition() = withIOContext {
         do {
             withMainContext {
-                val newProgress = player.currentPosition
-                if (!_progress.tryEmit(newProgress)) {
-                    _progress.value = newProgress
-                }
+                onProgressChange(_progress.updateAndGet { player.currentPosition })
 
                 val newLength = player.duration
-                if (newLength > 0) {
-                    if (!_length.tryEmit(newLength)) {
-                        _length.value = newLength
-                    }
+                if (newLength > 0 && _length.value != newLength) {
+                    onLengthChange(_length.updateAndGet { newLength })
                 }
             }
             delay(100)

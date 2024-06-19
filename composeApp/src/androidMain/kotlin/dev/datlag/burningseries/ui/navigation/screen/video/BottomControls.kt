@@ -37,6 +37,9 @@ fun BottomControls(
     modifier: Modifier = Modifier,
     onSeekChanged: (Long) -> Unit
 ) {
+    val progress by progressFlow.collectAsStateWithLifecycle()
+    val length by lengthFlow.collectAsStateWithLifecycle()
+
     AnimatedVisibility(
         modifier = modifier,
         visible = isVisible,
@@ -49,19 +52,20 @@ fun BottomControls(
             contentColor = Color.White
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                val progress by progressFlow.collectAsStateWithLifecycle()
-                val length by lengthFlow.collectAsStateWithLifecycle()
-
                 var showSeek by remember { mutableStateOf(true) }
                 var changedSeek by remember { mutableLongStateOf(progress) }
 
+                val displayProgress = remember(showSeek, progress, changedSeek) {
+                    if (showSeek) {
+                        changedSeek
+                    } else {
+                        progress
+                    }
+                }
+
                 Slider(
                     modifier = Modifier.fillMaxWidth(),
-                    value = if (showSeek) {
-                        changedSeek.toFloat()
-                    } else {
-                        progress.toFloat()
-                    },
+                    value = displayProgress.toFloat(),
                     valueRange = 0F..length.toFloat(),
                     onValueChange = {
                         showSeek = true
@@ -76,14 +80,7 @@ fun BottomControls(
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = "${progress.toDuration()} - ${length.toDuration()}")
-                    IconButton(
-                        onClick = {
-
-                        }
-                    ) {
-
-                    }
+                    Text(text = "${displayProgress.toDuration()} - ${length.toDuration()}")
                 }
             }
         }

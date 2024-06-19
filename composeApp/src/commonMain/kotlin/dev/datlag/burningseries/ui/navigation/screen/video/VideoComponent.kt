@@ -12,6 +12,7 @@ interface VideoComponent : Component {
     val episode: Series.Episode
     val streams: ImmutableCollection<Stream>
     val startingPos: Long
+    val startingLength: Long
 
     fun back()
     fun length(value: Long)

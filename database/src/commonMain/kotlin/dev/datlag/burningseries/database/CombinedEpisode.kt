@@ -46,6 +46,9 @@ data class CombinedEpisode @JvmOverloads constructor(
     val blurHash: String?
         get() = database?.blurHash?.ifBlank { null }
 
+    val hasHoster: Boolean
+        get() = default.hoster.isNotEmpty()
+
     fun isSame(other: Series.Episode?): Boolean {
         return default == other
     }

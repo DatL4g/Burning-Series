@@ -1,13 +1,23 @@
 package dev.datlag.burningseries.ui.navigation.screen.video
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.view.Window
 import android.view.WindowManager
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -22,8 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
@@ -95,12 +107,19 @@ actual fun VideoScreen(component: VideoComponent) {
             context = context,
             castContext = Kast.castContext,
             startingPos = component.startingPos,
+            startingLength = component.startingLength,
             onError = {
                 if (streamList[streamIndex].sources.size -1 > sourceIndex) {
                     sourceIndex++
                 } else if (streamList.size - 1 > streamIndex) {
                     streamIndex++
                 }
+            },
+            onProgressChange = {
+                component.progress(it)
+            },
+            onLengthChange = {
+                component.length(it)
             }
         )
     }
@@ -136,7 +155,7 @@ actual fun VideoScreen(component: VideoComponent) {
             TopControls(
                 isVisible = showControls,
                 mainTitle = component.episode.mainTitle,
-                subTitle = component.episode.subTitle ?: component.episode.convertedNumber?.let { "Episode: $it" },
+                subTitle = component.episode.subTitle ?: component.episode.convertedNumber?.let { "Episode $it" },
                 onBack = component::back
             )
         },
@@ -166,6 +185,7 @@ actual fun VideoScreen(component: VideoComponent) {
                     playerView.setOnClickListener {
                         showControls = !showControls
                     }
+                    playerView.isSoundEffectsEnabled = false
                     playerView.useController = false
                     playerView.keepScreenOn = true
                     playerView.player = playerWrapper.player
@@ -187,4 +207,31 @@ actual fun VideoScreen(component: VideoComponent) {
             )
         }
     }
+
+    RequireFullScreen()
+}
+
+@kotlin.OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RequireFullScreen() {
+    val controller = rememberWindowController()
+
+    DisposableEffect(Unit) {
+        val originalBehavior = controller.systemBarsBehavior
+
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.isSystemBarsVisible = false
+        controller.addWindowFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON and WindowManager.LayoutParams.FLAG_SECURE)
+        onDispose {
+            controller.isSystemBarsVisible = true
+            controller.systemBarsBehavior = originalBehavior
+            controller.clearWindowFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON and WindowManager.LayoutParams.FLAG_SECURE)
+        }
+    }
+}
+
+tailrec fun Context.findWindow(): Window? = when (this) {
+    is Activity -> window
+    is ContextWrapper -> baseContext.findWindow()
+    else -> null
 }
