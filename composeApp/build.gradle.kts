@@ -91,6 +91,7 @@ kotlin {
 
             implementation(libs.windowsize)
             implementation(libs.ktor)
+            implementation(libs.datetime)
 
             implementation(libs.kmpalette)
             implementation(libs.kolor)

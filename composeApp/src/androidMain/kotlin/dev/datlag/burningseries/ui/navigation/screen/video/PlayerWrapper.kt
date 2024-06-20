@@ -18,15 +18,20 @@ import com.google.android.gms.cast.framework.CastState
 import dev.datlag.nanoid.NanoIdUtils
 import dev.datlag.tooling.compose.withIOContext
 import dev.datlag.tooling.compose.withMainContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.getAndUpdate
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.isActive
+import kotlinx.datetime.Clock
 import kotlin.math.max
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.minutes
 
 @UnstableApi
 class PlayerWrapper(
@@ -107,8 +112,11 @@ class PlayerWrapper(
             }
         }
 
-    private val _isPlaying = MutableStateFlow(false)
+    private val _isPlaying = MutableStateFlow(player.isPlaying)
     val isPlaying: StateFlow<Boolean> = _isPlaying
+
+    val isCurrentlyPlaying: Boolean
+        get() = isPlaying.value
 
     private val _progress = MutableStateFlow(startingPos)
     val progress: StateFlow<Long> = _progress
@@ -122,6 +130,25 @@ class PlayerWrapper(
 
             // Playing works, can switch to casting
             castSupported = true
+        }
+    }
+
+    private val _showControlsTime = MutableStateFlow(0L)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val showControls = _showControlsTime.transformLatest { time ->
+        if (time > 0L) {
+            emit(true)
+
+            do {
+                delay(3000)
+                val newTime = Clock.System.now().toEpochMilliseconds()
+                if (newTime - time >= 3000) {
+                    _showControlsTime.update { 0L }
+                }
+            } while (currentCoroutineContext().isActive)
+        } else {
+            emit(false)
         }
     }
 
@@ -177,10 +204,12 @@ class PlayerWrapper(
 
     fun rewind() {
         player.seekBack()
+        _showControlsTime.update { Clock.System.now().toEpochMilliseconds() }
     }
 
     fun forward() {
         player.seekForward()
+        _showControlsTime.update { Clock.System.now().toEpochMilliseconds() }
     }
 
     fun togglePlay() {
@@ -189,10 +218,12 @@ class PlayerWrapper(
         } else {
             player.play()
         }
+        _showControlsTime.update { Clock.System.now().toEpochMilliseconds() }
     }
 
     fun seekTo(position: Long) {
         player.seekTo(position)
+        _showControlsTime.update { Clock.System.now().toEpochMilliseconds() }
     }
 
     suspend fun pollPosition() = withIOContext {
@@ -219,6 +250,28 @@ class PlayerWrapper(
         castPlayer?.stop()
         castPlayer?.clearMediaItems()
         Session.release()
+    }
+
+    fun showControls() {
+        _showControlsTime.update { Clock.System.now().toEpochMilliseconds() }
+    }
+
+    fun hideControls() {
+        _showControlsTime.update { 0L }
+    }
+
+    fun showControlsFor5Min() {
+        _showControlsTime.update { Clock.System.now().plus(5.minutes).toEpochMilliseconds() }
+    }
+
+    fun toggleControls() {
+        _showControlsTime.update {
+            if (it > 0L) {
+                0L
+            } else {
+                Clock.System.now().toEpochMilliseconds()
+            }
+        }
     }
 
     private fun MediaItem.forPlayer(player: Player): MediaItem {

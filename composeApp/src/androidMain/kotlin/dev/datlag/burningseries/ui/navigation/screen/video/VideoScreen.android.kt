@@ -70,7 +70,9 @@ import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
+import kotlinx.datetime.Clock
 import kotlin.random.Random
 
 @OptIn(UnstableApi::class)
@@ -138,17 +140,7 @@ actual fun VideoScreen(component: VideoComponent) {
         playerWrapper.pollPosition()
     }
 
-    var showControls by remember { mutableStateOf(false) }
-    LaunchedEffect(showControls) {
-        withIOContext {
-            if (showControls) {
-                delay(3000)
-                if (currentCoroutineContext().isActive && showControls) {
-                    showControls = false
-                }
-            }
-        }
-    }
+    val showControls by playerWrapper.showControls.collectAsStateWithLifecycle(false)
 
     Scaffold(
         topBar = {
@@ -156,6 +148,7 @@ actual fun VideoScreen(component: VideoComponent) {
                 isVisible = showControls,
                 mainTitle = component.episode.mainTitle,
                 subTitle = component.episode.subTitle ?: component.episode.convertedNumber?.let { "Episode $it" },
+                playerWrapper = playerWrapper,
                 onBack = component::back
             )
         },
@@ -183,7 +176,7 @@ actual fun VideoScreen(component: VideoComponent) {
                 },
                 update = { playerView ->
                     playerView.setOnClickListener {
-                        showControls = !showControls
+                        playerWrapper.toggleControls()
                     }
                     playerView.isSoundEffectsEnabled = false
                     playerView.useController = false

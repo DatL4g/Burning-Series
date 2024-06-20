@@ -52,35 +52,18 @@ fun BottomControls(
             contentColor = Color.White
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                var showSeek by remember { mutableStateOf(true) }
-                var changedSeek by remember { mutableLongStateOf(progress) }
-
-                val displayProgress = remember(showSeek, progress, changedSeek) {
-                    if (showSeek) {
-                        changedSeek
-                    } else {
-                        progress
-                    }
-                }
-
                 Slider(
                     modifier = Modifier.fillMaxWidth(),
-                    value = displayProgress.toFloat(),
+                    value = progress.toFloat(),
                     valueRange = 0F..length.toFloat(),
-                    onValueChange = {
-                        showSeek = true
-                        changedSeek = it.toLong()
-                    },
-                    onValueChangeFinished = {
-                        onSeekChanged(changedSeek)
-                        showSeek = false
-                    }
+                    onValueChange = { },
+                    onValueChangeFinished = { }
                 )
                 Row(
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = "${displayProgress.toDuration()} - ${length.toDuration()}")
+                    Text(text = "${progress.toDuration()} - ${length.toDuration()}")
                 }
             }
         }
