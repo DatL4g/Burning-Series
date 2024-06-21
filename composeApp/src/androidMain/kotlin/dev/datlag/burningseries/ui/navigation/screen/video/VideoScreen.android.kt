@@ -155,11 +155,7 @@ actual fun VideoScreen(component: VideoComponent) {
         bottomBar = {
             BottomControls(
                 isVisible = showControls,
-                progressFlow = playerWrapper.progress,
-                lengthFlow = playerWrapper.length,
-                onSeekChanged = {
-                    playerWrapper.seekTo(it)
-                }
+                playerWrapper = playerWrapper
             )
         }
     ) { padding ->

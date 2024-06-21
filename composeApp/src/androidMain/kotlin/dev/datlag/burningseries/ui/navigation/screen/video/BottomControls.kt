@@ -5,6 +5,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,21 +26,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.media3.common.util.UnstableApi
 import dev.datlag.burningseries.common.toDuration
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.StateFlow
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomControls(
     isVisible: Boolean,
-    progressFlow: StateFlow<Long>,
-    lengthFlow: StateFlow<Long>,
+    playerWrapper: PlayerWrapper,
     modifier: Modifier = Modifier,
-    onSeekChanged: (Long) -> Unit
 ) {
-    val progress by progressFlow.collectAsStateWithLifecycle()
-    val length by lengthFlow.collectAsStateWithLifecycle()
+    val progress by playerWrapper.progress.collectAsStateWithLifecycle()
+    val length by playerWrapper.length.collectAsStateWithLifecycle()
 
     AnimatedVisibility(
         modifier = modifier,
@@ -52,18 +55,39 @@ fun BottomControls(
             contentColor = Color.White
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
+                val source = remember { MutableInteractionSource() }
+                val dragging by source.collectIsDraggedAsState()
+                var changingProgress by remember { mutableLongStateOf(progress) }
+                val displayProgress = remember(dragging, progress, changingProgress) {
+                    if (dragging) {
+                        changingProgress
+                    } else {
+                        progress
+                    }
+                }
+
                 Slider(
                     modifier = Modifier.fillMaxWidth(),
-                    value = progress.toFloat(),
+                    value = displayProgress.toFloat(),
                     valueRange = 0F..length.toFloat(),
-                    onValueChange = { },
-                    onValueChangeFinished = { }
+                    onValueChange = {
+                        if (dragging) {
+                            changingProgress = it.toLong()
+                            playerWrapper.showControls()
+                        }
+                    },
+                    onValueChangeFinished = {
+                        if (dragging) {
+                            playerWrapper.seekTo(changingProgress)
+                        }
+                    },
+                    interactionSource = source
                 )
                 Row(
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = "${progress.toDuration()} - ${length.toDuration()}")
+                    Text(text = "${displayProgress.toDuration()} - ${length.toDuration()}")
                 }
             }
         }
