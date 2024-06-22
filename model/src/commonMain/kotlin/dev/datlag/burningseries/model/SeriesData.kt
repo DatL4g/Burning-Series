@@ -2,9 +2,10 @@ package dev.datlag.burningseries.model
 
 import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.model.common.moreThan
+import dev.datlag.burningseries.model.serializer.SerializableImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import kotlin.jvm.JvmOverloads
 
 @Serializable
@@ -80,6 +81,10 @@ abstract class SeriesData {
         !subTitle.isNullOrBlank()
     }
 
+    val fontType by lazy {
+        FontType.bestMatching(mainTitle, subTitle)
+    }
+
     private fun getHrefTitle(): String {
         val newHref = if (href.startsWith("series/")) {
             href.substringAfter("series/")
@@ -147,6 +152,60 @@ abstract class SeriesData {
             "serie/${source}/${newLanguage}"
         } else {
             "serie/$source"
+        }
+    }
+
+    @Serializable
+    sealed interface FontType {
+        val mainTitles: SerializableImmutableSet<String>
+        val subTitles: SerializableImmutableSet<String>
+            get() = persistentSetOf()
+
+        fun matchesMain(value: String): Boolean {
+            return when {
+                mainTitles.any { value.equals(it, ignoreCase = true) } -> true
+                else -> false
+            }
+        }
+
+        fun matchesSub(value: String): Boolean {
+            return when {
+                subTitles.any { value.equals(it, ignoreCase = true) } -> true
+                else -> false
+            }
+        }
+
+        @Serializable
+        data object Graffiti : FontType {
+            override val mainTitles: SerializableImmutableSet<String> = persistentSetOf(
+                "Windeu Beureikeo",
+                "Tokyo Revengers"
+            )
+
+            override val subTitles: SerializableImmutableSet<String> = persistentSetOf(
+                "Wind Breaker"
+            )
+        }
+
+        companion object {
+            fun fromMainTitle(value: String): FontType? {
+                return when {
+                    Graffiti.matchesMain(value) -> Graffiti
+                    else -> null
+                }
+            }
+
+            fun fromSubTitle(value: String?): FontType? {
+                return when {
+                    value.isNullOrBlank() -> null
+                    Graffiti.matchesSub(value) -> Graffiti
+                    else -> null
+                }
+            }
+
+            fun bestMatching(mainTitle: String, subTitle: String?): FontType? {
+                return fromMainTitle(mainTitle) ?: fromSubTitle(subTitle)
+            }
         }
     }
 

@@ -34,7 +34,7 @@ fun HomeCard(
     onClick: (Home.Episode) -> Unit
 ) {
     SchemeTheme(
-        key = episode.source
+        key = episode
     ) { updater ->
         Card(
             modifier = modifier,
@@ -105,7 +105,7 @@ fun HomeCard(
     onClick: (SeriesData) -> Unit
 ) {
     SchemeTheme(
-        key = series.source
+        key = series
     ) { updater ->
         Card(
             modifier = modifier,

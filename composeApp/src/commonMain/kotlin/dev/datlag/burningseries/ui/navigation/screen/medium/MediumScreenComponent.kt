@@ -181,7 +181,7 @@ class MediumScreenComponent(
         CompositionLocalProvider(
             LocalHaze provides haze
         ) {
-            onRenderWithScheme(initialSeriesData.source) {
+            onRenderWithScheme(initialSeriesData) {
                 MediumScreen(this, it)
             }
         }

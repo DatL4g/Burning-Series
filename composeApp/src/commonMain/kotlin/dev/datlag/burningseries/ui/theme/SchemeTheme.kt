@@ -13,17 +13,23 @@ import com.kmpalette.rememberPainterDominantColorState
 import com.materialkolor.DynamicMaterialTheme
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
+import dev.datlag.burningseries.LocalDI
 import dev.datlag.burningseries.common.plainOnColor
+import dev.datlag.burningseries.fontFamily
+import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.model.coroutines.Executor
+import dev.datlag.burningseries.settings.Settings
 import dev.datlag.tooling.async.scopeCatching
 import dev.datlag.tooling.async.suspendCatching
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.compose.launchDefault
 import dev.datlag.tooling.compose.launchIO
+import dev.datlag.tooling.compose.toTypography
 import dev.datlag.tooling.compose.withIOContext
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
+import org.kodein.di.instance
 import kotlin.coroutines.CoroutineContext
 
 data object SchemeTheme {
@@ -124,9 +130,14 @@ fun rememberSchemeThemeDominantColorState(
         return null
     }
 
-    val existingState = remember(key) {
-        SchemeTheme.get(key)
-    } ?: SchemeTheme.get(key)
+    val usingKey = when (key) {
+        is SeriesData -> key.source
+        else -> key
+    }
+
+    val existingState = remember(usingKey) {
+        SchemeTheme.get(usingKey)
+    } ?: SchemeTheme.get(usingKey)
 
     if (existingState != null) {
         return existingState
@@ -139,9 +150,9 @@ fun rememberSchemeThemeDominantColorState(
         isSwatchValid = isSwatchValid,
         coroutineContext = ioDispatcher()
     )
-    val state by produceState<DominantColorState<Painter>?>(null, key) {
+    val state by produceState<DominantColorState<Painter>?>(null, usingKey) {
         value = withIOContext {
-            SchemeTheme.getOrPut(key, fallbackState) ?: fallbackState
+            SchemeTheme.getOrPut(usingKey, fallbackState) ?: fallbackState
         }
     }
 
@@ -157,8 +168,13 @@ fun rememberSchemeThemeDominantColorState(
     applyMinContrast: Boolean = false,
     minContrastBackgroundColor: Color = Color.Transparent
 ): DominantColorState<Painter>? {
+    val usingKey = when (key) {
+        is SeriesData -> key.source
+        else -> key
+    }
+
     return rememberSchemeThemeDominantColorState(
-        key = key,
+        key = usingKey,
         defaultColor = defaultColor,
         defaultOnColor = defaultOnColor,
         builder = {
@@ -189,18 +205,36 @@ fun SchemeTheme(
     val onColor = defaultOnColor ?: remember(defaultColor) {
         defaultColor?.plainOnColor
     }
+    val usingKey = when (key) {
+        is SeriesData -> key.source
+        else -> key
+    }
+    val keyFont = when (key) {
+        is SeriesData -> key.fontType
+        else -> null
+    }
     val state = rememberSchemeThemeDominantColorState(
-        key = key,
+        key = usingKey,
         defaultColor = defaultColor ?: MaterialTheme.colorScheme.primary,
         defaultOnColor = onColor ?: MaterialTheme.colorScheme.onPrimary,
     )
-    val updater = SchemeTheme.create(key)
+    val updater = SchemeTheme.create(usingKey)
+    val appSettings by LocalDI.current.instance<Settings.PlatformAppSettings>()
+    val useCustomFont by appSettings.customFonts.collectAsStateWithLifecycle(false)
 
-    DynamicMaterialTheme(
-        seedColor = state?.color,
-        animate = animate
+    MaterialTheme(
+        typography = if (useCustomFont) {
+            keyFont?.fontFamily()?.toTypography() ?: MaterialTheme.typography
+        } else {
+            MaterialTheme.typography
+        }
     ) {
-        content(updater)
+        DynamicMaterialTheme(
+            seedColor = state?.color,
+            animate = animate
+        ) {
+            content(updater)
+        }
     }
 }
 

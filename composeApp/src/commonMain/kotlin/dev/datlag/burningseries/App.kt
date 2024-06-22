@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.toFontFamily
 import dev.chrisbanes.haze.HazeState
 import dev.datlag.burningseries.composeapp.generated.resources.Manrope_bold
 import dev.datlag.burningseries.composeapp.generated.resources.Manrope_bold_italic
@@ -25,6 +26,8 @@ import dev.datlag.burningseries.composeapp.generated.resources.Manrope_regular_i
 import dev.datlag.burningseries.composeapp.generated.resources.Manrope_semi_bold
 import dev.datlag.burningseries.composeapp.generated.resources.Manrope_semi_bold_italic
 import dev.datlag.burningseries.composeapp.generated.resources.Res
+import dev.datlag.burningseries.composeapp.generated.resources.SedgwickAve_regular
+import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.ui.theme.Colors
 import dev.datlag.tooling.compose.toTypography
 import org.jetbrains.compose.resources.Font
@@ -84,4 +87,11 @@ fun ManropeFontFamily(): FontFamily {
         Font(Res.font.Manrope_extra_bold, FontWeight.ExtraBold),
         Font(Res.font.Manrope_extra_bold_italic, FontWeight.ExtraBold, FontStyle.Italic),
     )
+}
+
+@Composable
+fun SeriesData.FontType.fontFamily(): FontFamily {
+    return when (this) {
+        is SeriesData.FontType.Graffiti -> Font(Res.font.SedgwickAve_regular, FontWeight.Normal).toFontFamily()
+    }
 }

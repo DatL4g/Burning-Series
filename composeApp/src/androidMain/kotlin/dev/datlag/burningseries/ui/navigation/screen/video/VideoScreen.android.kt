@@ -190,28 +190,26 @@ actual fun VideoScreen(component: VideoComponent) {
         ) {
             val nextEpisodeState by component.nextEpisode.collectAsStateWithLifecycle(EpisodeState.None)
             val isPlaying by playerWrapper.isPlaying.collectAsStateWithLifecycle()
-            var modifier = Modifier.fillMaxSize().background(Color.Black)
+            val playerView = PlayerView(LocalContext.current)
 
             AndroidView(
-                modifier = modifier,
-                factory = { viewContext ->
-                    PlayerView(viewContext).also {
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black)
-                            .onKeyEvent { key ->
-                                it.dispatchKeyEvent(key.nativeKeyEvent)
-                            }
-                    }
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+                    .onKeyEvent { key ->
+                        playerView.dispatchKeyEvent(key.nativeKeyEvent)
+                    },
+                factory = { _ ->
+                    playerView
                 },
-                update = { playerView ->
-                    playerView.setOnClickListener {
+                update = { player ->
+                    player.setOnClickListener {
                         playerWrapper.toggleControls()
                     }
-                    playerView.isSoundEffectsEnabled = false
-                    playerView.useController = false
-                    playerView.keepScreenOn = true
-                    playerView.player = playerWrapper.player
+                    player.isSoundEffectsEnabled = false
+                    player.useController = false
+                    player.keepScreenOn = true
+                    player.player = playerWrapper.player
                 }
             )
             CenterControls(
