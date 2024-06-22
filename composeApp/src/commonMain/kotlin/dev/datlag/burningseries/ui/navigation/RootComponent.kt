@@ -12,6 +12,7 @@ import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.replaceAll
+import com.arkivanov.decompose.router.stack.replaceCurrent
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.ui.navigation.screen.activate.ActivateScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeScreenComponent
@@ -87,7 +88,14 @@ class RootComponent(
                 series = rootConfig.series,
                 episode = rootConfig.episode,
                 streams = rootConfig.streams,
-                onBack = navigation::pop
+                onBack = navigation::pop,
+                onNext = { episode, streams ->
+                    navigation.replaceCurrent(RootConfig.Video(
+                        series = rootConfig.series,
+                        episode = episode,
+                        streams = streams.toImmutableSet()
+                    ))
+                }
             )
             is RootConfig.Activate -> ActivateScreenComponent(
                 componentContext = componentContext,

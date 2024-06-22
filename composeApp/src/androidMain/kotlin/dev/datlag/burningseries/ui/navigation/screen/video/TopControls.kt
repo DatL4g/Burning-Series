@@ -61,9 +61,11 @@ fun TopControls(
     modifier: Modifier = Modifier,
     onBack: () -> Unit,
 ) {
+    val isFinished by playerWrapper.isFinished.collectAsStateWithLifecycle()
+
     AnimatedVisibility(
         modifier = modifier.safeDrawingPadding(),
-        visible = isVisible,
+        visible = isVisible || isFinished,
         enter = slideInVertically() + fadeIn(),
         exit = slideOutVertically() + fadeOut()
     ) {

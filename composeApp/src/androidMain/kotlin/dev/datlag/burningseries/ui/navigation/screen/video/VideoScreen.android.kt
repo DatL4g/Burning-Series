@@ -62,6 +62,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import com.google.android.gms.cast.framework.CastState
 import dev.datlag.burningseries.common.isConnectedOrConnecting
+import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.ui.custom.video.pip.enterPIPMode
 import dev.datlag.burningseries.ui.custom.video.pip.isActivityStatePipMode
 import dev.datlag.burningseries.ui.custom.video.uri.VideoPlayerMediaItem
@@ -126,6 +127,9 @@ actual fun VideoScreen(component: VideoComponent) {
             },
             onLengthChange = {
                 component.length(it)
+            },
+            onFinish = {
+                component.ended()
             }
         )
     }
@@ -178,6 +182,7 @@ actual fun VideoScreen(component: VideoComponent) {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
+            val nextEpisodeState by component.nextEpisode.collectAsStateWithLifecycle(EpisodeState.None)
             val isPlaying by playerWrapper.isPlaying.collectAsStateWithLifecycle()
             var modifier = Modifier.fillMaxSize().background(Color.Black)
 
@@ -207,6 +212,8 @@ actual fun VideoScreen(component: VideoComponent) {
                 modifier = Modifier.padding(padding).fillMaxWidth(),
                 isVisible = controlsVisible,
                 isPlaying = isPlaying,
+                nextState = nextEpisodeState,
+                playerWrapper = playerWrapper,
                 onReplayClick = {
                     playerWrapper.rewind()
                 },
@@ -215,7 +222,8 @@ actual fun VideoScreen(component: VideoComponent) {
                 },
                 onForwardClick = {
                     playerWrapper.forward()
-                }
+                },
+                onNext = component::next
             )
         }
     }

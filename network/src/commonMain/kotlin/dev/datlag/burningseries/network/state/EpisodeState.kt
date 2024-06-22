@@ -31,4 +31,5 @@ sealed interface EpisodeState {
 sealed interface EpisodeAction {
     data object Clear : EpisodeAction
     data class Load(val episode: Series.Episode) : EpisodeAction
+    data class LoadNonSuccess(val episode: Series.Episode) : EpisodeAction
 }

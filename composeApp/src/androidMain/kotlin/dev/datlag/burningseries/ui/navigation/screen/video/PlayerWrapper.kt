@@ -18,6 +18,7 @@ import com.google.android.gms.cast.framework.CastState
 import dev.datlag.nanoid.NanoIdUtils
 import dev.datlag.tooling.compose.withIOContext
 import dev.datlag.tooling.compose.withMainContext
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -42,6 +43,7 @@ class PlayerWrapper(
     private val onError: (PlaybackException) -> Unit = { },
     private val onProgressChange: (Long) -> Unit = { },
     private val onLengthChange: (Long) -> Unit = { },
+    private val onFinish: () -> Unit = { }
 ): SessionAvailabilityListener, Player.Listener {
 
     private val castPlayer = castContext?.let(::CastPlayer)
@@ -124,6 +126,9 @@ class PlayerWrapper(
     private val _length = MutableStateFlow(max(max(progress.value, player.duration), startingLength))
     val length: StateFlow<Long> = _length
 
+    private val _isFinished = MutableStateFlow(player.playbackState == Player.STATE_ENDED)
+    val isFinished: StateFlow<Boolean> = _isFinished
+
     private val localPlayerListener = object : Player.Listener {
         override fun onRenderedFirstFrame() {
             super.onRenderedFirstFrame()
@@ -181,7 +186,7 @@ class PlayerWrapper(
         super.onIsPlayingChanged(isPlaying)
 
         _isPlaying.update { isPlaying }
-
+        _isFinished.update { player.playbackState == Player.STATE_ENDED }
         onProgressChange(_progress.updateAndGet { player.currentPosition })
     }
 
@@ -189,11 +194,21 @@ class PlayerWrapper(
         super.onTimelineChanged(timeline, reason)
 
         onProgressChange(_progress.updateAndGet { player.currentPosition })
+        _isFinished.update { player.playbackState == Player.STATE_ENDED }
 
         val newLength = player.duration
         if (newLength > 0) {
             _length.value = newLength
             onLengthChange(newLength)
+        }
+    }
+
+    override fun onPlaybackStateChanged(playbackState: Int) {
+        super.onPlaybackStateChanged(playbackState)
+
+        _isFinished.update { player.playbackState == Player.STATE_ENDED }
+        if (playbackState == Player.STATE_ENDED) {
+            onFinish()
         }
     }
 
@@ -230,6 +245,7 @@ class PlayerWrapper(
         do {
             withMainContext {
                 onProgressChange(_progress.updateAndGet { player.currentPosition })
+                _isFinished.update { player.playbackState == Player.STATE_ENDED }
 
                 val newLength = player.duration
                 if (newLength > 0 && _length.value != newLength) {

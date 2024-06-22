@@ -43,12 +43,13 @@ fun BottomControls(
     playerWrapper: PlayerWrapper,
     modifier: Modifier = Modifier,
 ) {
+    val isFinished by playerWrapper.isFinished.collectAsStateWithLifecycle()
     val progress by playerWrapper.progress.collectAsStateWithLifecycle()
     val length by playerWrapper.length.collectAsStateWithLifecycle()
 
     AnimatedVisibility(
         modifier = modifier.safeDrawingPadding(),
-        visible = isVisible,
+        visible = isVisible || isFinished,
         enter = slideInVertically { it / 2 } + fadeIn(),
         exit = slideOutVertically { it / 2 } + fadeOut()
     ) {

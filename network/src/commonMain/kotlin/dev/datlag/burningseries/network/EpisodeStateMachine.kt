@@ -33,6 +33,13 @@ class EpisodeStateMachine(
                 on<EpisodeAction.Load> { action, state ->
                     state.override { EpisodeState.Loading(action.episode) }
                 }
+                on<EpisodeAction.LoadNonSuccess> { action, state ->
+                    if (state.snapshot is EpisodeState.SuccessStream) {
+                        state.noChange()
+                    } else {
+                        state.override { EpisodeState.Loading(action.episode) }
+                    }
+                }
                 on<EpisodeAction.Clear> { _, state ->
                     state.override { EpisodeState.None }
                 }
