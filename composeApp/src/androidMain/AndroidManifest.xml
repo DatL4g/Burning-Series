@@ -13,6 +13,10 @@
         android:icon="@android:drawable/ic_menu_compass"
         android:label="Burning-Series"
         android:name=".App"
+        android:supportsRtl="true"
+        android:appCategory="video"
+        android:allowAudioPlaybackCapture="false"
+        android:enableOnBackInvokedCallback="true"
         android:networkSecurityConfig="@xml/network_security"
         android:usesCleartextTraffic="true"
         android:theme="@android:style/Theme.Material.NoActionBar">
@@ -22,6 +26,8 @@
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:launchMode="singleInstance"
             android:windowSoftInputMode="adjustPan"
+            android:supportsPictureInPicture="true"
+            android:visibleToInstantApps="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

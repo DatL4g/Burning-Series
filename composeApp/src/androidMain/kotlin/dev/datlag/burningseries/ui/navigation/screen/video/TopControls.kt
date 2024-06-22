@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.Cast
@@ -61,7 +62,7 @@ fun TopControls(
     onBack: () -> Unit,
 ) {
     AnimatedVisibility(
-        modifier = modifier,
+        modifier = modifier.safeDrawingPadding(),
         visible = isVisible,
         enter = slideInVertically() + fadeIn(),
         exit = slideOutVertically() + fadeOut()

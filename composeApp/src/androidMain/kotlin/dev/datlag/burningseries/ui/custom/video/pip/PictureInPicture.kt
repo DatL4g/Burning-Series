@@ -9,15 +9,16 @@ import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.media3.ui.PlayerView
 import dev.datlag.burningseries.ui.custom.findActivity
 
-internal fun enterPIPMode(context: Context, defaultPlayerView: PlayerView) {
+internal fun enterPIPMode(context: Context) {
     if (context.hasPIPFeature()) {
-        defaultPlayerView.useController = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val params = PictureInPictureParams.Builder()
+            var params = PictureInPictureParams.Builder()
+                .setAspectRatio(
+                    Rational(19, 9)
+                )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                params.setAspectRatio(Rational(19, 9))
-                    .setSeamlessResizeEnabled(true)
+                params = params.setSeamlessResizeEnabled(true).setAutoEnterEnabled(true)
             }
 
             context.findActivity()?.enterPictureInPictureMode(params.build())

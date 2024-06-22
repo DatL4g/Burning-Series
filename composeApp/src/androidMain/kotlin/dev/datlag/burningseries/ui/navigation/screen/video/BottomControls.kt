@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.safeGesturesPadding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -44,7 +47,7 @@ fun BottomControls(
     val length by playerWrapper.length.collectAsStateWithLifecycle()
 
     AnimatedVisibility(
-        modifier = modifier,
+        modifier = modifier.safeDrawingPadding(),
         visible = isVisible,
         enter = slideInVertically { it / 2 } + fadeIn(),
         exit = slideOutVertically { it / 2 } + fadeOut()
@@ -54,42 +57,42 @@ fun BottomControls(
             containerColor = Color.Black.copy(alpha = 0.5F),
             contentColor = Color.White
         ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                val source = remember { MutableInteractionSource() }
-                val dragging by source.collectIsDraggedAsState()
-                var changingProgress by remember { mutableLongStateOf(progress) }
-                val displayProgress = remember(dragging, progress, changingProgress) {
-                    if (dragging) {
-                        changingProgress
-                    } else {
-                        progress
-                    }
-                }
-
-                Slider(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = displayProgress.toFloat(),
-                    valueRange = 0F..length.toFloat(),
-                    onValueChange = {
-                        if (dragging) {
-                            changingProgress = it.toLong()
-                            playerWrapper.showControls()
-                        }
-                    },
-                    onValueChangeFinished = {
-                        if (dragging) {
-                            playerWrapper.seekTo(changingProgress)
-                        }
-                    },
-                    interactionSource = source
-                )
-                Row(
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(text = "${displayProgress.toDuration()} - ${length.toDuration()}")
+            val source = remember { MutableInteractionSource() }
+            val dragging by source.collectIsDraggedAsState()
+            var changingProgress by remember { mutableLongStateOf(progress) }
+            val displayProgress = remember(dragging, progress, changingProgress) {
+                if (dragging) {
+                    changingProgress
+                } else {
+                    progress
                 }
             }
+
+            Text(
+                text = displayProgress.toDuration(),
+                maxLines = 1
+            )
+            Slider(
+                modifier = Modifier.weight(1F),
+                value = displayProgress.toFloat(),
+                valueRange = 0F..length.toFloat(),
+                onValueChange = {
+                    if (dragging) {
+                        changingProgress = it.toLong()
+                        playerWrapper.showControls()
+                    }
+                },
+                onValueChangeFinished = {
+                    if (dragging) {
+                        playerWrapper.seekTo(changingProgress)
+                    }
+                },
+                interactionSource = source
+            )
+            Text(
+                text = length.toDuration(),
+                maxLines = 1
+            )
         }
     }
 }

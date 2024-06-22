@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.view.Window
 import android.view.WindowManager
+import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -26,10 +28,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
@@ -58,7 +62,8 @@ import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import com.google.android.gms.cast.framework.CastState
 import dev.datlag.burningseries.common.isConnectedOrConnecting
-import dev.datlag.burningseries.ui.custom.video.VideoPlayer
+import dev.datlag.burningseries.ui.custom.video.pip.enterPIPMode
+import dev.datlag.burningseries.ui.custom.video.pip.isActivityStatePipMode
 import dev.datlag.burningseries.ui.custom.video.uri.VideoPlayerMediaItem
 import dev.datlag.kast.ConnectionState
 import dev.datlag.kast.Kast
@@ -103,7 +108,6 @@ actual fun VideoScreen(component: VideoComponent) {
     }
 
     val context = LocalContext.current
-
     val playerWrapper = remember {
         PlayerWrapper(
             context = context,
@@ -141,11 +145,22 @@ actual fun VideoScreen(component: VideoComponent) {
     }
 
     val showControls by playerWrapper.showControls.collectAsStateWithLifecycle(false)
+    var pressedBack by remember { mutableLongStateOf(0L) }
+    val controlsVisible = showControls && !context.isActivityStatePipMode()
+
+    BackHandler {
+        val newTime = Clock.System.now().toEpochMilliseconds()
+        if (pressedBack > 0L && newTime - pressedBack < 3000) {
+            component.back()
+        } else {
+            pressedBack = newTime
+        }
+    }
 
     Scaffold(
         topBar = {
             TopControls(
-                isVisible = showControls,
+                isVisible = controlsVisible,
                 mainTitle = component.episode.mainTitle,
                 subTitle = component.episode.subTitle ?: component.episode.convertedNumber?.let { "Episode $it" },
                 playerWrapper = playerWrapper,
@@ -154,7 +169,7 @@ actual fun VideoScreen(component: VideoComponent) {
         },
         bottomBar = {
             BottomControls(
-                isVisible = showControls,
+                isVisible = controlsVisible,
                 playerWrapper = playerWrapper
             )
         }
@@ -164,11 +179,19 @@ actual fun VideoScreen(component: VideoComponent) {
             contentAlignment = Alignment.Center
         ) {
             val isPlaying by playerWrapper.isPlaying.collectAsStateWithLifecycle()
+            var modifier = Modifier.fillMaxSize().background(Color.Black)
 
             AndroidView(
-                modifier = Modifier.fillMaxSize().background(Color.Black),
+                modifier = modifier,
                 factory = { viewContext ->
-                    PlayerView(viewContext)
+                    PlayerView(viewContext).also {
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black)
+                            .onKeyEvent { key ->
+                                it.dispatchKeyEvent(key.nativeKeyEvent)
+                            }
+                    }
                 },
                 update = { playerView ->
                     playerView.setOnClickListener {
@@ -182,7 +205,7 @@ actual fun VideoScreen(component: VideoComponent) {
             )
             CenterControls(
                 modifier = Modifier.padding(padding).fillMaxWidth(),
-                isVisible = showControls,
+                isVisible = controlsVisible,
                 isPlaying = isPlaying,
                 onReplayClick = {
                     playerWrapper.rewind()
