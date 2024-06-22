@@ -57,14 +57,13 @@ fun CenterControls(
             }
 
             IconButton(
-                modifier = Modifier.size(56.dp).background(
+                modifier = Modifier.background(
                     color = Color.Black.copy(alpha = 0.5F),
                     shape = CircleShape
                 ),
                 onClick = onPauseToggle
             ) {
                 Icon(
-                    modifier = Modifier.size(40.dp),
                     imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                     contentDescription = null
                 )

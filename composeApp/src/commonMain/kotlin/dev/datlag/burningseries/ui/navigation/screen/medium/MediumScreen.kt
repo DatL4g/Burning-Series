@@ -166,6 +166,12 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
                             series = (seriesState as SeriesState.Success).series,
                             combinedEpisode = c
                         )
+                    },
+                    onActivate = { c ->
+                        component.activate(
+                            series = (seriesState as SeriesState.Success).series,
+                            episode = c
+                        )
                     }
                 )
             }

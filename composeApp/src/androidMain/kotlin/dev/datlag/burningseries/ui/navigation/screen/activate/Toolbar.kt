@@ -66,10 +66,14 @@ internal fun Toolbar(component: ActivateComponent) {
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Save,
-                    contentDescription = null
-                )
+                IconButton(
+                    onClick = {}
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Save,
+                        contentDescription = null
+                    )
+                }
             }
         }
     )

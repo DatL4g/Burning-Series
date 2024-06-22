@@ -55,7 +55,8 @@ internal fun EpisodeItem(
     modifier: Modifier = Modifier,
     onClick: (CombinedEpisode) -> Unit,
     onMarkWatched: (CombinedEpisode) -> Unit,
-    onMarkUnwatched: (CombinedEpisode) -> Unit
+    onMarkUnwatched: (CombinedEpisode) -> Unit,
+    onActivate: (CombinedEpisode) -> Unit
 ) {
     val colors = CardDefaults.elevatedCardColors()
 
@@ -73,6 +74,9 @@ internal fun EpisodeItem(
                     } else {
                         onMarkWatched(item)
                     }
+                },
+                onLongClick = {
+                    onActivate(item)
                 }
             ),
         colors = CardColors(

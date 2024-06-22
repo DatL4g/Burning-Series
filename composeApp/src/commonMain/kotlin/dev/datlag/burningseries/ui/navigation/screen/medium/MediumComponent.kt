@@ -53,6 +53,7 @@ interface MediumComponent : Component {
         streams: ImmutableCollection<Stream>
     )
     fun activate(series: Series, episode: Series.Episode)
+    fun activate(series: Series, episode: CombinedEpisode) = activate(series, episode.default)
     fun setFavorite(series: Series)
     fun unsetFavorite(series: Series)
 }
