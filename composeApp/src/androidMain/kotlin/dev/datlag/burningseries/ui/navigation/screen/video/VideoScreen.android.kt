@@ -109,6 +109,7 @@ actual fun VideoScreen(component: VideoComponent) {
     }
 
     val context = LocalContext.current
+    val controller = rememberWindowController()
     val playerWrapper = remember {
         PlayerWrapper(
             context = context,
@@ -121,6 +122,11 @@ actual fun VideoScreen(component: VideoComponent) {
                 } else if (streamList.size - 1 > streamIndex) {
                     streamIndex++
                 }
+            },
+            onFirstFrame = {
+                controller.isSystemBarsVisible = false
+                controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                controller.addWindowFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON and WindowManager.LayoutParams.FLAG_SECURE)
             },
             onProgressChange = {
                 component.progress(it)
@@ -228,23 +234,10 @@ actual fun VideoScreen(component: VideoComponent) {
         }
     }
 
-    RequireFullScreen()
-}
-
-@kotlin.OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun RequireFullScreen() {
-    val controller = rememberWindowController()
-
     DisposableEffect(Unit) {
-        val originalBehavior = controller.systemBarsBehavior
-
-        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        controller.isSystemBarsVisible = false
-        controller.addWindowFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON and WindowManager.LayoutParams.FLAG_SECURE)
         onDispose {
             controller.isSystemBarsVisible = true
-            controller.systemBarsBehavior = originalBehavior
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
             controller.clearWindowFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON and WindowManager.LayoutParams.FLAG_SECURE)
         }
     }

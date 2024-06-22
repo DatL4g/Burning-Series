@@ -41,6 +41,7 @@ class PlayerWrapper(
     private val startingPos: Long,
     private val startingLength: Long,
     private val onError: (PlaybackException) -> Unit = { },
+    private val onFirstFrame: () -> Unit = { },
     private val onProgressChange: (Long) -> Unit = { },
     private val onLengthChange: (Long) -> Unit = { },
     private val onFinish: () -> Unit = { }
@@ -135,6 +136,7 @@ class PlayerWrapper(
 
             // Playing works, can switch to casting
             castSupported = true
+            onFirstFrame()
         }
     }
 
