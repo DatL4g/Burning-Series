@@ -1,7 +1,9 @@
 package dev.datlag.burningseries.ui.theme
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 data object Colors {
@@ -142,3 +144,9 @@ data object Colors {
         inversePrimary = Color(THEME_LIGHT_INVERSE_PRIMARY)
     )
 }
+
+@Composable
+expect fun Colors.dynamicDark(): ColorScheme
+
+@Composable
+expect fun Colors.dynamicLight(): ColorScheme

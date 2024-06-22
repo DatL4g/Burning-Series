@@ -30,6 +30,8 @@ import dev.datlag.burningseries.composeapp.generated.resources.SedgwickAve_regul
 import dev.datlag.burningseries.composeapp.generated.resources.TradeWinds_regular
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.ui.theme.Colors
+import dev.datlag.burningseries.ui.theme.dynamicDark
+import dev.datlag.burningseries.ui.theme.dynamicLight
 import dev.datlag.tooling.compose.toTypography
 import org.jetbrains.compose.resources.Font
 import org.kodein.di.DI
@@ -50,7 +52,7 @@ internal fun App(
         LocalDI provides di
     ) {
         MaterialTheme(
-            colorScheme = if (systemDarkTheme) Colors.getDarkScheme() else Colors.getLightScheme(),
+            colorScheme = if (systemDarkTheme) Colors.dynamicDark() else Colors.dynamicLight(),
             typography = ManropeFontFamily().toTypography()
         ) {
             Surface(
