@@ -53,7 +53,7 @@ class VideoScreenComponent(
 
     @Composable
     override fun render() {
-        onRender {
+        onRenderWithScheme(series) {
             VideoScreen(this)
         }
     }
