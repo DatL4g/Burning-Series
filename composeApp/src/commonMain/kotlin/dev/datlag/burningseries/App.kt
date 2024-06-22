@@ -27,6 +27,7 @@ import dev.datlag.burningseries.composeapp.generated.resources.Manrope_semi_bold
 import dev.datlag.burningseries.composeapp.generated.resources.Manrope_semi_bold_italic
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.SedgwickAve_regular
+import dev.datlag.burningseries.composeapp.generated.resources.TradeWinds_regular
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.ui.theme.Colors
 import dev.datlag.tooling.compose.toTypography
@@ -93,5 +94,6 @@ fun ManropeFontFamily(): FontFamily {
 fun SeriesData.FontType.fontFamily(): FontFamily {
     return when (this) {
         is SeriesData.FontType.Graffiti -> Font(Res.font.SedgwickAve_regular, FontWeight.Normal).toFontFamily()
+        is SeriesData.FontType.Pirate -> Font(Res.font.TradeWinds_regular, FontWeight.Normal).toFontFamily()
     }
 }

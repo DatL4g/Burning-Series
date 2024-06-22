@@ -187,10 +187,18 @@ abstract class SeriesData {
             )
         }
 
+        @Serializable
+        data object Pirate : FontType {
+            override val mainTitles: SerializableImmutableSet<String> = persistentSetOf(
+                "One Piece"
+            )
+        }
+
         companion object {
             fun fromMainTitle(value: String): FontType? {
                 return when {
                     Graffiti.matchesMain(value) -> Graffiti
+                    Pirate.matchesMain(value) -> Pirate
                     else -> null
                 }
             }
@@ -199,6 +207,7 @@ abstract class SeriesData {
                 return when {
                     value.isNullOrBlank() -> null
                     Graffiti.matchesSub(value) -> Graffiti
+                    Pirate.matchesSub(value) -> Pirate
                     else -> null
                 }
             }
