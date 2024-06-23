@@ -1,6 +1,12 @@
 package dev.datlag.burningseries.ui.navigation.screen.video
 
 import android.content.Context
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.nativeKeyCode
+import androidx.compose.ui.input.key.type
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.ForwardingPlayer
@@ -230,11 +236,7 @@ class PlayerWrapper(
     }
 
     fun togglePlay() {
-        if (player.isPlaying) {
-            player.pause()
-        } else {
-            player.play()
-        }
+        player.togglePlay()
         _showControlsTime.update { Clock.System.now().toEpochMilliseconds() }
     }
 
@@ -292,12 +294,92 @@ class PlayerWrapper(
         }
     }
 
+    fun dispatchKey(controlsVisible: Boolean, event: KeyEvent): Boolean {
+        if (event.type != KeyEventType.KeyDown) {
+            return false
+        }
+
+        val isDpadKey = event.key.isDpadKey()
+        var handled = false
+
+        if (isDpadKey && !controlsVisible) {
+            // Handle the key event by showing the controller.
+            showControls()
+            handled = true
+        } else if (dispatchMediaKey(event)) {
+            showControls()
+            handled = true
+        } else if (isDpadKey) {
+            // The key event wasn't handled, but we should extend the controller's show timeout.
+            showControls()
+        }
+        return handled
+    }
+
+    private fun dispatchMediaKey(event: KeyEvent): Boolean {
+        when {
+            event.key.isSame(Key.MediaPlay) -> {
+                player.play()
+            }
+            event.key.isSame(Key.MediaPause) -> {
+                player.pause()
+            }
+            event.key.isSame(Key.MediaPlayPause) -> {
+                player.togglePlay()
+            }
+            event.key.isSame(Key.MediaFastForward) -> {
+                player.seekForward()
+            }
+            event.key.isSame(Key.MediaRewind) -> {
+                player.seekBack()
+            }
+            event.key.isSame(Key.MediaNext) -> {
+                if (length.value > 0L) {
+                    player.seekTo(length.value)
+                } else {
+                    player.seekToNext()
+                }
+            }
+            event.key.isSame(Key.MediaPrevious) -> {
+                player.seekToPrevious()
+            }
+            else -> {
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun Player.togglePlay() {
+        if (this.isPlaying) {
+            this.pause()
+        } else {
+            this.play()
+        }
+    }
+
     private fun MediaItem.forPlayer(player: Player): MediaItem {
         return if (player is CastPlayer) {
             this.buildUpon().setMimeType(MimeTypes.VIDEO_UNKNOWN).build()
         } else {
             this
         }
+    }
+
+    private fun Key.isDpadKey(): Boolean {
+        return this.isSame(Key.DirectionUp)
+                || this.isSame(Key.DirectionUpLeft)
+                || this.isSame(Key.DirectionUpRight)
+                || this.isSame(Key.DirectionRight)
+                || this.isSame(Key.DirectionDown)
+                || this.isSame(Key.DirectionDownLeft)
+                || this.isSame(Key.DirectionDownRight)
+                || this.isSame(Key.DirectionLeft)
+                || this.isSame(Key.DirectionCenter)
+    }
+
+    private fun Key.isSame(key: Key): Boolean {
+        return this == key || this.keyCode == key.keyCode || this.nativeKeyCode == key.nativeKeyCode
     }
 
     data object Session {

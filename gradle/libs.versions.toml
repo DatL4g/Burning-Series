@@ -42,6 +42,7 @@ sekret = "2.0.0-alpha-05"
 serialization = "1.7.0"
 skeo = "0.1.1"
 sqldelight = "2.0.2"
+splashscreen = "1.0.1"
 tooling = "1.5.2"
 versions = "0.51.0"
 vlcj = "4.8.3"
@@ -116,6 +117,7 @@ sqldelight-android = { group = "app.cash.sqldelight", name = "android-driver", v
 sqldelight-jvm = { group = "app.cash.sqldelight", name = "sqlite-driver", version.ref = "sqldelight" }
 sqldelight-native = { group = "app.cash.sqldelight", name = "native-driver", version.ref = "sqldelight" }
 sqldelight-adapter = { group = "app.cash.sqldelight", name = "primitive-adapters", version.ref = "sqldelight" }
+splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 tooling = { group = "dev.datlag.tooling", name = "tooling-async", version.ref = "tooling" }
 tooling-country = { group = "dev.datlag.tooling", name = "tooling-country", version.ref = "tooling" }
 tooling-decompose = { group = "dev.datlag.tooling", name = "tooling-decompose", version.ref = "tooling" }

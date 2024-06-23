@@ -11,20 +11,11 @@ class DataStoreAppSettings(
 ) : Settings.PlatformAppSettings {
 
     override val language: Flow<Language?> = dataStore.data.map { it.language }
-    override val customFonts: Flow<Boolean> = dataStore.data.map { it.customFonts }
 
     override suspend fun setLanguage(language: Language) {
         dataStore.updateData {
             it.copy(
                 language = language
-            )
-        }
-    }
-
-    override suspend fun useCustomFonts(value: Boolean) {
-        dataStore.updateData {
-            it.copy(
-                customFonts = value
             )
         }
     }

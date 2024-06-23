@@ -77,7 +77,8 @@ fun CenterControls(
             ) {
                 Icon(
                     imageVector = Icons.Rounded.FastRewind,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = Color.White
                 )
             }
 
@@ -90,7 +91,8 @@ fun CenterControls(
             ) {
                 Icon(
                     imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = Color.White
                 )
             }
 
@@ -134,7 +136,8 @@ fun CenterControls(
                             }
                         }.padding(8.dp),
                         imageVector = Icons.Rounded.SkipNext,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = Color.White
                     )
                 }
             } else {
@@ -148,7 +151,8 @@ fun CenterControls(
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.FastForward,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = Color.White
                     )
                 }
             }

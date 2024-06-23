@@ -56,11 +56,13 @@ import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.cast
 import dev.datlag.burningseries.composeapp.generated.resources.casting_not_supported
 import dev.datlag.burningseries.model.Series
+import dev.datlag.burningseries.other.rememberIsTv
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumComponent
 import dev.datlag.kast.ConnectionState
 import dev.datlag.kast.DeviceType
 import dev.datlag.kast.Kast
 import dev.datlag.kast.UnselectReason
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 
@@ -109,90 +111,93 @@ internal fun Toolbar(
             }
         },
         actions = {
-            val kastDevices by Kast.allAvailableDevices.collectAsStateWithLifecycle()
-            val kastState by Kast.connectionState.collectAsStateWithLifecycle()
-            val kastDialog = rememberUseCaseState()
             val isFavorite by component.isFavorite.collectAsStateWithLifecycle()
 
-            OptionDialog(
-                state = kastDialog,
-                selection = OptionSelection.Single(
-                    options = kastDevices.map { device ->
-                        Option(
-                            icon = IconSource(
-                                imageVector = when (device.type) {
-                                    is DeviceType.TV -> Icons.Rounded.Tv
-                                    is DeviceType.SPEAKER -> Icons.Rounded.Speaker
-                                    else -> Icons.Rounded.Devices
-                                }
-                            ),
-                            titleText = device.name,
-                            selected = device.isSelected
-                        )
-                    },
-                    onSelectOption = { option, _ ->
-                        val device = kastDevices.toList()[option]
+            if (!Platform.rememberIsTv()) {
+                val kastDevices by Kast.allAvailableDevices.collectAsStateWithLifecycle()
+                val kastState by Kast.connectionState.collectAsStateWithLifecycle()
+                val kastDialog = rememberUseCaseState()
 
-                        if (device.isSelected) {
-                            Kast.unselect(UnselectReason.disconnected)
-                        } else {
-                            Kast.select(device)
+                OptionDialog(
+                    state = kastDialog,
+                    selection = OptionSelection.Single(
+                        options = kastDevices.map { device ->
+                            Option(
+                                icon = IconSource(
+                                    imageVector = when (device.type) {
+                                        is DeviceType.TV -> Icons.Rounded.Tv
+                                        is DeviceType.SPEAKER -> Icons.Rounded.Speaker
+                                        else -> Icons.Rounded.Devices
+                                    }
+                                ),
+                                titleText = device.name,
+                                selected = device.isSelected
+                            )
+                        },
+                        onSelectOption = { option, _ ->
+                            val device = kastDevices.toList()[option]
+
+                            if (device.isSelected) {
+                                Kast.unselect(UnselectReason.disconnected)
+                            } else {
+                                Kast.select(device)
+                            }
                         }
-                    }
-                ),
-                config = OptionConfig(
-                    mode = DisplayMode.LIST
-                ),
-                header = Header.Default(
-                    icon = IconSource(
-                        imageVector = Icons.Rounded.Cast
                     ),
-                    title = stringResource(Res.string.cast)
-                ),
-                body = if (Kast.isSupported) {
-                    null
-                } else {
-                    OptionBody.Default(
-                        bodyText = stringResource(Res.string.casting_not_supported)
-                    )
-                }
-            )
+                    config = OptionConfig(
+                        mode = DisplayMode.LIST
+                    ),
+                    header = Header.Default(
+                        icon = IconSource(
+                            imageVector = Icons.Rounded.Cast
+                        ),
+                        title = stringResource(Res.string.cast)
+                    ),
+                    body = if (Kast.isSupported) {
+                        null
+                    } else {
+                        OptionBody.Default(
+                            bodyText = stringResource(Res.string.casting_not_supported)
+                        )
+                    }
+                )
 
-            when (kastState) {
-                is ConnectionState.CONNECTED -> {
-                    IconButton(
-                        onClick = {
-                            Kast.unselect(UnselectReason.disconnected)
+                when (kastState) {
+                    is ConnectionState.CONNECTED -> {
+                        IconButton(
+                            onClick = {
+                                Kast.unselect(UnselectReason.disconnected)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = kastState.icon,
+                                contentDescription = null
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = kastState.icon,
-                            contentDescription = null
-                        )
                     }
-                }
-                is ConnectionState.CONNECTING -> {
-                    IconButton(
-                        onClick = {
-                            Kast.unselect(UnselectReason.disconnected)
+                    is ConnectionState.CONNECTING -> {
+                        IconButton(
+                            onClick = {
+                                Kast.unselect(UnselectReason.disconnected)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = kastState.icon,
+                                contentDescription = null
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = kastState.icon,
-                            contentDescription = null
-                        )
                     }
-                }
-                else -> {
-                    IconButton(
-                        onClick = {
-                            kastDialog.show()
+                    else -> {
+                        IconButton(
+                            onClick = {
+                                kastDialog.show()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = kastState.icon,
+                                contentDescription = null
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = kastState.icon,
-                            contentDescription = null
-                        )
                     }
                 }
             }

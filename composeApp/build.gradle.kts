@@ -131,6 +131,7 @@ kotlin {
 
                 implementation(libs.bundles.android.media)
                 implementation(libs.webview)
+                implementation(libs.splashscreen)
             }
         }
 

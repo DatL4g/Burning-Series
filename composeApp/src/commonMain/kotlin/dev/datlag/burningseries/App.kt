@@ -91,11 +91,3 @@ fun ManropeFontFamily(): FontFamily {
         Font(Res.font.Manrope_extra_bold_italic, FontWeight.ExtraBold, FontStyle.Italic),
     )
 }
-
-@Composable
-fun SeriesData.FontType.fontFamily(): FontFamily {
-    return when (this) {
-        is SeriesData.FontType.Graffiti -> Font(Res.font.SedgwickAve_regular, FontWeight.Normal).toFontFamily()
-        is SeriesData.FontType.Pirate -> Font(Res.font.TradeWinds_regular, FontWeight.Normal).toFontFamily()
-    }
-}

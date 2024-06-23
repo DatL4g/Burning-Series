@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.ui.navigation.screen.component
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -25,6 +27,7 @@ import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.ui.theme.SchemeTheme
 import dev.datlag.burningseries.ui.theme.rememberSchemeThemeDominantColorState
+import dev.datlag.tooling.compose.focusScale
 import io.github.aakira.napier.Napier
 
 @Composable
@@ -36,11 +39,16 @@ fun HomeCard(
     SchemeTheme(
         key = episode
     ) { updater ->
+        val source = remember { MutableInteractionSource() }
         Card(
-            modifier = modifier,
+            modifier = modifier.focusScale(
+                scale = 1.05F,
+                interactionSource = source
+            ),
             onClick = {
                 onClick(episode)
-            }
+            },
+            interactionSource = source
         ) {
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -78,7 +86,7 @@ fun HomeCard(
                     Text(
                         text = episode.mainTitle,
                         style = MaterialTheme.typography.titleLarge,
-                        maxLines = if (episode.hasSubtitle) 1 else 2,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.fillMaxWidth(),
                         color = colorState.onPrimary
@@ -89,7 +97,7 @@ fun HomeCard(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.fillMaxWidth(),
                             color = colorState.onPrimary,
-                            maxLines = 4
+                            maxLines = 2
                         )
                     }
                 }
@@ -107,11 +115,15 @@ fun HomeCard(
     SchemeTheme(
         key = series
     ) { updater ->
+        val source = remember { MutableInteractionSource() }
         Card(
-            modifier = modifier,
+            modifier = modifier.focusScale(
+                interactionSource = source
+            ),
             onClick = {
                 onClick(series)
-            }
+            },
+            interactionSource = source
         ) {
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -144,7 +156,7 @@ fun HomeCard(
                     Text(
                         text = series.mainTitle,
                         style = MaterialTheme.typography.titleLarge,
-                        maxLines = if (series.hasSubtitle) 1 else 2,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.fillMaxWidth(),
                         color = colorState.onPrimary
@@ -155,7 +167,7 @@ fun HomeCard(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.fillMaxWidth(),
                             color = colorState.onPrimary,
-                            maxLines = 4
+                            maxLines = 2
                         )
                     }
                 }

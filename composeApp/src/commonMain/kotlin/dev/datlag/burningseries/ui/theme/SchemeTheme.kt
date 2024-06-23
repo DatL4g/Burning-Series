@@ -15,7 +15,6 @@ import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
 import dev.datlag.burningseries.LocalDI
 import dev.datlag.burningseries.common.plainOnColor
-import dev.datlag.burningseries.fontFamily
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.model.coroutines.Executor
 import dev.datlag.burningseries.settings.Settings
@@ -209,10 +208,6 @@ fun SchemeTheme(
         is SeriesData -> key.source
         else -> key
     }
-    val keyFont = when (key) {
-        is SeriesData -> key.fontType
-        else -> null
-    }
     val state = rememberSchemeThemeDominantColorState(
         key = usingKey,
         defaultColor = defaultColor ?: MaterialTheme.colorScheme.primary,
@@ -220,21 +215,12 @@ fun SchemeTheme(
     )
     val updater = SchemeTheme.create(usingKey)
     val appSettings by LocalDI.current.instance<Settings.PlatformAppSettings>()
-    val useCustomFont by appSettings.customFonts.collectAsStateWithLifecycle(false)
 
-    MaterialTheme(
-        typography = if (useCustomFont) {
-            keyFont?.fontFamily()?.toTypography() ?: MaterialTheme.typography
-        } else {
-            MaterialTheme.typography
-        }
+    DynamicMaterialTheme(
+        seedColor = state?.color,
+        animate = animate
     ) {
-        DynamicMaterialTheme(
-            seedColor = state?.color,
-            animate = animate
-        ) {
-            content(updater)
-        }
+        content(updater)
     }
 }
 

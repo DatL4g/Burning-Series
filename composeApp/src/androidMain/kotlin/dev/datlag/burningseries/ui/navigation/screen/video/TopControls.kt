@@ -43,10 +43,12 @@ import com.maxkeppeler.sheets.option.models.OptionSelection
 import dev.datlag.burningseries.common.icon
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.cast
+import dev.datlag.burningseries.other.rememberIsTv
 import dev.datlag.kast.ConnectionState
 import dev.datlag.kast.DeviceType
 import dev.datlag.kast.Kast
 import dev.datlag.kast.UnselectReason
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 
@@ -107,84 +109,86 @@ fun TopControls(
                     }
                 },
                 actions = {
-                    val connectionState by Kast.connectionState.collectAsStateWithLifecycle()
-                    val allAvailableDevices by Kast.allAvailableDevices.collectAsStateWithLifecycle()
-                    val connectDialog = rememberUseCaseState(
-                        onCloseRequest = {
-                            playerWrapper.showControls()
-                        },
-                        onDismissRequest = {
-                            Kast.Android.passiveDiscovery()
-                            playerWrapper.showControls()
-                        },
-                        onFinishedRequest = {
-                            playerWrapper.showControls()
-                        }
-                    )
-
-                    OptionDialog(
-                        state = connectDialog,
-                        selection = OptionSelection.Single(
-                            options = allAvailableDevices.map { device ->
-                                Option(
-                                    icon = IconSource(
-                                        imageVector = when (device.type) {
-                                            is DeviceType.TV -> Icons.Rounded.Tv
-                                            is DeviceType.SPEAKER -> Icons.Rounded.Speaker
-                                            else -> Icons.Rounded.Devices
-                                        }
-                                    ),
-                                    titleText = device.name,
-                                    selected = device.isSelected
-                                )
+                    if (!Platform.rememberIsTv()) {
+                        val connectionState by Kast.connectionState.collectAsStateWithLifecycle()
+                        val allAvailableDevices by Kast.allAvailableDevices.collectAsStateWithLifecycle()
+                        val connectDialog = rememberUseCaseState(
+                            onCloseRequest = {
+                                playerWrapper.showControls()
                             },
-                            onSelectOption = { option, _ ->
-                                val device = allAvailableDevices.toList()[option]
-
-                                if (device.isSelected) {
-                                    Kast.unselect(UnselectReason.disconnected)
-                                    Kast.Android.passiveDiscovery()
-                                } else {
-                                    Kast.select(device)
-                                }
+                            onDismissRequest = {
+                                Kast.Android.passiveDiscovery()
+                                playerWrapper.showControls()
+                            },
+                            onFinishedRequest = {
+                                playerWrapper.showControls()
                             }
-                        ),
-                        config = OptionConfig(
-                            mode = DisplayMode.LIST
-                        ),
-                        header = Header.Default(
-                            icon = IconSource(
-                                imageVector = Icons.Rounded.Cast
-                            ),
-                            title = stringResource(Res.string.cast)
                         )
-                    )
 
-                    when (connectionState) {
-                        is ConnectionState.CONNECTED, is ConnectionState.CONNECTING -> {
-                            IconButton(
-                                onClick = {
-                                    Kast.unselect(UnselectReason.disconnected)
+                        OptionDialog(
+                            state = connectDialog,
+                            selection = OptionSelection.Single(
+                                options = allAvailableDevices.map { device ->
+                                    Option(
+                                        icon = IconSource(
+                                            imageVector = when (device.type) {
+                                                is DeviceType.TV -> Icons.Rounded.Tv
+                                                is DeviceType.SPEAKER -> Icons.Rounded.Speaker
+                                                else -> Icons.Rounded.Devices
+                                            }
+                                        ),
+                                        titleText = device.name,
+                                        selected = device.isSelected
+                                    )
+                                },
+                                onSelectOption = { option, _ ->
+                                    val device = allAvailableDevices.toList()[option]
+
+                                    if (device.isSelected) {
+                                        Kast.unselect(UnselectReason.disconnected)
+                                        Kast.Android.passiveDiscovery()
+                                    } else {
+                                        Kast.select(device)
+                                    }
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = connectionState.icon,
-                                    contentDescription = null
-                                )
+                            ),
+                            config = OptionConfig(
+                                mode = DisplayMode.LIST
+                            ),
+                            header = Header.Default(
+                                icon = IconSource(
+                                    imageVector = Icons.Rounded.Cast
+                                ),
+                                title = stringResource(Res.string.cast)
+                            )
+                        )
+
+                        when (connectionState) {
+                            is ConnectionState.CONNECTED, is ConnectionState.CONNECTING -> {
+                                IconButton(
+                                    onClick = {
+                                        Kast.unselect(UnselectReason.disconnected)
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = connectionState.icon,
+                                        contentDescription = null
+                                    )
+                                }
                             }
-                        }
-                        is ConnectionState.DISCONNECTED -> {
-                            IconButton(
-                                onClick = {
-                                    Kast.Android.activeDiscovery()
-                                    connectDialog.show()
-                                    playerWrapper.showControlsFor5Min()
+                            is ConnectionState.DISCONNECTED -> {
+                                IconButton(
+                                    onClick = {
+                                        Kast.Android.activeDiscovery()
+                                        connectDialog.show()
+                                        playerWrapper.showControlsFor5Min()
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = connectionState.icon,
+                                        contentDescription = null
+                                    )
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = connectionState.icon,
-                                    contentDescription = null
-                                )
                             }
                         }
                     }

@@ -7,9 +7,7 @@ data object Settings {
 
     interface PlatformAppSettings {
         val language: Flow<Language?>
-        val customFonts: Flow<Boolean>
 
         suspend fun setLanguage(language: Language)
-        suspend fun useCustomFonts(value: Boolean)
     }
 }

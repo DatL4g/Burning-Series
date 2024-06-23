@@ -14,8 +14,7 @@ import okio.BufferedSource
 @Serializable
 @OptIn(ExperimentalSerializationApi::class)
 data class AppSettings(
-    @ProtoNumber(1) val language: Language?,
-    @ProtoNumber(2) val customFonts: Boolean = true
+    @ProtoNumber(1) val language: Language?
 ) {
     companion object SettingsSerializer : OkioSerializer<AppSettings> {
         override val defaultValue: AppSettings = AppSettings(

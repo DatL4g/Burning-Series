@@ -30,11 +30,17 @@ fun BurningSeries.isFavoriteOneShot(seriesData: SeriesData): Boolean {
 }
 
 fun BurningSeries.setSeriesFavorite(series: Series) {
+    val fallbackSeason = if (series.seasons.size == 1) {
+        series.seasons.firstOrNull()?.value
+    } else {
+        null
+    }
+
     this.burningSeriesQueries.upsertSeriesFavoriteSince(
         since = Clock.System.now().epochSeconds,
         hrefPrimary = series.source,
         href = series.href,
-        season = series.season,
+        season = series.season ?: fallbackSeason,
         seasons = series.seasons.map { it.value },
         coverHref = series.coverHref,
         fullTitle = series.title,
@@ -54,11 +60,17 @@ fun BurningSeries.setSeriesFavorite(series: Series) {
 }
 
 fun BurningSeries.unsetSeriesFavorite(series: Series) {
+    val fallbackSeason = if (series.seasons.size == 1) {
+        series.seasons.firstOrNull()?.value
+    } else {
+        null
+    }
+
     this.burningSeriesQueries.upsertSeriesFavoriteSince(
         since = 0L,
         hrefPrimary = series.source,
         href = series.href,
-        season = series.season,
+        season = series.season ?: fallbackSeason,
         seasons = series.seasons.map { it.value },
         coverHref = series.coverHref,
         fullTitle = series.title,
@@ -79,10 +91,16 @@ fun BurningSeries.favoritesSeriesOneShot(): ImmutableCollection<ExtendedSeries> 
 }
 
 fun BurningSeries.insertSeriesOrIgnore(series: Series) {
+    val fallbackSeason = if (series.seasons.size == 1) {
+        series.seasons.firstOrNull()?.value
+    } else {
+        null
+    }
+
     this.burningSeriesQueries.insertSeriesOrIgnore(
         hrefPrimary = series.source,
         href = series.href,
-        season = series.season,
+        season = series.season ?: fallbackSeason,
         seasons = series.seasons.map { it.value },
         coverHref = series.coverHref,
         fullTitle = series.title,
@@ -98,6 +116,18 @@ fun BurningSeries.updateSeriesHref(seriesData: SeriesData, value: String = serie
         value = value,
         hrefPrimary = seriesData.source
     )
+}
+
+fun BurningSeries.updateSeriesSeason(seriesData: SeriesData, value: Int? = seriesData.season) {
+    this.burningSeriesQueries.updateSeriesSeason(
+        value = value,
+        hrefPrimary = seriesData.source
+    )
+}
+
+fun BurningSeries.updateSeriesData(seriesData: SeriesData) {
+    this.updateSeriesHref(seriesData)
+    this.updateSeriesSeason(seriesData)
 }
 
 fun BurningSeries.updateLength(value: Long, episode: Series.Episode) {
