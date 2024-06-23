@@ -74,6 +74,14 @@
         <receiver
             android:name="androidx.mediarouter.media.MediaTransferReceiver"
             android:exported="true" />
+
+        <provider
+            android:authorities="dev.datlag.burningseries.provider"
+            android:name=".other.DatabaseProvider"
+            android:enabled="true"
+            android:exported="true"
+            android:readPermission="dev.datlag.burningseries.READ_DATABASE"
+            android:grantUriPermissions="true" />
     </application>
 
 </manifest>

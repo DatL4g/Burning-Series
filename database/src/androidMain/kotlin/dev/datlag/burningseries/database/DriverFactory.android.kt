@@ -3,6 +3,9 @@ package dev.datlag.burningseries.database
 import android.content.Context
 import android.content.ContextWrapper
 import androidx.sqlite.db.SupportSQLiteOpenHelper
+import androidx.sqlite.db.SupportSQLiteQuery
+import androidx.sqlite.db.SupportSQLiteQueryBuilder
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import dev.datlag.tooling.existsSafely
@@ -36,5 +39,44 @@ actual class DriverFactory(
         val driver = AndroidSqliteDriver(BurningSeries.Schema, databaseContext, "bs.db")
 
         return driver
+    }
+
+    fun createBurningSeriesNativeDriver(): SupportSQLiteOpenHelper {
+        val factory = FrameworkSQLiteOpenHelperFactory()
+        val callback = AndroidSqliteDriver.Callback(BurningSeries.Schema)
+
+        return factory.create(
+            SupportSQLiteOpenHelper.Configuration.builder(databaseContext)
+                .callback(callback)
+                .name("bs.db")
+                .noBackupDirectory(false)
+                .build()
+        )
+    }
+
+    fun createSeriesQuery(
+        projection: Array<out String>?,
+        selection: String?,
+        selectionArgs: Array<out Any>?,
+        sortOrder: String?
+    ): SupportSQLiteQuery {
+        return SupportSQLiteQueryBuilder.builder("Series")
+            .columns(projection)
+            .selection(selection, selectionArgs)
+            .orderBy(sortOrder)
+            .create()
+    }
+
+    fun createEpisodeQuery(
+        projection: Array<out String>?,
+        selection: String?,
+        selectionArgs: Array<out Any>?,
+        sortOrder: String?
+    ): SupportSQLiteQuery {
+        return SupportSQLiteQueryBuilder.builder("Episode")
+            .columns(projection)
+            .selection(selection, selectionArgs)
+            .orderBy(sortOrder)
+            .create()
     }
 }
