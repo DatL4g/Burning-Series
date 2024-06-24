@@ -16,7 +16,15 @@ interface ActivateComponent : Component {
     val dialog: Value<ChildSlot<DialogConfig, DialogComponent>>
 
     fun back()
-    fun onScraped(data: String?)
-    fun success(stream: Stream?)
-    fun error(stream: Stream?)
+    fun onScraped(episodeHref: String?, data: String?)
+    fun success(
+        series: Series?,
+        episode: Series.Episode?,
+        stream: Stream?
+    )
+    fun error(
+        series: Series?,
+        episode: Series.Episode?,
+        stream: Stream?
+    )
 }

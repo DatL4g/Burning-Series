@@ -32,7 +32,7 @@ class SaveStateMachine(
             }
             inState<SaveState.None> {
                 on<SaveAction.Save> { action, state ->
-                    state.override { SaveState.Saving(action.data) }
+                    state.override { SaveState.Saving(action.episodeHref, action.data) }
                 }
             }
             inState<SaveState.Saving> {
@@ -43,27 +43,41 @@ class SaveStateMachine(
                         )
                     }.getOrNull() ?: false
 
+                    val series = suspendCatching {
+                        state.snapshot.episodeHref?.let { href ->
+                            BurningSeries.series(client, href)
+                        }
+                    }.getOrNull()
+
+                    val episode = state.snapshot.episodeHref?.let { href ->
+                        series?.episodes?.firstOrNull {
+                            it.href == href
+                        } ?: series?.episodes?.firstOrNull {
+                            it.href.equals(href, ignoreCase = true)
+                        }
+                    }
+
                     val stream = suspendCatching {
                         Skeo.loadVideos(client, state.snapshot.data.url)
                     }.getOrNull()
 
                     state.override {
                         if (firebaseSaved) {
-                            SaveState.Success(stream)
+                            SaveState.Success(series, episode, stream)
                         } else {
-                            SaveState.Error(stream)
+                            SaveState.Error(series, episode, stream)
                         }
                     }
                 }
             }
             inState<SaveState.Success> {
                 on<SaveAction.Save> { action, state ->
-                    state.override { SaveState.Saving(action.data) }
+                    state.override { SaveState.Saving(action.episodeHref, action.data) }
                 }
             }
             inState<SaveState.Error> {
                 on<SaveAction.Save> { action, state ->
-                    state.override { SaveState.Saving(action.data) }
+                    state.override { SaveState.Saving(action.episodeHref, action.data) }
                 }
             }
         }

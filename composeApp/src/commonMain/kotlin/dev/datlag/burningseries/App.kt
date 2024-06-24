@@ -26,8 +26,6 @@ import dev.datlag.burningseries.composeapp.generated.resources.Manrope_regular_i
 import dev.datlag.burningseries.composeapp.generated.resources.Manrope_semi_bold
 import dev.datlag.burningseries.composeapp.generated.resources.Manrope_semi_bold_italic
 import dev.datlag.burningseries.composeapp.generated.resources.Res
-import dev.datlag.burningseries.composeapp.generated.resources.SedgwickAve_regular
-import dev.datlag.burningseries.composeapp.generated.resources.TradeWinds_regular
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.ui.theme.Colors
 import dev.datlag.burningseries.ui.theme.dynamicDark

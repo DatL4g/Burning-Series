@@ -71,7 +71,7 @@ class ActivateScreenComponent(
                 },
                 onWatch = { stream ->
                     dialogNavigation.dismiss {
-                        onWatch(series, episode, stream)
+                        onWatch(config.series ?: series, config.episode ?: episode, stream)
                     }
                 }
             )
@@ -87,7 +87,7 @@ class ActivateScreenComponent(
                 },
                 onWatch = { stream ->
                     dialogNavigation.dismiss {
-                        onWatch(series, episode, stream)
+                        onWatch(config.series ?: series, config.episode ?: episode, stream)
                     }
                 }
             )
@@ -105,7 +105,7 @@ class ActivateScreenComponent(
         onBack()
     }
 
-    override fun onScraped(data: String?) {
+    override fun onScraped(episodeHref: String?, data: String?) {
         val trimmed = data?.trim()?.ifBlank { null } ?: return
         if (!trimmed.equals("null", true) && !trimmed.equals("undefined", true)) {
             val converted = scopeCatching {
@@ -115,7 +115,7 @@ class ActivateScreenComponent(
             if (converted != null) {
                 if (!savedData.contains(converted.href)) {
                     launchIO {
-                        saveStateMachine.dispatch(SaveAction.Save(converted))
+                        saveStateMachine.dispatch(SaveAction.Save(episodeHref, converted))
                     }
                 }
 
@@ -124,20 +124,28 @@ class ActivateScreenComponent(
         }
     }
 
-    override fun success(stream: Stream?) {
+    override fun success(
+        series: Series?,
+        episode: Series.Episode?,
+        stream: Stream?
+    ) {
         launchIO {
             saveStateMachine.dispatch(SaveAction.Clear)
             withMainContext {
-                dialogNavigation.activate(DialogConfig.Success(stream))
+                dialogNavigation.activate(DialogConfig.Success(series, episode, stream))
             }
         }
     }
 
-    override fun error(stream: Stream?) {
+    override fun error(
+        series: Series?,
+        episode: Series.Episode?,
+        stream: Stream?
+    ) {
         launchIO {
             saveStateMachine.dispatch(SaveAction.Clear)
             withMainContext {
-                dialogNavigation.activate(DialogConfig.Error(stream))
+                dialogNavigation.activate(DialogConfig.Error(series, episode, stream))
             }
         }
     }

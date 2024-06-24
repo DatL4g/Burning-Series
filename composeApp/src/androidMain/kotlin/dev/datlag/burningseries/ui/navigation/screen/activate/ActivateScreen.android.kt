@@ -68,12 +68,21 @@ actual fun ActivateScreen(component: ActivateComponent) {
     }
 }
 
-private suspend fun WebView.scrape(js: String?, onScraped: (String?) -> Unit) {
+private suspend fun WebView.scrape(js: String?, onScraped: (String?, String?) -> Unit) {
     while (currentCoroutineContext().isActive && !js.isNullOrBlank()) {
         delay(3000)
         withMainContext {
+            val episodeHref = BSUtil.matchingUrl(
+                this@scrape.url,
+                this@scrape.originalUrl
+            )
+
             this@scrape.evaluateJavascript(js) { result ->
-                onScraped(result)
+                val episode = episodeHref ?: BSUtil.matchingUrl(
+                    this@scrape.url,
+                    this@scrape.originalUrl
+                )
+                onScraped(episode, result)
             }
         }
     }

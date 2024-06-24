@@ -46,10 +46,18 @@ internal fun Toolbar(component: ActivateComponent) {
             val saveState by component.saveState.collectAsStateWithLifecycle()
             when (val current = saveState) {
                 is SaveState.Success -> {
-                    component.success(current.stream)
+                    component.success(
+                        current.series,
+                        current.episode,
+                        current.stream
+                    )
                 }
                 is SaveState.Error -> {
-                    component.error(current.stream)
+                    component.error(
+                        current.series,
+                        current.episode,
+                        current.stream
+                    )
                 }
                 else -> { }
             }

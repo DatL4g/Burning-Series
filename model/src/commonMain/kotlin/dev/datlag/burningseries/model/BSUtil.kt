@@ -9,7 +9,6 @@ data object BSUtil {
     const val SEARCH = "andere-serien"
 
     val episodeNumberRegex = "[|({]\\s*Ep([.]|isode)?\\s*(\\d+)\\s*[|)}]".toRegex(RegexOption.IGNORE_CASE)
-    val banner = BSUtil.getBurningSeriesLink("public/images/header.png")
 
     fun getBurningSeriesLink(href: String, http: Boolean = false, host: String = HOST_BS_TO): String {
         return if (!href.matches("^\\w+?://.*".toRegex())) {
@@ -38,5 +37,21 @@ data object BSUtil {
 
     fun seasonFrom(href: String): Int? {
         return SeriesData.fromHref(href).season
+    }
+
+    fun matchingUrl(url1: String?, url2: String?): String? {
+        val fixedUrl1 = url1?.let(::normalizeHref)
+        val regex = "serie\\S+".toRegex(RegexOption.IGNORE_CASE)
+
+        if (regex.containsMatchIn(fixedUrl1 ?: "")) {
+            return fixedUrl1
+        }
+
+        val fixedUrl2 = url2?.let(::normalizeHref)
+        if (regex.containsMatchIn(fixedUrl2 ?: "")) {
+            return fixedUrl2
+        }
+
+        return null
     }
 }
