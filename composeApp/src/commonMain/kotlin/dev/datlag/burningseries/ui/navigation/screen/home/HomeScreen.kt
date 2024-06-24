@@ -73,6 +73,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import coil3.compose.AsyncImage
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
@@ -96,6 +97,9 @@ import kotlinx.collections.immutable.toImmutableList
 fun HomeScreen(component: HomeComponent) {
     AndroidFixWindowSize {
         val showFavorites by component.showFavorites.collectAsStateWithLifecycle()
+        val dialogState by component.dialog.subscribeAsState()
+
+        dialogState.child?.instance?.render()
 
         Scaffold(
             topBar = {

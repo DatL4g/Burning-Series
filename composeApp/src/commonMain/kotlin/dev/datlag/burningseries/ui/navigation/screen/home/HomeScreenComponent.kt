@@ -4,6 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.value.Value
 import dev.chrisbanes.haze.HazeState
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.database.BurningSeries
@@ -21,6 +27,8 @@ import dev.datlag.burningseries.network.state.SearchAction
 import dev.datlag.burningseries.network.state.SearchState
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.Language
+import dev.datlag.burningseries.ui.navigation.DialogComponent
+import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.SettingsDialogComponent
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.decompose.ioScope
 import io.ktor.client.HttpClient
@@ -75,6 +83,20 @@ class HomeScreenComponent(
     private val settings by instance<Settings.PlatformAppSettings>()
     override val language = settings.language.flowOn(ioDispatcher())
 
+    private val dialogNavigation = SlotNavigation<DialogConfig>()
+    override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = childSlot(
+        source = dialogNavigation,
+        serializer = DialogConfig.serializer()
+    ) { config, context ->
+        when (config) {
+            is DialogConfig.Settings -> SettingsDialogComponent(
+                componentContext = context,
+                di = di,
+                onDismiss = dialogNavigation::dismiss
+            )
+        }
+    }
+
     @Composable
     override fun render() {
         val haze = remember { HazeState() }
@@ -106,5 +128,9 @@ class HomeScreenComponent(
 
     override fun toggleFavorites() {
         showFavorites.update { !it }
+    }
+
+    override fun settings() {
+        dialogNavigation.activate(DialogConfig.Settings)
     }
 }

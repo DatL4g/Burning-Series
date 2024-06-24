@@ -21,6 +21,7 @@ import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,7 +49,9 @@ import dev.datlag.burningseries.common.merge
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.search
 import dev.datlag.burningseries.network.state.SearchState
+import dev.datlag.burningseries.other.rememberIsTv
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeComponent
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.onClick
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.toImmutableList
@@ -87,19 +90,34 @@ internal fun HomeSearchBar(component: HomeComponent, showFavorites: Boolean) {
             component.search(it)
         },
         leadingIcon = {
-            IconButton(
-                onClick = {
-                    if (isActive) {
-                        isActive = false
-                    } else {
-                        // open settings
+            if (!Platform.rememberIsTv()) {
+                IconButton(
+                    onClick = {
+                        if (isActive) {
+                            isActive = false
+                        } else {
+                            component.settings()
+                        }
                     }
+                ) {
+                    Icon(
+                        imageVector = if (isActive) Icons.Rounded.KeyboardArrowDown else Icons.Rounded.Settings,
+                        contentDescription = null
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = if (isActive) Icons.Rounded.KeyboardArrowDown else Icons.Rounded.Settings,
-                    contentDescription = null
-                )
+            } else {
+                IconButton(
+                    onClick = {
+                        if (isActive) {
+                            isActive = false
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (isActive) Icons.Rounded.KeyboardArrowDown else Icons.Rounded.Search,
+                        contentDescription = null
+                    )
+                }
             }
         },
         placeholder = {
