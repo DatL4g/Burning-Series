@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -102,4 +105,24 @@ fun LazyGridScope.fullRow(
     content: @Composable LazyGridItemScope.() -> Unit
 ) {
     item(span = { GridItemSpan(this.maxLineSpan) }, content = content)
+}
+
+/**
+ * Checks if the modal is currently expanded or a swipe action is in progress to be expanded.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+fun SheetState.isFullyExpandedOrTargeted(forceFullExpand: Boolean = false): Boolean {
+    val checkState = if (this.hasExpandedState) {
+        if (!this.hasPartiallyExpandedState) {
+            return false
+        }
+        SheetValue.Expanded
+    } else {
+        if (forceFullExpand) {
+            return false
+        }
+        SheetValue.PartiallyExpanded
+    }
+
+    return this.targetValue == checkState
 }
