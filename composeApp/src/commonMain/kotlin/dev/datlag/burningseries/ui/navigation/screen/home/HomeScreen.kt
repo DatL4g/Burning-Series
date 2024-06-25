@@ -61,6 +61,7 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,6 +80,7 @@ import dev.chrisbanes.haze.hazeChild
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.merge
+import dev.datlag.burningseries.github.UserAndReleaseState
 import dev.datlag.burningseries.network.state.HomeState
 import dev.datlag.burningseries.network.state.SearchState
 import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
@@ -107,6 +109,11 @@ fun HomeScreen(component: HomeComponent) {
             },
         ) { padding ->
             val state by component.home.collectAsStateWithLifecycle()
+            val github by component.githubState.collectAsStateWithLifecycle(UserAndReleaseState.None)
+
+            SideEffect {
+                Napier.e("GitHub: $github")
+            }
 
             if (showFavorites) {
                 FavoritesScreen(padding, component)

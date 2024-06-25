@@ -19,6 +19,9 @@ import dev.datlag.tooling.createAsFileSafely
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.ContentType
+import io.ktor.serialization.kotlinx.json.json
 import okhttp3.Dns
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
@@ -63,10 +66,10 @@ actual object PlatformModule {
                         dns(instance())
                     }
                 }
-                /*install(ContentNegotiation) {
+                install(ContentNegotiation) {
                     json(instance(), ContentType.Application.Json)
                     json(instance(), ContentType.Text.Plain)
-                }*/
+                }
             }
         }
         bindSingleton<DataStore<AppSettings>> {

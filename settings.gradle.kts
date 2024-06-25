@@ -5,6 +5,7 @@ include(":model")
 include(":network")
 include(":firebase")
 include(":database")
+include(":github")
 
 pluginManagement {
     repositories {

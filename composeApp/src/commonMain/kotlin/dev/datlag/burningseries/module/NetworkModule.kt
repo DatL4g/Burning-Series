@@ -7,12 +7,17 @@ import coil3.memory.MemoryCache
 import coil3.network.ktor.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import coil3.svg.SvgDecoder
+import com.apollographql.apollo3.ApolloClient
+import de.jensklingenberg.ktorfit.ktorfit
 import dev.datlag.burningseries.common.nullableFirebaseInstance
+import dev.datlag.burningseries.github.GitHub
+import dev.datlag.burningseries.github.UserAndReleaseRepository
 import dev.datlag.burningseries.network.EpisodeStateMachine
 import dev.datlag.burningseries.network.HomeStateMachine
 import dev.datlag.burningseries.network.SaveStateMachine
 import dev.datlag.burningseries.network.SearchStateMachine
 import dev.datlag.burningseries.network.SeriesStateMachine
+import dev.datlag.tooling.compose.ioDispatcher
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import okio.FileSystem
@@ -82,6 +87,25 @@ data object NetworkModule {
                 client = instance(),
                 firebaseAuth = nullableFirebaseInstance()?.auth,
                 fireStore = nullableFirebaseInstance()?.store
+            )
+        }
+        bindSingleton<ApolloClient> {
+            ApolloClient.Builder()
+                .dispatcher(ioDispatcher())
+                .serverUrl("https://api.github.com/graphql")
+                .build()
+        }
+        bindSingleton<GitHub> {
+            val ktorfit = ktorfit {
+                httpClient(instance<HttpClient>())
+                baseUrl("https://api.github.com/")
+            }
+            ktorfit.create<GitHub>()
+        }
+        bindSingleton<UserAndReleaseRepository> {
+            UserAndReleaseRepository(
+                client = instance(),
+                github = instance()
             )
         }
     }

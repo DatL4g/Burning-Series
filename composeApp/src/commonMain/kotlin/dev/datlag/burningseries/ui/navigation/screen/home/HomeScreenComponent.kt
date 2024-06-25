@@ -17,6 +17,8 @@ import dev.datlag.burningseries.database.ExtendedSeries
 import dev.datlag.burningseries.database.Series
 import dev.datlag.burningseries.database.common.favoritesSeries
 import dev.datlag.burningseries.database.common.favoritesSeriesOneShot
+import dev.datlag.burningseries.github.UserAndReleaseRepository
+import dev.datlag.burningseries.github.UserAndReleaseState
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.SearchItem
 import dev.datlag.burningseries.model.SeriesData
@@ -36,6 +38,7 @@ import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -82,6 +85,9 @@ class HomeScreenComponent(
 
     private val settings by instance<Settings.PlatformAppSettings>()
     override val language = settings.language.flowOn(ioDispatcher())
+
+    private val github by instance<UserAndReleaseRepository>()
+    override val githubState: Flow<UserAndReleaseState> = github.userAndRelease.flowOn(ioDispatcher())
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = childSlot(

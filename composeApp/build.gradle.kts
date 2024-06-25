@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.konfig)
+    alias(libs.plugins.ktorfit)
     alias(libs.plugins.moko.resources)
     alias(libs.plugins.sekret)
     alias(libs.plugins.serialization)
@@ -91,6 +92,8 @@ kotlin {
 
             implementation(libs.windowsize)
             implementation(libs.ktor)
+            implementation(libs.ktor.content.negotiation)
+            implementation(libs.ktor.serialization.json)
             implementation(libs.datetime)
 
             implementation(libs.kmpalette)
@@ -112,6 +115,7 @@ kotlin {
             implementation(project(":network"))
             implementation(project(":firebase"))
             implementation(project(":database"))
+            implementation(project(":github"))
         }
 
         val androidMain by getting {

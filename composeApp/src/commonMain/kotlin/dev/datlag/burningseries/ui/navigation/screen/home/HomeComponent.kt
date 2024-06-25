@@ -4,6 +4,7 @@ import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.database.ExtendedSeries
 import dev.datlag.burningseries.database.Series
+import dev.datlag.burningseries.github.UserAndReleaseState
 import dev.datlag.burningseries.model.SearchItem
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.network.state.HomeState
@@ -22,6 +23,8 @@ interface HomeComponent : Component {
     val showFavorites: StateFlow<Boolean>
     val favorites: StateFlow<ImmutableCollection<ExtendedSeries>>
     val language: Flow<Language?>
+
+    val githubState: Flow<UserAndReleaseState>
 
     val dialog: Value<ChildSlot<DialogConfig, DialogComponent>>
 
