@@ -3,7 +3,7 @@ package dev.datlag.burningseries.github
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Headers
 import de.jensklingenberg.ktorfit.http.Path
-import dev.datlag.burningseries.github.model.Release
+import dev.datlag.burningseries.github.model.RESTRelease
 
 interface GitHub {
 
@@ -12,5 +12,5 @@ interface GitHub {
     suspend fun getLatestRelease(
         @Path("owner") owner: String,
         @Path("repo") repo: String
-    ): Release
+    ): RESTRelease
 }

@@ -20,4 +20,9 @@ query UserAndRelease($owner: String!, $repo: String!) {
         }
         viewerHasStarred
     }
+    viewer {
+        avatarUrl(size: 300),
+        name,
+        login
+    }
 }

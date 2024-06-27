@@ -1,12 +1,12 @@
 package dev.datlag.burningseries.github
 
-import dev.datlag.burningseries.github.model.Release
+import dev.datlag.burningseries.github.model.RESTRelease
 import dev.datlag.burningseries.github.model.UserAndRelease
 
 sealed interface UserAndReleaseState {
     data object None : UserAndReleaseState
     data class Success(val data: UserAndRelease) : UserAndReleaseState {
-        constructor(release: Release) : this(UserAndRelease(release))
+        constructor(release: RESTRelease) : this(UserAndRelease(release))
     }
     data class Error(val throwable: Throwable?) : UserAndReleaseState
 
