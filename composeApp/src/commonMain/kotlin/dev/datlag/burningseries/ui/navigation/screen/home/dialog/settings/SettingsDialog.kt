@@ -9,18 +9,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalEdgeToEdge
 import dev.datlag.burningseries.common.isFullyExpandedOrTargeted
 import dev.datlag.burningseries.common.merge
+import dev.datlag.burningseries.github.UserAndReleaseState
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.InfoSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.LanguageSection
+import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +46,8 @@ fun SettingsDialog(component: SettingsComponent) {
         windowInsets = insets,
         sheetState = sheetState
     ) {
+        val userState by component.userAndRelease.collectAsStateWithLifecycle(UserAndReleaseState.None)
+
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = bottomPadding.merge(16.dp),
@@ -50,6 +56,7 @@ fun SettingsDialog(component: SettingsComponent) {
             item {
                 InfoSection(
                     dismissVisible = sheetState.isFullyExpandedOrTargeted(forceFullExpand = true),
+                    user = userState.user,
                     modifier = Modifier.fillParentMaxWidth(),
                     onDismiss = component::dismiss
                 )
@@ -60,6 +67,15 @@ fun SettingsDialog(component: SettingsComponent) {
                     modifier = Modifier.fillParentMaxWidth(),
                     onSelect = component::setLanguage
                 )
+            }
+            item {
+                Button(
+                    onClick = {
+                        component.auth()
+                    }
+                ) {
+                    Text(text = "Authorize with GitHub")
+                }
             }
         }
     }

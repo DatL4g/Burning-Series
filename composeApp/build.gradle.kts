@@ -109,6 +109,7 @@ kotlin {
             implementation(libs.kast)
             implementation(libs.nanoid)
             implementation(libs.serialization.json)
+            implementation(libs.oidc)
             implementation("dev.datlag.sheets-compose-dialogs:option:2.0.0-SNAPSHOT")
 
             implementation(project(":settings"))
@@ -170,6 +171,10 @@ android {
 
         multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
+
+        addManifestPlaceholders(
+            mapOf("oidcRedirectScheme" to "burningseries")
+        )
     }
     packaging {
         resources {

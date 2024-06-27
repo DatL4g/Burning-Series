@@ -18,6 +18,9 @@ import dev.datlag.kast.UnselectReason
 import dev.datlag.tooling.decompose.lifecycle.LocalLifecycleOwner
 import dev.datlag.tooling.safeCast
 import org.kodein.di.DIAware
+import org.kodein.di.instance
+import org.publicvalue.multiplatform.oidc.appsupport.AndroidCodeAuthFlowFactory
+import org.publicvalue.multiplatform.oidc.appsupport.CodeAuthFlowFactory
 
 class MainActivity : ComponentActivity() {
 
@@ -32,6 +35,7 @@ class MainActivity : ComponentActivity() {
         val lifecycleOwner = object : LifecycleOwner {
             override val lifecycle: Lifecycle = essentyLifecycle()
         }
+        val authFactory by di.instance<AndroidCodeAuthFlowFactory>()
 
         val root = RootComponent(
             componentContext = DefaultComponentContext(
@@ -41,6 +45,7 @@ class MainActivity : ComponentActivity() {
             di = di
         )
 
+        authFactory.registerActivity(this)
         Kast.setup(this)
 
         setContent {

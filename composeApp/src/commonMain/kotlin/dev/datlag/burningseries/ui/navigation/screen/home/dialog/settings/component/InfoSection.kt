@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,18 +24,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.close
 import dev.icerock.moko.resources.compose.painterResource
 import org.jetbrains.compose.resources.stringResource
 import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.composeapp.generated.resources.app_name
+import dev.datlag.burningseries.github.model.UserAndRelease
+import dev.datlag.burningseries.other.Constants
 
 @Composable
 fun InfoSection(
     dismissVisible: Boolean,
+    user: UserAndRelease.User?,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit
 ) {
@@ -62,16 +69,38 @@ fun InfoSection(
                 }
             }
 
-            Image(
+            AsyncImage(
                 modifier = Modifier.size(96.dp).clip(CircleShape),
-                painter = painterResource(MokoRes.images.AppIcon),
+                model = user?.avatar,
                 contentDescription = null,
+                error = painterResource(MokoRes.images.AppIcon),
+                placeholder = painterResource(MokoRes.images.AppIcon),
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center
             )
+
+            this@Column.AnimatedVisibility(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                visible = user != null,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                val uriHandler = LocalUriHandler.current
+
+                IconButton(
+                    onClick = {
+                        uriHandler.openUri(Constants.GITHUB_REPO)
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (user?.hasStarred == true) Icons.Rounded.Star else Icons.Rounded.StarBorder,
+                        contentDescription = null
+                    )
+                }
+            }
         }
         Text(
-            text = stringResource(Res.string.app_name),
+            text = user?.name ?: stringResource(Res.string.app_name),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )

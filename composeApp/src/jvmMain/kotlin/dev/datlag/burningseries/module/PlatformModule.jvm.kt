@@ -14,8 +14,10 @@ import dev.datlag.burningseries.firebase.initialize
 // import dev.datlag.burningseries.firebase.initialize
 import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.settings.DataStoreAppSettings
+import dev.datlag.burningseries.settings.DataStoreUserSettings
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.AppSettings
+import dev.datlag.burningseries.settings.model.UserSettings
 import dev.datlag.tooling.Tooling
 import dev.datlag.tooling.createAsFileSafely
 import dev.datlag.tooling.getRWUserConfigFile
@@ -36,6 +38,8 @@ import org.kodein.di.DI
 import org.kodein.di.bindEagerSingleton
 import org.kodein.di.bindSingleton
 import org.kodein.di.instance
+import org.publicvalue.multiplatform.oidc.appsupport.CodeAuthFlowFactory
+import org.publicvalue.multiplatform.oidc.appsupport.JvmCodeAuthFlowFactory
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
@@ -99,6 +103,24 @@ actual object PlatformModule {
         bindSingleton<Settings.PlatformAppSettings> {
             DataStoreAppSettings(instance())
         }
+        bindSingleton<DataStore<UserSettings>> {
+            DataStoreFactory.create(
+                storage = OkioStorage(
+                    fileSystem = FileSystem.SYSTEM,
+                    serializer = UserSettings.SettingsSerializer,
+                    producePath = {
+                        Tooling.getRWUserConfigFile(
+                            child = "user.settings",
+                            appName = APP_NAME,
+                            appVersion = "v6"
+                        ).also { it.createAsFileSafely() }.toOkioPath()
+                    }
+                )
+            )
+        }
+        bindSingleton<Settings.PlatformUserSettings> {
+            DataStoreUserSettings(instance())
+        }
         bindSingleton<FirebaseFactory> {
             if (StateSaver.sekretLibraryLoaded) {
                 FirebaseFactory.initialize(
@@ -131,6 +153,9 @@ actual object PlatformModule {
                     appVersion = "v6"
                 )
             )
+        }
+        bindSingleton<CodeAuthFlowFactory> {
+            JvmCodeAuthFlowFactory()
         }
     }
 }

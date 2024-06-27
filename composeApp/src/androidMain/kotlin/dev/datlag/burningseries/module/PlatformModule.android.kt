@@ -13,8 +13,10 @@ import dev.datlag.burningseries.firebase.FirebaseFactory
 import dev.datlag.burningseries.firebase.initialize
 import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.settings.DataStoreAppSettings
+import dev.datlag.burningseries.settings.DataStoreUserSettings
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.AppSettings
+import dev.datlag.burningseries.settings.model.UserSettings
 import dev.datlag.tooling.createAsFileSafely
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
@@ -31,6 +33,8 @@ import okio.Path.Companion.toOkioPath
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
 import org.kodein.di.instance
+import org.publicvalue.multiplatform.oidc.appsupport.AndroidCodeAuthFlowFactory
+import org.publicvalue.multiplatform.oidc.appsupport.CodeAuthFlowFactory
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
@@ -94,6 +98,28 @@ actual object PlatformModule {
         bindSingleton<Settings.PlatformAppSettings> {
             DataStoreAppSettings(instance())
         }
+        bindSingleton<DataStore<UserSettings>> {
+            val app: Context = instance()
+
+            DataStoreFactory.create(
+                storage = OkioStorage(
+                    fileSystem = FileSystem.SYSTEM,
+                    serializer = UserSettings.SettingsSerializer,
+                    producePath = {
+                        val path = app.filesDir.toOkioPath()
+                            .resolve("v6")
+                            .resolve("user.settings").also {
+                                it.toFile().createAsFileSafely()
+                            }
+
+                        path
+                    }
+                )
+            )
+        }
+        bindSingleton<Settings.PlatformUserSettings> {
+            DataStoreUserSettings(instance())
+        }
         bindSingleton<FirebaseFactory> {
             if (StateSaver.sekretLibraryLoaded) {
                 FirebaseFactory.initialize(
@@ -123,6 +149,9 @@ actual object PlatformModule {
             DriverFactory(
                 context = instance()
             )
+        }
+        bindSingleton<AndroidCodeAuthFlowFactory> {
+            AndroidCodeAuthFlowFactory()
         }
     }
 }

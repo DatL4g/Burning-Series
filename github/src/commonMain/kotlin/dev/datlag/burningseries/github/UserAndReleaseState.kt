@@ -4,8 +4,16 @@ import dev.datlag.burningseries.github.model.RESTRelease
 import dev.datlag.burningseries.github.model.UserAndRelease
 
 sealed interface UserAndReleaseState {
+
+    val user: UserAndRelease.User?
+        get() = null
+
     data object None : UserAndReleaseState
     data class Success(val data: UserAndRelease) : UserAndReleaseState {
+
+        override val user: UserAndRelease.User?
+            get() = data.user
+
         constructor(release: RESTRelease) : this(UserAndRelease(release))
     }
     data class Error(val throwable: Throwable?) : UserAndReleaseState

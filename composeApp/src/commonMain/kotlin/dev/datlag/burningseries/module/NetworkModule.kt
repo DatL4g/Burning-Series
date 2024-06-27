@@ -8,7 +8,13 @@ import coil3.network.ktor.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import coil3.svg.SvgDecoder
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.http.HttpRequest
+import com.apollographql.apollo3.api.http.HttpResponse
+import com.apollographql.apollo3.network.http.HttpInterceptor
+import com.apollographql.apollo3.network.http.HttpInterceptorChain
 import de.jensklingenberg.ktorfit.ktorfit
+import dev.datlag.burningseries.BuildKonfig
+import dev.datlag.burningseries.Sekret
 import dev.datlag.burningseries.common.nullableFirebaseInstance
 import dev.datlag.burningseries.github.GitHub
 import dev.datlag.burningseries.github.UserAndReleaseRepository
@@ -17,7 +23,9 @@ import dev.datlag.burningseries.network.HomeStateMachine
 import dev.datlag.burningseries.network.SaveStateMachine
 import dev.datlag.burningseries.network.SearchStateMachine
 import dev.datlag.burningseries.network.SeriesStateMachine
+import dev.datlag.burningseries.other.UserHelper
 import dev.datlag.tooling.compose.ioDispatcher
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import okio.FileSystem
@@ -25,11 +33,16 @@ import org.kodein.di.DI
 import org.kodein.di.bindProvider
 import org.kodein.di.bindSingleton
 import org.kodein.di.instance
+import org.publicvalue.multiplatform.oidc.ExperimentalOpenIdConnect
+import org.publicvalue.multiplatform.oidc.OpenIdConnectClient
+import org.publicvalue.multiplatform.oidc.appsupport.CodeAuthFlowFactory
+import org.publicvalue.multiplatform.oidc.flows.CodeAuthFlow
 
 data object NetworkModule {
 
     const val NAME = "NetworkModule"
 
+    @OptIn(ExperimentalOpenIdConnect::class)
     val di = DI.Module(NAME) {
         import(DatabaseModule.di)
 
@@ -90,9 +103,27 @@ data object NetworkModule {
             )
         }
         bindSingleton<ApolloClient> {
+            val userHelper = instance<UserHelper>()
+
             ApolloClient.Builder()
                 .dispatcher(ioDispatcher())
                 .serverUrl("https://api.github.com/graphql")
+                .addHttpInterceptor(object : HttpInterceptor {
+                    override suspend fun intercept(
+                        request: HttpRequest,
+                        chain: HttpInterceptorChain
+                    ): HttpResponse {
+                        val req = request.newBuilder().apply {
+                            val token = userHelper.getAccessToken()
+
+                            token?.let {
+                                addHeader("Authorization", "Bearer $it")
+                            }
+                        }.build()
+
+                        return chain.proceed(req)
+                    }
+                })
                 .build()
         }
         bindSingleton<GitHub> {
@@ -106,6 +137,27 @@ data object NetworkModule {
             UserAndReleaseRepository(
                 client = instance(),
                 github = instance()
+            )
+        }
+        bindSingleton<OpenIdConnectClient> {
+            OpenIdConnectClient {
+                endpoints {
+                    authorizationEndpoint = "https://github.com/login/oauth/authorize"
+                    tokenEndpoint = "https://github.com/login/oauth/access_token"
+                }
+
+                clientId = Sekret.githubClientId(BuildKonfig.packageName)
+                clientSecret = Sekret.githubClientSecret(BuildKonfig.packageName)
+                scope = "read:user"
+            }
+        }
+        bindProvider<CodeAuthFlow> {
+            instance<CodeAuthFlowFactory>().createAuthFlow(instance())
+        }
+        bindSingleton<UserHelper> {
+            UserHelper(
+                oidcClient = instance(),
+                tokenStore = instance()
             )
         }
     }
