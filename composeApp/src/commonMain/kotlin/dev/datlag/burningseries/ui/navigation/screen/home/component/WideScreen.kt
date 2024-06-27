@@ -55,7 +55,6 @@ import dev.datlag.burningseries.ui.custom.localScrollbarStyle
 @Composable
 internal fun WideScreen(
     state: HomeState,
-    release: UserAndRelease.Release?,
     padding: PaddingValues,
     component: HomeComponent
 ) {
@@ -64,7 +63,6 @@ internal fun WideScreen(
     ) {
         val listState = rememberLazyGridState()
         val language by component.language.collectAsStateWithLifecycle(null)
-        var hideRelease by remember { mutableStateOf(false) }
 
         LazyVerticalGrid(
             state = listState,
@@ -74,17 +72,6 @@ internal fun WideScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = padding.merge(16.dp)
         ) {
-            if (!hideRelease && release != null) {
-                fullRow {
-                    ReleaseSection(
-                        release = release,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                        onHide = {
-                            hideRelease = true
-                        }
-                    )
-                }
-            }
             fullRow {
                 Text(
                     modifier = Modifier.padding(top = 16.dp),

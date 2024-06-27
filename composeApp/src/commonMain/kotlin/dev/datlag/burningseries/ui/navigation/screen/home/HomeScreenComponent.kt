@@ -19,6 +19,7 @@ import dev.datlag.burningseries.database.common.favoritesSeries
 import dev.datlag.burningseries.database.common.favoritesSeriesOneShot
 import dev.datlag.burningseries.github.UserAndReleaseRepository
 import dev.datlag.burningseries.github.UserAndReleaseState
+import dev.datlag.burningseries.github.model.UserAndRelease
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.SearchItem
 import dev.datlag.burningseries.model.SeriesData
@@ -30,6 +31,7 @@ import dev.datlag.burningseries.network.state.SearchState
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.navigation.DialogComponent
+import dev.datlag.burningseries.ui.navigation.screen.home.dialog.release.ReleaseDialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.SettingsDialogComponent
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.decompose.ioScope
@@ -48,6 +50,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.kodein.di.DI
 import org.kodein.di.instance
+import org.kodein.di.instanceOrNull
 
 class HomeScreenComponent(
     componentContext: ComponentContext,
@@ -88,6 +91,8 @@ class HomeScreenComponent(
 
     private val github by instance<UserAndReleaseRepository>()
     override val githubState: Flow<UserAndReleaseState> = github.userAndRelease.flowOn(ioDispatcher())
+    override val appVersion: String? by instanceOrNull<String>("APP_VERSION")
+    override val displayRelease: MutableStateFlow<Boolean> = MutableStateFlow(true)
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = childSlot(
@@ -99,6 +104,16 @@ class HomeScreenComponent(
                 componentContext = context,
                 di = di,
                 onDismiss = dialogNavigation::dismiss
+            )
+            is DialogConfig.Release -> ReleaseDialogComponent(
+                componentContext = context,
+                di = di,
+                release = config.release,
+                onDismiss = {
+                    dialogNavigation.dismiss {
+                        displayRelease.update { false }
+                    }
+                }
             )
         }
     }
@@ -138,5 +153,9 @@ class HomeScreenComponent(
 
     override fun settings() {
         dialogNavigation.activate(DialogConfig.Settings)
+    }
+
+    override fun release(release: UserAndRelease.Release) {
+        dialogNavigation.activate(DialogConfig.Release(release))
     }
 }

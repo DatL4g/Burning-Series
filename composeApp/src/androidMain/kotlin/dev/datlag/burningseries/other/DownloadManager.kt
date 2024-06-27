@@ -54,6 +54,9 @@ data object DownloadManager {
     private val _progress = MutableStateFlow(Progress(0, 0))
     val progress: StateFlow<Progress> = _progress
 
+    private val _downloadEnabled = MutableStateFlow(true)
+    val downloadEnabled: StateFlow<Boolean> = _downloadEnabled
+
     fun setClient(httpClient: HttpClient) = apply {
         this.httpClient = httpClient
     }
@@ -74,6 +77,7 @@ data object DownloadManager {
             return@withIOContext null
         }
 
+        _downloadEnabled.update { false }
         file.deleteSafely()
         file.createAsFileSafely()
 
@@ -100,6 +104,7 @@ data object DownloadManager {
             }
         }
 
+        _downloadEnabled.update { true }
         return@withIOContext file
     }
 

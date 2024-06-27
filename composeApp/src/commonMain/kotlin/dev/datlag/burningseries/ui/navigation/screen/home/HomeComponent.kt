@@ -5,6 +5,7 @@ import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.database.ExtendedSeries
 import dev.datlag.burningseries.database.Series
 import dev.datlag.burningseries.github.UserAndReleaseState
+import dev.datlag.burningseries.github.model.UserAndRelease
 import dev.datlag.burningseries.model.SearchItem
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.network.state.HomeState
@@ -25,6 +26,8 @@ interface HomeComponent : Component {
     val language: Flow<Language?>
 
     val githubState: Flow<UserAndReleaseState>
+    val appVersion: String?
+    val displayRelease: StateFlow<Boolean>
 
     val dialog: Value<ChildSlot<DialogConfig, DialogComponent>>
 
@@ -34,4 +37,5 @@ interface HomeComponent : Component {
     fun retryLoadingSearch()
     fun toggleFavorites()
     fun settings()
+    fun release(release: UserAndRelease.Release)
 }

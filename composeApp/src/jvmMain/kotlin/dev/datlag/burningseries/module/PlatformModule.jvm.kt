@@ -10,8 +10,6 @@ import dev.datlag.burningseries.Sekret
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.firebase.FirebaseFactory
 import dev.datlag.burningseries.firebase.initialize
-// import dev.datlag.burningseries.firebase.FirebaseFactory
-// import dev.datlag.burningseries.firebase.initialize
 import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.settings.DataStoreAppSettings
 import dev.datlag.burningseries.settings.DataStoreUserSettings
@@ -22,6 +20,7 @@ import dev.datlag.tooling.Tooling
 import dev.datlag.tooling.createAsFileSafely
 import dev.datlag.tooling.getRWUserConfigFile
 import dev.datlag.tooling.getRWUserDataFile
+import dev.datlag.tooling.systemProperty
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -47,6 +46,7 @@ actual object PlatformModule {
 
     private const val NAME = "DesktopPlatformModule"
     private const val APP_NAME = "Burning-Series"
+    private const val APP_VERSION = "APP_VERSION"
 
     actual val di: DI.Module = DI.Module(NAME) {
         bindSingleton<PlatformContext> {
@@ -156,6 +156,9 @@ actual object PlatformModule {
         }
         bindSingleton<CodeAuthFlowFactory> {
             JvmCodeAuthFlowFactory()
+        }
+        systemProperty("jpackage.app-version")?.let {
+            bindSingleton(APP_VERSION) { it }
         }
     }
 }

@@ -8,7 +8,7 @@
     <string name="english">English</string>
     <string name="german">German</string>
     <string name="german_subtitle">German Subtitle</string>
-    <string name="japanese_subtitle">Japanese Subtitle</string>
+    <string name="english_subtitle">English Subtitle</string>
     <string name="welcome_to">Welcome to</string>
     <string name="lets_go">Let's Go</string>
     <string name="aniflow">AniFlow</string>

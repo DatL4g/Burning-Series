@@ -100,6 +100,17 @@ fun HomeScreen(component: HomeComponent) {
     AndroidFixWindowSize {
         val showFavorites by component.showFavorites.collectAsStateWithLifecycle()
         val dialogState by component.dialog.subscribeAsState()
+        val github by component.githubState.collectAsStateWithLifecycle(UserAndReleaseState.None)
+        val displayRelease by component.displayRelease.collectAsStateWithLifecycle()
+
+        LaunchedEffect(github, displayRelease) {
+            if (displayRelease) {
+                val latest = github.release(component.appVersion)
+                if (latest != null) {
+                    component.release(latest)
+                }
+            }
+        }
 
         dialogState.child?.instance?.render()
 
@@ -109,7 +120,6 @@ fun HomeScreen(component: HomeComponent) {
             },
         ) { padding ->
             val state by component.home.collectAsStateWithLifecycle()
-            val github by component.githubState.collectAsStateWithLifecycle(UserAndReleaseState.None)
 
             if (showFavorites) {
                 FavoritesScreen(padding, component)
@@ -117,13 +127,11 @@ fun HomeScreen(component: HomeComponent) {
                 when (calculateWindowSizeClass().widthSizeClass) {
                     WindowWidthSizeClass.Compact -> CompactScreen(
                         state = state,
-                        release = github.release(null),
                         padding = padding,
                         component = component
                     )
                     else -> WideScreen(
                         state = state,
-                        release = github.release(null),
                         padding = padding,
                         component = component
                     )

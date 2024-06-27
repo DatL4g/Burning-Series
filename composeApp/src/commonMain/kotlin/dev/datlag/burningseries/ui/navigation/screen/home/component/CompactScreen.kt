@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.ui.navigation.screen.home.component
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,33 +43,20 @@ import dev.datlag.burningseries.ui.custom.HorizontalScrollbar
 import dev.datlag.burningseries.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.ui.custom.localScrollbarStyle
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 internal fun CompactScreen(
     state: HomeState,
-    release: UserAndRelease.Release?,
     padding: PaddingValues,
     component: HomeComponent
 ) {
     val language by component.language.collectAsStateWithLifecycle(null)
-    var hideRelease by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = padding
     ) {
-        if (!hideRelease && release != null) {
-            item {
-                ReleaseSection(
-                    release = release,
-                    modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp),
-                    onHide = {
-                        hideRelease = true
-                    }
-                )
-            }
-        }
         item {
             Text(
                 modifier = Modifier.padding(16.dp),

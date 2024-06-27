@@ -2,6 +2,7 @@ package dev.datlag.burningseries.github
 
 import dev.datlag.burningseries.github.model.RESTRelease
 import dev.datlag.burningseries.github.model.UserAndRelease
+import dev.datlag.tooling.getDigitsOrNull
 
 sealed interface UserAndReleaseState {
 
@@ -21,7 +22,16 @@ sealed interface UserAndReleaseState {
         constructor(release: RESTRelease) : this(UserAndRelease(release))
 
         override fun release(currentVersion: String?): UserAndRelease.Release? {
-            return data.release
+            if (currentVersion.isNullOrBlank()) {
+                return null
+            }
+            val releaseNumber = data.release?.tagNumber ?: return null
+            val currentNumber = currentVersion.getDigitsOrNull()?.toIntOrNull() ?: return null
+
+            if (releaseNumber > currentNumber) {
+                return data.release
+            }
+            return null
         }
     }
     data class Error(val throwable: Throwable?) : UserAndReleaseState

@@ -29,8 +29,6 @@ import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.app_name
 import dev.datlag.burningseries.firebase.FirebaseFactory
 import dev.datlag.burningseries.firebase.initializePlatform
-// import dev.datlag.burningseries.firebase.FirebaseFactory
-// import dev.datlag.burningseries.firebase.initializePlatform
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.navigation.RootComponent
@@ -63,10 +61,6 @@ fun main(vararg args: String) {
     Kast.restartDiscovery()
 
     val di = DI {
-        systemProperty("jpackage.app-version")?.let {
-            bindSingleton("APP_VERSION") { it }
-        }
-
         import(NetworkModule.di)
     }
     val firebase = di.nullableFirebaseInstance()?.auth

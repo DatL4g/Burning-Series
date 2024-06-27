@@ -1,11 +1,13 @@
 package dev.datlag.burningseries.module
 
 import android.content.Context
+import android.os.Build
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.okio.OkioStorage
 import coil3.ImageLoader
 import coil3.request.allowHardware
+import dev.datlag.burningseries.BuildConfig
 import dev.datlag.burningseries.BuildKonfig
 import dev.datlag.burningseries.Sekret
 import dev.datlag.burningseries.database.DriverFactory
@@ -41,6 +43,7 @@ import java.util.concurrent.TimeUnit
 actual object PlatformModule {
 
     private const val NAME = "AndroidPlatformModule"
+    private const val APP_VERSION = "APP_VERSION"
 
     actual val di: DI.Module = DI.Module(NAME) {
         bindSingleton<OkHttpClient> {
@@ -152,6 +155,11 @@ actual object PlatformModule {
         }
         bindSingleton<AndroidCodeAuthFlowFactory> {
             AndroidCodeAuthFlowFactory()
+        }
+        if (!BuildConfig.DEBUG) {
+            bindSingleton<String>(APP_VERSION) {
+                BuildConfig.VERSION_NAME
+            }
         }
     }
 }

@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
+import dev.datlag.burningseries.common.drawProgress
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.skeo.Stream
@@ -121,20 +122,7 @@ fun CenterControls(
                     }
                 ) {
                     Icon(
-                        modifier = Modifier.fillMaxSize().drawWithContent {
-                            with(drawContext.canvas.nativeCanvas) {
-                                val checkPoint = saveLayer(null, null)
-
-                                drawContent()
-
-                                drawRect(
-                                    color = Color.White,
-                                    size = Size(size.width * animatedProgress, size.height),
-                                    blendMode = BlendMode.SrcOut
-                                )
-                                restoreToCount(checkPoint)
-                            }
-                        }.padding(8.dp),
+                        modifier = Modifier.fillMaxSize().drawProgress(Color.White, animatedProgress).padding(8.dp),
                         imageVector = Icons.Rounded.SkipNext,
                         contentDescription = null,
                         tint = Color.White
