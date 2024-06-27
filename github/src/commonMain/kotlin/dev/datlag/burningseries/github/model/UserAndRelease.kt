@@ -59,6 +59,15 @@ data class UserAndRelease(
         @Transient
         val tagNumber = tagName.getDigitsOrNull()?.toIntOrNull()
 
+        @Transient
+        val androidAsset = assets.maxByOrNull { it.apkIdentifier }?.let { a ->
+            if (a.hasAnyApkIdentifier) {
+                a
+            } else {
+                null
+            }
+        }
+
         constructor(release: UserAndReleaseQuery.LatestRelease) : this(
             url = (release.url as? CharSequence)?.toString()?.ifBlank { null },
             tagName = release.tagName,

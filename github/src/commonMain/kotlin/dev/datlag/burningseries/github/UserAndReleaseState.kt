@@ -8,6 +8,10 @@ sealed interface UserAndReleaseState {
     val user: UserAndRelease.User?
         get() = null
 
+    fun release(currentVersion: String?): UserAndRelease.Release? {
+        return null
+    }
+
     data object None : UserAndReleaseState
     data class Success(val data: UserAndRelease) : UserAndReleaseState {
 
@@ -15,6 +19,10 @@ sealed interface UserAndReleaseState {
             get() = data.user
 
         constructor(release: RESTRelease) : this(UserAndRelease(release))
+
+        override fun release(currentVersion: String?): UserAndRelease.Release? {
+            return data.release
+        }
     }
     data class Error(val throwable: Throwable?) : UserAndReleaseState
 

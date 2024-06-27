@@ -129,6 +129,7 @@ kotlin {
                 implementation(libs.activity.compose)
                 implementation(libs.multidex)
                 implementation(libs.androidx.window)
+                implementation(libs.ackpine)
 
                 implementation(libs.ktor.jvm)
                 implementation(libs.coroutines.android)

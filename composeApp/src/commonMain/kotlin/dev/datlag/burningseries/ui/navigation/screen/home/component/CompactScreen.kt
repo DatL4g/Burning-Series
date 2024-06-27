@@ -20,6 +20,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.haze
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.merge
+import dev.datlag.burningseries.github.model.UserAndRelease
 import dev.datlag.burningseries.network.state.HomeState
 import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.navigation.screen.component.HomeCard
@@ -42,16 +46,29 @@ import dev.datlag.burningseries.ui.custom.localScrollbarStyle
 @Composable
 internal fun CompactScreen(
     state: HomeState,
+    release: UserAndRelease.Release?,
     padding: PaddingValues,
     component: HomeComponent
 ) {
     val language by component.language.collectAsStateWithLifecycle(null)
+    var hideRelease by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = padding
     ) {
+        if (!hideRelease && release != null) {
+            item {
+                ReleaseSection(
+                    release = release,
+                    modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp),
+                    onHide = {
+                        hideRelease = true
+                    }
+                )
+            }
+        }
         item {
             Text(
                 modifier = Modifier.padding(16.dp),

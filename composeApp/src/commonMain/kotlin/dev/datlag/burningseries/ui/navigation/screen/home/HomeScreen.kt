@@ -111,16 +111,22 @@ fun HomeScreen(component: HomeComponent) {
             val state by component.home.collectAsStateWithLifecycle()
             val github by component.githubState.collectAsStateWithLifecycle(UserAndReleaseState.None)
 
-            SideEffect {
-                Napier.e("GitHub: $github")
-            }
-
             if (showFavorites) {
                 FavoritesScreen(padding, component)
             } else {
                 when (calculateWindowSizeClass().widthSizeClass) {
-                    WindowWidthSizeClass.Compact -> CompactScreen(state, padding, component)
-                    else -> WideScreen(state, padding, component)
+                    WindowWidthSizeClass.Compact -> CompactScreen(
+                        state = state,
+                        release = github.release(null),
+                        padding = padding,
+                        component = component
+                    )
+                    else -> WideScreen(
+                        state = state,
+                        release = github.release(null),
+                        padding = padding,
+                        component = component
+                    )
                 }
             }
         }
