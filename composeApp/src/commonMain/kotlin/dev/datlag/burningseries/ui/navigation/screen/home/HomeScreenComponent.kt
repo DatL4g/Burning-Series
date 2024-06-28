@@ -17,6 +17,7 @@ import dev.datlag.burningseries.database.ExtendedSeries
 import dev.datlag.burningseries.database.Series
 import dev.datlag.burningseries.database.common.favoritesSeries
 import dev.datlag.burningseries.database.common.favoritesSeriesOneShot
+import dev.datlag.burningseries.database.common.seriesFullHref
 import dev.datlag.burningseries.github.UserAndReleaseRepository
 import dev.datlag.burningseries.github.UserAndReleaseState
 import dev.datlag.burningseries.github.model.UserAndRelease
@@ -132,7 +133,14 @@ class HomeScreenComponent(
     }
 
     override fun details(data: SeriesData, language: Language?) {
-        onMedium(data, language)
+        val savedSeries = database.seriesFullHref(data)?.let { href ->
+            data.shadowCopy(href = href)
+        }
+        if (savedSeries != null) {
+            onMedium(savedSeries, null)
+        } else {
+            onMedium(data, language)
+        }
     }
 
     override fun search(query: String?) {

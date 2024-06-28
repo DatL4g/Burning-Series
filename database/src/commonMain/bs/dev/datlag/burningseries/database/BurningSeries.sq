@@ -62,6 +62,9 @@ UPDATE Series SET href = :value WHERE hrefPrimary = :hrefPrimary OR hrefPrimary 
 updateSeriesSeason:
 UPDATE Series SET season = :value WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
 
+selectSeriesFullHref:
+SELECT href FROM Series WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
+
 insertEpisodeOrIgnore:
 INSERT OR IGNORE INTO Episode(
     href,

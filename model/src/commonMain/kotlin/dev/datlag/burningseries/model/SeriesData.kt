@@ -151,6 +151,16 @@ abstract class SeriesData {
         }
     }
 
+    fun shadowCopy(
+        href: String = this.href,
+        title: String = this.title,
+        coverHref: String? = this.coverHref,
+    ) = object : SeriesData() {
+        override val href: String = href
+        override val title: String = title
+        override val coverHref: String? = coverHref
+    }
+
     companion object {
         fun fromHref(href: String) = object : SeriesData() {
             override val href: String = href
