@@ -269,7 +269,7 @@ class MediumScreenComponent(
         episode: Series.Episode,
         streams: ImmutableCollection<Stream>
     ) {
-        val isSponsor = userHelper.isSponsoring.value
+        val isSponsor = userHelper.isSponsoring
         if (isSponsor) {
             watch(series, episode, streams)
         } else {

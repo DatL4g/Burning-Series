@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.github
 
 import com.apollographql.apollo3.ApolloClient
+import dev.datlag.burningseries.github.model.UserAndRelease
 import dev.datlag.tooling.async.suspendCatching
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -8,7 +9,7 @@ import kotlinx.coroutines.flow.mapNotNull
 class UserAndReleaseRepository(
     private val client: ApolloClient,
     private val github: GitHub,
-    private val saveIsSponsoring: (Boolean) -> Unit
+    private val saveUser: (UserAndRelease.User) -> Unit
 ) {
 
     private val query = Query()
@@ -24,10 +25,7 @@ class UserAndReleaseRepository(
             UserAndReleaseState.fromGraphQL(data, it.exception)
         }
     }.map {
-        val isSponsoring = it.user?.isSponsoring ?: false
-        if (isSponsoring) {
-            saveIsSponsoring(isSponsoring)
-        }
+        it.user?.let(saveUser)
 
         when (it) {
             is UserAndReleaseState.Error -> {

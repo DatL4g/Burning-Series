@@ -1,5 +1,6 @@
 name: Check Dependency Versions
 on:
+  workflow_dispatch:
   push:
     branches:
       - compose

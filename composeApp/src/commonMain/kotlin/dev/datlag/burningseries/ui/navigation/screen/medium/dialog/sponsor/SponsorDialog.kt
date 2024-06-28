@@ -1,18 +1,24 @@
 package dev.datlag.burningseries.ui.navigation.screen.medium.dialog.sponsor
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Savings
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.composeapp.generated.resources.Res
@@ -20,7 +26,9 @@ import dev.datlag.burningseries.composeapp.generated.resources.close
 import dev.datlag.burningseries.composeapp.generated.resources.sponsor
 import dev.datlag.burningseries.composeapp.generated.resources.sponsor_text
 import dev.datlag.burningseries.composeapp.generated.resources.sponsor_hint
+import dev.icerock.moko.resources.compose.painterResource
 import org.jetbrains.compose.resources.stringResource
+import dev.datlag.burningseries.MokoRes
 
 @Composable
 fun SponsorDialog(component: SponsorComponent) {
@@ -53,6 +61,24 @@ fun SponsorDialog(component: SponsorComponent) {
                 )
             }
         },
+        dismissButton = if (!component.isLoggedIn) {
+            {
+                TextButton(
+                    onClick = {
+                        component.login()
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier.size(ButtonDefaults.IconSize),
+                        painter = painterResource(MokoRes.images.github),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(LocalContentColor.current)
+                    )
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(text = "Login")
+                }
+            }
+        } else null,
         confirmButton = {
             TextButton(
                 onClick = {

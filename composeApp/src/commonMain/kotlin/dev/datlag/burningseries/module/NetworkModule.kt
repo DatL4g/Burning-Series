@@ -139,8 +139,8 @@ data object NetworkModule {
             UserAndReleaseRepository(
                 client = instance(),
                 github = instance(),
-                saveIsSponsoring = {
-                    userHelper.setSponsoring(it)
+                saveUser = {
+                    userHelper.updateUser(it)
                 }
             )
         }

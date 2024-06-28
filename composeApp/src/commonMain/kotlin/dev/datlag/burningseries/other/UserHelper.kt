@@ -2,6 +2,7 @@ package dev.datlag.burningseries.other
 
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.database.common.countWatchedEpisodes
+import dev.datlag.burningseries.github.model.UserAndRelease
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.tooling.async.suspendCatching
 import io.github.aakira.napier.Napier
@@ -27,8 +28,13 @@ class UserHelper(
 ) {
 
     private val refreshHandler = TokenRefreshHandler(tokenStore)
-    private val _isSponsoring = MutableStateFlow(false)
-    val isSponsoring: StateFlow<Boolean> = _isSponsoring
+    private var user: UserAndRelease.User? = null
+
+    val isLoggedIn: Boolean
+        get() = user != null
+
+    val isSponsoring: Boolean
+        get() = user?.isSponsoring ?: false
 
     suspend fun login(authFlow: CodeAuthFlow): AccessTokenResponse? {
         val access = suspendCatching {
@@ -83,7 +89,7 @@ class UserHelper(
         return watched >= 30
     }
 
-    fun setSponsoring(value: Boolean) {
-        _isSponsoring.update { value }
+    fun updateUser(value: UserAndRelease.User) {
+        user = value
     }
 }
