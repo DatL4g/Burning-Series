@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import com.vanniktech.blurhash.BlurHash
+import dev.datlag.tooling.Platform
 
 actual fun BlurHash.decode(
     hash: String?,
@@ -43,4 +44,9 @@ actual fun Modifier.drawProgress(color: Color, progress: Float): Modifier = draw
 
         restoreToCount(checkPoint)
     }
+}
+
+@Composable
+actual fun Platform.rememberIsTv(): Boolean {
+    return false
 }

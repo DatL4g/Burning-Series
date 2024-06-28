@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import com.vanniktech.blurhash.BlurHash
+import dev.datlag.tooling.Platform
 
 expect fun BlurHash.decode(
     hash: String?,
@@ -14,3 +15,6 @@ expect fun BlurHash.decode(
 
 @Composable
 expect fun Modifier.drawProgress(color: Color, progress: Float): Modifier
+
+@Composable
+expect fun Platform.rememberIsTv(): Boolean

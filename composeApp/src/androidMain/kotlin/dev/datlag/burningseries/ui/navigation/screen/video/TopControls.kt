@@ -41,9 +41,9 @@ import com.maxkeppeler.sheets.option.models.Option
 import com.maxkeppeler.sheets.option.models.OptionConfig
 import com.maxkeppeler.sheets.option.models.OptionSelection
 import dev.datlag.burningseries.common.icon
+import dev.datlag.burningseries.common.rememberIsTv
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.cast
-import dev.datlag.burningseries.other.rememberIsTv
 import dev.datlag.kast.ConnectionState
 import dev.datlag.kast.DeviceType
 import dev.datlag.kast.Kast

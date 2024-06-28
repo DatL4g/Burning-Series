@@ -40,10 +40,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.common.drawProgress
+import dev.datlag.burningseries.common.rememberIsTv
 import dev.datlag.burningseries.github.model.UserAndRelease
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.DownloadManager
-import dev.datlag.burningseries.other.rememberIsTv
 import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.launchIO
 import dev.datlag.tooling.compose.withMainContext

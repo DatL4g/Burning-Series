@@ -12,6 +12,7 @@
     <string name="welcome_to">Welcome to</string>
     <string name="lets_go">Let's Go</string>
     <string name="aniflow">AniFlow</string>
+    <string name="aniflow_subtitle">Sync your Anime watch progress with AniList.</string>
     <string name="description">Description</string>
     <string name="season_placeholder">Season %1$d</string>
     <string name="select_season">Select Season</string>

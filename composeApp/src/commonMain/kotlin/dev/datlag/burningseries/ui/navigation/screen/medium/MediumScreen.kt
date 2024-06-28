@@ -52,9 +52,12 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.datlag.burningseries.LocalDarkMode
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.plus
+import dev.datlag.burningseries.common.rememberIsTv
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
-import dev.datlag.burningseries.other.rememberIsTv
+import dev.datlag.burningseries.other.AniFlow
+import dev.datlag.burningseries.other.isInstalled
+import dev.datlag.burningseries.ui.navigation.screen.medium.component.AniFlowCard
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.CoverSection
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.DescriptionSection
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.EpisodeItem
@@ -116,7 +119,8 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
         }
     ) { padding ->
         val isAnime by component.seriesIsAnime.collectAsStateWithLifecycle(component.initialIsAnime)
-        val isAndroidPhone = Platform.isAndroidJvm && Platform.rememberIsTv()
+        val isAndroidPhone = Platform.isAndroidJvm && !Platform.rememberIsTv()
+        val isAniFlowInstalled = AniFlow.isInstalled()
         val episodes by component.combinedEpisodes.collectAsStateWithLifecycle(persistentListOf())
 
         LazyColumn(
@@ -138,16 +142,16 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
                     modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp).padding(top = 8.dp)
                 )
             }
+            if (isAndroidPhone && isAnime && !isAniFlowInstalled) {
+                item {
+                    AniFlowCard(modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp).padding(top = 8.dp))
+                }
+            }
             item {
                 DescriptionSection(
                     component = component,
                     modifier = Modifier.fillParentMaxWidth().padding(vertical = 8.dp)
                 )
-            }
-            if (isAndroidPhone && isAnime) {
-                item {
-                    Text(text = "AniFlow")
-                }
             }
             items(episodes.toImmutableList(), key = { it.href }) {
                 EpisodeItem(

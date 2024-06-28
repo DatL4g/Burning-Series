@@ -46,10 +46,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.merge
+import dev.datlag.burningseries.common.rememberIsTv
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.search
 import dev.datlag.burningseries.network.state.SearchState
-import dev.datlag.burningseries.other.rememberIsTv
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeComponent
 import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.onClick

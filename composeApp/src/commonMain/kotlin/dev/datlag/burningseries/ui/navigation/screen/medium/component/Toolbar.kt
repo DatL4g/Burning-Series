@@ -52,11 +52,11 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.icon
 import dev.datlag.burningseries.common.isConnectedOrConnecting
+import dev.datlag.burningseries.common.rememberIsTv
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.cast
 import dev.datlag.burningseries.composeapp.generated.resources.casting_not_supported
 import dev.datlag.burningseries.model.Series
-import dev.datlag.burningseries.other.rememberIsTv
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumComponent
 import dev.datlag.kast.ConnectionState
 import dev.datlag.kast.DeviceType

@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DoubleArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -34,7 +33,7 @@ import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.app_name
 import dev.datlag.burningseries.composeapp.generated.resources.lets_go
 import dev.datlag.burningseries.composeapp.generated.resources.welcome_to
-import dev.datlag.burningseries.other.Project
+import dev.datlag.burningseries.other.AniFlow
 import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
 import dev.datlag.burningseries.ui.navigation.screen.welcome.component.CompactScreen
@@ -118,16 +117,16 @@ private fun LazyListScope.content(
             OutlinedButton(
                 modifier = Modifier.fillParentMaxWidth(0.7F),
                 onClick = {
-                    uriHandler.openUri(Project.AniFlow.googlePlay)
+                    uriHandler.openUri(AniFlow.googlePlay)
                 }
             ) {
                 Image(
                     modifier = Modifier.size(ButtonDefaults.IconSize).clip(CircleShape),
-                    painter = painterResource(Project.AniFlow.image),
+                    painter = painterResource(AniFlow.icon),
                     contentDescription = null
                 )
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(stringResource(Project.AniFlow.title))
+                Text(stringResource(AniFlow.title))
             }
         }
     }
