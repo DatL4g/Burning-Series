@@ -1,6 +1,8 @@
 package dev.datlag.burningseries.ui.navigation.screen.medium
 
 import dev.datlag.burningseries.model.Series
+import dev.datlag.skeo.Stream
+import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,5 +12,12 @@ sealed interface DialogConfig {
     data class Activate(
         val series: Series,
         val episode: Series.Episode
+    ) : DialogConfig
+
+    @Serializable
+    data class Sponsor(
+        val series: Series,
+        val episode: Series.Episode,
+        val streams: ImmutableCollection<Stream>
     ) : DialogConfig
 }

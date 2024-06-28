@@ -134,9 +134,14 @@ data object NetworkModule {
             ktorfit.create<GitHub>()
         }
         bindSingleton<UserAndReleaseRepository> {
+            val userHelper = instance<UserHelper>()
+
             UserAndReleaseRepository(
                 client = instance(),
-                github = instance()
+                github = instance(),
+                saveIsSponsoring = {
+                    userHelper.setSponsoring(it)
+                }
             )
         }
         bindSingleton<OpenIdConnectClient> {
@@ -157,7 +162,9 @@ data object NetworkModule {
         bindSingleton<UserHelper> {
             UserHelper(
                 oidcClient = instance(),
-                tokenStore = instance()
+                tokenStore = instance(),
+                appSettings = instance(),
+                database = instance()
             )
         }
     }

@@ -80,7 +80,7 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
 
     when (val current = episodeState) {
         is EpisodeState.SuccessStream -> {
-            component.watch(
+            component.showSponsoringOrWatch(
                 series = (seriesState as SeriesState.Success).series,
                 episode = current.episode,
                 streams = current.results

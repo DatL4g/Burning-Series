@@ -117,3 +117,6 @@ SELECT number FROM Episode WHERE href = :href OR href LIKE :href;
 
 selectEpisodeByHref:
 SELECT * FROM Episode WHERE href = :href OR href LIKE :href;
+
+countWatchedEpisode:
+SELECT COUNT(DISTINCT href) FROM Episode WHERE watching = 1 OR finished = 1;

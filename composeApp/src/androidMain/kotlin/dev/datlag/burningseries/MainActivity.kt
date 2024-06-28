@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.DefaultComponentContext
@@ -14,11 +15,13 @@ import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import dev.datlag.burningseries.other.DownloadManager
+import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.ui.navigation.RootComponent
 import dev.datlag.kast.Kast
 import dev.datlag.kast.UnselectReason
 import dev.datlag.tooling.decompose.lifecycle.LocalLifecycleOwner
 import dev.datlag.tooling.safeCast
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import org.kodein.di.DIAware
 import org.kodein.di.instance
@@ -56,6 +59,11 @@ class MainActivity : ComponentActivity() {
         DownloadManager.setClient(httpClient).setFile(appContext ?: this)
 
         setContent {
+            val appSettings by di.instance<Settings.PlatformAppSettings>()
+            LaunchedEffect(Unit) {
+                appSettings.increaseStartCounter()
+            }
+
             CompositionLocalProvider(
                 LocalLifecycleOwner provides lifecycleOwner,
                 LocalEdgeToEdge provides true

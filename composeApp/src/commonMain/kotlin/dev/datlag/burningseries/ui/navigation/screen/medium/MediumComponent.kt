@@ -47,13 +47,13 @@ interface MediumComponent : Component {
     fun watched(series: Series, combinedEpisode: CombinedEpisode) = watched(series, combinedEpisode.default)
     fun unwatched(series: Series, episode: Series.Episode)
     fun unwatched(series: Series, combinedEpisode: CombinedEpisode) = unwatched(series, combinedEpisode.default)
-    fun watch(
-        series: Series,
-        episode: Series.Episode,
-        streams: ImmutableCollection<Stream>
-    )
     fun activate(series: Series, episode: Series.Episode)
     fun activate(series: Series, episode: CombinedEpisode) = activate(series, episode.default)
     fun setFavorite(series: Series)
     fun unsetFavorite(series: Series)
+    fun showSponsoringOrWatch(
+        series: Series,
+        episode: Series.Episode,
+        streams: ImmutableCollection<Stream>
+    )
 }

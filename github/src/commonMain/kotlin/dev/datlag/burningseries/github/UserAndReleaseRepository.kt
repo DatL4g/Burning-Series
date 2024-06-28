@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.mapNotNull
 
 class UserAndReleaseRepository(
     private val client: ApolloClient,
-    private val github: GitHub
+    private val github: GitHub,
+    private val saveIsSponsoring: (Boolean) -> Unit
 ) {
 
     private val query = Query()
@@ -23,6 +24,11 @@ class UserAndReleaseRepository(
             UserAndReleaseState.fromGraphQL(data, it.exception)
         }
     }.map {
+        val isSponsoring = it.user?.isSponsoring ?: false
+        if (isSponsoring) {
+            saveIsSponsoring(isSponsoring)
+        }
+
         when (it) {
             is UserAndReleaseState.Error -> {
                 suspendCatching {

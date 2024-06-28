@@ -36,4 +36,6 @@
     <string name="watch">Watch</string>
     <string name="close">Close</string>
     <string name="search">Search</string>
+    <string name="sponsor_text">Maintaining this project is time and money consuming, please consider contributing financially to support it's upkeep.</string>
+    <string name="sponsor_hint">The amount you want to donate is completely up to you, but keep in mind that only GitHub Sponsors or Patreon (linked with GitHub) can be recognized.</string>
 </resources>

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
@@ -31,6 +32,7 @@ import dev.datlag.burningseries.firebase.FirebaseFactory
 import dev.datlag.burningseries.firebase.initializePlatform
 import dev.datlag.burningseries.module.NetworkModule
 import dev.datlag.burningseries.other.StateSaver
+import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.ui.navigation.RootComponent
 import dev.datlag.kast.Kast
 import dev.datlag.sekret.NativeLoader
@@ -113,6 +115,11 @@ private fun runWindow(di: DI) {
         exitProcessOnExit = true
     ) {
         LifecycleController(lifecycle, windowState)
+
+        val appSettings by di.instance<Settings.PlatformAppSettings>()
+        LaunchedEffect(Unit) {
+            appSettings.increaseStartCounter()
+        }
 
         CompositionLocalProvider(
             LocalLifecycleOwner provides lifecycleOwner,

@@ -1,6 +1,14 @@
 package dev.datlag.burningseries.other
 
+import dev.datlag.burningseries.database.BurningSeries
+import dev.datlag.burningseries.database.common.countWatchedEpisodes
+import dev.datlag.burningseries.settings.Settings
 import dev.datlag.tooling.async.suspendCatching
+import io.github.aakira.napier.Napier
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withTimeout
 import org.publicvalue.multiplatform.oidc.ExperimentalOpenIdConnect
 import org.publicvalue.multiplatform.oidc.OpenIdConnectClient
@@ -13,10 +21,14 @@ import org.publicvalue.multiplatform.oidc.types.remote.AccessTokenResponse
 @OptIn(ExperimentalOpenIdConnect::class)
 class UserHelper(
     private val oidcClient: OpenIdConnectClient,
-    private val tokenStore: TokenStore
+    private val tokenStore: TokenStore,
+    private val appSettings: Settings.PlatformAppSettings,
+    private val database: BurningSeries
 ) {
 
     private val refreshHandler = TokenRefreshHandler(tokenStore)
+    private val _isSponsoring = MutableStateFlow(false)
+    val isSponsoring: StateFlow<Boolean> = _isSponsoring
 
     suspend fun login(authFlow: CodeAuthFlow): AccessTokenResponse? {
         val access = suspendCatching {
@@ -60,5 +72,18 @@ class UserHelper(
         }.getOrNull()
 
         return token?.accessToken?.ifBlank { null } ?: oldToken
+    }
+
+    suspend fun requiresSponsoring(): Boolean {
+        if ((appSettings.startCounter.firstOrNull() ?: 0) >= 15) {
+            return true
+        }
+
+        val watched = database.countWatchedEpisodes()
+        return watched >= 30
+    }
+
+    fun setSponsoring(value: Boolean) {
+        _isSponsoring.update { value }
     }
 }

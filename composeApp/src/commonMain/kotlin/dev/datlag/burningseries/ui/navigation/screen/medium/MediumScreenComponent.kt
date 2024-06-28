@@ -35,11 +35,14 @@ import dev.datlag.burningseries.network.SeriesStateMachine
 import dev.datlag.burningseries.network.state.EpisodeAction
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
+import dev.datlag.burningseries.other.UserHelper
 import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.navigation.DialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.medium.dialog.activate.ActivateDialogComponent
+import dev.datlag.burningseries.ui.navigation.screen.medium.dialog.sponsor.SponsorDialogComponent
 import dev.datlag.skeo.Stream
 import dev.datlag.tooling.compose.ioDispatcher
+import dev.datlag.tooling.compose.withIOContext
 import dev.datlag.tooling.compose.withMainContext
 import dev.datlag.tooling.decompose.ioScope
 import dev.datlag.tooling.safeCast
@@ -140,6 +143,19 @@ class MediumScreenComponent(
                     }
                 }
             )
+            is DialogConfig.Sponsor -> SponsorDialogComponent(
+                componentContext = context,
+                di = di,
+                onDismiss = {
+                    dialogNavigation.dismiss {
+                        watch(
+                            config.series,
+                            config.episode,
+                            config.streams
+                        )
+                    }
+                }
+            )
         }
     }
 
@@ -164,6 +180,8 @@ class MediumScreenComponent(
             }
         )
     }
+
+    private val userHelper by instance<UserHelper>()
 
     init {
         val hrefWithLanguage = if (initialLanguage != null) {
@@ -206,7 +224,7 @@ class MediumScreenComponent(
         }
     }
 
-    override fun watch(
+    private fun watch(
         series: Series,
         episode: Series.Episode,
         streams: ImmutableCollection<Stream>
@@ -244,5 +262,29 @@ class MediumScreenComponent(
     override fun unwatched(series: Series, episode: Series.Episode) {
         database.insertEpisodeOrIgnore(episode, series)
         database.setEpisodeUnwatched(episode)
+    }
+
+    override fun showSponsoringOrWatch(
+        series: Series,
+        episode: Series.Episode,
+        streams: ImmutableCollection<Stream>
+    ) {
+        val isSponsor = userHelper.isSponsoring.value
+        if (isSponsor) {
+            watch(series, episode, streams)
+        } else {
+            launchMain {
+                if (withIOContext { userHelper.requiresSponsoring() }) {
+                    episodeStateMachine.dispatch(EpisodeAction.Clear)
+                    dialogNavigation.activate(
+                        DialogConfig.Sponsor(
+                            series, episode, streams
+                        )
+                    )
+                } else {
+                    watch(series, episode, streams)
+                }
+            }
+        }
     }
 }

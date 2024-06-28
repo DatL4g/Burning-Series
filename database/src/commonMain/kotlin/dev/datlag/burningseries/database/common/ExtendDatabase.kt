@@ -288,3 +288,7 @@ fun BurningSeries.episodeRefreshingData(episode: Series.Episode, context: Corout
 fun BurningSeries.seriesFullHref(data: SeriesData): String? {
     return this.burningSeriesQueries.selectSeriesFullHref(data.source).executeAsOneOrNull()?.ifBlank { null }
 }
+
+fun BurningSeries.countWatchedEpisodes(): Int {
+    return this.burningSeriesQueries.countWatchedEpisode().executeAsOneOrNull()?.toInt() ?: 0
+}

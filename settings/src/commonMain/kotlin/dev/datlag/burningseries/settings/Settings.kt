@@ -9,8 +9,10 @@ data object Settings {
 
     interface PlatformAppSettings {
         val language: Flow<Language?>
+        val startCounter: Flow<Int>
 
         suspend fun setLanguage(language: Language)
+        suspend fun increaseStartCounter()
     }
 
     @OptIn(ExperimentalOpenIdConnect::class)
