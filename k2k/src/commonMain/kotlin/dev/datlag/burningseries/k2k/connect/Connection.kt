@@ -28,6 +28,8 @@ class Connection private constructor(
 
     val receiveData: Flow<Pair<Host, ByteArray>> = channelFlow {
         ConnectionServer.receiveData.collectLatest {
+            println("Received Data: ${it?.second?.decodeToString()}")
+
             if (it != null) {
                 val peer = peers.value.firstOrNull { aPeer ->
                     aPeer.hostAddress == it.first.substringBefore(':').substringAfter('/')

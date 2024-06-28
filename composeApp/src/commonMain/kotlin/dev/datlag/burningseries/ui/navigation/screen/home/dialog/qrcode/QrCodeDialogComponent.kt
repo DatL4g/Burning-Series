@@ -8,10 +8,12 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import dev.datlag.burningseries.k2k.connect.connection
 import dev.datlag.burningseries.k2k.discover.discovery
 import dev.datlag.nanoid.NanoIdUtils
 import dev.datlag.tooling.Platform
 import dev.datlag.tooling.decompose.ioScope
+import io.github.aakira.napier.Napier
 import org.kodein.di.DI
 
 class QrCodeDialogComponent(
@@ -27,6 +29,11 @@ class QrCodeDialogComponent(
         setDiscoveryTimeout(1L) // builder requires value, stop immediately if used for discovery
     }
 
+    private val connection = ioScope().connection {
+        setPort(1338)
+        fromDiscovery(discovery)
+    }
+
     init {
         val name = if (Platform.isDesktop) {
             "Desktop"
@@ -39,8 +46,13 @@ class QrCodeDialogComponent(
             filterMatch = identifier
         )
 
-        doOnDestroy {
-            discovery.stopBeingDiscoverable()
+        connection.startReceiving()
+        Napier.e("Started Receiving")
+
+        launchIO {
+            connection.receiveData.collect { (host, bytes) ->
+                Napier.e("Got from ${host.name}: ${bytes.decodeToString()}")
+            }
         }
     }
 

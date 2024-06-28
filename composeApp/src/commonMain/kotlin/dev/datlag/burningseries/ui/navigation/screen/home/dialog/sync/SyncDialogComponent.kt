@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.navigation.screen.home.dialog.sync
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.lifecycle.doOnDestroy
 import dev.datlag.burningseries.k2k.Host
 import dev.datlag.burningseries.k2k.connect.Connection
 import dev.datlag.burningseries.k2k.connect.connection
@@ -31,6 +32,9 @@ class SyncDialogComponent(
         setHostIsClient(false)
         setHostFilter("^$connectId$".toRegex())
     }
+    private val connect = ioScope().connection {
+        setPort(1338)
+    }
 
     init {
         discovery.startDiscovery()
@@ -38,7 +42,9 @@ class SyncDialogComponent(
         launchIO {
             val matchingPeer = discovery.peers.firstOrNull { it.size >= 1 }?.firstOrNull()
 
-            matchingPeer?.let(::connect)
+            matchingPeer?.let {
+                connect(it)
+            }
         }
     }
 
@@ -53,12 +59,10 @@ class SyncDialogComponent(
         onDismiss()
     }
 
-    private fun connect(host: Host) {
+    private suspend fun connect(host: Host) {
         discovery.stopDiscovery()
 
-        val connect = ioScope().connection {
-            setPort(1337)
-            forPeer(host)
-        }
+        Napier.e("Started sending")
+        connect.send("Hello from Syncer".encodeToByteArray(), host)
     }
 }
