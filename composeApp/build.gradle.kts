@@ -100,6 +100,7 @@ kotlin {
             implementation(libs.kolor)
             implementation(libs.kache)
             implementation(libs.blurhash)
+            implementation(libs.qrose)
 
             implementation(libs.coil)
             implementation(libs.coil.network)
@@ -117,6 +118,7 @@ kotlin {
             implementation(project(":firebase"))
             implementation(project(":database"))
             implementation(project(":github"))
+            implementation(project(":k2k"))
         }
 
         val androidMain by getting {

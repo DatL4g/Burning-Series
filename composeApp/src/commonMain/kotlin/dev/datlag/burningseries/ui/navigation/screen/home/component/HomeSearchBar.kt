@@ -21,6 +21,7 @@ import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.QrCode
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.DockedSearchBar
@@ -90,7 +91,24 @@ internal fun HomeSearchBar(component: HomeComponent, showFavorites: Boolean) {
             component.search(it)
         },
         leadingIcon = {
-            if (!Platform.rememberIsTv()) {
+            val isDesktopOrTv = Platform.isDesktop || Platform.rememberIsTv()
+
+            if (isDesktopOrTv) {
+                IconButton(
+                    onClick = {
+                        if (isActive) {
+                            isActive = false
+                        } else {
+                            component.showQrCode()
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (isActive) Icons.Rounded.KeyboardArrowDown else Icons.Rounded.QrCode,
+                        contentDescription = null
+                    )
+                }
+            } else {
                 IconButton(
                     onClick = {
                         if (isActive) {
@@ -102,19 +120,6 @@ internal fun HomeSearchBar(component: HomeComponent, showFavorites: Boolean) {
                 ) {
                     Icon(
                         imageVector = if (isActive) Icons.Rounded.KeyboardArrowDown else Icons.Rounded.Settings,
-                        contentDescription = null
-                    )
-                }
-            } else {
-                IconButton(
-                    onClick = {
-                        if (isActive) {
-                            isActive = false
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = if (isActive) Icons.Rounded.KeyboardArrowDown else Icons.Rounded.Search,
                         contentDescription = null
                     )
                 }

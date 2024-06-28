@@ -43,6 +43,7 @@ nanoid = "1.0.1"
 napier = "2.7.1"
 oidc = "0.10.0"
 okhttp = "4.12.0"
+qrose = "1.0.1"
 sekret = "2.0.0-alpha-05"
 serialization = "1.7.0"
 skeo = "0.1.1"
@@ -102,6 +103,8 @@ ktor-js = { group = "io.ktor", name = "ktor-client-js", version.ref = "ktor" }
 ktor-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-network = { group = "io.ktor", name = "ktor-network", version.ref = "ktor" }
+ktor-network-tls = { group = "io.ktor", name = "ktor-network-tls", version.ref = "ktor" }
 ktorfit = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-lib", version.ref = "ktorfit" }
 ktorfit-ksp = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-ksp", version.ref = "ktorfit" }
 media3 = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
@@ -120,6 +123,7 @@ napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 oidc = { group = "io.github.kalinjul.kotlin.multiplatform", name = "oidc-appsupport", version.ref = "oidc" }
 oidc-tokenstore = { group = "io.github.kalinjul.kotlin.multiplatform", name = "oidc-tokenstore", version.ref = "oidc" }
 okhttp-doh = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttp" }
+qrose = { group = "io.github.alexzhirkevich", name = "qrose", version.ref = "qrose" }
 sekret = { group = "dev.datlag.sekret", name = "sekret", version.ref = "sekret" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "serialization" }
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }

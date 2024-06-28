@@ -21,6 +21,7 @@ import dev.datlag.burningseries.database.common.seriesFullHref
 import dev.datlag.burningseries.github.UserAndReleaseRepository
 import dev.datlag.burningseries.github.UserAndReleaseState
 import dev.datlag.burningseries.github.model.UserAndRelease
+import dev.datlag.burningseries.k2k.discover.discovery
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.SearchItem
 import dev.datlag.burningseries.model.SeriesData
@@ -32,10 +33,14 @@ import dev.datlag.burningseries.network.state.SearchState
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.navigation.DialogComponent
+import dev.datlag.burningseries.ui.navigation.screen.home.dialog.qrcode.QrCodeDialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.release.ReleaseDialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.SettingsDialogComponent
+import dev.datlag.burningseries.ui.navigation.screen.home.dialog.sync.SyncDialogComponent
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.decompose.ioScope
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.collections.immutable.ImmutableSet
@@ -56,6 +61,7 @@ import org.kodein.di.instanceOrNull
 class HomeScreenComponent(
     componentContext: ComponentContext,
     override val di: DI,
+    private val syncId: String?,
     private val onMedium: (SeriesData, Language?) -> Unit
 ): HomeComponent, ComponentContext by componentContext {
 
@@ -98,7 +104,8 @@ class HomeScreenComponent(
     private val dialogNavigation = SlotNavigation<DialogConfig>()
     override val dialog: Value<ChildSlot<DialogConfig, DialogComponent>> = childSlot(
         source = dialogNavigation,
-        serializer = DialogConfig.serializer()
+        serializer = DialogConfig.serializer(),
+        initialConfiguration = { syncId?.ifBlank { null }?.let(DialogConfig::Sync) }
     ) { config, context ->
         when (config) {
             is DialogConfig.Settings -> SettingsDialogComponent(
@@ -115,6 +122,17 @@ class HomeScreenComponent(
                         displayRelease.update { false }
                     }
                 }
+            )
+            is DialogConfig.QrCode -> QrCodeDialogComponent(
+                componentContext = context,
+                di = di,
+                onDismiss = dialogNavigation::dismiss
+            )
+            is DialogConfig.Sync -> SyncDialogComponent(
+                componentContext = context,
+                di = di,
+                connectId = config.id,
+                onDismiss = dialogNavigation::dismiss
             )
         }
     }
@@ -165,5 +183,9 @@ class HomeScreenComponent(
 
     override fun release(release: UserAndRelease.Release) {
         dialogNavigation.activate(DialogConfig.Release(release))
+    }
+
+    override fun showQrCode() {
+        dialogNavigation.activate(DialogConfig.QrCode)
     }
 }

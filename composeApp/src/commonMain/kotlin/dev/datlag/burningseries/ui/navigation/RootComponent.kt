@@ -28,7 +28,8 @@ import org.kodein.di.instance
 
 class RootComponent(
     componentContext: ComponentContext,
-    override val di: DI
+    override val di: DI,
+    private val syncId: String? = null
 ) : Component, ComponentContext by componentContext {
 
     private val settings by instance<Settings.PlatformAppSettings>()
@@ -43,7 +44,7 @@ class RootComponent(
             if (it == null) {
                 RootConfig.Welcome
             } else {
-                RootConfig.Home
+                RootConfig.Home(syncId?.ifBlank { null })
             }
         },
         childFactory = ::createScreenComponent
@@ -58,12 +59,13 @@ class RootComponent(
                 componentContext = componentContext,
                 di = di,
                 onHome = {
-                    navigation.replaceAll(RootConfig.Home)
+                    navigation.replaceAll(RootConfig.Home(syncId?.ifBlank { null }))
                 }
             )
             is RootConfig.Home -> HomeScreenComponent(
                 componentContext = componentContext,
                 di = di,
+                syncId = rootConfig.syncId,
                 onMedium = { data, lang ->
                     navigation.bringToFront(RootConfig.Medium(data, lang))
                 }
@@ -127,5 +129,9 @@ class RootComponent(
                 it.instance.render()
             }
         }
+    }
+
+    fun onSync(id: String) {
+        navigation.replaceAll(RootConfig.Home(syncId = id.ifBlank { null }))
     }
 }

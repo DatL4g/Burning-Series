@@ -17,7 +17,7 @@ sealed class RootConfig {
     data object Welcome : RootConfig()
 
     @Serializable
-    data object Home : RootConfig()
+    data class Home(val syncId: String?) : RootConfig()
 
     @Serializable
     data class Medium(

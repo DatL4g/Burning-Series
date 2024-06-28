@@ -6,16 +6,17 @@ plugins {
 kotlin {
     jvm()
 
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-
     applyDefaultHierarchyTemplate()
 
     sourceSets {
         commonMain.dependencies {
             api(libs.immutable)
             implementation(libs.coroutines)
+            implementation(libs.ktor)
+            implementation(libs.ktor.network)
+            implementation(libs.ktor.network.tls)
+            implementation(libs.serialization.json)
+            implementation(libs.tooling)
         }
     }
 }

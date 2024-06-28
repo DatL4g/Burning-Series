@@ -38,4 +38,5 @@ interface HomeComponent : Component {
     fun toggleFavorites()
     fun settings()
     fun release(release: UserAndRelease.Release)
+    fun showQrCode()
 }

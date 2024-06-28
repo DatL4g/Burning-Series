@@ -1,6 +1,8 @@
 package dev.datlag.burningseries
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +33,8 @@ import org.publicvalue.multiplatform.oidc.appsupport.CodeAuthFlowFactory
 
 class MainActivity : ComponentActivity() {
 
+    private lateinit var root: RootComponent
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -46,12 +50,13 @@ class MainActivity : ComponentActivity() {
         val httpClient by di.instance<HttpClient>()
         val appContext by di.instanceOrNull<Context>()
 
-        val root = RootComponent(
+        root = RootComponent(
             componentContext = DefaultComponentContext(
                 lifecycle = lifecycleOwner.lifecycle,
                 backHandler = backHandler()
             ),
-            di = di
+            di = di,
+            syncId = intent.data?.findSyncId()
         )
 
         authFactory.registerActivity(this)
@@ -77,10 +82,35 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        intent.data?.findSyncId()?.let(root::onSync)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
         Kast.unselect(UnselectReason.disconnected)
         Kast.dispose()
+    }
+
+    private fun Uri.findSyncId(): String? {
+        val matchingHost = this.host.equals("bs.datlag", ignoreCase = true)
+        if (matchingHost) {
+            val matchingPath = this.pathSegments.firstOrNull()?.equals("sync", ignoreCase = true) == true
+
+            if (matchingPath) {
+                val id = lastPathSegment?.ifBlank {
+                    null
+                } ?: pathSegments.lastOrNull()?.ifBlank {
+                    null
+                }
+
+                return id
+            }
+        }
+
+        return null
     }
 }
