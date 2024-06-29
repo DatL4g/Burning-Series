@@ -29,9 +29,13 @@ class UserHelper(
 
     private val refreshHandler = TokenRefreshHandler(tokenStore)
     private var user: UserAndRelease.User? = null
+        set(value) {
+            field = value
+            _isLoggedIn.update { value != null }
+        }
 
-    val isLoggedIn: Boolean
-        get() = user != null
+    private val _isLoggedIn = MutableStateFlow(user != null)
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
     val isSponsoring: Boolean
         get() = user?.isSponsoring ?: false
@@ -46,6 +50,15 @@ class UserHelper(
         }
 
         return access
+    }
+
+    suspend fun logout() {
+        tokenStore.saveTokens(
+            accessToken = "",
+            refreshToken = null,
+            idToken = null
+        )
+        user = null
     }
 
     suspend fun getAccessWithAuthFlowToken(authFlow: CodeAuthFlow): String? {

@@ -8,6 +8,7 @@ import dev.datlag.burningseries.other.UserHelper
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.tooling.compose.ioDispatcher
+import dev.datlag.tooling.compose.withMainContext
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -51,9 +52,18 @@ class SettingsDialogComponent(
     }
 
     @OptIn(ExperimentalOpenIdConnect::class)
-    override fun auth() {
+    override fun login() {
         launchIO {
             userHelper.login(authFlow)
+        }
+    }
+
+    override fun logout() {
+        launchIO {
+            userHelper.logout()
+            withMainContext {
+                onDismiss()
+            }
         }
     }
 }

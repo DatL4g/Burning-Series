@@ -16,6 +16,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -29,9 +30,15 @@ import dev.datlag.burningseries.composeapp.generated.resources.sponsor_hint
 import dev.icerock.moko.resources.compose.painterResource
 import org.jetbrains.compose.resources.stringResource
 import dev.datlag.burningseries.MokoRes
+import dev.datlag.burningseries.common.rememberIsTv
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 
 @Composable
 fun SponsorDialog(component: SponsorComponent) {
+    val isDesktopOrTv = Platform.isDesktop || Platform.rememberIsTv()
+    val isLoggedIn by component.isLoggedIn.collectAsStateWithLifecycle()
+
     AlertDialog(
         onDismissRequest = {},
         icon = {
@@ -61,7 +68,7 @@ fun SponsorDialog(component: SponsorComponent) {
                 )
             }
         },
-        dismissButton = if (!component.isLoggedIn) {
+        dismissButton = if (!isDesktopOrTv && !isLoggedIn) {
             {
                 TextButton(
                     onClick = {

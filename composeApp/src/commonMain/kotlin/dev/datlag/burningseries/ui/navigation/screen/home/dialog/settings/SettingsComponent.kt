@@ -11,5 +11,6 @@ interface SettingsComponent : DialogComponent {
     val userAndRelease: Flow<UserAndReleaseState>
 
     fun setLanguage(language: Language)
-    fun auth()
+    fun login()
+    fun logout()
 }

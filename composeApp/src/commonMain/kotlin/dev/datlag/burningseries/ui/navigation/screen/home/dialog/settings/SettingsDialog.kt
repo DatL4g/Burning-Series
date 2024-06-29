@@ -24,6 +24,7 @@ import dev.datlag.burningseries.common.merge
 import dev.datlag.burningseries.github.UserAndReleaseState
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.InfoSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.LanguageSection
+import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.LoginSection
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,13 +70,16 @@ fun SettingsDialog(component: SettingsComponent) {
                 )
             }
             item {
-                Button(
-                    onClick = {
-                        component.auth()
+                LoginSection(
+                    isLoggedIn = userState.user != null,
+                    modifier = Modifier.fillParentMaxWidth(),
+                    onLogin = {
+                        component.login()
+                    },
+                    onLogout = {
+                        component.logout()
                     }
-                ) {
-                    Text(text = "Authorize with GitHub")
-                }
+                )
             }
         }
     }

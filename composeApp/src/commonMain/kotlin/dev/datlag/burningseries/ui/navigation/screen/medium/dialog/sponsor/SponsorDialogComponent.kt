@@ -15,8 +15,7 @@ class SponsorDialogComponent(
 
     private val authFlow by instance<CodeAuthFlow>()
     private val userHelper by instance<UserHelper>()
-    override val isLoggedIn: Boolean
-        get() = userHelper.isLoggedIn
+    override val isLoggedIn = userHelper.isLoggedIn
 
     @Composable
     override fun render() {
