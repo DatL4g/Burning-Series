@@ -29,7 +29,7 @@ class SyncDialogComponent(
 
     private val syncHelper by instance<SyncHelper>()
     override val deviceNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    override val sending: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val sendingTo: MutableStateFlow<String?> = MutableStateFlow(null)
     private val discovery = ioScope().discovery {
         setPort(1337)
         setDiscoveryTimeout(5000L)
@@ -71,11 +71,11 @@ class SyncDialogComponent(
         discovery.stopDiscovery()
 
         deviceNotFound.update { false }
-        sending.update { true }
+        sendingTo.update { host.name }
         while (currentCoroutineContext().isActive) {
             connect.send(syncHelper.encodeSettingsToByteArray(), host)
             delay(3000)
         }
-        sending.update { false }
+        sendingTo.update { null }
     }
 }

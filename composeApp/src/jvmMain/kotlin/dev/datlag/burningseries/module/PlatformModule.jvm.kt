@@ -7,6 +7,7 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import dev.datlag.burningseries.BuildKonfig
 import dev.datlag.burningseries.Sekret
+import dev.datlag.burningseries.common.deviceName
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.firebase.FirebaseFactory
 import dev.datlag.burningseries.firebase.initialize
@@ -16,6 +17,7 @@ import dev.datlag.burningseries.settings.DataStoreUserSettings
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.AppSettings
 import dev.datlag.burningseries.settings.model.UserSettings
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.Tooling
 import dev.datlag.tooling.createAsFileSafely
 import dev.datlag.tooling.getRWUserConfigFile
@@ -47,6 +49,7 @@ actual object PlatformModule {
     private const val NAME = "DesktopPlatformModule"
     private const val APP_NAME = "Burning-Series"
     private const val APP_VERSION = "APP_VERSION"
+    private const val DEVICE_NAME = "DEVICE_NAME"
 
     actual val di: DI.Module = DI.Module(NAME) {
         bindSingleton<PlatformContext> {
@@ -159,6 +162,9 @@ actual object PlatformModule {
         }
         systemProperty("jpackage.app-version")?.let {
             bindSingleton(APP_VERSION) { it }
+        }
+        bindSingleton<String>(DEVICE_NAME) {
+            Platform.deviceName()
         }
     }
 }

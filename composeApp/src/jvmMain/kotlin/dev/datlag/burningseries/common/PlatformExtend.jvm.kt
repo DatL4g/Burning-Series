@@ -11,6 +11,10 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import com.vanniktech.blurhash.BlurHash
 import dev.datlag.tooling.Platform
+import dev.datlag.tooling.scopeCatching
+import dev.datlag.tooling.systemEnv
+import dev.datlag.tooling.systemProperty
+import java.net.InetAddress
 
 actual fun BlurHash.decode(
     hash: String?,
@@ -49,4 +53,18 @@ actual fun Modifier.drawProgress(color: Color, progress: Float): Modifier = draw
 @Composable
 actual fun Platform.rememberIsTv(): Boolean {
     return false
+}
+
+fun Platform.deviceName(): String {
+    return systemEnv("COMPUTERNAME")?.ifBlank { null }
+        ?: systemEnv("HOSTNAME")?.ifBlank { null }
+        ?: systemProperty("COMPUTERNAME")?.ifBlank { null }
+        ?: systemProperty("HOSTNAME")?.ifBlank { null }
+        ?: scopeCatching {
+            InetAddress.getLocalHost().hostName
+        }.getOrNull()?.ifBlank { null }
+        ?: scopeCatching {
+            InetAddress.getLocalHost().canonicalHostName
+        }.getOrNull()?.ifBlank { null }
+        ?: "Desktop"
 }

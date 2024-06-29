@@ -39,16 +39,11 @@ class QrCodeDialogComponent(
     private val connection = ioScope().connection {
         setPort(1338)
     }
+    private val deviceName by instance<String>("DEVICE_NAME")
 
     init {
-        val name = if (Platform.isDesktop) {
-            "Desktop"
-        } else {
-            "Android"
-        }
-
         discovery.makeDiscoverable(
-            hostName = name,
+            hostName = deviceName,
             filterMatch = identifier
         )
 

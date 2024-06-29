@@ -10,6 +10,7 @@ import coil3.request.allowHardware
 import dev.datlag.burningseries.BuildConfig
 import dev.datlag.burningseries.BuildKonfig
 import dev.datlag.burningseries.Sekret
+import dev.datlag.burningseries.common.deviceName
 import dev.datlag.burningseries.database.DriverFactory
 import dev.datlag.burningseries.firebase.FirebaseFactory
 import dev.datlag.burningseries.firebase.initialize
@@ -19,6 +20,7 @@ import dev.datlag.burningseries.settings.DataStoreUserSettings
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.AppSettings
 import dev.datlag.burningseries.settings.model.UserSettings
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.createAsFileSafely
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
@@ -44,6 +46,7 @@ actual object PlatformModule {
 
     private const val NAME = "AndroidPlatformModule"
     private const val APP_VERSION = "APP_VERSION"
+    private const val DEVICE_NAME = "DEVICE_NAME"
 
     actual val di: DI.Module = DI.Module(NAME) {
         bindSingleton<OkHttpClient> {
@@ -160,6 +163,9 @@ actual object PlatformModule {
             bindSingleton<String>(APP_VERSION) {
                 BuildConfig.VERSION_NAME
             }
+        }
+        bindSingleton<String>(DEVICE_NAME) {
+            Platform.deviceName(instance())
         }
     }
 }

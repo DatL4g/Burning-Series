@@ -41,7 +41,7 @@ fun SyncDialog(component: SyncComponent) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val deviceNotFound by component.deviceNotFound.collectAsStateWithLifecycle()
-                val sending by component.sending.collectAsStateWithLifecycle()
+                val sendingTo by component.sendingTo.collectAsStateWithLifecycle()
 
                 if (deviceNotFound) {
                     Text(
@@ -50,19 +50,19 @@ fun SyncDialog(component: SyncComponent) {
                         textAlign = TextAlign.Center
                     )
                 } else {
-                    if (sending) {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Syncing to your other device, please wait",
-                            textAlign = TextAlign.Center
-                        )
-                        CircularProgressIndicator()
-                    } else {
+                    if (sendingTo.isNullOrBlank()) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Connecting to your other device, please wait",
                             textAlign = TextAlign.Center
                         )
+                    } else {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Syncing to $sendingTo, please wait",
+                            textAlign = TextAlign.Center
+                        )
+                        CircularProgressIndicator()
                     }
                 }
             }
