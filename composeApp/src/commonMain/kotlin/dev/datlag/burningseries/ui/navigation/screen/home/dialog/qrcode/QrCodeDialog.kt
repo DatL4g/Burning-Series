@@ -34,6 +34,7 @@ import io.github.alexzhirkevich.qrose.options.solid
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import org.jetbrains.compose.resources.stringResource
 import dev.datlag.burningseries.MokoRes
+import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.ui.custom.TintPainter
 import io.github.alexzhirkevich.qrose.options.QrLogoPadding
 import io.github.alexzhirkevich.qrose.toImageBitmap
@@ -67,7 +68,7 @@ fun QrCodeDialog(component: QrCodeComponent) {
                 val logo = painterResource(MokoRes.images.Logo)
                 Image(
                     modifier = Modifier.size(200.dp),
-                    painter = rememberQrCodePainter("https://bs.datlag/sync/${component.identifier}") {
+                    painter = rememberQrCodePainter("${Constants.SYNCING_URL}${component.identifier}") {
                         logo {
                             painter = TintPainter(logo, contentColor)
                             padding = QrLogoPadding.Natural(0.1F)

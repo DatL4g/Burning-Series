@@ -11,6 +11,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.SwitchColors
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -127,4 +129,28 @@ fun SheetState.isFullyExpandedOrTargeted(forceFullExpand: Boolean = false): Bool
     }
 
     return this.targetValue == checkState
+}
+
+@Composable
+fun SwitchDefaults.alwaysEnabledColors(): SwitchColors {
+    val defaultColors = SwitchDefaults.colors()
+
+    return SwitchColors(
+        checkedThumbColor = defaultColors.checkedThumbColor,
+        checkedTrackColor = defaultColors.checkedTrackColor,
+        checkedBorderColor = defaultColors.checkedBorderColor,
+        checkedIconColor = defaultColors.checkedIconColor,
+        uncheckedThumbColor = defaultColors.uncheckedThumbColor,
+        uncheckedTrackColor = defaultColors.uncheckedTrackColor,
+        uncheckedBorderColor = defaultColors.uncheckedBorderColor,
+        uncheckedIconColor = defaultColors.uncheckedIconColor,
+        disabledCheckedThumbColor = defaultColors.checkedThumbColor,
+        disabledCheckedTrackColor = defaultColors.checkedTrackColor,
+        disabledCheckedBorderColor = defaultColors.checkedBorderColor,
+        disabledCheckedIconColor = defaultColors.checkedIconColor,
+        disabledUncheckedThumbColor = defaultColors.uncheckedThumbColor,
+        disabledUncheckedTrackColor = defaultColors.uncheckedTrackColor,
+        disabledUncheckedBorderColor = defaultColors.uncheckedBorderColor,
+        disabledUncheckedIconColor = defaultColors.uncheckedIconColor,
+    )
 }

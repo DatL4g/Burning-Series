@@ -6,4 +6,7 @@ data object Constants {
     const val GITHUB_OWNER = "https://github.com/DatL4g"
     const val GITHUB_REPO = "$GITHUB_OWNER/Burning-Series"
     const val GITHUB_RELEASE = "$GITHUB_REPO/releases/latest"
+
+    const val SYNCING_DOMAIN = "burningseries.datlag"
+    const val SYNCING_URL = "https://burningseries.datlag/sync/"
 }

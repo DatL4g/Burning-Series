@@ -22,9 +22,12 @@ import dev.datlag.burningseries.LocalEdgeToEdge
 import dev.datlag.burningseries.common.isFullyExpandedOrTargeted
 import dev.datlag.burningseries.common.merge
 import dev.datlag.burningseries.github.UserAndReleaseState
+import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.GitHubOwnerSection
+import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.GitHubRepoSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.InfoSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.LanguageSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.LoginSection
+import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.SyncSection
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,6 +83,13 @@ fun SettingsDialog(component: SettingsComponent) {
                         component.logout()
                     }
                 )
+            }
+            SyncSection()
+            item {
+                GitHubRepoSection(modifier = Modifier.fillParentMaxWidth())
+            }
+            item {
+                GitHubOwnerSection(modifier = Modifier.fillParentMaxWidth())
             }
         }
     }

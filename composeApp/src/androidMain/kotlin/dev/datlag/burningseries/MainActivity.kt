@@ -16,6 +16,8 @@ import com.arkivanov.essenty.backhandler.backHandler
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.essentyLifecycle
+import dev.datlag.burningseries.other.Constants
+import dev.datlag.burningseries.other.DomainVerifier
 import dev.datlag.burningseries.other.DownloadManager
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.ui.navigation.RootComponent
@@ -62,6 +64,7 @@ class MainActivity : ComponentActivity() {
         authFactory.registerActivity(this)
         Kast.setup(this)
         DownloadManager.setClient(httpClient).setFile(appContext ?: this)
+        DomainVerifier.verify(this)
 
         setContent {
             val appSettings by di.instance<Settings.PlatformAppSettings>()
@@ -93,10 +96,35 @@ class MainActivity : ComponentActivity() {
 
         Kast.unselect(UnselectReason.disconnected)
         Kast.dispose()
+        DomainVerifier.verify(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        DomainVerifier.verify(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        DomainVerifier.verify(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        DomainVerifier.verify(this)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+
+        DomainVerifier.verify(this)
     }
 
     private fun Uri.findSyncId(): String? {
-        val matchingHost = this.host.equals("bs.datlag", ignoreCase = true)
+        val matchingHost = this.host.equals(Constants.SYNCING_DOMAIN, ignoreCase = true)
         if (matchingHost) {
             val matchingPath = this.pathSegments.firstOrNull()?.equals("sync", ignoreCase = true) == true
 
