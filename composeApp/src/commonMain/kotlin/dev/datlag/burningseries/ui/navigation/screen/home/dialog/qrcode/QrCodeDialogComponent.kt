@@ -10,11 +10,16 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import dev.datlag.burningseries.k2k.connect.connection
 import dev.datlag.burningseries.k2k.discover.discovery
+import dev.datlag.burningseries.other.SyncHelper
 import dev.datlag.nanoid.NanoIdUtils
 import dev.datlag.tooling.Platform
 import dev.datlag.tooling.decompose.ioScope
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import org.kodein.di.DI
+import org.kodein.di.instance
 
 class QrCodeDialogComponent(
     componentContext: ComponentContext,
@@ -22,6 +27,8 @@ class QrCodeDialogComponent(
     private val onDismiss: () -> Unit
 ) : QrCodeComponent, ComponentContext by componentContext {
 
+    private val syncHelper by instance<SyncHelper>()
+    override val syncedSettings: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val identifier: String = NanoIdUtils.randomNanoId()
     private val discovery = ioScope().discovery {
         setPort(1337)
@@ -31,7 +38,6 @@ class QrCodeDialogComponent(
 
     private val connection = ioScope().connection {
         setPort(1338)
-        fromDiscovery(discovery)
     }
 
     init {
@@ -46,13 +52,9 @@ class QrCodeDialogComponent(
             filterMatch = identifier
         )
 
-        connection.startReceiving()
-        Napier.e("Started Receiving")
-
-        launchIO {
-            connection.receiveData.collect { (host, bytes) ->
-                Napier.e("Got from ${host.name}: ${bytes.decodeToString()}")
-            }
+        connection.startReceiving { bytes ->
+            val updated = syncHelper.updateSettingsFromByteArray(bytes)
+            syncedSettings.update { updated }
         }
     }
 
@@ -67,5 +69,6 @@ class QrCodeDialogComponent(
     override fun dismiss() {
         onDismiss()
     }
+
 }
 

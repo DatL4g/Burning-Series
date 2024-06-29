@@ -10,8 +10,18 @@ class DataStoreAppSettings(
     private val dataStore: DataStore<AppSettings>
 ) : Settings.PlatformAppSettings {
 
-    override val language: Flow<Language?> = dataStore.data.map { it.language }
-    override val startCounter: Flow<Int> = dataStore.data.map { it.startCounter }
+    override val all: Flow<AppSettings> = dataStore.data
+    override val language: Flow<Language?> = all.map { it.language }
+    override val startCounter: Flow<Int> = all.map { it.startCounter }
+
+    // Don't just override with value as we want to keep startCounter device specific
+    override suspend fun updateAll(value: AppSettings) {
+        dataStore.updateData {
+            it.copy(
+                language = value.language
+            )
+        }
+    }
 
     override suspend fun setLanguage(language: Language) {
         dataStore.updateData {

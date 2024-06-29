@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.QrCode
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -14,6 +15,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,18 +38,28 @@ import org.jetbrains.compose.resources.stringResource
 import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.ui.custom.TintPainter
+import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import io.github.alexzhirkevich.qrose.options.QrLogoPadding
 import io.github.alexzhirkevich.qrose.toImageBitmap
 
 @Composable
 fun QrCodeDialog(component: QrCodeComponent) {
+    val settingsSynced by component.syncedSettings.collectAsStateWithLifecycle()
+
     AlertDialog(
         onDismissRequest = { },
         icon = {
-            Icon(
-                imageVector = Icons.Rounded.QrCode,
-                contentDescription = null
-            )
+            if (settingsSynced) {
+                Icon(
+                    imageVector = Icons.Rounded.Check,
+                    contentDescription = null
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Rounded.QrCode,
+                    contentDescription = null
+                )
+            }
         },
         title = {
             Text(text = "Sync Settings")
@@ -58,34 +70,42 @@ fun QrCodeDialog(component: QrCodeComponent) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
             ) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Scan the QR Code with your Smartphone, it will open the app and connect to this device.\nMake sure they are both in the same network.",
-                    textAlign = TextAlign.Center
-                )
+                if (settingsSynced) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Settings synced, you can close this dialog now",
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Scan the QR Code with your Smartphone, it will open the app and connect to this device.\nMake sure they are both in the same network.",
+                        textAlign = TextAlign.Center
+                    )
 
-                val contentColor = LocalContentColor.current
-                val logo = painterResource(MokoRes.images.Logo)
-                Image(
-                    modifier = Modifier.size(200.dp),
-                    painter = rememberQrCodePainter("${Constants.SYNCING_URL}${component.identifier}") {
-                        logo {
-                            painter = TintPainter(logo, contentColor)
-                            padding = QrLogoPadding.Natural(0.1F)
-                        }
-                        shapes {
-                            ball = QrBallShape.circle()
-                            frame = QrFrameShape.circle()
-                            darkPixel = QrPixelShape.circle()
-                        }
-                        colors {
-                            ball = QrBrush.solid(contentColor)
-                            frame = QrBrush.solid(contentColor)
-                            dark = QrBrush.solid(contentColor)
-                        }
-                    },
-                    contentDescription = null
-                )
+                    val contentColor = LocalContentColor.current
+                    val logo = painterResource(MokoRes.images.Logo)
+                    Image(
+                        modifier = Modifier.size(200.dp),
+                        painter = rememberQrCodePainter("${Constants.SYNCING_URL}${component.identifier}") {
+                            logo {
+                                painter = TintPainter(logo, contentColor)
+                                padding = QrLogoPadding.Natural(0.1F)
+                            }
+                            shapes {
+                                ball = QrBallShape.circle()
+                                frame = QrFrameShape.circle()
+                                darkPixel = QrPixelShape.circle()
+                            }
+                            colors {
+                                ball = QrBrush.solid(contentColor)
+                                frame = QrBrush.solid(contentColor)
+                                dark = QrBrush.solid(contentColor)
+                            }
+                        },
+                        contentDescription = null
+                    )
+                }
             }
         },
         confirmButton = {

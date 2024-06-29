@@ -9,9 +9,15 @@ import kotlinx.coroutines.flow.map
 class DataStoreUserSettings(
     private val dataStore: DataStore<UserSettings>
 ) : Settings.PlatformUserSettings() {
-    override val accessTokenFlow: Flow<String?> = dataStore.data.map { it.github.accessToken?.ifBlank { null } }
-    override val idTokenFlow: Flow<String?> = dataStore.data.map { it.github.idToken?.ifBlank { null } }
-    override val refreshTokenFlow: Flow<String?> = dataStore.data.map { it.github.refreshToken?.ifBlank { null } }
+
+    override val all: Flow<UserSettings> = dataStore.data
+    override val accessTokenFlow: Flow<String?> = all.map { it.github.accessToken?.ifBlank { null } }
+    override val idTokenFlow: Flow<String?> = all.map { it.github.idToken?.ifBlank { null } }
+    override val refreshTokenFlow: Flow<String?> = all.map { it.github.refreshToken?.ifBlank { null } }
+
+    override suspend fun updateAll(value: UserSettings) {
+        dataStore.updateData { value }
+    }
 
     override suspend fun getAccessToken(): String? {
         return dataStore.data.map { it.github.accessToken?.ifBlank { null } }.firstOrNull()

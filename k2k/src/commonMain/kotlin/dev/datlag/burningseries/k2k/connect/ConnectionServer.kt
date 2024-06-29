@@ -17,11 +17,16 @@ import kotlinx.coroutines.flow.update
 
 internal data object ConnectionServer {
     private var socket = aSocket(SelectorManager(Dispatchers.IO)).tcp()
-    internal val receiveData: MutableStateFlow<Pair<String, ByteArray>?> = MutableStateFlow(null)
+    private var onReceive: suspend (ByteArray) -> Unit = { }
     private var receiveJob: Job? = null
 
-    fun startServer(port: Int, scope: CoroutineScope) {
+    fun startServer(
+        port: Int,
+        scope: CoroutineScope,
+        listener: suspend (ByteArray) -> Unit
+    ) {
         receiveJob?.cancel()
+        setReceiver(listener)
         receiveJob = scope.launch(Dispatchers.IO) {
             while (true) {
                 val socketAddress = InetSocketAddress(NetInterface.getLocalAddress(), port)
@@ -39,9 +44,7 @@ internal data object ConnectionServer {
                                 break
                             }
 
-                            receiveData.update {
-                                boundSocket.remoteAddress.toString() to buffer
-                            }
+                            onReceive(buffer)
                         }
                     }.onFailure {
                         boundSocket.close()
@@ -53,5 +56,9 @@ internal data object ConnectionServer {
 
     fun stopServer() {
         receiveJob?.cancel()
+    }
+
+    fun setReceiver(listener: suspend (ByteArray) -> Unit) {
+        onReceive = listener
     }
 }

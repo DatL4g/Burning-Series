@@ -110,6 +110,7 @@ kotlin {
             implementation(libs.kast)
             implementation(libs.nanoid)
             implementation(libs.serialization.json)
+            implementation(libs.serialization.protobuf)
             implementation(libs.oidc)
             implementation("dev.datlag.sheets-compose-dialogs:option:2.0.0-SNAPSHOT")
 

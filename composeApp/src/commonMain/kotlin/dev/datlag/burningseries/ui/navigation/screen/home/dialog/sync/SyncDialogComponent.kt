@@ -7,12 +7,18 @@ import dev.datlag.burningseries.k2k.Host
 import dev.datlag.burningseries.k2k.connect.Connection
 import dev.datlag.burningseries.k2k.connect.connection
 import dev.datlag.burningseries.k2k.discover.discovery
+import dev.datlag.burningseries.other.SyncHelper
 import dev.datlag.tooling.decompose.ioScope
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import org.kodein.di.DI
+import org.kodein.di.instance
 
 class SyncDialogComponent(
     componentContext: ComponentContext,
@@ -21,7 +27,9 @@ class SyncDialogComponent(
     private val onDismiss: () -> Unit
 ) : SyncComponent, ComponentContext by componentContext {
 
+    private val syncHelper by instance<SyncHelper>()
     override val deviceNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val sending: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val discovery = ioScope().discovery {
         setPort(1337)
         setDiscoveryTimeout(5000L)
@@ -44,7 +52,7 @@ class SyncDialogComponent(
 
             matchingPeer?.let {
                 connect(it)
-            }
+            } ?: deviceNotFound.update { true }
         }
     }
 
@@ -62,7 +70,12 @@ class SyncDialogComponent(
     private suspend fun connect(host: Host) {
         discovery.stopDiscovery()
 
-        Napier.e("Started sending")
-        connect.send("Hello from Syncer".encodeToByteArray(), host)
+        deviceNotFound.update { false }
+        sending.update { true }
+        while (currentCoroutineContext().isActive) {
+            connect.send(syncHelper.encodeSettingsToByteArray(), host)
+            delay(3000)
+        }
+        sending.update { false }
     }
 }

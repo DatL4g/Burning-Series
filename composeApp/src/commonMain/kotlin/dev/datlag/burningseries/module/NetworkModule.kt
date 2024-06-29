@@ -23,11 +23,14 @@ import dev.datlag.burningseries.network.HomeStateMachine
 import dev.datlag.burningseries.network.SaveStateMachine
 import dev.datlag.burningseries.network.SearchStateMachine
 import dev.datlag.burningseries.network.SeriesStateMachine
+import dev.datlag.burningseries.other.SyncHelper
 import dev.datlag.burningseries.other.UserHelper
 import dev.datlag.tooling.compose.ioDispatcher
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.protobuf.ProtoBuf
 import okio.FileSystem
 import org.kodein.di.DI
 import org.kodein.di.bindProvider
@@ -165,6 +168,12 @@ data object NetworkModule {
                 tokenStore = instance(),
                 appSettings = instance(),
                 database = instance()
+            )
+        }
+        bindSingleton<SyncHelper> {
+            SyncHelper(
+                appSettings = instance(),
+                userSettings = instance()
             )
         }
     }
