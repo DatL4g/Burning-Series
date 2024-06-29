@@ -13,6 +13,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.router.stack.replaceCurrent
+import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.ui.navigation.screen.activate.ActivateScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeScreenComponent
@@ -29,7 +30,8 @@ import org.kodein.di.instance
 class RootComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val syncId: String? = null
+    private val syncId: String? = null,
+    private val seriesHref: String? = null
 ) : Component, ComponentContext by componentContext {
 
     private val settings by instance<Settings.PlatformAppSettings>()
@@ -38,13 +40,26 @@ class RootComponent(
     private val stack = childStack(
         source = navigation,
         serializer = RootConfig.serializer(),
-        initialConfiguration = runBlocking {
-            settings.language.firstOrNull()
-        }.let {
-            if (it == null) {
-                RootConfig.Welcome
-            } else {
-                RootConfig.Home(syncId?.ifBlank { null })
+        initialStack = {
+            runBlocking {
+                settings.language.firstOrNull()
+            }.let {
+                if (it == null) {
+                    listOf(RootConfig.Welcome)
+                } else {
+                    val home = RootConfig.Home(syncId?.ifBlank { null })
+                    if (!seriesHref.isNullOrBlank()) {
+                        listOf(
+                            home,
+                            RootConfig.Medium(
+                                SeriesData.fromHref(seriesHref),
+                                it
+                            )
+                        )
+                    } else {
+                        listOf(home)
+                    }
+                }
             }
         },
         childFactory = ::createScreenComponent
@@ -133,5 +148,9 @@ class RootComponent(
 
     fun onSync(id: String) {
         navigation.replaceAll(RootConfig.Home(syncId = id.ifBlank { null }))
+    }
+
+    fun onSeries(href: String) {
+        navigation.bringToFront(RootConfig.Medium(SeriesData.fromHref(href), null))
     }
 }

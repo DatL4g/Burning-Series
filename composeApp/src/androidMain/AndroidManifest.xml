@@ -72,6 +72,29 @@
                 <data android:host="burningseries.datlag" />
                 <data android:pathPrefix="/sync" />
             </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+
+                <data android:host="bs.to" />
+                <data android:host="burningseries.tw" />
+                <data android:host="burningseries.co" />
+                <data android:host="burningseries.sx" />
+                <data android:host="burningseries.ac" />
+                <data android:host="burningseries.vc" />
+                <data android:host="burningseries.cx" />
+                <data android:host="burningseries.nz" />
+                <data android:host="burningseries.se" />
+
+                <!-- Fake domains, but can still be redirected -->
+                <data android:host="burning-series.io" />
+                <data android:host="burning-series.net" />
+                <data android:host="burning-seri.es" />
+            </intent-filter>
         </activity>
 
         <meta-data

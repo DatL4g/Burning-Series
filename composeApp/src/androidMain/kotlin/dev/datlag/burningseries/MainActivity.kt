@@ -16,6 +16,7 @@ import com.arkivanov.essenty.backhandler.backHandler
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import com.arkivanov.essenty.lifecycle.essentyLifecycle
+import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.DomainVerifier
 import dev.datlag.burningseries.other.DownloadManager
@@ -58,7 +59,8 @@ class MainActivity : ComponentActivity() {
                 backHandler = backHandler()
             ),
             di = di,
-            syncId = intent.data?.findSyncId()
+            syncId = intent.data?.findSyncId(),
+            seriesHref = intent.data?.findSeries()
         )
 
         authFactory.registerActivity(this)
@@ -89,6 +91,7 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
 
         intent.data?.findSyncId()?.let(root::onSync)
+            ?: intent.data?.findSeries()?.let(root::onSeries)
     }
 
     override fun onDestroy() {
@@ -140,5 +143,9 @@ class MainActivity : ComponentActivity() {
         }
 
         return null
+    }
+
+    private fun Uri.findSeries(): String? {
+        return BSUtil.matchingUrl(this.toString(), this.path)?.let(BSUtil::fixSeriesHref)?.ifBlank { null }
     }
 }
