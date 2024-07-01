@@ -44,8 +44,12 @@ INSERT OR IGNORE INTO Series(
     favoriteSince
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
-favoriteSeries:
-SELECT * FROM Series WHERE favoriteSince > 0 ORDER BY favoriteSince DESC;
+favoriteSeriesSorted:
+SELECT s.* FROM Series s JOIN (
+    SELECT seriesHref, MAX(updatedAt) AS latestUpdate FROM Episode GROUP BY seriesHref
+) e ON s.hrefPrimary = e.seriesHref WHERE s.favoriteSince > 0 ORDER BY
+CASE WHEN e.latestUpdate > s.favoriteSince THEN e.latestUpdate
+ELSE s.favoriteSince END DESC;
 
 upsertSeriesFavoriteSince {
     UPDATE Series SET favoriteSince = :since WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;

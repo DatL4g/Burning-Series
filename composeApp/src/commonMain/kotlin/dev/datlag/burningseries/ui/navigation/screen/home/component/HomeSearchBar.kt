@@ -67,6 +67,7 @@ import dev.icerock.moko.resources.compose.painterResource
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import dev.datlag.burningseries.MokoRes
+import dev.datlag.burningseries.composeapp.generated.resources.loading
 import dev.datlag.burningseries.other.isInstalled
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -124,24 +125,11 @@ internal fun HomeSearchBar(component: HomeComponent) {
             }
         },
         placeholder = {
-            Row(
+            Text(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
-            ) {
-                AnimatedVisibility(
-                    visible = !searchState.isSuccess
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = LocalContentColor.current,
-                        strokeWidth = 2.dp
-                    )
-                }
-                Text(
-                    text = stringResource(Res.string.search)
-                )
-            }
+                text = stringResource(if (searchState.isLoading) Res.string.loading else Res.string.search),
+                textAlign = TextAlign.Center
+            )
         },
         trailingIcon = {
             if (isActive) {

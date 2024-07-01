@@ -81,13 +81,13 @@ fun BurningSeries.unsetSeriesFavorite(series: Series) {
 }
 
 fun BurningSeries.favoritesSeries(context: CoroutineContext): Flow<ImmutableCollection<ExtendedSeries>> {
-    return this.burningSeriesQueries.favoriteSeries().asFlow().mapToList(context).map { collection ->
+    return this.burningSeriesQueries.favoriteSeriesSorted().asFlow().mapToList(context).map { collection ->
         collection.map(::ExtendedSeries).toImmutableSet()
     }
 }
 
 fun BurningSeries.favoritesSeriesOneShot(): ImmutableCollection<ExtendedSeries> {
-    return this.burningSeriesQueries.favoriteSeries().executeAsList().map(::ExtendedSeries).toImmutableSet()
+    return this.burningSeriesQueries.favoriteSeriesSorted().executeAsList().map(::ExtendedSeries).toImmutableSet()
 }
 
 fun BurningSeries.insertSeriesOrIgnore(series: Series) {

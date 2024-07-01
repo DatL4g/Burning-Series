@@ -2,7 +2,7 @@
     <string name="app_name">Burning-Series</string>
     <string name="home">Home</string>
     <string name="sponsor">Sponsor</string>
-    <string name="favorite">Favorite</string>
+    <string name="favorites">Favorites</string>
     <string name="select_default_language">Default Language</string>
     <string name="select_default_language_text">This language will be preferred when you watch series</string>
     <string name="english">English</string>
@@ -38,4 +38,12 @@
     <string name="search">Search</string>
     <string name="sponsor_text">Maintaining this project is time and money consuming, please consider contributing financially to support it's upkeep.</string>
     <string name="sponsor_hint">The amount you want to donate is completely up to you, but keep in mind that only GitHub Sponsors or Patreon (linked with GitHub) can be recognized.</string>
+    <string name="open_domains_title">Open Links</string>
+    <string name="open_domains_text_1">You are not protected against fake domains right now!</string>
+    <string name="open_domains_text_2">Additionally you can view Burning-Series search results directly in this app then.</string>
+    <string name="open_domains_text_3">Make sure to check the option to open supported links and add every link below.</string>
+    <string name="enable">Enable</string>
+    <string name="episodes">Episodes</string>
+    <string name="series">Series</string>
+    <string name="loading">Loading</string>
 </resources>

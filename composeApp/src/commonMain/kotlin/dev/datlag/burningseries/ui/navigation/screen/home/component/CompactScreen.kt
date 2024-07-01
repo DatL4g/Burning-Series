@@ -32,6 +32,10 @@ import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.haze
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.merge
+import dev.datlag.burningseries.composeapp.generated.resources.Res
+import dev.datlag.burningseries.composeapp.generated.resources.episodes
+import dev.datlag.burningseries.composeapp.generated.resources.favorites
+import dev.datlag.burningseries.composeapp.generated.resources.series
 import dev.datlag.burningseries.github.model.UserAndRelease
 import dev.datlag.burningseries.network.state.HomeState
 import dev.datlag.burningseries.settings.model.Language
@@ -42,6 +46,9 @@ import kotlinx.collections.immutable.toImmutableList
 import dev.datlag.burningseries.ui.custom.HorizontalScrollbar
 import dev.datlag.burningseries.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.ui.custom.localScrollbarStyle
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.rememberIsTv
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -53,17 +60,22 @@ internal fun CompactScreen(
     val language by component.language.collectAsStateWithLifecycle(null)
     val favorites by component.favorites.collectAsStateWithLifecycle()
     val headerPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp)
+    val linksSupported by Platform.linksSupported.collectAsStateWithLifecycle()
+    val isDesktopOrTv = Platform.isDesktop || Platform.rememberIsTv()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = padding
     ) {
+        if (!linksSupported && !isDesktopOrTv) {
+            LinkSupportSection(headerPadding)
+        }
         if (favorites.isNotEmpty()) {
             item {
                 Text(
                     modifier = Modifier.padding(headerPadding),
-                    text = "Favorites",
+                    text = stringResource(Res.string.favorites),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -110,7 +122,7 @@ internal fun CompactScreen(
         item {
             Text(
                 modifier = Modifier.padding(headerPadding),
-                text = "Episodes",
+                text = stringResource(Res.string.episodes),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -171,7 +183,7 @@ internal fun CompactScreen(
         item {
             Text(
                 modifier = Modifier.padding(headerPadding),
-                text = "Series",
+                text = stringResource(Res.string.series),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
