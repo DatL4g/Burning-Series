@@ -31,6 +31,7 @@ interface MediumComponent : Component {
     val seriesDescription: Flow<String>
     val seriesIsAnime: Flow<Boolean>
     val combinedEpisodes: Flow<ImmutableCollection<CombinedEpisode>>
+    val nextCombinedEpisode: Flow<CombinedEpisode?>
 
     val episodeState: StateFlow<EpisodeState>
 

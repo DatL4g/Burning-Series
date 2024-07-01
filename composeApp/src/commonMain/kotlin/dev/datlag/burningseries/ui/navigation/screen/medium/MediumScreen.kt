@@ -13,16 +13,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.PlayCircle
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -53,6 +58,7 @@ import dev.datlag.burningseries.LocalDarkMode
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.common.plus
 import dev.datlag.burningseries.common.rememberIsTv
+import dev.datlag.burningseries.common.scrollUpVisible
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
 import dev.datlag.burningseries.other.AniFlow
@@ -116,6 +122,37 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
                 component = component,
                 series = (seriesState as? SeriesState.Success)?.series
             )
+        },
+        floatingActionButton = {
+            val nextEpisode by component.nextCombinedEpisode.collectAsStateWithLifecycle(null)
+
+            nextEpisode?.ifHasHoster()?.let { episode ->
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        component.episode(episode)
+                    },
+                    expanded = listState.scrollUpVisible(),
+                    icon = {
+                        if (episode.isSame(loadingEpisode)) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(ButtonDefaults.IconSize),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Rounded.PlayArrow,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    text = {
+                        Text(
+                            text = episode.mainTitle,
+                            maxLines = 2
+                        )
+                    }
+                )
+            }
         }
     ) { padding ->
         val isAnime by component.seriesIsAnime.collectAsStateWithLifecycle(component.initialIsAnime)

@@ -52,4 +52,12 @@ data class CombinedEpisode @JvmOverloads constructor(
     fun isSame(other: Series.Episode?): Boolean {
         return default == other
     }
+
+    fun ifHasHoster(): CombinedEpisode? {
+        return if (default.hoster.isEmpty()) {
+            null
+        } else {
+            this
+        }
+    }
 }

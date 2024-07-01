@@ -181,6 +181,32 @@ class MediumScreenComponent(
         )
     }
 
+    override val nextCombinedEpisode: Flow<CombinedEpisode?> = combinedEpisodes.map { list ->
+        val maxWatchedEpisode = list.mapNotNull { episode ->
+            if (episode.progress > 0L) {
+                episode
+            } else {
+                null
+            }
+        }.maxByOrNull { it.number }
+
+        return@map if (maxWatchedEpisode == null) {
+            return@map list.minByOrNull { it.number }
+        } else {
+            val finished = maxWatchedEpisode.isFinished
+
+            val wantedNumber = if (finished) {
+                maxWatchedEpisode.number.plus(1)
+            } else {
+                return@map maxWatchedEpisode
+            }
+
+            list.firstOrNull {
+                it.number == wantedNumber
+            }
+        }
+    }
+
     private val userHelper by instance<UserHelper>()
 
     init {
