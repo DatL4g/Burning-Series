@@ -37,7 +37,7 @@ import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 @Composable
 fun SponsorDialog(component: SponsorComponent) {
     val isDesktopOrTv = Platform.isDesktop || Platform.rememberIsTv()
-    val isLoggedIn by component.isLoggedIn.collectAsStateWithLifecycle()
+    val isLoggedIn by component.isLoggedIn.collectAsStateWithLifecycle(false)
 
     AlertDialog(
         onDismissRequest = {},

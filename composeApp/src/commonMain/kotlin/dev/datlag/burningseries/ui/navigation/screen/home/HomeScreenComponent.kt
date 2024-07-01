@@ -14,22 +14,17 @@ import dev.chrisbanes.haze.HazeState
 import dev.datlag.burningseries.LocalHaze
 import dev.datlag.burningseries.database.BurningSeries
 import dev.datlag.burningseries.database.ExtendedSeries
-import dev.datlag.burningseries.database.Series
 import dev.datlag.burningseries.database.common.favoritesSeries
 import dev.datlag.burningseries.database.common.favoritesSeriesOneShot
 import dev.datlag.burningseries.database.common.seriesFullHref
-import dev.datlag.burningseries.github.UserAndReleaseRepository
-import dev.datlag.burningseries.github.UserAndReleaseState
 import dev.datlag.burningseries.github.model.UserAndRelease
-import dev.datlag.burningseries.k2k.discover.discovery
-import dev.datlag.burningseries.model.Home
-import dev.datlag.burningseries.model.SearchItem
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.network.HomeStateMachine
 import dev.datlag.burningseries.network.SearchStateMachine
 import dev.datlag.burningseries.network.state.HomeState
 import dev.datlag.burningseries.network.state.SearchAction
 import dev.datlag.burningseries.network.state.SearchState
+import dev.datlag.burningseries.other.UserHelper
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.navigation.DialogComponent
@@ -37,20 +32,13 @@ import dev.datlag.burningseries.ui.navigation.screen.home.dialog.qrcode.QrCodeDi
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.release.ReleaseDialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.SettingsDialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.sync.SyncDialogComponent
-import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.decompose.ioScope
-import io.github.aakira.napier.Napier
-import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.ImmutableCollection
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -96,9 +84,8 @@ class HomeScreenComponent(
     private val settings by instance<Settings.PlatformAppSettings>()
     override val language = settings.language.flowOn(ioDispatcher())
 
-    private val github by instance<UserAndReleaseRepository>()
-    override val githubState: Flow<UserAndReleaseState> = github.userAndRelease.flowOn(ioDispatcher())
-    override val appVersion: String? by instanceOrNull<String>("APP_VERSION")
+    private val userHelper by instance<UserHelper>()
+    override val release: Flow<UserAndRelease.Release?> = userHelper.release
     override val displayRelease: MutableStateFlow<Boolean> = MutableStateFlow(true)
 
     private val dialogNavigation = SlotNavigation<DialogConfig>()

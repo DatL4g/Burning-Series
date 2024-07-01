@@ -9,10 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,12 +19,12 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalEdgeToEdge
 import dev.datlag.burningseries.common.isFullyExpandedOrTargeted
 import dev.datlag.burningseries.common.merge
-import dev.datlag.burningseries.github.UserAndReleaseState
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.GitHubOwnerSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.GitHubRepoSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.InfoSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.LanguageSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.LoginSection
+import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.SponsorSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.SyncSection
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 
@@ -50,7 +48,7 @@ fun SettingsDialog(component: SettingsComponent) {
         windowInsets = insets,
         sheetState = sheetState
     ) {
-        val userState by component.userAndRelease.collectAsStateWithLifecycle(UserAndReleaseState.None)
+        val userState by component.user.collectAsStateWithLifecycle(null)
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -60,7 +58,7 @@ fun SettingsDialog(component: SettingsComponent) {
             item {
                 InfoSection(
                     dismissVisible = sheetState.isFullyExpandedOrTargeted(forceFullExpand = true),
-                    user = userState.user,
+                    user = userState,
                     modifier = Modifier.fillParentMaxWidth(),
                     onDismiss = component::dismiss
                 )
@@ -74,7 +72,7 @@ fun SettingsDialog(component: SettingsComponent) {
             }
             item {
                 LoginSection(
-                    isLoggedIn = userState.user != null,
+                    isLoggedIn = userState != null,
                     modifier = Modifier.fillParentMaxWidth(),
                     onLogin = {
                         component.login()
@@ -85,6 +83,9 @@ fun SettingsDialog(component: SettingsComponent) {
                 )
             }
             SyncSection()
+            item {
+                SponsorSection(modifier = Modifier.fillParentMaxWidth())
+            }
             item {
                 GitHubRepoSection(modifier = Modifier.fillParentMaxWidth())
             }

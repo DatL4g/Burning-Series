@@ -85,5 +85,18 @@ data class UserAndRelease(
             isDraft = release.draft,
             assets = release.assets
         )
+
+        fun asUpdateOrNull(currentVersion: String?): Release? {
+            if (currentVersion.isNullOrBlank()) {
+                return null
+            }
+            val releaseNumber = tagNumber ?: return null
+            val currentNumber = currentVersion.getDigitsOrNull()?.toIntOrNull() ?: return null
+
+            if (releaseNumber > currentNumber) {
+                return this
+            }
+            return null
+        }
     }
 }
