@@ -31,7 +31,7 @@ class SyncDialogComponent(
     override val deviceNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val sendingTo: MutableStateFlow<String?> = MutableStateFlow(null)
     private val discovery = ioScope().discovery {
-        setPort(1337)
+        setPort(7331)
         setDiscoveryTimeout(5000L)
         setDiscoveryTimeoutListener {
             deviceNotFound.update { true }
@@ -41,11 +41,17 @@ class SyncDialogComponent(
         setHostFilter("^$connectId$".toRegex())
     }
     private val connect = ioScope().connection {
-        setPort(1338)
+        setPort(7337)
     }
 
     init {
         discovery.startDiscovery()
+
+        doOnDestroy {
+            discovery.stopDiscovery()
+            discovery.stopBeingDiscoverable()
+            connect.stopReceiving()
+        }
 
         launchIO {
             val matchingPeer = discovery.peers.firstOrNull { it.size >= 1 }?.firstOrNull()

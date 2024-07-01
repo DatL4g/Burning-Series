@@ -51,15 +51,65 @@ internal fun CompactScreen(
     component: HomeComponent
 ) {
     val language by component.language.collectAsStateWithLifecycle(null)
+    val favorites by component.favorites.collectAsStateWithLifecycle()
+    val headerPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().haze(state = LocalHaze.current),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = padding
     ) {
+        if (favorites.isNotEmpty()) {
+            item {
+                Text(
+                    modifier = Modifier.padding(headerPadding),
+                    text = "Favorites",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            item {
+                val rowState = rememberLazyListState()
+
+                Column(
+                    modifier = Modifier.fillParentMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    LazyRow(
+                        state = rowState,
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                        items(
+                            items = favorites.toImmutableList(),
+                            key = { it.href }
+                        ) {
+                            HomeCard(
+                                series = it,
+                                modifier = Modifier
+                                    .width(200.dp)
+                                    .height(280.dp),
+                                onClick = component::details
+                            )
+                        }
+                    }
+
+                    HorizontalScrollbar(
+                        adapter = rememberScrollbarAdapter(rowState),
+                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                        style = localScrollbarStyle().copy(
+                            unhoverColor = MaterialTheme.colorScheme.secondary,
+                            hoverColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                }
+            }
+        }
         item {
             Text(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(headerPadding),
                 text = "Episodes",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
@@ -120,7 +170,7 @@ internal fun CompactScreen(
         }
         item {
             Text(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(headerPadding),
                 text = "Series",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold

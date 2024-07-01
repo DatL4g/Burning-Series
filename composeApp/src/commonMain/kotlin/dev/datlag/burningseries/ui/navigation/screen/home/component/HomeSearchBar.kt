@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.ui.navigation.screen.home.component
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.merge
@@ -51,20 +53,25 @@ import dev.datlag.burningseries.common.rememberIsTv
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.search
 import dev.datlag.burningseries.network.state.SearchState
+import dev.datlag.burningseries.other.AniFlow
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeComponent
 import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.onClick
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
+import dev.icerock.moko.resources.compose.painterResource
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
+import dev.datlag.burningseries.MokoRes
+import dev.datlag.burningseries.other.isInstalled
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun HomeSearchBar(component: HomeComponent, showFavorites: Boolean) {
+internal fun HomeSearchBar(component: HomeComponent) {
     var query by remember { mutableStateOf("") }
     val searchState by component.search.collectAsStateWithLifecycle()
     val windowInsets = SearchBarDefaults.windowInsets.asPaddingValues().merge(16.dp)
     var isActive by remember(searchState) { mutableStateOf(searchState.hasQueryItems) }
+    val isDesktopOrTv = Platform.isDesktop || Platform.rememberIsTv()
 
     DockedSearchBar(
         modifier = Modifier
@@ -91,38 +98,23 @@ internal fun HomeSearchBar(component: HomeComponent, showFavorites: Boolean) {
             component.search(it)
         },
         leadingIcon = {
-            val isDesktopOrTv = Platform.isDesktop || Platform.rememberIsTv()
-
-            if (isDesktopOrTv) {
+            if (isActive) {
                 IconButton(
                     onClick = {
-                        if (isActive) {
-                            isActive = false
-                        } else {
-                            component.showQrCode()
-                        }
+                        isActive = false
                     }
                 ) {
                     Icon(
-                        imageVector = if (isActive) Icons.Rounded.KeyboardArrowDown else Icons.Rounded.QrCode,
+                        imageVector = Icons.Rounded.KeyboardArrowDown,
                         contentDescription = null
                     )
                 }
             } else {
-                IconButton(
+                AniFlowIconButton(
                     onClick = {
-                        if (isActive) {
-                            isActive = false
-                        } else {
-                            component.settings()
-                        }
+                        component.search(query)
                     }
-                ) {
-                    Icon(
-                        imageVector = if (isActive) Icons.Rounded.KeyboardArrowDown else Icons.Rounded.Settings,
-                        contentDescription = null
-                    )
-                }
+                )
             }
         },
         placeholder = {
@@ -141,19 +133,30 @@ internal fun HomeSearchBar(component: HomeComponent, showFavorites: Boolean) {
                     )
                 }
             } else {
-                IconButton(
-                    onClick = {
-                        component.toggleFavorites()
+
+
+                if (isDesktopOrTv) {
+                    IconButton(
+                        onClick = {
+                            component.showQrCode()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.QrCode,
+                            contentDescription = null
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = if (showFavorites) {
-                            Icons.Rounded.Favorite
-                        } else {
-                            Icons.Rounded.FavoriteBorder
-                        },
-                        contentDescription = null
-                    )
+                } else {
+                    IconButton(
+                        onClick = {
+                            component.settings()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
         },

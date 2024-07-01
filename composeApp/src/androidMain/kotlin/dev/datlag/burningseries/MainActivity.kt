@@ -90,8 +90,15 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
-        intent.data?.findSyncId()?.let(root::onSync)
-            ?: intent.data?.findSeries()?.let(root::onSeries)
+        val syncId = intent.data?.findSyncId()
+        if (!syncId.isNullOrBlank()) {
+            return root.onSync(syncId)
+        }
+
+        val href = intent.data?.findSeries()
+        if (!href.isNullOrBlank()) {
+            return root.onSeries(href)
+        }
     }
 
     override fun onDestroy() {

@@ -13,14 +13,12 @@ import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
 import dev.datlag.burningseries.ui.navigation.screen.home.component.CompactScreen
 import dev.datlag.burningseries.ui.navigation.screen.home.component.FavoritesScreen
 import dev.datlag.burningseries.ui.navigation.screen.home.component.HomeSearchBar
-import dev.datlag.burningseries.ui.navigation.screen.home.component.WideScreen
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(component: HomeComponent) {
     AndroidFixWindowSize {
-        val showFavorites by component.showFavorites.collectAsStateWithLifecycle()
         val dialogState by component.dialog.subscribeAsState()
         val release by component.release.collectAsStateWithLifecycle(null)
         val displayRelease by component.displayRelease.collectAsStateWithLifecycle()
@@ -35,27 +33,16 @@ fun HomeScreen(component: HomeComponent) {
 
         Scaffold(
             topBar = {
-                HomeSearchBar(component, showFavorites)
+                HomeSearchBar(component)
             },
         ) { padding ->
             val state by component.home.collectAsStateWithLifecycle()
 
-            if (showFavorites) {
-                FavoritesScreen(padding, component)
-            } else {
-                when (calculateWindowSizeClass().widthSizeClass) {
-                    WindowWidthSizeClass.Compact -> CompactScreen(
-                        state = state,
-                        padding = padding,
-                        component = component
-                    )
-                    else -> WideScreen(
-                        state = state,
-                        padding = padding,
-                        component = component
-                    )
-                }
-            }
+            CompactScreen(
+                state = state,
+                padding = padding,
+                component = component
+            )
         }
     }
 }

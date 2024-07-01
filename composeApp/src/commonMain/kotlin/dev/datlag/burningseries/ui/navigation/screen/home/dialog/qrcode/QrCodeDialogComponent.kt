@@ -31,13 +31,13 @@ class QrCodeDialogComponent(
     override val syncedSettings: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val identifier: String = NanoIdUtils.randomNanoId()
     private val discovery = ioScope().discovery {
-        setPort(1337)
+        setPort(7331)
         setDiscoverableTimeout(0L)
         setDiscoveryTimeout(1L) // builder requires value, stop immediately if used for discovery
     }
 
     private val connection = ioScope().connection {
-        setPort(1338)
+        setPort(7337)
     }
     private val deviceName by instance<String>("DEVICE_NAME")
 
@@ -50,6 +50,12 @@ class QrCodeDialogComponent(
         connection.startReceiving { bytes ->
             val updated = syncHelper.updateSettingsFromByteArray(bytes)
             syncedSettings.update { updated }
+        }
+
+        doOnDestroy {
+            discovery.stopDiscovery()
+            discovery.stopBeingDiscoverable()
+            connection.stopReceiving()
         }
     }
 
