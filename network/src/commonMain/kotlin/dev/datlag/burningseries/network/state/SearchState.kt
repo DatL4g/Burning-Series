@@ -14,6 +14,9 @@ sealed interface SearchState {
     val isError: Boolean
         get() = this is Failure
 
+    val isSuccess: Boolean
+        get() = !isLoading && !isError
+
     val hasQueryItems: Boolean
         get() = this is Success && this.queriedItems.isNotEmpty()
 

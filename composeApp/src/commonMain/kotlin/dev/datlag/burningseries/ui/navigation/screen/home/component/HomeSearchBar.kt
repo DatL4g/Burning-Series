@@ -1,5 +1,6 @@
 package dev.datlag.burningseries.ui.navigation.screen.home.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -25,11 +27,13 @@ import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.QrCode
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -47,6 +51,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.merge
 import dev.datlag.burningseries.common.rememberIsTv
@@ -83,6 +88,7 @@ internal fun HomeSearchBar(component: HomeComponent) {
             component.search(query)
         },
         active = isActive,
+        enabled = searchState.isSuccess,
         onActiveChange = {
             if (it) {
                 isActive = searchState.hasQueryItems
@@ -118,13 +124,34 @@ internal fun HomeSearchBar(component: HomeComponent) {
             }
         },
         placeholder = {
-            Text(text = stringResource(Res.string.search))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+            ) {
+                AnimatedVisibility(
+                    visible = !searchState.isSuccess
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = LocalContentColor.current,
+                        strokeWidth = 2.dp
+                    )
+                }
+                Text(
+                    text = stringResource(Res.string.search)
+                )
+            }
         },
         trailingIcon = {
             if (isActive) {
                 IconButton(
                     onClick = {
-                        query = ""
+                        if (query.isEmpty()) {
+                            isActive = false
+                        } else {
+                            query = ""
+                        }
                     }
                 ) {
                     Icon(
@@ -163,34 +190,19 @@ internal fun HomeSearchBar(component: HomeComponent) {
         content = {
             val language by component.language.collectAsStateWithLifecycle(null)
 
-            when (val current = searchState) {
-                is SearchState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        LinearProgressIndicator(
-                            modifier = Modifier.fillMaxWidth(fraction = 0.2F).clip(CircleShape)
+            (searchState as? SearchState.Success)?.let { current ->
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(1.dp)
+                ) {
+                    items(current.queriedItems.toImmutableList(), key = { it.href }) {
+                        SearchResult(
+                            item = it,
+                            modifier = Modifier.fillParentMaxWidth(),
+                            onClick = { data ->
+                                component.details(data, language)
+                            }
                         )
-                    }
-                }
-                is SearchState.Failure -> {
-                    Text(text = "Error")
-                }
-                is SearchState.Success -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(1.dp)
-                    ) {
-                        items(current.queriedItems.toImmutableList(), key = { it.href }) {
-                            SearchResult(
-                                item = it,
-                                modifier = Modifier.fillParentMaxWidth(),
-                                onClick = { data ->
-                                    component.details(data, language)
-                                }
-                            )
-                        }
                     }
                 }
             }
