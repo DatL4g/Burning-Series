@@ -16,7 +16,15 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.extractor.DefaultExtractorsFactory
+import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES
+import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
+import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ENABLE_HDMV_DTS_AUDIO_STREAMS
 import androidx.media3.session.MediaSession
 import coil3.annotation.InternalCoilApi
 import com.google.android.gms.cast.framework.CastContext
@@ -25,6 +33,7 @@ import dev.datlag.nanoid.NanoIdUtils
 import dev.datlag.tooling.compose.withIOContext
 import dev.datlag.tooling.compose.withMainContext
 import io.github.aakira.napier.Napier
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -46,6 +55,7 @@ class PlayerWrapper(
     castContext: CastContext?,
     private val startingPos: Long,
     private val startingLength: Long,
+    private val headers: ImmutableMap<String, String>,
     private val onError: (PlaybackException) -> Unit = { },
     private val onFirstFrame: () -> Unit = { },
     private val onProgressChange: (Long) -> Unit = { },
@@ -53,11 +63,22 @@ class PlayerWrapper(
     private val onFinish: () -> Unit = { }
 ): SessionAvailabilityListener, Player.Listener {
 
+    private val extractorFactory = DefaultExtractorsFactory().setTsExtractorFlags(
+        FLAG_ALLOW_NON_IDR_KEYFRAMES and FLAG_DETECT_ACCESS_UNITS and FLAG_ENABLE_HDMV_DTS_AUDIO_STREAMS
+    )
+
+    private val dataSource: DataSource.Factory = DefaultDataSource.Factory(context, DefaultHttpDataSource.Factory()
+            .setDefaultRequestProperties(headers)
+            .setAllowCrossProtocolRedirects(true)
+            .setKeepPostFor302Redirects(true)
+        )
+
     private val castPlayer = castContext?.let(::CastPlayer)
 
     private val localPlayer = ExoPlayer.Builder(context).apply {
         setSeekBackIncrementMs(10000)
         setSeekForwardIncrementMs(10000)
+        setMediaSourceFactory(DefaultMediaSourceFactory(dataSource, extractorFactory))
     }.build()
 
     private val castState = castContext?.castState

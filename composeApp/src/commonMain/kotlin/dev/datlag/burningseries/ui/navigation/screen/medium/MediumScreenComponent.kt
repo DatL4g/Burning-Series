@@ -40,7 +40,7 @@ import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.navigation.DialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.medium.dialog.activate.ActivateDialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.medium.dialog.sponsor.SponsorDialogComponent
-import dev.datlag.skeo.Stream
+import dev.datlag.skeo.DirectLink
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.compose.withIOContext
 import dev.datlag.tooling.compose.withMainContext
@@ -77,7 +77,7 @@ class MediumScreenComponent(
     override val initialIsAnime: Boolean,
     private val initialLanguage: Language?,
     private val onBack: () -> Unit,
-    private val onWatch: (Series, Series.Episode, ImmutableCollection<Stream>) -> Unit,
+    private val onWatch: (Series, Series.Episode, ImmutableCollection<DirectLink>) -> Unit,
     private val onActivate: (Series, Series.Episode) -> Unit
 ) : MediumComponent, ComponentContext by componentContext {
 
@@ -253,7 +253,7 @@ class MediumScreenComponent(
     private fun watch(
         series: Series,
         episode: Series.Episode,
-        streams: ImmutableCollection<Stream>
+        streams: ImmutableCollection<DirectLink>
     ) {
         launchIO {
             episodeStateMachine.dispatch(EpisodeAction.Clear)
@@ -293,7 +293,7 @@ class MediumScreenComponent(
     override fun showSponsoringOrWatch(
         series: Series,
         episode: Series.Episode,
-        streams: ImmutableCollection<Stream>
+        streams: ImmutableCollection<DirectLink>
     ) {
         val isSponsor = userHelper.isSponsoring
         if (isSponsor) {

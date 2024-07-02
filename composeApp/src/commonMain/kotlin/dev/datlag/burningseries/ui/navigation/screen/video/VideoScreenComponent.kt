@@ -15,7 +15,7 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.network.EpisodeStateMachine
 import dev.datlag.burningseries.network.state.EpisodeAction
 import dev.datlag.burningseries.network.state.EpisodeState
-import dev.datlag.skeo.Stream
+import dev.datlag.skeo.DirectLink
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.compose.withMainContext
 import kotlinx.collections.immutable.ImmutableCollection
@@ -30,9 +30,9 @@ class VideoScreenComponent(
     override val di: DI,
     override val series: Series,
     override val episode: Series.Episode,
-    override val streams: ImmutableCollection<Stream>,
+    override val streams: ImmutableCollection<DirectLink>,
     private val onBack: () -> Unit,
-    private val onNext: (Series.Episode, ImmutableCollection<Stream>) -> Unit
+    private val onNext: (Series.Episode, ImmutableCollection<DirectLink>) -> Unit
 ) : VideoComponent, ComponentContext by componentContext {
 
     private val database by instance<BurningSeries>()
@@ -91,7 +91,7 @@ class VideoScreenComponent(
         }
     }
 
-    override fun next(episode: Series.Episode, streams: ImmutableCollection<Stream>) {
+    override fun next(episode: Series.Episode, streams: ImmutableCollection<DirectLink>) {
         launchIO {
             episodeState.dispatch(EpisodeAction.Clear)
             withMainContext {

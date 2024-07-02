@@ -48,10 +48,8 @@ internal fun VideoPlayer(
     val streamList = remember { component.streams.toImmutableList() }
 
     var streamIndex by remember(streamList) { mutableIntStateOf(0) }
-    var sourceIndex by remember(streamIndex) { mutableIntStateOf(0) }
-    val url = remember(streamIndex, sourceIndex) { streamList[streamIndex].sources.toImmutableList()[sourceIndex] }
-    val headers = remember(streamIndex) {
-        streamList[streamIndex].headers
+    val (url, headers) = remember(streamIndex) {
+        streamList[streamIndex]
     }
 
     val isPlaying = remember { mutableStateOf(false) }
@@ -77,9 +75,7 @@ internal fun VideoPlayer(
         override fun error(mediaPlayer: MediaPlayer?) {
             super.error(mediaPlayer)
 
-            if (streamList[streamIndex].sources.size - 1 > sourceIndex) {
-                sourceIndex++
-            } else if (streamList.size - 1 > streamIndex) {
+            if (streamList.size - 1 > streamIndex) {
                 streamIndex++
             }
         }

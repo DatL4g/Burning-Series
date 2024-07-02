@@ -1,7 +1,7 @@
 package dev.datlag.burningseries.network.state
 
 import dev.datlag.burningseries.model.Series
-import dev.datlag.skeo.Stream
+import dev.datlag.skeo.DirectLink
 import kotlinx.collections.immutable.ImmutableCollection
 
 sealed interface EpisodeState {
@@ -20,7 +20,7 @@ sealed interface EpisodeState {
 
     data class SuccessStream(
         override val episode: Series.Episode,
-        val results: ImmutableCollection<Stream>
+        val results: ImmutableCollection<DirectLink>
     ): EpisodeHolder
 
     data class ErrorHoster(override val episode: Series.Episode) : EpisodeHolder

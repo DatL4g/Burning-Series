@@ -77,6 +77,7 @@ import dev.datlag.tooling.compose.withMainContext
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -89,9 +90,8 @@ import kotlin.random.Random
 actual fun VideoScreen(component: VideoComponent) {
     val streamList = remember { component.streams.toImmutableList() }
     var streamIndex by remember(streamList) { mutableIntStateOf(0) }
-    var sourceIndex by remember(streamIndex) { mutableIntStateOf(0) }
-    val headers by remember(streamIndex) {
-        mutableStateOf(streamList[streamIndex].headers)
+    val (url, headers) = remember(streamList, streamIndex) {
+        streamList[streamIndex]
     }
     val metadata = remember(component.series, component.episode) {
         MediaMetadata.Builder()
@@ -103,9 +103,9 @@ actual fun VideoScreen(component: VideoComponent) {
             .setArtworkUri(component.series.coverHref?.toUri())
             .build()
     }
-    val mediaItem = remember(streamList, streamIndex, sourceIndex, metadata) {
+    val mediaItem = remember(streamList, url, metadata) {
         MediaItem.Builder()
-            .setUri(streamList[streamIndex].sources.toImmutableList()[sourceIndex])
+            .setUri(url)
             .setMediaMetadata(
                 metadata
             ).build()
@@ -113,16 +113,15 @@ actual fun VideoScreen(component: VideoComponent) {
 
     val context = LocalContext.current
     val controller = rememberWindowController()
-    val playerWrapper = remember {
+    val playerWrapper = remember(headers) {
         PlayerWrapper(
             context = context,
             castContext = Kast.castContext,
             startingPos = component.startingPos,
             startingLength = component.startingLength,
+            headers = headers.toImmutableMap(),
             onError = {
-                if (streamList[streamIndex].sources.size -1 > sourceIndex) {
-                    sourceIndex++
-                } else if (streamList.size - 1 > streamIndex) {
+                if (streamList.size - 1 > streamIndex) {
                     streamIndex++
                 }
             },

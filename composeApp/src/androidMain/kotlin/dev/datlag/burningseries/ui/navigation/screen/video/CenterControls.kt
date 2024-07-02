@@ -40,7 +40,7 @@ import androidx.media3.common.util.UnstableApi
 import dev.datlag.burningseries.common.drawProgress
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.network.state.EpisodeState
-import dev.datlag.skeo.Stream
+import dev.datlag.skeo.DirectLink
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableCollection
 
@@ -55,7 +55,7 @@ fun CenterControls(
     onReplayClick: () -> Unit,
     onPauseToggle: () -> Unit,
     onForwardClick: () -> Unit,
-    onNext: (Series.Episode, ImmutableCollection<Stream>) -> Unit
+    onNext: (Series.Episode, ImmutableCollection<DirectLink>) -> Unit
 ) {
     val isFinished by playerWrapper.isFinished.collectAsStateWithLifecycle()
 

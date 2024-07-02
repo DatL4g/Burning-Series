@@ -6,7 +6,8 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.network.state.SaveState
 import dev.datlag.burningseries.ui.navigation.Component
 import dev.datlag.burningseries.ui.navigation.DialogComponent
-import dev.datlag.skeo.Stream
+import dev.datlag.skeo.DirectLink
+import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.coroutines.flow.StateFlow
 
 interface ActivateComponent : Component {
@@ -20,11 +21,11 @@ interface ActivateComponent : Component {
     fun success(
         series: Series?,
         episode: Series.Episode?,
-        stream: Stream?
+        stream: ImmutableCollection<DirectLink>
     )
     fun error(
         series: Series?,
         episode: Series.Episode?,
-        stream: Stream?
+        stream: ImmutableCollection<DirectLink>
     )
 }

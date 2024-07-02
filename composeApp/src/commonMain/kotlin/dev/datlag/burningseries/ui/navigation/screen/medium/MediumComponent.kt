@@ -9,7 +9,7 @@ import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
 import dev.datlag.burningseries.ui.navigation.Component
 import dev.datlag.burningseries.ui.navigation.DialogComponent
-import dev.datlag.skeo.Stream
+import dev.datlag.skeo.DirectLink
 import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.flow.Flow
@@ -55,6 +55,6 @@ interface MediumComponent : Component {
     fun showSponsoringOrWatch(
         series: Series,
         episode: Series.Episode,
-        streams: ImmutableCollection<Stream>
+        streams: ImmutableCollection<DirectLink>
     )
 }

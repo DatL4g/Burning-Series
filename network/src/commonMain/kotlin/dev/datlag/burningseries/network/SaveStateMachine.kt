@@ -7,6 +7,7 @@ import dev.datlag.burningseries.network.state.SaveState
 import dev.datlag.skeo.Skeo
 import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -59,7 +60,7 @@ class SaveStateMachine(
 
                     val stream = suspendCatching {
                         Skeo.loadVideos(client, state.snapshot.data.url)
-                    }.getOrNull()
+                    }.getOrNull().orEmpty().toImmutableSet()
 
                     state.override {
                         if (firebaseSaved) {

@@ -121,7 +121,7 @@ class RootComponent(
                 episode = rootConfig.episode,
                 onBack = navigation::pop,
                 onWatch = { series, episode, stream ->
-                    navigation.bringToFront(RootConfig.Video(series, episode, persistentSetOf(stream)))
+                    navigation.bringToFront(RootConfig.Video(series, episode, stream.toImmutableSet()))
                 }
             )
         }

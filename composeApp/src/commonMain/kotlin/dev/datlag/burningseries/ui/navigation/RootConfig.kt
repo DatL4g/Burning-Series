@@ -6,7 +6,7 @@ import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.model.serializer.SerializableImmutableList
 import dev.datlag.burningseries.model.serializer.SerializableImmutableSet
 import dev.datlag.burningseries.settings.model.Language
-import dev.datlag.skeo.Stream
+import dev.datlag.skeo.DirectLink
 import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.serialization.Serializable
 
@@ -30,7 +30,7 @@ sealed class RootConfig {
     data class Video(
         val series: Series,
         val episode: Series.Episode,
-        val streams: SerializableImmutableSet<Stream>
+        val streams: SerializableImmutableSet<DirectLink>
     ) : RootConfig()
 
     @Serializable

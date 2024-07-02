@@ -17,11 +17,12 @@ import dev.datlag.burningseries.ui.navigation.DialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.activate.dialog.error.ErrorDialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.activate.dialog.success.SuccessDialog
 import dev.datlag.burningseries.ui.navigation.screen.activate.dialog.success.SuccessDialogComponent
-import dev.datlag.skeo.Stream
+import dev.datlag.skeo.DirectLink
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.compose.withMainContext
 import dev.datlag.tooling.decompose.ioScope
 import dev.datlag.tooling.scopeCatching
+import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +39,7 @@ class ActivateScreenComponent(
     private val series: Series,
     override val episode: Series.Episode,
     private val onBack: () -> Unit,
-    private val onWatch: (Series, Series.Episode, Stream) -> Unit
+    private val onWatch: (Series, Series.Episode, ImmutableCollection<DirectLink>) -> Unit
 ) : ActivateComponent, ComponentContext by componentContext {
 
     private val json by instance<Json>()
@@ -127,7 +128,7 @@ class ActivateScreenComponent(
     override fun success(
         series: Series?,
         episode: Series.Episode?,
-        stream: Stream?
+        stream: ImmutableCollection<DirectLink>
     ) {
         launchIO {
             saveStateMachine.dispatch(SaveAction.Clear)
@@ -140,7 +141,7 @@ class ActivateScreenComponent(
     override fun error(
         series: Series?,
         episode: Series.Episode?,
-        stream: Stream?
+        stream: ImmutableCollection<DirectLink>
     ) {
         launchIO {
             saveStateMachine.dispatch(SaveAction.Clear)

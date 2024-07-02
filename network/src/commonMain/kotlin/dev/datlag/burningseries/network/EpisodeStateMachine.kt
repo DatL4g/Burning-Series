@@ -85,7 +85,7 @@ class EpisodeStateMachine(
                         } else {
                             EpisodeState.SuccessStream(
                                 episode = state.snapshot.episode,
-                                results = streams.toImmutableSet()
+                                results = streams.flatten().toImmutableSet()
                             )
                         }
                     }
