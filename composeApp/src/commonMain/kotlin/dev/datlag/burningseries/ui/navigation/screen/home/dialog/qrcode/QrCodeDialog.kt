@@ -36,6 +36,9 @@ import io.github.alexzhirkevich.qrose.options.solid
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import org.jetbrains.compose.resources.stringResource
 import dev.datlag.burningseries.MokoRes
+import dev.datlag.burningseries.composeapp.generated.resources.sync_settings
+import dev.datlag.burningseries.composeapp.generated.resources.sync_settings_finished
+import dev.datlag.burningseries.composeapp.generated.resources.sync_settings_wait
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.ui.custom.TintPainter
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
@@ -62,7 +65,7 @@ fun QrCodeDialog(component: QrCodeComponent) {
             }
         },
         title = {
-            Text(text = "Sync Settings")
+            Text(text = stringResource(Res.string.sync_settings))
         },
         text = {
             Column(
@@ -73,13 +76,13 @@ fun QrCodeDialog(component: QrCodeComponent) {
                 if (settingsSynced) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = "Settings synced, you can close this dialog now",
+                        text = stringResource(Res.string.sync_settings_finished),
                         textAlign = TextAlign.Center
                     )
                 } else {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = "Scan the QR Code with your Smartphone, it will open the app and connect to this device.\nMake sure they are both in the same network.",
+                        text = stringResource(Res.string.sync_settings_wait),
                         textAlign = TextAlign.Center
                     )
 

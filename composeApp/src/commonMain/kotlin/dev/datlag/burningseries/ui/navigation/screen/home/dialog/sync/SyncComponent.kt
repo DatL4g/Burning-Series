@@ -7,4 +7,5 @@ interface SyncComponent : DialogComponent {
     val connectId: String
     val deviceNotFound: StateFlow<Boolean>
     val sendingTo: StateFlow<String?>
+    val takingTime: StateFlow<Boolean>
 }

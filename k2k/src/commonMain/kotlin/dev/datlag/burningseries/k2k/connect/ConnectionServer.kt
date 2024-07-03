@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.update
 
 internal data object ConnectionServer {
     private var socket = aSocket(SelectorManager(Dispatchers.IO)).tcp()
-    private var onReceive: suspend (ByteArray) -> Unit = { }
     private var receiveJob: Job? = null
 
     fun startServer(
@@ -26,7 +25,6 @@ internal data object ConnectionServer {
         listener: suspend (ByteArray) -> Unit
     ) {
         receiveJob?.cancel()
-        setReceiver(listener)
         receiveJob = scope.launch(Dispatchers.IO) {
             while (true) {
                 val socketAddress = InetSocketAddress(NetInterface.getLocalAddress(), port)
@@ -44,7 +42,7 @@ internal data object ConnectionServer {
                                 break
                             }
 
-                            onReceive(buffer)
+                            listener(buffer)
                         }
                     }.onFailure {
                         boundSocket.close()
@@ -56,9 +54,6 @@ internal data object ConnectionServer {
 
     fun stopServer() {
         receiveJob?.cancel()
-    }
-
-    fun setReceiver(listener: suspend (ByteArray) -> Unit) {
-        onReceive = listener
+        socket = aSocket(SelectorManager(Dispatchers.IO)).tcp()
     }
 }

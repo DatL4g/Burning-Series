@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
 import dev.datlag.burningseries.ui.navigation.screen.home.component.CompactScreen
-import dev.datlag.burningseries.ui.navigation.screen.home.component.FavoritesScreen
 import dev.datlag.burningseries.ui.navigation.screen.home.component.HomeSearchBar
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 

@@ -48,8 +48,9 @@ class QrCodeDialogComponent(
         )
 
         connection.startReceiving { bytes ->
-            val updated = syncHelper.updateSettingsFromByteArray(bytes)
-            syncedSettings.update { updated }
+            if (syncHelper.updateSettingsFromByteArray(bytes))  {
+                syncedSettings.update { true }
+            }
         }
 
         doOnDestroy {

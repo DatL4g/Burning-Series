@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import dev.datlag.burningseries.k2k.NetInterface
 
 internal data object DiscoveryClient {
-    private val socket = aSocket(SelectorManager(Dispatchers.IO)).udp()
+    private var socket = aSocket(SelectorManager(Dispatchers.IO)).udp()
 
     private var broadcastJob: Job? = null
 
@@ -39,6 +39,7 @@ internal data object DiscoveryClient {
 
     internal fun stopBroadcasting() {
         broadcastJob?.cancel()
+        socket = aSocket(SelectorManager(Dispatchers.IO)).udp()
     }
 
     private suspend fun send(port: Int, data: ByteArray) {

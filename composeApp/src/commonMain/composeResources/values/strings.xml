@@ -48,4 +48,11 @@
     <string name="loading">Loading</string>
     <string name="oh_noo">Oh noo</string>
     <string name="error_try_again">An error occurred, please try again later</string>
+    <string name="sync_settings">Sync Settings</string>
+    <string name="sync_settings_finished">Settings synced, you can close this on both ends now.</string>
+    <string name="sync_settings_wait">Scan the QR Code with your Smartphone and make sure both devices are in the same network.</string>
+    <string name="sync_settings_not_found">Device not found, make sure both devices are in the same network.</string>
+    <string name="sync_settings_connecting">Trying to sync, please wait.</string>
+    <string name="sync_settings_sending">Syncing to %1$s, please wait.</string>
+    <string name="sync_settings_time">This seems to take some time, maybe try again later.</string>
 </resources>
