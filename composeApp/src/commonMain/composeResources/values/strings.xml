@@ -46,4 +46,6 @@
     <string name="episodes">Episodes</string>
     <string name="series">Series</string>
     <string name="loading">Loading</string>
+    <string name="oh_noo">Oh noo</string>
+    <string name="error_try_again">An error occurred, please try again later</string>
 </resources>

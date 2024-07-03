@@ -88,6 +88,15 @@ actual object PlatformModule {
                 }
             }
         }
+        bindSingleton<HttpClient>("STREAM_CLIENT") {
+            HttpClient(OkHttp) {
+                engine {
+                    config {
+                        followRedirects(true)
+                    }
+                }
+            }
+        }
         bindSingleton<DataStore<AppSettings>> {
             DataStoreFactory.create(
                 storage = OkioStorage(

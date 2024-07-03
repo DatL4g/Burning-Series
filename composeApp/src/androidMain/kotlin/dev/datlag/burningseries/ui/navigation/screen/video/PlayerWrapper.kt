@@ -19,6 +19,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.datasource.HttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.extractor.DefaultExtractorsFactory
@@ -67,18 +68,22 @@ class PlayerWrapper(
         FLAG_ALLOW_NON_IDR_KEYFRAMES and FLAG_DETECT_ACCESS_UNITS and FLAG_ENABLE_HDMV_DTS_AUDIO_STREAMS
     )
 
-    private val dataSource: DataSource.Factory = DefaultDataSource.Factory(context, DefaultHttpDataSource.Factory()
-            .setDefaultRequestProperties(headers)
-            .setAllowCrossProtocolRedirects(true)
-            .setKeepPostFor302Redirects(true)
-        )
+    private val dataSource: DataSource.Factory = DefaultHttpDataSource.Factory()
+        .setDefaultRequestProperties(headers)
+        .setAllowCrossProtocolRedirects(true)
+        .setKeepPostFor302Redirects(true)
 
     private val castPlayer = castContext?.let(::CastPlayer)
 
     private val localPlayer = ExoPlayer.Builder(context).apply {
         setSeekBackIncrementMs(10000)
         setSeekForwardIncrementMs(10000)
-        setMediaSourceFactory(DefaultMediaSourceFactory(dataSource, extractorFactory))
+        setMediaSourceFactory(
+            DefaultMediaSourceFactory(
+                DefaultDataSource.Factory(context, dataSource),
+                extractorFactory
+            )
+        )
     }.build()
 
     private val castState = castContext?.castState

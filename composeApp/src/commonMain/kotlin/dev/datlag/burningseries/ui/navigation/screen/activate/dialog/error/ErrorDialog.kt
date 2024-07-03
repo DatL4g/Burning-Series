@@ -35,7 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ErrorDialog(component: ErrorComponent) {
-    val isWarning = remember { component.stream != null }
+    val isWarning = remember { component.stream.isNotEmpty() }
 
     AlertDialog(
         onDismissRequest = {
@@ -61,7 +61,7 @@ fun ErrorDialog(component: ErrorComponent) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = stringResource(Res.string.activate_error_text))
-                component.stream?.let { stream ->
+                component.stream.ifEmpty { null }?.let { stream ->
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {

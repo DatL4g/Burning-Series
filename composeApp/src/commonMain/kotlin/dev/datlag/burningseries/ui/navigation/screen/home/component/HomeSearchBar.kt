@@ -148,7 +148,7 @@ internal fun HomeSearchBar(component: HomeComponent) {
                     )
                 }
             } else {
-
+                val color = LocalContentColor.current.copy(alpha = 1F)
 
                 if (isDesktopOrTv) {
                     IconButton(
@@ -158,7 +158,8 @@ internal fun HomeSearchBar(component: HomeComponent) {
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.QrCode,
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = color
                         )
                     }
                 } else {
@@ -169,7 +170,8 @@ internal fun HomeSearchBar(component: HomeComponent) {
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Settings,
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = color
                         )
                     }
                 }

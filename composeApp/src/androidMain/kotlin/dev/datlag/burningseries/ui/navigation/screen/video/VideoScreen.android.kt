@@ -68,7 +68,6 @@ import dev.datlag.burningseries.common.isConnectedOrConnecting
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.ui.custom.video.pip.enterPIPMode
 import dev.datlag.burningseries.ui.custom.video.pip.isActivityStatePipMode
-import dev.datlag.burningseries.ui.custom.video.uri.VideoPlayerMediaItem
 import dev.datlag.kast.ConnectionState
 import dev.datlag.kast.Kast
 import dev.datlag.nanoid.NanoIdUtils

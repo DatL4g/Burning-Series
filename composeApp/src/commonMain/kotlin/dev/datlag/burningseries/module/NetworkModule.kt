@@ -90,7 +90,7 @@ data object NetworkModule {
         }
         bindProvider<EpisodeStateMachine> {
             EpisodeStateMachine(
-                client = instance(),
+                client = instanceOrNull<HttpClient>("STREAM_CLIENT") ?: instance(),
                 firebaseAuth = nullableFirebaseInstance()?.auth,
                 fireStore = nullableFirebaseInstance()?.store
             )
@@ -98,6 +98,7 @@ data object NetworkModule {
         bindProvider<SaveStateMachine> {
             SaveStateMachine(
                 client = instance(),
+                streamClient = instanceOrNull("STREAM_CLIENT"),
                 firebaseAuth = nullableFirebaseInstance()?.auth,
                 fireStore = nullableFirebaseInstance()?.store
             )

@@ -13,6 +13,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @OptIn(ExperimentalCoroutinesApi::class)
 class SaveStateMachine(
     private val client: HttpClient,
+    private val streamClient: HttpClient?,
     private val firebaseAuth: FirebaseFactory.Auth?,
     private val fireStore: FirebaseFactory.Store?
 ) : FlowReduxStateMachine<SaveState, SaveAction>(
@@ -59,7 +60,7 @@ class SaveStateMachine(
                     }
 
                     val stream = suspendCatching {
-                        Skeo.loadVideos(client, state.snapshot.data.url)
+                        Skeo.loadVideos(streamClient ?: client, state.snapshot.data.url)
                     }.getOrNull().orEmpty().toImmutableSet()
 
                     state.override {

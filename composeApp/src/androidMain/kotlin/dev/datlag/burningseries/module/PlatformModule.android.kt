@@ -82,6 +82,15 @@ actual object PlatformModule {
                 }
             }
         }
+        bindSingleton<HttpClient>("STREAM_CLIENT") {
+            HttpClient(OkHttp) {
+                engine {
+                    config {
+                        followRedirects(true)
+                    }
+                }
+            }
+        }
         bindSingleton<DataStore<AppSettings>> {
             val app: Context = instance()
 

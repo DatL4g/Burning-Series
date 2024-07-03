@@ -75,7 +75,7 @@ class EpisodeStateMachine(
                                 Skeo.loadVideos(client, it)
                             }
                         }.awaitAll()
-                    }.filterNotNull()
+                    }.flatten()
 
                     state.override {
                         if (streams.isEmpty()) {
@@ -85,7 +85,7 @@ class EpisodeStateMachine(
                         } else {
                             EpisodeState.SuccessStream(
                                 episode = state.snapshot.episode,
-                                results = streams.flatten().toImmutableSet()
+                                results = streams.toImmutableSet()
                             )
                         }
                     }

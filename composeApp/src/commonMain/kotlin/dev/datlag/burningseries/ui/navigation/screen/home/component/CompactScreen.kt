@@ -39,6 +39,7 @@ import dev.datlag.burningseries.composeapp.generated.resources.series
 import dev.datlag.burningseries.github.model.UserAndRelease
 import dev.datlag.burningseries.network.state.HomeState
 import dev.datlag.burningseries.settings.model.Language
+import dev.datlag.burningseries.ui.custom.ErrorContent
 import dev.datlag.burningseries.ui.navigation.screen.component.HomeCard
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeComponent
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
@@ -133,7 +134,10 @@ internal fun CompactScreen(
                     Loading()
                 }
                 state.isEpisodeError -> {
-                    Text(text = "Error loading episodes")
+                    ErrorContent(
+                        modifier = Modifier.fillParentMaxWidth().padding(16.dp),
+                        horizontal = true
+                    )
                 }
                 state is HomeState.Success -> {
                     val rowState = rememberLazyListState()
@@ -194,7 +198,10 @@ internal fun CompactScreen(
                     Loading()
                 }
                 state.isSeriesError -> {
-                    Text(text = "Error loading series")
+                    ErrorContent(
+                        modifier = Modifier.fillParentMaxWidth().padding(16.dp),
+                        horizontal = true
+                    )
                 }
                 state is HomeState.Success -> {
                     val rowState = rememberLazyListState()

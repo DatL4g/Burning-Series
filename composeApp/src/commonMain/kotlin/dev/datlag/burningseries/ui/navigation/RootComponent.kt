@@ -62,7 +62,8 @@ class RootComponent(
                 }
             }
         },
-        childFactory = ::createScreenComponent
+        childFactory = ::createScreenComponent,
+        handleBackButton = true
     )
 
     private fun createScreenComponent(

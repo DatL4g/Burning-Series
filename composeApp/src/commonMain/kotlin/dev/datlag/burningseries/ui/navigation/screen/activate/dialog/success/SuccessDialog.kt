@@ -53,7 +53,7 @@ fun SuccessDialog(component: SuccessComponent) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = stringResource(Res.string.activate_success_text))
-                component.stream?.let { stream ->
+                component.stream.ifEmpty { null }?.let { stream ->
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
