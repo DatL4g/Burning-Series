@@ -57,7 +57,7 @@ fun ErrorContent(
         }
     } else {
         Column(
-            modifier = modifier,
+            modifier = modifier.padding(horizontal = 16.dp, vertical = 32.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

@@ -67,6 +67,7 @@ import dev.icerock.moko.resources.compose.painterResource
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import dev.datlag.burningseries.MokoRes
+import dev.datlag.burningseries.composeapp.generated.resources.error
 import dev.datlag.burningseries.composeapp.generated.resources.loading
 import dev.datlag.burningseries.other.isInstalled
 
@@ -125,9 +126,15 @@ internal fun HomeSearchBar(component: HomeComponent) {
             }
         },
         placeholder = {
+            val res = when {
+                searchState.isLoading -> Res.string.loading
+                searchState.isSuccess -> Res.string.search
+                else -> Res.string.error
+            }
+
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(if (searchState.isLoading) Res.string.loading else Res.string.search),
+                text = stringResource(res),
                 textAlign = TextAlign.Center
             )
         },

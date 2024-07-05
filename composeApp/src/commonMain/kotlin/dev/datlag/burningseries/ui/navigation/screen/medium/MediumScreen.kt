@@ -63,6 +63,7 @@ import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
 import dev.datlag.burningseries.other.AniFlow
 import dev.datlag.burningseries.other.isInstalled
+import dev.datlag.burningseries.ui.custom.ErrorContent
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.AniFlowCard
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.CoverSection
 import dev.datlag.burningseries.ui.navigation.screen.medium.component.DescriptionSection
@@ -189,6 +190,13 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
                     component = component,
                     modifier = Modifier.fillParentMaxWidth().padding(vertical = 8.dp)
                 )
+            }
+            if (seriesState is SeriesState.Failure) {
+                item {
+                    ErrorContent(
+                        modifier = Modifier.fillParentMaxWidth()
+                    )
+                }
             }
             items(episodes.toImmutableList(), key = { it.href }) {
                 EpisodeItem(
