@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.network
 
 import com.freeletics.flowredux.dsl.FlowReduxStateMachine
+import dev.datlag.burningseries.firebase.FirebaseFactory
 import dev.datlag.burningseries.network.state.HomeAction
 import dev.datlag.burningseries.network.state.HomeState
 import dev.datlag.tooling.async.suspendCatching
@@ -10,7 +11,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeStateMachine(
-    private val client: HttpClient
+    private val client: HttpClient,
+    private val crashlytics: FirebaseFactory.Crashlytics?
 ) : FlowReduxStateMachine<HomeState, HomeAction>(
     initialState = currentState
 ) {
@@ -41,8 +43,7 @@ class HomeStateMachine(
             }
             inState<HomeState.Failure> {
                 onEnterEffect {
-                    Napier.e("BS Home Error:", it.throwable)
-                    // log in crashlytics
+                    crashlytics?.log(it.throwable)
                 }
                 on<HomeAction.Retry> { _, state ->
                     state.override { HomeState.Loading }

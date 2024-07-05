@@ -75,24 +75,28 @@ data object NetworkModule {
         }
         bindProvider<HomeStateMachine> {
             HomeStateMachine(
-                client = instance()
+                client = instance(),
+                crashlytics = nullableFirebaseInstance()?.crashlytics
             )
         }
         bindProvider<SearchStateMachine> {
             SearchStateMachine(
-                client = instance()
+                client = instance(),
+                crashlytics = nullableFirebaseInstance()?.crashlytics
             )
         }
         bindProvider<SeriesStateMachine> {
             SeriesStateMachine(
-                client = instance()
+                client = instance(),
+                crashlytics = nullableFirebaseInstance()?.crashlytics
             )
         }
         bindProvider<EpisodeStateMachine> {
             EpisodeStateMachine(
                 client = instanceOrNull<HttpClient>("STREAM_CLIENT") ?: instance(),
                 firebaseAuth = nullableFirebaseInstance()?.auth,
-                fireStore = nullableFirebaseInstance()?.store
+                fireStore = nullableFirebaseInstance()?.store,
+                crashlytics = nullableFirebaseInstance()?.crashlytics
             )
         }
         bindProvider<SaveStateMachine> {
@@ -100,7 +104,8 @@ data object NetworkModule {
                 client = instance(),
                 streamClient = instanceOrNull("STREAM_CLIENT"),
                 firebaseAuth = nullableFirebaseInstance()?.auth,
-                fireStore = nullableFirebaseInstance()?.store
+                fireStore = nullableFirebaseInstance()?.store,
+                crashlytics = nullableFirebaseInstance()?.crashlytics
             )
         }
         bindSingleton<GitHub> {

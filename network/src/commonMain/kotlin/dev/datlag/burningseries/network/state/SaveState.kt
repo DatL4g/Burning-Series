@@ -14,6 +14,7 @@ sealed interface SaveState {
         val stream: ImmutableCollection<DirectLink>
     ) : SaveState
     data class Error(
+        internal val throwable: Throwable?,
         val series: Series?,
         val episode: Series.Episode?,
         val stream: ImmutableCollection<DirectLink>

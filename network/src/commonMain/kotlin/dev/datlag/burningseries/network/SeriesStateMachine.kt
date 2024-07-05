@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.network
 
 import com.freeletics.flowredux.dsl.FlowReduxStateMachine
+import dev.datlag.burningseries.firebase.FirebaseFactory
 import dev.datlag.burningseries.network.state.SeriesAction
 import dev.datlag.burningseries.network.state.SeriesState
 import dev.datlag.tooling.async.suspendCatching
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SeriesStateMachine(
-    private val client: HttpClient
+    private val client: HttpClient,
+    private val crashlytics: FirebaseFactory.Crashlytics?,
 ) : FlowReduxStateMachine<SeriesState, SeriesAction>(
     initialState = SeriesState.Loading
 ) {
@@ -42,6 +44,9 @@ class SeriesStateMachine(
                 }
             }
             inState<SeriesState.Failure> {
+                onEnterEffect {
+                    crashlytics?.log(it.throwable)
+                }
                 onActionEffect<SeriesAction.Retry> { _, _ ->
                     val previous = seriesHref.getAndUpdate { null }
                     seriesHref.update { previous }

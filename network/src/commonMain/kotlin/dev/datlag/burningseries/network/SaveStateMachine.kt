@@ -15,7 +15,8 @@ class SaveStateMachine(
     private val client: HttpClient,
     private val streamClient: HttpClient?,
     private val firebaseAuth: FirebaseFactory.Auth?,
-    private val fireStore: FirebaseFactory.Store?
+    private val fireStore: FirebaseFactory.Store?,
+    private val crashlytics: FirebaseFactory.Crashlytics?
 ) : FlowReduxStateMachine<SaveState, SaveAction>(
     initialState = SaveState.None
 ) {
@@ -45,11 +46,12 @@ class SaveStateMachine(
                         )
                     }.getOrNull() ?: false
 
-                    val series = suspendCatching {
+                    val seriesResult = suspendCatching {
                         state.snapshot.episodeHref?.let { href ->
                             BurningSeries.series(client, href)
                         }
-                    }.getOrNull()
+                    }
+                    val series = seriesResult.getOrNull()
 
                     val episode = state.snapshot.episodeHref?.let { href ->
                         series?.episodes?.firstOrNull {
@@ -67,7 +69,7 @@ class SaveStateMachine(
                         if (firebaseSaved) {
                             SaveState.Success(series, episode, stream)
                         } else {
-                            SaveState.Error(series, episode, stream)
+                            SaveState.Error(seriesResult.exceptionOrNull(), series, episode, stream)
                         }
                     }
                 }
@@ -78,6 +80,9 @@ class SaveStateMachine(
                 }
             }
             inState<SaveState.Error> {
+                onEnterEffect {
+                    crashlytics?.log(it.throwable)
+                }
                 on<SaveAction.Save> { action, state ->
                     state.override { SaveState.Saving(action.episodeHref, action.data) }
                 }

@@ -17,7 +17,8 @@ import kotlinx.coroutines.coroutineScope
 class EpisodeStateMachine(
     private val client: HttpClient,
     private val firebaseAuth: FirebaseFactory.Auth?,
-    private val fireStore: FirebaseFactory.Store?
+    private val fireStore: FirebaseFactory.Store?,
+    private val crashlytics: FirebaseFactory.Crashlytics?
 ) : FlowReduxStateMachine<EpisodeState, EpisodeAction>(
     initialState = EpisodeState.None
 ) {
@@ -48,19 +49,21 @@ class EpisodeStateMachine(
                 onEnter { state ->
                     val hosterHref = state.snapshot.episode.hoster.map { it.href }
 
-                    val firebaseResults = suspendCatching {
+                    val firebaseResult = suspendCatching {
                         fireStore?.streams(hosterHref)
-                    }.getOrNull()
+                    }
+                    val lists = firebaseResult.getOrNull()
 
                     state.override {
-                        if (firebaseResults.isNullOrEmpty()) {
+                        if (lists.isNullOrEmpty()) {
                             EpisodeState.ErrorHoster(
+                                throwable = firebaseResult.exceptionOrNull(),
                                 episode = state.snapshot.episode
                             )
                         } else {
                             EpisodeState.SuccessHoster(
                                 episode = state.snapshot.episode,
-                                results = firebaseResults.toImmutableSet()
+                                results = lists.toImmutableSet()
                             )
                         }
                     }
@@ -80,6 +83,7 @@ class EpisodeStateMachine(
                     state.override {
                         if (streams.isEmpty()) {
                             EpisodeState.ErrorStream(
+                                throwable = null,
                                 episode = state.snapshot.episode
                             )
                         } else {
@@ -93,7 +97,7 @@ class EpisodeStateMachine(
             }
             inState<EpisodeState.ErrorHoster> {
                 onEnterEffect {
-                    println("Error Hoster")
+                    crashlytics?.log(it.throwable)
                 }
             }
         }

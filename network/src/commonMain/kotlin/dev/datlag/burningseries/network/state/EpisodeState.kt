@@ -23,9 +23,15 @@ sealed interface EpisodeState {
         val results: ImmutableCollection<DirectLink>
     ): EpisodeHolder
 
-    data class ErrorHoster(override val episode: Series.Episode) : EpisodeHolder
+    data class ErrorHoster(
+        internal val throwable: Throwable?,
+        override val episode: Series.Episode
+    ) : EpisodeHolder
 
-    data class ErrorStream(override val episode: Series.Episode) : EpisodeHolder
+    data class ErrorStream(
+        internal val throwable: Throwable?,
+        override val episode: Series.Episode
+    ) : EpisodeHolder
 }
 
 sealed interface EpisodeAction {
