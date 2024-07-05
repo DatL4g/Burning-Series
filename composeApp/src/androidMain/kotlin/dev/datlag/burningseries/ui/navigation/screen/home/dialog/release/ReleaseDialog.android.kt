@@ -2,6 +2,7 @@ package dev.datlag.burningseries.ui.navigation.screen.home.dialog.release
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,6 +42,11 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.common.drawProgress
 import dev.datlag.burningseries.common.rememberIsTv
+import dev.datlag.burningseries.composeapp.generated.resources.Res
+import dev.datlag.burningseries.composeapp.generated.resources.install
+import dev.datlag.burningseries.composeapp.generated.resources.release_text_1
+import dev.datlag.burningseries.composeapp.generated.resources.release_text_2
+import dev.datlag.burningseries.composeapp.generated.resources.view
 import dev.datlag.burningseries.github.model.UserAndRelease
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.DownloadManager
@@ -49,6 +55,7 @@ import dev.datlag.tooling.compose.launchIO
 import dev.datlag.tooling.compose.withMainContext
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import dev.icerock.moko.resources.compose.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.solrudev.ackpine.session.SessionResult
 
 @Composable
@@ -74,11 +81,22 @@ actual fun ReleaseDialog(component: ReleaseComponent) {
             Text(text = component.release.title ?: component.release.tagName)
         },
         text = {
-            Text(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                text = "A new version is available ${component.release.tagName}\nYou should check it out!",
-                textAlign = TextAlign.Center
-            )
+                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(Res.string.release_text_1, component.release.tagName),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(Res.string.release_text_2),
+                    textAlign = TextAlign.Center
+                )
+            }
         },
         dismissButton = if (androidAsset != null) {
             {
@@ -137,7 +155,7 @@ actual fun ReleaseDialog(component: ReleaseComponent) {
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(text = "Install")
+                        Text(text = stringResource(Res.string.install))
                     }
                 }
             }
@@ -161,7 +179,7 @@ private fun ViewButton(release: UserAndRelease.Release) {
             colorFilter = ColorFilter.tint(LocalContentColor.current)
         )
         Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-        Text(text = "View")
+        Text(text = stringResource(Res.string.view))
     }
 }
 

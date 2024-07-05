@@ -29,8 +29,10 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.composeapp.generated.resources.Res
-import dev.datlag.burningseries.composeapp.generated.resources.activate_on_desktop
+import dev.datlag.burningseries.composeapp.generated.resources.activate_on_desktop_1
+import dev.datlag.burningseries.composeapp.generated.resources.activate_on_desktop_2
 import dev.datlag.burningseries.composeapp.generated.resources.download
+import dev.datlag.burningseries.composeapp.generated.resources.open_in_browser
 import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.other.Constants
 import org.jetbrains.compose.resources.stringResource
@@ -66,7 +68,12 @@ actual fun ActivateScreen(component: ActivateComponent) {
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(fraction = 0.7F),
-                text = stringResource(Res.string.activate_on_desktop),
+                text = stringResource(Res.string.activate_on_desktop_1),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.fillMaxWidth(fraction = 0.7F),
+                text = stringResource(Res.string.activate_on_desktop_2),
                 textAlign = TextAlign.Center
             )
 
@@ -100,7 +107,7 @@ actual fun ActivateScreen(component: ActivateComponent) {
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = "Open in browser")
+                    Text(text = stringResource(Res.string.open_in_browser))
                 }
             }
         }

@@ -20,8 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.alwaysEnabledColors
+import dev.datlag.burningseries.composeapp.generated.resources.Res
+import dev.datlag.burningseries.composeapp.generated.resources.syncing_enabled
 import dev.datlag.burningseries.other.DomainVerifier
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.stringResource
 
 actual fun LazyListScope.SyncSection() {
     if (DomainVerifier.supported) {
@@ -42,7 +45,7 @@ actual fun LazyListScope.SyncSection() {
                     imageVector = Icons.Rounded.Phonelink,
                     contentDescription = null,
                 )
-                Text(text = "Syncing enabled")
+                Text(text = stringResource(Res.string.syncing_enabled))
                 Spacer(modifier = Modifier.weight(1F))
                 Switch(
                     checked = enabled,

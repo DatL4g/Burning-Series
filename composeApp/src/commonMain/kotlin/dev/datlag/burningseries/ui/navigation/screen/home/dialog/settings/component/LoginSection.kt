@@ -26,6 +26,10 @@ import dev.icerock.moko.resources.compose.painterResource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import dev.datlag.burningseries.MokoRes
+import dev.datlag.burningseries.composeapp.generated.resources.Res
+import dev.datlag.burningseries.composeapp.generated.resources.login
+import dev.datlag.burningseries.composeapp.generated.resources.logout
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun LoginSection(
@@ -53,7 +57,7 @@ fun LoginSection(
                 imageVector = Icons.Rounded.NotInterested,
                 contentDescription = null
             )
-            Text(text = "Logout")
+            Text(text = stringResource(Res.string.logout))
         } else {
             Image(
                 modifier = Modifier.size(24.dp),
@@ -61,7 +65,7 @@ fun LoginSection(
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(LocalContentColor.current)
             )
-            Text(text = "Login")
+            Text(text = stringResource(Res.string.login))
         }
     }
 }

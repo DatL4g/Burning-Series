@@ -20,13 +20,15 @@
     <string name="cast">Cast</string>
     <string name="casting_not_supported">Casting is not supported on this device yet.</string>
     <string name="back">Back</string>
-    <string name="vlc_required">VLC is required to play videos on your PC.\nMake sure to only download and install the official package from videolan.org or your system package manager.</string>
+    <string name="vlc_required_1">VLC is required to play videos on your PC.</string>
+    <string name="vlc_required_2">Make sure to only download and install the official package from videolan.org or your system package manager.</string>
     <string name="download">Download</string>
     <string name="activate_episode_title">Activate Episode</string>
     <string name="activate_episode_text">Do you want to activate this episode now?</string>
     <string name="activate">Activate</string>
     <string name="later">Later</string>
-    <string name="activate_on_desktop">Activating on Desktop is no longer supported.\nEnable (Google) DoH in your browser and use the extension instead.</string>
+    <string name="activate_on_desktop_1">Activating on Desktop is no longer supported.</string>
+    <string name="activate_on_desktop_2">Enable (Google) DoH in your browser and use the extension instead.</string>
     <string name="load_to_activate_episode">Load to activate Episode</string>
     <string name="activate_success_text">You can go back now or continue browsing and activate some more.</string>
     <string name="activate_error_text">Could not activate hoster, please try again later.</string>
@@ -55,4 +57,17 @@
     <string name="sync_settings_connecting">Trying to sync, please wait.</string>
     <string name="sync_settings_sending">Syncing to %1$s, please wait.</string>
     <string name="sync_settings_time">This seems to take some time, maybe try again later.</string>
+    <string name="github_repository">GitHub Repository</string>
+    <string name="developed_by_datlag">Developed by DatLag</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="github">GitHub</string>
+    <string name="polar">Polar</string>
+    <string name="patreon">Patreon</string>
+    <string name="install">Install</string>
+    <string name="view">View</string>
+    <string name="open_in_browser">Open in Browser</string>
+    <string name="release_text_1">A new version is available %1$s</string>
+    <string name="release_text_2">You should check it out!</string>
+    <string name="syncing_enabled">Syncing enabled</string>
 </resources>

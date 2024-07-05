@@ -1,6 +1,8 @@
 package dev.datlag.burningseries.ui.navigation.screen.home.dialog.release
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -17,14 +19,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.MokoRes
+import dev.datlag.burningseries.composeapp.generated.resources.Res
+import dev.datlag.burningseries.composeapp.generated.resources.release_text_1
+import dev.datlag.burningseries.composeapp.generated.resources.release_text_2
+import dev.datlag.burningseries.composeapp.generated.resources.view
 import dev.datlag.burningseries.other.Constants
 import dev.icerock.moko.resources.compose.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 actual fun ReleaseDialog(component: ReleaseComponent) {
@@ -48,11 +57,22 @@ actual fun ReleaseDialog(component: ReleaseComponent) {
             Text(text = component.release.title ?: component.release.tagName)
         },
         text = {
-            Text(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                text = "A new version is available ${component.release.tagName}\nYou should check it out!",
-                textAlign = TextAlign.Center
-            )
+                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(Res.string.release_text_1, component.release.tagName),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(Res.string.release_text_2),
+                    textAlign = TextAlign.Center
+                )
+            }
         },
         confirmButton = {
             val uriHandler = LocalUriHandler.current
@@ -69,7 +89,7 @@ actual fun ReleaseDialog(component: ReleaseComponent) {
                     colorFilter = ColorFilter.tint(LocalContentColor.current)
                 )
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "View")
+                Text(text = stringResource(Res.string.view))
             }
         }
     )

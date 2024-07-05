@@ -92,6 +92,9 @@ actual fun VideoScreen(component: VideoComponent) {
     val (url, headers) = remember(streamList, streamIndex) {
         streamList[streamIndex]
     }
+    var useLongTimeout by remember {
+        mutableStateOf(false)
+    }
     val metadata = remember(component.series, component.episode) {
         MediaMetadata.Builder()
             .setMediaType(MediaMetadata.MEDIA_TYPE_VIDEO)
@@ -112,16 +115,20 @@ actual fun VideoScreen(component: VideoComponent) {
 
     val context = LocalContext.current
     val controller = rememberWindowController()
-    val playerWrapper = remember(headers) {
+    val playerWrapper = remember(headers, useLongTimeout) {
         PlayerWrapper(
             context = context,
             castContext = Kast.castContext,
             startingPos = component.startingPos,
             startingLength = component.startingLength,
             headers = headers.toImmutableMap(),
+            longTimeout = useLongTimeout,
             onError = {
                 if (streamList.size - 1 > streamIndex) {
                     streamIndex++
+                } else if (!useLongTimeout) {
+                    useLongTimeout = true
+                    streamIndex = 0
                 }
             },
             onFirstFrame = {

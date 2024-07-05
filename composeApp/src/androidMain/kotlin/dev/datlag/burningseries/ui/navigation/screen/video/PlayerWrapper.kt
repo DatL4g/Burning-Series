@@ -49,6 +49,7 @@ import kotlinx.datetime.Clock
 import kotlin.math.max
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @UnstableApi
 class PlayerWrapper(
@@ -57,6 +58,7 @@ class PlayerWrapper(
     private val startingPos: Long,
     private val startingLength: Long,
     private val headers: ImmutableMap<String, String>,
+    private val longTimeout: Boolean,
     private val onError: (PlaybackException) -> Unit = { },
     private val onFirstFrame: () -> Unit = { },
     private val onProgressChange: (Long) -> Unit = { },
@@ -72,6 +74,19 @@ class PlayerWrapper(
         .setDefaultRequestProperties(headers)
         .setAllowCrossProtocolRedirects(true)
         .setKeepPostFor302Redirects(true)
+        .setReadTimeoutMs(
+            if (longTimeout) {
+                30.seconds.inWholeMilliseconds.toInt()
+            } else {
+                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS
+            }
+        ).setConnectTimeoutMs(
+            if (longTimeout) {
+                30.seconds.inWholeMilliseconds.toInt()
+            } else {
+                DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS
+            }
+        )
 
     private val castPlayer = castContext?.let(::CastPlayer)
 

@@ -23,7 +23,10 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.tooling.compose.onClick
 import dev.datlag.burningseries.MokoRes
+import dev.datlag.burningseries.composeapp.generated.resources.Res
+import dev.datlag.burningseries.composeapp.generated.resources.github_repository
 import dev.icerock.moko.resources.compose.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun GitHubRepoSection(
@@ -45,6 +48,6 @@ fun GitHubRepoSection(
             imageVector = Icons.Rounded.Inventory2,
             contentDescription = null,
         )
-        Text(text = "GitHub Repository")
+        Text(text = stringResource(Res.string.github_repository))
     }
 }

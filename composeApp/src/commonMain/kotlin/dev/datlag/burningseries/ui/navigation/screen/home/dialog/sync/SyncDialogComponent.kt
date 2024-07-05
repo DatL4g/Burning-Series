@@ -81,8 +81,12 @@ class SyncDialogComponent(
         sendingTo.update { host.name }
         deviceNotFound.update { false }
         var counter = 0
+        var syncData = syncHelper.encodeSettingsToByteArray()
         while (currentCoroutineContext().isActive) {
-            connect.send(syncHelper.encodeSettingsToByteArray(), host)
+            if (syncData.isEmpty()) {
+                syncData = syncHelper.encodeSettingsToByteArray()
+            }
+            connect.send(syncData, host)
             delay(3000)
             if (counter >= 5) {
                 takingTime.update { true }

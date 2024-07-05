@@ -15,8 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import dev.datlag.burningseries.composeapp.generated.resources.Res
+import dev.datlag.burningseries.composeapp.generated.resources.developed_by_datlag
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.tooling.compose.onClick
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun GitHubOwnerSection(
@@ -38,6 +41,6 @@ fun GitHubOwnerSection(
             imageVector = Icons.Rounded.Code,
             contentDescription = null,
         )
-        Text(text = "Developed by DatLag")
+        Text(text = stringResource(Res.string.developed_by_datlag))
     }
 }

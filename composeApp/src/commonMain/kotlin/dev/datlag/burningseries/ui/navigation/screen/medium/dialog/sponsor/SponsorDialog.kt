@@ -31,6 +31,7 @@ import dev.icerock.moko.resources.compose.painterResource
 import org.jetbrains.compose.resources.stringResource
 import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.common.rememberIsTv
+import dev.datlag.burningseries.composeapp.generated.resources.login
 import dev.datlag.tooling.Platform
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 
@@ -82,7 +83,7 @@ fun SponsorDialog(component: SponsorComponent) {
                         colorFilter = ColorFilter.tint(LocalContentColor.current)
                     )
                     Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = "Login")
+                    Text(text = stringResource(Res.string.login))
                 }
             }
         } else null,

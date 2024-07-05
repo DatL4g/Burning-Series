@@ -31,7 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.download
-import dev.datlag.burningseries.composeapp.generated.resources.vlc_required
+import dev.datlag.burningseries.composeapp.generated.resources.vlc_required_1
+import dev.datlag.burningseries.composeapp.generated.resources.vlc_required_2
 import dev.datlag.burningseries.other.Constants
 import org.jetbrains.compose.resources.stringResource
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery
@@ -76,7 +77,12 @@ actual fun VideoScreen(component: VideoComponent) {
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(fraction = 0.7F),
-                text = stringResource(Res.string.vlc_required),
+                text = stringResource(Res.string.vlc_required_1),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.fillMaxWidth(fraction = 0.7F),
+                text = stringResource(Res.string.vlc_required_2),
                 textAlign = TextAlign.Center
             )
             Row(

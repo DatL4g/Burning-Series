@@ -27,6 +27,9 @@ import com.maxkeppeler.sheets.option.models.OptionSelection
 import dev.icerock.moko.resources.compose.painterResource
 import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.composeapp.generated.resources.Res
+import dev.datlag.burningseries.composeapp.generated.resources.github
+import dev.datlag.burningseries.composeapp.generated.resources.patreon
+import dev.datlag.burningseries.composeapp.generated.resources.polar
 import dev.datlag.burningseries.composeapp.generated.resources.sponsor
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.tooling.compose.onClick
@@ -49,15 +52,15 @@ fun SponsorSection(
             options = listOf(
                 Option(
                     icon = IconSource(painter = painterResource(MokoRes.images.github)),
-                    titleText = "GitHub"
+                    titleText = stringResource(Res.string.github)
                 ),
                 Option(
                     icon = IconSource(painter = painterResource(MokoRes.images.polar)),
-                    titleText = "Polar"
+                    titleText = stringResource(Res.string.polar)
                 ),
                 Option(
                     icon = IconSource(painter = painterResource(MokoRes.images.patreon)),
-                    titleText = "Patreon"
+                    titleText = stringResource(Res.string.patreon)
                 )
             ),
             onSelectOption = { option, _ ->
