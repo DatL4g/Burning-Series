@@ -12,7 +12,7 @@ interface DialogComponent : Component {
     override fun onRender(content: @Composable (Boolean) -> Unit) {
         val isPip by PictureInPicture.collectAsStateWithLifecycle()
 
-        if (!isPip) {
+        if (!isPip || handlesPIP) {
             super.onRender(content)
         }
     }

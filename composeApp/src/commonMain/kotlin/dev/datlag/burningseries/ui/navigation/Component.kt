@@ -24,6 +24,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import dev.datlag.burningseries.LocalDI
 import dev.datlag.burningseries.PictureInPicture
 import dev.datlag.burningseries.common.nullableFirebaseInstance
+import dev.datlag.burningseries.common.screen
 import dev.datlag.burningseries.ui.custom.PIPContent
 import dev.datlag.burningseries.ui.theme.SchemeTheme
 import dev.datlag.tooling.compose.launchDefault
@@ -67,7 +68,7 @@ interface Component : DIAware, ComponentContext {
             }
         }
         SideEffect {
-            // nullableFirebaseInstance()?.crashlytics?.screen(this)
+            nullableFirebaseInstance()?.crashlytics?.screen(this)
         }
     }
 
