@@ -1,0 +1,28 @@
+query UserAndRelease($owner: String!, $repo: String!) {
+    user(login: $owner) {
+        viewerIsSponsoring
+        isViewer
+    }
+    repository(owner: $owner, name: $repo) {
+        latestRelease {
+            url,
+            tagName,
+            name,
+            isPrerelease,
+            isDraft,
+            releaseAssets(first: 20) {
+                nodes {
+                    contentType,
+                    downloadUrl,
+                    name
+                }
+            }
+        }
+        viewerHasStarred
+    }
+    viewer {
+        avatarUrl(size: 300),
+        name,
+        login
+    }
+}

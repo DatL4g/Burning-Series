@@ -1,34 +1,20 @@
 rootProject.name = "Burning-Series"
-
-include(":app:shared")
-include(":app:shared:sekret")
-include(":app:android")
-include(":app:desktop")
-
+include(":composeApp", ":composeApp:sekret")
+include(":settings")
 include(":model")
 include(":network")
+include(":firebase")
 include(":database")
-
-include(
-    ":extension",
-    ":extension:base",
-    ":extension:content",
-    ":extension:background",
-    ":extension:background:sekret",
-)
+include(":github")
+include(":k2k")
 
 pluginManagement {
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven { url = uri("https://jitpack.io") }
-        maven { url = uri("https://plugins.gradle.org/m2/") }
+        maven("https://jitpack.io")
         maven("https://jogamp.org/deployment/maven")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
-}
-
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version("0.7.0")
 }

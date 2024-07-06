@@ -1,24 +1,26 @@
 package dev.datlag.burningseries.model
 
+import dev.datlag.burningseries.model.serializer.SerializableImmutableList
+import dev.datlag.burningseries.model.serializer.SerializableImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
 data class Home(
-    @SerialName("latestEpisodes") val episodes: List<Episode> = emptyList(),
-    @SerialName("latestSeries") val series: List<Series> = emptyList()
+    @SerialName("latestEpisodes") val episodes: SerializableImmutableSet<Episode> = persistentSetOf(),
+    @SerialName("latestSeries") val series: SerializableImmutableSet<Series> = persistentSetOf()
 ) {
 
     @Serializable
     data class Episode(
         @SerialName("title") val fullTitle: String,
-        @SerialName("href") val href: String,
-        @SerialName("infoText") val info: String = String(),
-        @SerialName("infoFlags") val flags: List<Flag> = emptyList(),
-        @SerialName("isNsfw") val isNsfw: Boolean = false,
-        @SerialName("cover") val coverHref: String? = null
-    ) : TitleHolder() {
+        @SerialName("href") override val href: String,
+        @SerialName("infoText") val info: String? = null,
+        @SerialName("infoFlags") val flags: SerializableImmutableSet<Flag> = persistentSetOf(),
+        @SerialName("cover") override val coverHref: String? = null
+    ) : SeriesData() {
 
         @Transient
         private val seriesAndEpisodeMatch = Regex(
@@ -32,26 +34,31 @@ data class Home(
         @Transient
         val episode: String? = seriesAndEpisodeMatch?.groupValues?.get(3)?.trim()?.ifBlank { null }
 
-        @Transient
-        override val title: String = series ?: fullTitle
+        override val title: String
+            get() = series ?: fullTitle
+
+        override val mainTitle: String
+            get() = series ?: super.mainTitle
+
+        override val subTitle: String?
+            get() = episode ?: super.subTitle
 
         @Serializable
         data class Flag(
             @SerialName("class") val clazz: String,
-            @SerialName("title") val title: String
+            @SerialName("title") val title: String?
         ) {
             @Transient
             val bestCountryCode: String? = clazz.split(" ").firstOrNull {
                 !it.equals("flag", true) && it.contains("flag", true)
-            }?.replace("flag", String(), true)?.replace("-", String(), true)
+            }?.replace("flag", "", true)?.replace("-", "", true)
         }
     }
 
     @Serializable
     data class Series(
         @SerialName("title") override val title: String,
-        @SerialName("href") val href: String,
-        @SerialName("isNsfw") val isNsfw: Boolean = false,
-        @SerialName("coverHref") val coverHref: String? = null
-    ) : TitleHolder()
+        @SerialName("href") override val href: String,
+        @SerialName("cover") override val coverHref: String? = null
+    ) : SeriesData()
 }

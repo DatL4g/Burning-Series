@@ -1,96 +1,126 @@
 import kotlin.Boolean;
+import kotlin.Int;
+import kotlin.collections.List;
+import kotlinx.datetime.Instant;
 
 CREATE TABLE IF NOT EXISTS Series(
     hrefPrimary TEXT NOT NULL PRIMARY KEY,
     href TEXT NOT NULL,
-    title TEXT NOT NULL,
-    coverHref TEXT,
-    favoriteSince INTEGER NOT NULL,
-    anime INTEGER AS Boolean NOT NULL DEFAULT 0
+    season INTEGER AS Int,
+    seasons TEXT AS List<Int> NOT NULL,
+    coverHref TEXT DEFAULT NULL,
+    fullTitle TEXT NOT NULL,
+    mainTitle TEXT DEFAULT NULL,
+    subTitle TEXT DEFAULT NULL,
+    isAnime INTEGER AS Boolean NOT NULL DEFAULT 0,
+    favoriteSince INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS Episode(
     href TEXT NOT NULL PRIMARY KEY,
-    number TEXT NOT NULL,
+    number INTEGER AS Int NOT NULL,
     title TEXT NOT NULL,
-    length INTEGER NOT NULL,
-    progress INTEGER NOT NULL,
+    length INTEGER NOT NULL DEFAULT 0,
+    progress INTEGER NOT NULL DEFAULT 0,
+    watching INTEGER AS Boolean NOT NULL DEFAULT 0,
+    finished INTEGER AS Boolean NOT NULL DEFAULT 0,
+    blurHash TEXT DEFAULT NULL,
+    updatedAt INTEGER AS Instant NOT NULL DEFAULT 0,
     seriesHref TEXT NOT NULL,
     FOREIGN KEY (seriesHref) REFERENCES Series(hrefPrimary) ON DELETE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS Hoster(
-    href TEXT NOT NULL PRIMARY KEY,
-    title TEXT NOT NULL,
-    episodeHref TEXT NOT NULL,
-    FOREIGN KEY (episodeHref) REFERENCES Episode(href) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS SearchItem(
-    href TEXT NOT NULL PRIMARY KEY,
-    title TEXT NOT NULL,
-    genre TEXT NOT NULL
-);
-
-insertSeries:
-INSERT OR REPLACE INTO Series(hrefPrimary, href, title, coverHref, favoriteSince, anime) VALUES (?, ?, ?, ?, ?, ?);
-
 insertSeriesOrIgnore:
-INSERT OR IGNORE INTO Series(hrefPrimary, href, title, coverHref, favoriteSince, anime) VALUES (?, ?, ?, ?, ?, ?);
+INSERT OR IGNORE INTO Series(
+    hrefPrimary,
+    href,
+    season,
+    seasons,
+    coverHref,
+    fullTitle,
+    mainTitle,
+    subTitle,
+    isAnime,
+    favoriteSince
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
-favoriteSeries:
-SELECT * FROM Series WHERE favoriteSince > 0 ORDER BY favoriteSince DESC;
+favoriteSeriesSorted:
+SELECT s.* FROM Series s JOIN (
+    SELECT seriesHref, MAX(updatedAt) AS latestUpdate FROM Episode GROUP BY seriesHref
+) e ON s.hrefPrimary = e.seriesHref WHERE s.favoriteSince > 0 ORDER BY
+CASE WHEN e.latestUpdate > s.favoriteSince THEN e.latestUpdate
+ELSE s.favoriteSince END DESC;
 
-seriesByHref:
-SELECT * FROM Series WHERE hrefPrimary = :href OR hrefPrimary LIKE :href;
-
-seriesUpdateHrefByCommonHref:
-UPDATE Series SET href = :href WHERE hrefPrimary = :commonHref OR hrefPrimary LIKE :commonHref;
-
-updateSeriesFavoriteSince {
+upsertSeriesFavoriteSince {
     UPDATE Series SET favoriteSince = :since WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
 
-    INSERT OR IGNORE INTO Series (hrefPrimary, href, title, coverHref, favoriteSince, anime) VALUES (:hrefPrimary, :href, :title, :coverHref, :since, :anime);
+    INSERT OR IGNORE INTO Series(hrefPrimary, href, season, seasons, coverHref, fullTitle, mainTitle, subTitle, isAnime, favoriteSince) VALUES (:hrefPrimary, :href, :season, :seasons, :coverHref, :fullTitle, :mainTitle, :subTitle, :isAnime, :since);
 }
 
-insertEpisode:
-INSERT OR IGNORE INTO Episode(href, number, title, length, progress, seriesHref) VALUES (?, ?, ?, ?, ?, ?);
+seriesIsFavoriteByHref:
+SELECT favoriteSince > 0 FROM Series WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
 
-updateEpisodeLength {
-    UPDATE Episode SET length = :length WHERE href = :href OR href LIKE :href;
+updateSeriesHref:
+UPDATE Series SET href = :value WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
 
-    INSERT OR IGNORE INTO Episode (href, number, title, length, progress, seriesHref) VALUES (:href, :number, :title, :length, :progress, :seriesHref);
-}
+updateSeriesSeason:
+UPDATE Series SET season = :value WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
 
-updateEpisodeProgress {
-    UPDATE Episode SET progress = :progress WHERE href = :href OR href LIKE :href;
+selectSeriesFullHref:
+SELECT href FROM Series WHERE hrefPrimary = :hrefPrimary OR hrefPrimary LIKE :hrefPrimary;
 
-    INSERT OR IGNORE INTO Episode (href, number, title, length, progress, seriesHref) VALUES (:href, :number, :title, :length, :progress, :seriesHref);
-}
+insertEpisodeOrIgnore:
+INSERT OR IGNORE INTO Episode(
+    href,
+    number,
+    title,
+    length,
+    progress,
+    watching,
+    finished,
+    blurHash,
+    updatedAt,
+    seriesHref
+) VALUES (?, ?, ?, 0, 0, 0, 0, NULL, ?, ?);
+
+updateEpisodeLength:
+UPDATE Episode SET length = :value WHERE href = :href OR href LIKE :href;
+
+updateEpisodeProgress:
+UPDATE Episode SET progress = :value, watching = :value > 0, finished = (CAST(:value AS REAL) / CAST(length AS REAL) * 100.0) >= 85.0, updatedAt = :updated WHERE href = :href OR href LIKE :href;
+
+updateEpisodeBlurHash:
+UPDATE Episode SET blurHash = :value WHERE href = :href OR href LIKE :href;
+
+selectEpisodeProgress:
+SELECT progress FROM Episode WHERE href = :href OR href LIKE :href;
+
+selectEpisodeLength:
+SELECT progress FROM Episode WHERE href = :href OR href LIKE :href;
+
+episodeMarkWatched:
+UPDATE Episode SET finished = 1, updatedAt = :updated WHERE href = :href OR href LIKE :href;
+
+episodeMarkUnwatched:
+UPDATE Episode SET progress = CASE WHEN (CAST(progress AS REAL) / CAST(length AS REAL) * 100.0) >= 85.0 THEN 0 ELSE progress END, finished = 0, updatedAt = :updated WHERE href = :href OR href LIKE :href;
+
+selectEpisodeBySeriesHref:
+SELECT * FROM Episode WHERE seriesHref = :href OR seriesHref LIKE :href;
+
+selectEpisodeWatchingByHref:
+SELECT watching FROM Episode WHERE href = :href OR href LIKE :href;
+
+selectEpisodeFinishedByHref:
+SELECT finished FROM Episode WHERE href = :href OR href LIKE :href;
+
+selectEpisodeBlurHashByHref:
+SELECT blurHash FROM Episode WHERE href = :href OR href LIKE :href;
+
+selectEpisodeNumberByHref:
+SELECT number FROM Episode WHERE href = :href OR href LIKE :href;
 
 selectEpisodeByHref:
 SELECT * FROM Episode WHERE href = :href OR href LIKE :href;
 
-selectEpisodesBySeriesHref:
-SELECT * FROM Episode WHERE seriesHref = :href OR seriesHref LIKE :href;
-
-insertHoster:
-INSERT OR IGNORE INTO Hoster (href, title, episodeHref) VALUES (?, ?, ?);
-
-selectHosterByEpisodeHref:
-SELECT * FROM Hoster WHERE episodeHref = :href OR episodeHref LIKE :href;
-
-insertSearchItem:
-INSERT OR IGNORE INTO SearchItem (href, title, genre) VALUES ?;
-
-selectAllSearchItems:
-SELECT * FROM SearchItem;
-
-setSeriesAnime:
-UPDATE Series SET anime = 1 WHERE hrefPrimary = :href;
-
-unsetSeriesAnime:
-UPDATE Series SET anime = 0 WHERE hrefPrimary = :href;
-
-isSeriesAnime:
-SELECT anime FROM Series WHERE hrefPrimary = :href;
+countWatchedEpisode:
+SELECT COUNT(DISTINCT href) FROM Episode WHERE watching = 1 OR finished = 1;

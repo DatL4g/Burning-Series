@@ -9,19 +9,14 @@ data class HosterScraping(
     @SerialName("url") val url: String,
     @SerialName("embed") val embed: Boolean = false
 ) {
-    val firestore = Firestore(
+
+    val fireStore = FireStore(
         id = href,
         url = url
     )
 
-    val jsonBase = JsonBaseCaptchaEntry(
-        url = url,
-        embed = embed,
-        broken = false
-    )
-
     @Serializable
-    data class Firestore(
+    data class FireStore(
         @SerialName("id") val id: String,
         @SerialName("url") val url: String
     )

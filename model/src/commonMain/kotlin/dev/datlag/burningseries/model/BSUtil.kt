@@ -10,22 +10,6 @@ data object BSUtil {
 
     val episodeNumberRegex = "[|({]\\s*Ep([.]|isode)?\\s*(\\d+)\\s*[|)}]".toRegex(RegexOption.IGNORE_CASE)
 
-    fun getIntentDataUrl(data: String?): Shortcut.Intent {
-        val normalizedData = data?.replace("series.io", String(), true)
-        return when {
-            normalizedData.isNullOrBlank() -> Shortcut.Intent.NONE
-            normalizedData.contains(SEARCH, true) -> Shortcut.Intent.SEARCH
-            else -> {
-                val normalized = normalizeHref(normalizedData)
-                if (!normalized.equals(normalizedData, true)) {
-                    Shortcut.Intent.Series(fixSeriesHref(normalized))
-                } else {
-                    Shortcut.Intent.NONE
-                }
-            }
-        }
-    }
-
     fun getBurningSeriesLink(href: String, http: Boolean = false, host: String = HOST_BS_TO): String {
         return if (!href.matches("^\\w+?://.*".toRegex())) {
             if (!href.startsWith("/")) {
@@ -44,77 +28,30 @@ data object BSUtil {
     }
 
     fun fixSeriesHref(href: String): String {
-        return rebuildHrefFromData(hrefDataFromHref(normalizeHref(href)))
+        return SeriesData.fromHref(normalizeHref(href)).toHref()
     }
 
     fun commonSeriesHref(href: String): String {
-        return rebuildHrefFromData(hrefDataFromHref(fixSeriesHref(href)).copy(second = null, third = null))
+        return SeriesData.commonHref(fixSeriesHref(href)).toHref()
     }
 
-    fun hrefDataFromHref(href: String): Triple<String, String?, String?> {
-        fun getTitle(): String {
-            val newHref = if (href.startsWith("series/")) {
-                href.substringAfter("series/")
-            } else if (href.startsWith("serie/")) {
-                href.substringAfter("serie/")
-            } else if (href.startsWith("/series/")) {
-                href.substringAfter("/series/")
-            } else if (href.startsWith("/serie/")) {
-                href.substringAfter("/serie/")
-            } else {
-                href
-            }
-            val potentialTitle = if (newHref.startsWith('/')) {
-                newHref.substringAfter('/')
-            } else {
-                newHref
-            }
-            val potTitle = potentialTitle.substringBefore('/').trim()
-            return if (potTitle.equals("serie", true) || potTitle.equals("series", true)) {
-                potentialTitle.substringAfter('/').substringBefore('/').trim()
-            } else {
-                potTitle
-            }
-        }
-
-        var newHref = normalizeHref(href)
-        if (newHref.startsWith('/')) {
-            newHref = newHref.substring(1)
-        }
-        if (newHref.startsWith("serie/", true) || newHref.startsWith("series/", true)) {
-            newHref = newHref.substringAfter('/')
-        }
-        val hrefSplit = newHref.split('/')
-        val season = if (hrefSplit.size >= 2) hrefSplit[1] else null
-        val language = if (hrefSplit.size >= 3) hrefSplit[2] else null
-        val fallbackLanguage = if (hrefSplit.size >= 4) hrefSplit[3] else null
-        var title = hrefSplit[0].ifBlank {
-            getTitle()
-        }
-        if (title.equals(season, true)) {
-            title = getTitle()
-        }
-        return Triple(
-            title,
-            if (season.isNullOrEmpty()) null else season,
-            if (!fallbackLanguage.isNullOrEmpty()) {
-                fallbackLanguage
-            } else {
-                if (language.isNullOrEmpty()) null else language
-            }
-        )
+    fun seasonFrom(href: String): Int? {
+        return SeriesData.fromHref(href).season
     }
 
-    fun rebuildHrefFromData(hrefData: Triple<String, String?, String?>): String {
-        return if (hrefData.second != null && hrefData.third != null) {
-            "serie/${hrefData.first}/${hrefData.second}/${hrefData.third}"
-        } else if (hrefData.second != null) {
-            "serie/${hrefData.first}/${hrefData.second}"
-        } else if (hrefData.third != null) {
-            "serie/${hrefData.first}/${hrefData.third}"
-        } else {
-            "serie/${hrefData.first}"
-        }
-    }
+    fun matchingUrl(url1: String?, url2: String?): String? {
+        val fixedUrl1 = url1?.let(::normalizeHref)
+        val regex = "serie\\S+".toRegex(RegexOption.IGNORE_CASE)
 
+        if (regex.containsMatchIn(fixedUrl1 ?: "")) {
+            return fixedUrl1
+        }
+
+        val fixedUrl2 = url2?.let(::normalizeHref)
+        if (regex.containsMatchIn(fixedUrl2 ?: "")) {
+            return fixedUrl2
+        }
+
+        return null
+    }
 }

@@ -4,18 +4,9 @@ plugins {
     alias(libs.plugins.sqldelight)
 }
 
-val artifact = VersionCatalog.artifactName("database")
-
-group = artifact
-
 kotlin {
     jvm()
     androidTarget()
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-
-    jvmToolchain(CompileOptions.jvmTargetVersion)
 
     applyDefaultHierarchyTemplate()
 
@@ -24,7 +15,9 @@ kotlin {
             dependencies {
                 api(libs.sqldelight.coroutines)
                 api(project(":model"))
-                implementation(libs.sqldelight.adapter.bool)
+                implementation(libs.sqldelight.adapter)
+                implementation(libs.tooling)
+                implementation(libs.datetime)
             }
         }
 
@@ -43,35 +36,24 @@ kotlin {
     }
 }
 
-android {
-    compileSdk = Configuration.compileSdk
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-
-    namespace = artifact
-
-    defaultConfig {
-        minSdk = Configuration.minSdk
-    }
-
-    compileOptions {
-        sourceCompatibility = CompileOptions.sourceCompatibility
-        targetCompatibility = CompileOptions.targetCompatibility
-    }
-    packaging {
-        resources.merges.add("META-INF/LICENSE")
-        resources.merges.add("META-INF/DEPENDENCIES")
-        resources.pickFirsts.add("**")
-        resources.pickFirsts.add("**/*")
-        resources.pickFirsts.add("*")
-        resources.excludes.add("META-INF/versions/9/previous-compilation-data.bin")
-    }
-}
-
 sqldelight {
     databases {
         create("BurningSeries") {
-            packageName.set(artifact)
+            packageName.set("dev.datlag.burningseries.database")
             srcDirs("src/commonMain/bs")
         }
+    }
+}
+
+android {
+    compileSdk = 34
+    namespace = "dev.datlag.burningseries.database"
+
+    defaultConfig {
+        minSdk = 23
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }

@@ -1,28 +1,28 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
 plugins {
+    alias(libs.plugins.aboutlibraries) apply false
     alias(libs.plugins.android) apply false
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.apollo) apply false
     alias(libs.plugins.cocoapods) apply false
     alias(libs.plugins.compose) apply false
-    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.crashlytics) apply false
+    alias(libs.plugins.konfig) apply false
     alias(libs.plugins.ktorfit) apply false
+    alias(libs.plugins.moko.resources) apply false
     alias(libs.plugins.multiplatform) apply false
-    alias(libs.plugins.osdetector) apply false
-    alias(libs.plugins.protobuf) apply false
-    alias(libs.plugins.realm) apply false
     alias(libs.plugins.sekret) apply false
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.sqldelight) apply false
-    alias(libs.plugins.crashlytics) apply false
-    alias(libs.plugins.complete.kotlin)
     alias(libs.plugins.versions)
-    `project-report`
 }
 
 buildscript {
@@ -31,11 +31,14 @@ buildscript {
         mavenCentral()
         gradlePluginPortal()
         maven("https://jitpack.io")
-        maven("https://plugins.gradle.org/m2/")
         maven("https://jogamp.org/deployment/maven")
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    }
+    dependencies {
+        classpath(libs.moko.resources.generator)
+        classpath(libs.atomicfu)
     }
 }
 
@@ -45,7 +48,6 @@ allprojects {
         mavenCentral()
         gradlePluginPortal()
         maven("https://jitpack.io")
-        maven("https://plugins.gradle.org/m2/")
         maven("https://jogamp.org/deployment/maven")
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
@@ -53,20 +55,15 @@ allprojects {
     }
 
     tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions.jvmTarget = CompileOptions.jvmTarget
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
     }
-    configurations.configureEach {
-        exclude("androidx.palette", "palette")
+    plugins.withType<YarnPlugin> {
+        yarn.yarnLockAutoReplace = true
     }
 }
 
-tasks.withType<HtmlDependencyReportTask> {
-    projects = project.allprojects
-}
-
-plugins.withType<YarnPlugin> {
-    yarn.yarnLockAutoReplace = true
-}
 
 tasks.withType<DependencyUpdatesTask> {
     outputFormatter {
@@ -153,7 +150,7 @@ fun isNonStable(version: String): Boolean {
 }
 
 tasks.create("createSekretProperties") {
-    var file = File(rootDir, "sekret.properties")
+    var file = File(project(":composeApp").projectDir, "sekret.properties")
     val key = properties["key"] as? String ?: return@create
     val value = properties["value"] as? String ?: return@create
 

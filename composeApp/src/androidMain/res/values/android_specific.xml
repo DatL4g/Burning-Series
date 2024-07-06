@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Burning-Series</string>
+    <string name="session_title">Video</string>
+    <string name="session_description">Handle video playback.</string>
+</resources>

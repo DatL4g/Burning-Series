@@ -1,6 +1,9 @@
 package dev.datlag.burningseries.model
 
-import dev.datlag.burningseries.model.common.getDigitsOrNull
+import dev.datlag.burningseries.model.serializer.SerializableImmutableSet
+import dev.datlag.tooling.getDigitsOrNull
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -9,33 +12,44 @@ import kotlinx.serialization.Transient
 data class Series(
     @SerialName("title") override val title: String,
     @SerialName("description") val description: String,
-    @SerialName("cover") val coverHref: String? = null,
-    @SerialName("href") val href: String,
+    @SerialName("cover") override val coverHref: String? = null,
+    @SerialName("href") override val href: String,
     @SerialName("seasonTitle") val seasonTitle: String,
     @SerialName("selectedLanguage") val selectedLanguage: String?,
-    @SerialName("seasons") val seasons: List<Season>,
-    @SerialName("languages") val languages: List<Language>,
-    @SerialName("infos") val infos: List<Info> = emptyList(),
-    @SerialName("episodes") val episodes: List<Episode>
-) : TitleHolder() {
+    @SerialName("seasons") val seasons: SerializableImmutableSet<Season> = persistentSetOf(),
+    @SerialName("languages") val languages: SerializableImmutableSet<Language> = persistentSetOf(),
+    @SerialName("info") val info: SerializableImmutableSet<Info> = persistentSetOf(),
+    @SerialName("episodes") val episodes: SerializableImmutableSet<Episode> = persistentSetOf()
+) : SeriesData() {
 
     @Transient
-    val isAnime: Boolean = infos.filter {
+    val genres = info.filter {
         it.header.equals("Genre", ignoreCase = true) || it.header.equals("Genres", ignoreCase = true)
-    }.any {
+    }.toImmutableSet()
+
+    @Transient
+    val firstGenre = genres.firstNotNullOfOrNull { it.data.ifBlank { null } }
+
+    @Transient
+    val isAnime: Boolean = genres.any {
         it.data.contains("Anime", ignoreCase = true)
     }
 
+    @Transient
+    val infoWithoutGenre = info.filterNot {
+        it.header.equals("Genre", ignoreCase = true) || it.header.equals("Genres", ignoreCase = true)
+    }.toImmutableSet()
+
     val currentSeason: Season? by lazy {
         seasons.firstOrNull {
-            it.title.equals(seasonTitle, true)
+            it.value == season
         } ?: seasons.firstOrNull {
-            it.title.trim().equals(seasonTitle.trim(), true)
+            it.title.equals(seasonTitle, true)
         } ?: seasons.firstOrNull {
             it.title.equals(seasonTitle.toIntOrNull()?.toString(), true)
         } ?: seasons.firstOrNull {
             val titleInt = it.title.toIntOrNull()
-            val seasonInt = seasonTitle.toIntOrNull()
+            val seasonInt = season
 
             titleInt != null && seasonInt != null && titleInt == seasonInt
         } ?: seasons.firstOrNull {
@@ -48,26 +62,11 @@ data class Series(
     }
 
     val currentLanguage: Language? by lazy {
-        languages.find {
+        languages.firstOrNull {
+            it.value.equals(language, true)
+        } ?: languages.firstOrNull {
             it.value.equals(selectedLanguage, true)
-                    || it.value.trim().equals(selectedLanguage?.trim(), true)
         }
-    }
-
-    fun hrefBuilder(season: Int? = currentSeason?.value, language: String? = currentLanguage?.value ?: selectedLanguage): String {
-        val hrefData = BSUtil.hrefDataFromHref(
-            BSUtil.normalizeHref(href)
-        )
-
-        return BSUtil.fixSeriesHref(
-            BSUtil.rebuildHrefFromData(
-                Triple(
-                    first = hrefData.first,
-                    second = season?.toString() ?: hrefData.second,
-                    third = language ?: hrefData.third
-                )
-            )
-        )
     }
 
     @Serializable
@@ -84,22 +83,28 @@ data class Series(
 
     @Serializable
     data class Info(
-        @SerialName("header") val header: String = String(),
-        @SerialName("data") val data: String = String(),
+        @SerialName("header") val header: String = "",
+        @SerialName("data") val data: String = "",
     )
 
     @Serializable
     data class Episode(
         @SerialName("number") val number: String,
-        @SerialName("title") val title: String,
-        @SerialName("href") val href: String,
-        @SerialName("hosters") val hosters: List<Hoster>
-    ) {
+        @SerialName("title") val fullTitle: String,
+        @SerialName("href") override val href: String,
+        @SerialName("hoster") val hoster: SerializableImmutableSet<Hoster>
+    ) : SeriesData() {
 
-        val episodeNumber: String = BSUtil.episodeNumberRegex.find(title)?.groupValues?.lastOrNull() ?: number
-        val episodeTitle: String = BSUtil.episodeNumberRegex.replaceFirst(title, String()).trim().ifBlank { title }
+        override val coverHref: String? = null
 
-        val convertedNumber: Int? = number.toIntOrNull() ?: number.getDigitsOrNull()?.toIntOrNull()
+        @Transient
+        val episodeNumber: String = BSUtil.episodeNumberRegex.find(fullTitle)?.groupValues?.lastOrNull() ?: number
+
+        @Transient
+        override val title: String = BSUtil.episodeNumberRegex.replaceFirst(fullTitle, String()).trim().ifBlank { fullTitle }
+
+        @Transient
+        val convertedNumber: Int? = episodeNumber.toIntOrNull() ?: episodeNumber.getDigitsOrNull()?.toIntOrNull()
 
         @Serializable
         data class Hoster(

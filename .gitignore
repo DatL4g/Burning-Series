@@ -1,21 +1,23 @@
-TODO
-
-app/release/*
-app/android/release/*
-!app/release/.gitkeep
-!app/android/release/.gitkeep
-
-sekret.properties
-app/desktop/mongodb-realm
-app/shared/sekret/src
-extension/background/sekret/src
+TODO*
+composeApp/sekret.properties
+composeApp/sekret/src
+composeApp/release/*
+composeApp/src/commonMain/moko-resources/assets/*
 
 *.so
 *.dll
 *.dylib
 
+.idea
+captures
+xcuserdata/
+Pods/
+*.jks
+*yarn.lock
+
 *.iml
 .gradle
+.kotlin
 /local.properties
 /.idea
 .DS_Store
