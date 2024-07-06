@@ -21,6 +21,7 @@ import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.DomainVerifier
 import dev.datlag.burningseries.other.DownloadManager
 import dev.datlag.burningseries.settings.Settings
+import dev.datlag.burningseries.ui.custom.video.pip.enterPIPMode
 import dev.datlag.burningseries.ui.navigation.RootComponent
 import dev.datlag.kast.Kast
 import dev.datlag.kast.UnselectReason
@@ -99,6 +100,11 @@ class MainActivity : ComponentActivity() {
         if (!href.isNullOrBlank()) {
             return root.onSeries(href)
         }
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        enterPIPMode(this)
     }
 
     override fun onDestroy() {

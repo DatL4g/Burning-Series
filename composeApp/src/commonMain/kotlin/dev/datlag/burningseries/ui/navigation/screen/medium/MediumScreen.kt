@@ -149,7 +149,9 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
                     text = {
                         Text(
                             text = episode.mainTitle,
-                            maxLines = 2
+                            maxLines = 1,
+                            softWrap = true,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 )

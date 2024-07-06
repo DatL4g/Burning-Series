@@ -68,6 +68,7 @@ import dev.datlag.burningseries.common.isConnectedOrConnecting
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.ui.custom.video.pip.enterPIPMode
 import dev.datlag.burningseries.ui.custom.video.pip.isActivityStatePipMode
+import dev.datlag.burningseries.ui.theme.SchemeTheme
 import dev.datlag.kast.ConnectionState
 import dev.datlag.kast.Kast
 import dev.datlag.nanoid.NanoIdUtils
@@ -103,6 +104,7 @@ actual fun VideoScreen(component: VideoComponent) {
             .setGenre(component.series.firstGenre)
             .setAlbumTitle(component.series.mainTitle)
             .setArtworkUri(component.series.coverHref?.toUri())
+            .setArtworkData(SchemeTheme.getByteArray(component.series), MediaMetadata.PICTURE_TYPE_FRONT_COVER)
             .build()
     }
     val mediaItem = remember(streamList, url, metadata) {
@@ -115,6 +117,7 @@ actual fun VideoScreen(component: VideoComponent) {
 
     val context = LocalContext.current
     val controller = rememberWindowController()
+
     val playerWrapper = remember(headers, useLongTimeout) {
         PlayerWrapper(
             context = context,
@@ -122,6 +125,7 @@ actual fun VideoScreen(component: VideoComponent) {
             startingPos = component.startingPos,
             startingLength = component.startingLength,
             headers = headers.toImmutableMap(),
+            coverData = SchemeTheme.getByteArray(component.series),
             longTimeout = useLongTimeout,
             onError = {
                 if (streamList.size - 1 > streamIndex) {

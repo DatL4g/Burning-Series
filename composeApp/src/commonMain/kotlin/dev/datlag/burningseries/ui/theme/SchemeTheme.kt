@@ -26,16 +26,23 @@ import dev.datlag.tooling.compose.launchIO
 import dev.datlag.tooling.compose.toTypography
 import dev.datlag.tooling.compose.withIOContext
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
+import io.github.alexzhirkevich.qrose.toByteArray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import org.kodein.di.instance
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.roundToInt
 
 data object SchemeTheme {
 
     internal val executor = Executor()
     private val kache = InMemoryKache<Any, DominantColorState<Painter>>(
         maxSize = 25L * 1024 * 1024
+    ) {
+        strategy = KacheStrategy.LRU
+    }
+    private val imageBytes = InMemoryKache<Any, ByteArray>(
+        maxSize = 5L * 1024 * 1024
     ) {
         strategy = KacheStrategy.LRU
     }
@@ -51,6 +58,53 @@ data object SchemeTheme {
     }.getOrNull() ?: suspendCatching {
         kache.getOrPut(key) { fallback }
     }.getOrNull()
+
+    internal fun getByteArray(key: Any) = scopeCatching {
+        val usingKey = when (key) {
+            is SeriesData -> key.source
+            else -> key
+        }
+
+        imageBytes.getIfAvailable(usingKey)
+    }.getOrNull()
+
+    internal suspend fun getOrPutByteArray(key: Any, fallback: ByteArray = ByteArray(0)): ByteArray? {
+        val usingKey = when (key) {
+            is SeriesData -> key.source
+            else -> key
+        }
+
+        return suspendCatching {
+            imageBytes.getIfAvailable(usingKey)
+        }.getOrNull() ?: suspendCatching {
+            if (fallback.isNotEmpty()) {
+                imageBytes.put(usingKey, fallback)
+            } else {
+                null
+            }
+        }.getOrNull() ?: suspendCatching {
+            imageBytes.getOrPut(usingKey) {
+                if (fallback.isNotEmpty()) {
+                    fallback
+                } else {
+                    null
+                }
+            }
+        }.getOrNull()
+    }
+
+    internal suspend fun setByteArray(key: Any, data: ByteArray) = suspendCatching {
+        val usingKey = when (key) {
+            is SeriesData -> key.source
+            else -> key
+        }
+
+        if (data.isNotEmpty()) {
+            imageBytes.put(usingKey, data)
+        } else {
+            null
+        }
+    }.isSuccess
 
     @Composable
     fun create(
@@ -72,7 +126,7 @@ data object SchemeTheme {
         )
         val scope = rememberCoroutineScope()
         return remember(state, scope) {
-            state?.let { Updater.State(scope, it) }
+            state?.let { Updater.State(key, scope, it) }
         }
     }
 
@@ -81,6 +135,7 @@ data object SchemeTheme {
         fun update(color: Color?) = update(color?.let(::ColorPainter))
 
         data class State(
+            private val key: Any,
             private val scope: CoroutineScope,
             private val state: DominantColorState<Painter>
         ) : Updater {
@@ -91,6 +146,11 @@ data object SchemeTheme {
 
                 scope.launchIO {
                     executor.enqueue {
+                        setByteArray(key, input.toByteArray(
+                            width = input.intrinsicSize.width.roundToInt(),
+                            height = input.intrinsicSize.height.roundToInt()
+                        ))
+
                         state.updateFrom(input)
                     }
                 }
@@ -108,6 +168,11 @@ data object SchemeTheme {
 
                 scope.launchIO {
                     executor.enqueue {
+                        setByteArray(key, input.toByteArray(
+                            width = input.intrinsicSize.width.roundToInt(),
+                            height = input.intrinsicSize.height.roundToInt()
+                        ))
+
                         val state = get(key) ?: return@enqueue
                         state.updateFrom(input)
                     }

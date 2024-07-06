@@ -1,20 +1,36 @@
 package dev.datlag.burningseries.ui.navigation.screen.video
 
+import android.app.Notification
+import android.app.NotificationManager
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Icon
+import android.media.MediaSession2Service
+import android.media.session.MediaSession.Token
+import android.os.Build
+import android.support.v4.media.session.MediaSessionCompat
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.nativeKeyCode
 import androidx.compose.ui.input.key.type
+import androidx.core.app.NotificationChannelCompat
+import androidx.core.app.NotificationCompat
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import androidx.media3.common.util.NotificationUtil
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
@@ -26,13 +42,19 @@ import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES
 import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
 import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ENABLE_HDMV_DTS_AUDIO_STREAMS
+import androidx.media3.session.MediaNotification
 import androidx.media3.session.MediaSession
+import androidx.media3.session.MediaStyleNotificationHelper
+import androidx.media3.session.MediaStyleNotificationHelper.MediaStyle
 import coil3.annotation.InternalCoilApi
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastState
+import dev.datlag.burningseries.R
+import dev.datlag.burningseries.ui.theme.SchemeTheme
 import dev.datlag.nanoid.NanoIdUtils
 import dev.datlag.tooling.compose.withIOContext
 import dev.datlag.tooling.compose.withMainContext
+import dev.datlag.tooling.scopeCatching
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,6 +80,7 @@ class PlayerWrapper(
     private val startingPos: Long,
     private val startingLength: Long,
     private val headers: ImmutableMap<String, String>,
+    private val coverData: ByteArray?,
     private val longTimeout: Boolean,
     private val onError: (PlaybackException) -> Unit = { },
     private val onFirstFrame: () -> Unit = { },
@@ -146,8 +169,6 @@ class PlayerWrapper(
                     value.setMediaItem(it.forPlayer(value), max(progress.value, startingPos))
                     value.prepare()
                 }
-
-                Session.createNew(context, value)
             }
         }
 
@@ -159,6 +180,7 @@ class PlayerWrapper(
             if (previous != value && value != null) {
                 player.setMediaItem(value.forPlayer(player), max(progress.value, startingPos))
                 player.prepare()
+                Session.createNew(context, player, value.mediaMetadata)
             }
         }
 
@@ -427,19 +449,39 @@ class PlayerWrapper(
         private var current: MediaSession? = null
         private val PseudoRandom = Random((10000..12345).random())
         private val Alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        private const val CHANNEL = "Video"
 
-        fun createNew(context: Context, player: Player) {
+        fun createNew(context: Context, player: Player, metadata: MediaMetadata) {
             release()
 
             current = MediaSession.Builder(
                 context,
-                (player as? ForwardingPlayer) ?: ForwardingPlayer(player)
+                ForwardingPlayer(player)
             ).setId(
                 NanoIdUtils.randomNanoId(
                     random = PseudoRandom,
                     alphabet = Alphabet.toCharArray()
                 )
-            ).build()
+            ).build().also { session ->
+
+                NotificationUtil.createNotificationChannel(
+                    context,
+                    CHANNEL,
+                    R.string.session_title,
+                    R.string.session_description,
+                    NotificationUtil.IMPORTANCE_LOW
+                )
+
+                val notification = NotificationCompat.Builder(context, CHANNEL)
+                    .setContentTitle(metadata.title)
+                    .setContentText(metadata.subtitle?.ifBlank { null } ?: metadata.albumTitle?.ifBlank { null })
+                    .setContentInfo(metadata.genre?.ifBlank { null })
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setStyle(MediaStyle(session))
+                    .build()
+
+                NotificationUtil.setNotification(context, 69, notification)
+            }
         }
 
         fun release() {
