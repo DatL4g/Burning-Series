@@ -70,4 +70,5 @@
     <string name="release_text_1">A new version is available %1$s</string>
     <string name="release_text_2">You should check it out!</string>
     <string name="syncing_enabled">Syncing enabled</string>
+    <string name="pip_unsupported">Picture in Picture is not available in this screen.</string>
 </resources>

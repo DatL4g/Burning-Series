@@ -128,6 +128,8 @@ class RootComponent(
         }
     }
 
+    override val handlesPIP: Boolean = true
+
     @OptIn(ExperimentalDecomposeApi::class)
     @Composable
     override fun render() {

@@ -70,4 +70,5 @@
     <string name="release_text_1">Eine neue Version ist verfügbar %1$s</string>
     <string name="release_text_2">Das solltest du dir ansehen!</string>
     <string name="syncing_enabled">Synchronisieren aktiviert</string>
+    <string name="pip_unsupported">Bild in Bild ist hier nicht verfügbar.</string>
 </resources>
