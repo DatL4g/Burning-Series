@@ -1,15 +1,15 @@
 [versions]
 app = "6.0.0"
 aboutlibraries = "11.2.1"
-ackpine = "0.6.1"
+ackpine = "0.7.1"
 activity = "1.9.0"
-android = "8.4.1"
+android = "8.5.0"
 android-core = "1.13.1"
 android-sqlite = "2.4.0"
-apollo = "4.0.0-beta.6"
-atomicfu = "0.24.0"
+apollo = "4.0.0-beta.7"
+atomicfu = "0.25.0"
 blurhash = "0.3.0"
-coil = "3.0.0-alpha06"
+coil = "3.0.0-alpha07"
 compose = "1.6.11"
 coroutines = "1.8.1"
 crashlytics-plugin = "3.0.2"
@@ -29,7 +29,7 @@ kache = "2.1.0"
 kast = "0.2.1"
 kmpalette = "3.1.0"
 kodein = "7.22.0"
-kolor = "1.6.0"
+kolor = "1.7.0"
 konfig = "0.15.1"
 kotlin = "2.0.0"
 ksoup = "0.1.2"
@@ -37,7 +37,7 @@ ksp = "2.0.0-1.0.22"
 ktor = "2.3.12"
 ktorfit = "1.14.0"
 media3 = "1.3.1"
-moko-resources = "0.24.0"
+moko-resources = "0.24.1"
 multidex = "2.0.1"
 nanoid = "1.0.1"
 napier = "2.7.1"
@@ -64,7 +64,6 @@ activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
 androidx-window = { module = "androidx.window:window", version.require = "1.3.0" }
 apollo = { group = "com.apollographql.apollo3", name = "apollo-runtime", version.ref = "apollo" }
-atomicfu = { group = "org.jetbrains.kotlinx", name = "atomicfu-gradle-plugin", version.ref = "atomicfu" }
 blurhash = { group = "com.vanniktech", name = "blurhash", version.ref = "blurhash" }
 coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
 coil-network = { group = "io.coil-kt.coil3", name = "coil-network-ktor", version.ref = "coil" }
@@ -151,6 +150,7 @@ android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "android" }
 android-library = { id = "com.android.library", version.ref = "android" }
 apollo = { id = "com.apollographql.apollo3", version.ref = "apollo" }
+atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
