@@ -12,6 +12,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,9 +24,9 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import dev.datlag.burningseries.LocalDI
-import dev.datlag.burningseries.PictureInPicture
 import dev.datlag.burningseries.common.nullableFirebaseInstance
 import dev.datlag.burningseries.common.screen
+import dev.datlag.burningseries.other.PictureInPicture
 import dev.datlag.burningseries.ui.custom.PIPContent
 import dev.datlag.burningseries.ui.theme.SchemeTheme
 import dev.datlag.tooling.compose.launchDefault
@@ -43,6 +45,9 @@ interface Component : DIAware, ComponentContext {
     val handlesPIP: Boolean
         get() = false
 
+    val enablePIP: Boolean
+        get() = false
+
     @Composable
     fun render()
 
@@ -52,6 +57,10 @@ interface Component : DIAware, ComponentContext {
 
     @Composable
     fun onRender(content: @Composable (Boolean) -> Unit) {
+        LaunchedEffect(Unit) {
+            PictureInPicture.setEnabled(enablePIP)
+        }
+
         CompositionLocalProvider(
             LocalDI provides di,
             LocalLifecycleOwner provides object : LifecycleOwner {
@@ -59,7 +68,7 @@ interface Component : DIAware, ComponentContext {
             }
         ) {
             Box {
-                val pip by PictureInPicture.collectAsStateWithLifecycle()
+                val pip by PictureInPicture.active.collectAsStateWithLifecycle()
 
                 content(pip)
                 if (pip && !handlesPIP) {

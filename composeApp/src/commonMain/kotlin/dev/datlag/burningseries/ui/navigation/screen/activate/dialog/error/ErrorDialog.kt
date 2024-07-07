@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.composeapp.generated.resources.Res
@@ -57,10 +58,15 @@ fun ErrorDialog(component: ErrorComponent) {
         },
         text = {
             Column(
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = stringResource(Res.string.activate_error_text))
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(Res.string.activate_error_text),
+                    textAlign = TextAlign.Center
+                )
                 component.stream.ifEmpty { null }?.let { stream ->
                     Button(
                         modifier = Modifier.fillMaxWidth(),

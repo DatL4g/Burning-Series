@@ -24,6 +24,7 @@ import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.DomainVerifier
 import dev.datlag.burningseries.other.DownloadManager
+import dev.datlag.burningseries.other.PictureInPicture
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.ui.custom.video.pip.enterPIPMode
 import dev.datlag.burningseries.ui.custom.video.pip.isActivityStatePipMode
@@ -76,7 +77,7 @@ class MainActivity : ComponentActivity() {
         Kast.setup(this)
         DownloadManager.setClient(httpClient).setFile(appContext ?: this)
         DomainVerifier.verify(this)
-        PictureInPicture.update { this.isActivityStatePipMode() }
+        PictureInPicture.setActive(this.isActivityStatePipMode())
 
         setContent {
             val appSettings by di.instance<Settings.PlatformAppSettings>()
@@ -113,7 +114,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        enterPIPMode(this)
+
+        if (PictureInPicture.isEnabled) {
+            enterPIPMode(this)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -123,7 +127,7 @@ class MainActivity : ComponentActivity() {
     ) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
 
-        PictureInPicture.update { isInPictureInPictureMode }
+        PictureInPicture.setActive(isInPictureInPictureMode)
     }
 
     override fun onDestroy() {
@@ -133,35 +137,35 @@ class MainActivity : ComponentActivity() {
         Kast.dispose()
         DomainVerifier.verify(this)
 
-        PictureInPicture.update { this.isActivityStatePipMode() }
+        PictureInPicture.setActive(this.isActivityStatePipMode())
     }
 
     override fun onStart() {
         super.onStart()
 
         DomainVerifier.verify(this)
-        PictureInPicture.update { this.isActivityStatePipMode() }
+        PictureInPicture.setActive(this.isActivityStatePipMode())
     }
 
     override fun onResume() {
         super.onResume()
 
         DomainVerifier.verify(this)
-        PictureInPicture.update { this.isActivityStatePipMode() }
+        PictureInPicture.setActive(this.isActivityStatePipMode())
     }
 
     override fun onPause() {
         super.onPause()
 
         DomainVerifier.verify(this)
-        PictureInPicture.update { this.isActivityStatePipMode() }
+        PictureInPicture.setActive(this.isActivityStatePipMode())
     }
 
     override fun onRestart() {
         super.onRestart()
 
         DomainVerifier.verify(this)
-        PictureInPicture.update { this.isActivityStatePipMode() }
+        PictureInPicture.setActive(this.isActivityStatePipMode())
     }
 
     private fun Uri.findSyncId(): String? {

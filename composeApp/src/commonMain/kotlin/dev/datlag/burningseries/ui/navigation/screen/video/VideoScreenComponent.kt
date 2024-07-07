@@ -52,6 +52,7 @@ class VideoScreenComponent(
     }
 
     override val handlesPIP: Boolean = true
+    override val enablePIP: Boolean = true
 
     @Composable
     override fun render() {
