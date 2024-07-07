@@ -58,7 +58,9 @@ interface Component : DIAware, ComponentContext {
     @Composable
     fun onRender(content: @Composable (Boolean) -> Unit) {
         LaunchedEffect(Unit) {
-            PictureInPicture.setEnabled(enablePIP)
+            if (this !is DialogComponent) {
+                PictureInPicture.setEnabled(enablePIP)
+            }
         }
 
         CompositionLocalProvider(

@@ -19,6 +19,7 @@ plugins {
     alias(libs.plugins.ktorfit) apply false
     alias(libs.plugins.moko.resources) apply false
     alias(libs.plugins.multiplatform) apply false
+    alias(libs.plugins.osdetector) apply false
     alias(libs.plugins.sekret) apply false
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.sqldelight) apply false

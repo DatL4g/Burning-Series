@@ -1,4 +1,5 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
@@ -10,6 +11,7 @@ plugins {
     alias(libs.plugins.konfig)
     alias(libs.plugins.ktorfit)
     alias(libs.plugins.moko.resources)
+    alias(libs.plugins.osdetector)
     alias(libs.plugins.sekret)
     alias(libs.plugins.serialization)
 }
@@ -202,10 +204,79 @@ compose {
         application {
             mainClass = "$artifact.MainKt"
 
+            jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
+            when (getHost()) {
+                Host.Linux -> {
+                    jvmArgs("--add-opens", "java.desktop/sun.awt.X11=ALL-UNNAMED")
+                    jvmArgs("--add-opens", "java.desktop/sun.awt.wl=ALL-UNNAMED")
+                }
+                else -> { }
+            }
+
             nativeDistributions {
+                packageName = "Burning-Series"
+                packageVersion = appVersion
+                description = "Watch any series from Burning-Series using this (unofficial) app."
+                copyright = "© 2020 Jeff Retz (DatLag). All rights reserved."
+                licenseFile.set(rootProject.file("LICENSE"))
+
+                outputBaseDir.set(rootProject.layout.buildDirectory.asFile.get().resolve("release"))
                 appResourcesRootDir.set(project.layout.projectDirectory.dir("src").dir("jvmMain").dir("resources"))
+
+                when (getHost()) {
+                    Host.Linux -> targetFormats(
+                        TargetFormat.AppImage, TargetFormat.Deb, TargetFormat.Rpm
+                    )
+                    Host.MAC -> targetFormats(
+                        TargetFormat.Dmg
+                    )
+                    Host.Windows -> targetFormats(
+                        TargetFormat.Exe, TargetFormat.Msi
+                    )
+                }
+
+                linux {
+                    iconFile.set(File(rootProject.project("composeApp").projectDir, "src/commonMain/moko-resources/assets/png/launcher_128.png"))
+                    rpmLicenseType = "GPL-3.0"
+                    debMaintainer = "Jeff Retz (DatLag)"
+                    appCategory = "Video"
+                }
+                windows {
+                    iconFile.set(File(rootProject.project("composeApp").projectDir, "src/commonMain/moko-resources/assets/ico/launcher_128.ico"))
+                    upgradeUuid = "3487d337-1ef5-4e01-87cb-d1ede6e10752"
+                }
+                macOS {
+                    iconFile.set(File(rootProject.project("composeApp").projectDir, "src/commonMain/moko-resources/assets/icns/launcher.icns"))
+                }
+
+                includeAllModules = true
             }
         }
     }
     web { }
+}
+
+fun getHost(): Host {
+    return when (osdetector.os) {
+        "linux" -> Host.Linux
+        "osx" -> Host.MAC
+        "windows" -> Host.Windows
+        else -> {
+            val hostOs = System.getProperty("os.name")
+            val isMingwX64 = hostOs.startsWith("Windows")
+
+            when {
+                hostOs == "Linux" -> Host.Linux
+                hostOs == "Mac OS X" -> Host.MAC
+                isMingwX64 -> Host.Windows
+                else -> throw IllegalStateException("Unknown OS: ${osdetector.classifier}")
+            }
+        }
+    }
+}
+
+enum class Host(val label: String) {
+    Linux("linux"),
+    Windows("win"),
+    MAC("mac");
 }

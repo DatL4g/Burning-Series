@@ -43,6 +43,7 @@ nanoid = "1.0.1"
 napier = "2.7.1"
 oidc = "0.10.0"
 okhttp = "4.12.0"
+osdetector = "1.7.3"
 qrose = "1.0.1"
 sekret = "2.0.0-alpha-05"
 serialization = "1.7.1"
@@ -160,6 +161,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }
 sekret = { id = "dev.datlag.sekret", version.ref = "sekret" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
