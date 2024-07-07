@@ -12,7 +12,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
+import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
+import androidx.compose.ui.window.application
 import androidx.compose.ui.window.singleWindowApplication
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
@@ -42,6 +44,7 @@ import dev.datlag.tooling.applicationTitle
 import dev.datlag.tooling.decompose.lifecycle.LocalLifecycleOwner
 import dev.datlag.tooling.scopeCatching
 import dev.datlag.tooling.systemProperty
+import dev.icerock.moko.resources.compose.painterResource
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.runBlocking
@@ -110,59 +113,62 @@ private fun runWindow(di: DI) {
         )
     }
 
-    singleWindowApplication(
-        state = windowState,
-        title = appTitle,
-        exitProcessOnExit = true
-    ) {
-        LifecycleController(lifecycle, windowState)
-        App.applyIcon(
-            this.window,
-            rememberCoroutineScope(),
-            MokoRes.assets.icns.launcher_icns,
-            MokoRes.assets.ico.launcher_128_ico,
-            MokoRes.assets.ico.launcher_96_ico,
-            MokoRes.assets.ico.launcher_64_ico,
-            MokoRes.assets.ico.launcher_48_ico,
-            MokoRes.assets.ico.launcher_32_ico,
-            MokoRes.assets.ico.launcher_16_ico,
-            MokoRes.assets.png.launcher_128_png,
-            MokoRes.assets.png.launcher_96_png,
-            MokoRes.assets.png.launcher_64_png,
-            MokoRes.assets.png.launcher_48_png,
-            MokoRes.assets.png.launcher_32_png,
-            MokoRes.assets.png.launcher_16_png,
-            MokoRes.assets.svg.launcher_128_svg,
-            MokoRes.assets.svg.launcher_96_svg,
-            MokoRes.assets.svg.launcher_64_svg,
-            MokoRes.assets.svg.launcher_48_svg,
-            MokoRes.assets.svg.launcher_32_svg,
-            MokoRes.assets.svg.launcher_16_svg
-        )
-
-        val appSettings by di.instance<Settings.PlatformAppSettings>()
-        LaunchedEffect(Unit) {
-            appSettings.increaseStartCounter()
-        }
-
-        CompositionLocalProvider(
-            LocalLifecycleOwner provides lifecycleOwner,
-            LocalWindow provides window
+    application(exitProcessOnExit = true) {
+        Window(
+            state = windowState,
+            title = appTitle,
+            icon = painterResource(MokoRes.images.AppIcon),
+            onCloseRequest = ::exitApplication
         ) {
-            App(di) {
-                PredictiveBackGestureOverlay(
-                    backDispatcher = backDispatcher,
-                    backIcon = { progress, _ ->
-                        PredictiveBackGestureIcon(
-                            imageVector = Icons.Rounded.ArrowBackIosNew,
-                            progress = progress,
-                            iconTintColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            backgroundColor = MaterialTheme.colorScheme.secondaryContainer
-                        )
-                    },
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    root.render()
+            LifecycleController(lifecycle, windowState)
+            App.applyIcon(
+                this.window,
+                rememberCoroutineScope(),
+                MokoRes.assets.icns.launcher_icns,
+                MokoRes.assets.ico.launcher_128_ico,
+                MokoRes.assets.ico.launcher_96_ico,
+                MokoRes.assets.ico.launcher_64_ico,
+                MokoRes.assets.ico.launcher_48_ico,
+                MokoRes.assets.ico.launcher_32_ico,
+                MokoRes.assets.ico.launcher_16_ico,
+                MokoRes.assets.png.launcher_128_png,
+                MokoRes.assets.png.launcher_96_png,
+                MokoRes.assets.png.launcher_64_png,
+                MokoRes.assets.png.launcher_48_png,
+                MokoRes.assets.png.launcher_32_png,
+                MokoRes.assets.png.launcher_16_png,
+                MokoRes.assets.svg.launcher_128_svg,
+                MokoRes.assets.svg.launcher_96_svg,
+                MokoRes.assets.svg.launcher_64_svg,
+                MokoRes.assets.svg.launcher_48_svg,
+                MokoRes.assets.svg.launcher_32_svg,
+                MokoRes.assets.svg.launcher_16_svg
+            )
+
+            val appSettings by di.instance<Settings.PlatformAppSettings>()
+            LaunchedEffect(Unit) {
+                appSettings.increaseStartCounter()
+            }
+
+            CompositionLocalProvider(
+                LocalLifecycleOwner provides lifecycleOwner,
+                LocalWindow provides window
+            ) {
+                App(di) {
+                    PredictiveBackGestureOverlay(
+                        backDispatcher = backDispatcher,
+                        backIcon = { progress, _ ->
+                            PredictiveBackGestureIcon(
+                                imageVector = Icons.Rounded.ArrowBackIosNew,
+                                progress = progress,
+                                iconTintColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+                            )
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        root.render()
+                    }
                 }
             }
         }
