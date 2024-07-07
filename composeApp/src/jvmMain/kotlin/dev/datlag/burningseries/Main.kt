@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
@@ -115,29 +116,29 @@ private fun runWindow(di: DI) {
         exitProcessOnExit = true
     ) {
         LifecycleController(lifecycle, windowState)
-        LaunchedEffect(this) {
-            this@singleWindowApplication.window.iconImages = App.loadAppIcon(
-                MokoRes.assets.icns.launcher_icns,
-                MokoRes.assets.ico.launcher_128_ico,
-                MokoRes.assets.ico.launcher_96_ico,
-                MokoRes.assets.ico.launcher_64_ico,
-                MokoRes.assets.ico.launcher_48_ico,
-                MokoRes.assets.ico.launcher_32_ico,
-                MokoRes.assets.ico.launcher_16_ico,
-                MokoRes.assets.png.launcher_128_png,
-                MokoRes.assets.png.launcher_96_png,
-                MokoRes.assets.png.launcher_64_png,
-                MokoRes.assets.png.launcher_48_png,
-                MokoRes.assets.png.launcher_32_png,
-                MokoRes.assets.png.launcher_16_png,
-                MokoRes.assets.svg.launcher_128_svg,
-                MokoRes.assets.svg.launcher_96_svg,
-                MokoRes.assets.svg.launcher_64_svg,
-                MokoRes.assets.svg.launcher_48_svg,
-                MokoRes.assets.svg.launcher_32_svg,
-                MokoRes.assets.svg.launcher_16_svg,
-            )
-        }
+        App.applyIcon(
+            this.window,
+            rememberCoroutineScope(),
+            MokoRes.assets.icns.launcher_icns,
+            MokoRes.assets.ico.launcher_128_ico,
+            MokoRes.assets.ico.launcher_96_ico,
+            MokoRes.assets.ico.launcher_64_ico,
+            MokoRes.assets.ico.launcher_48_ico,
+            MokoRes.assets.ico.launcher_32_ico,
+            MokoRes.assets.ico.launcher_16_ico,
+            MokoRes.assets.png.launcher_128_png,
+            MokoRes.assets.png.launcher_96_png,
+            MokoRes.assets.png.launcher_64_png,
+            MokoRes.assets.png.launcher_48_png,
+            MokoRes.assets.png.launcher_32_png,
+            MokoRes.assets.png.launcher_16_png,
+            MokoRes.assets.svg.launcher_128_svg,
+            MokoRes.assets.svg.launcher_96_svg,
+            MokoRes.assets.svg.launcher_64_svg,
+            MokoRes.assets.svg.launcher_48_svg,
+            MokoRes.assets.svg.launcher_32_svg,
+            MokoRes.assets.svg.launcher_16_svg
+        )
 
         val appSettings by di.instance<Settings.PlatformAppSettings>()
         LaunchedEffect(Unit) {
