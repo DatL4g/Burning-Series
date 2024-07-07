@@ -158,7 +158,7 @@ actual fun VideoScreen(component: VideoComponent) {
 
     DisposableEffect(playerWrapper) {
         onDispose {
-            playerWrapper.release()
+            playerWrapper.release(context)
         }
     }
 

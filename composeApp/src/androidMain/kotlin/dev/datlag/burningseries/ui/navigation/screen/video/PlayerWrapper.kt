@@ -323,7 +323,7 @@ class PlayerWrapper(
         } while (currentCoroutineContext().isActive)
     }
 
-    fun release() {
+    fun release(context: Context) {
         localPlayer.removeListener(this)
         localPlayer.removeListener(localPlayerListener)
         castPlayer?.removeListener(this)
@@ -332,7 +332,7 @@ class PlayerWrapper(
         localPlayer.release()
         castPlayer?.stop()
         castPlayer?.clearMediaItems()
-        Session.release()
+        Session.release(context)
     }
 
     fun showControls() {
@@ -450,9 +450,10 @@ class PlayerWrapper(
         private val PseudoRandom = Random((10000..12345).random())
         private val Alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         private const val CHANNEL = "Video"
+        private const val NOTIFY_ID = 69
 
         fun createNew(context: Context, player: Player, metadata: MediaMetadata) {
-            release()
+            release(context)
 
             current = MediaSession.Builder(
                 context,
@@ -480,11 +481,12 @@ class PlayerWrapper(
                     .setStyle(MediaStyle(session))
                     .build()
 
-                NotificationUtil.setNotification(context, 69, notification)
+                NotificationUtil.setNotification(context, NOTIFY_ID, notification)
             }
         }
 
-        fun release() {
+        fun release(context: Context) {
+            NotificationUtil.setNotification(context, NOTIFY_ID, null)
             current?.release()
             current = null
         }
