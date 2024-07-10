@@ -67,9 +67,11 @@ actual object PlatformModule {
         }
         bindSingleton<HttpClient> {
             HttpClient(OkHttp) {
+                followRedirects = true
                 engine {
                     config {
                         followRedirects(true)
+                        followSslRedirects(true)
                         connectTimeout(3, TimeUnit.MINUTES)
                         readTimeout(3, TimeUnit.MINUTES)
                         writeTimeout(3, TimeUnit.MINUTES)
@@ -84,11 +86,7 @@ actual object PlatformModule {
         }
         bindSingleton<HttpClient>("STREAM_CLIENT") {
             HttpClient(OkHttp) {
-                engine {
-                    config {
-                        followRedirects(true)
-                    }
-                }
+                followRedirects = true
             }
         }
         bindSingleton<DataStore<AppSettings>> {
