@@ -36,6 +36,9 @@ jobs:
         run: gradle composeApp:copySekretNativeBinary
         working-directory: ${{ github.workspace }}
 
+      - name: Generate Moko
+        run: gradle composeApp:generateMR
+
       - name: Package
         run: gradle composeApp:packageExe; gradle composeApp:packageMsi; gradle composeApp:packageUberJarForCurrentOS
         working-directory: ${{ github.workspace }}
