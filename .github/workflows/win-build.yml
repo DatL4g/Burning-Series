@@ -21,8 +21,8 @@ jobs:
 
       - name: Create Sekrets
         run: |
-          gradle createSekretProperties -Pkey=GITHUB_CLIENT_ID -Pvalue=${{ secrets.GITHUB_CLIENT_ID }};
-          gradle createSekretProperties -Pkey=GITHUB_CLIENT_SECRET -Pvalue=${{ secrets.GITHUB_CLIENT_SECRET }};
+          gradle createSekretProperties -Pkey=GITHUB_CLIENT_ID -Pvalue=${{ secrets.GH_CLIENT_ID }};
+          gradle createSekretProperties -Pkey=GITHUB_CLIENT_SECRET -Pvalue=${{ secrets.GH_CLIENT_SECRET }};
           gradle createSekretProperties -Pkey=FIREBASE_PROJECT -Pvalue=${{ secrets.FIREBASE_PROJECT }};
           gradle createSekretProperties -Pkey=FIREBASE_APPLICATION -Pvalue=${{ secrets.FIREBASE_APPLICATION }};
           gradle createSekretProperties -Pkey=FIREBASE_API_KEY -Pvalue=${{ secrets.FIREBASE_API_KEY }}
