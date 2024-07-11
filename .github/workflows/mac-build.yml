@@ -33,6 +33,9 @@ jobs:
       - name: Copy Sekrets
         run: ./gradlew composeApp:copySekretNativeBinary
 
+      - name: Moko
+        run: ./gradlew composeApp:generateMR; ./gradlew generateMR
+
       - name: Package
         run: ./gradlew composeApp:packageDmg; ./gradlew composeApp:packageUberJarForCurrentOS
 
