@@ -18,7 +18,8 @@ import org.publicvalue.multiplatform.oidc.flows.CodeAuthFlow
 class SettingsDialogComponent(
     componentContext: ComponentContext,
     override val di: DI,
-    private val onDismiss: () -> Unit
+    private val onDismiss: () -> Unit,
+    private val onAbout: () -> Unit
 ) : SettingsComponent, ComponentContext by componentContext {
 
     private val settings by instance<Settings.PlatformAppSettings>()
@@ -59,5 +60,9 @@ class SettingsDialogComponent(
                 onDismiss()
             }
         }
+    }
+
+    override fun about() {
+        onAbout()
     }
 }

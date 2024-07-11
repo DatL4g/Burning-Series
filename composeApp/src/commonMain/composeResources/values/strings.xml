@@ -71,4 +71,6 @@
     <string name="release_text_2">You should check it out!</string>
     <string name="syncing_enabled">Syncing enabled</string>
     <string name="pip_unsupported">Picture in Picture is not available in this screen.</string>
+    <string name="open_source_licenses">Open-Source Licenses</string>
+    <string name="open_source_licenses_text">This is a list of (all) libraries used in this project and it's licenses</string>
 </resources>

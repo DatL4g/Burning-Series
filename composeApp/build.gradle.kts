@@ -1,4 +1,6 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import com.mikepenz.aboutlibraries.plugin.DuplicateMode
+import com.mikepenz.aboutlibraries.plugin.DuplicateRule
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
@@ -31,6 +33,13 @@ multiplatformResources {
 composeCompiler {
     enableStrongSkippingMode.set(true)
     enableNonSkippingGroupOptimization.set(true)
+}
+
+aboutLibraries {
+    includePlatform = true
+    duplicationMode = DuplicateMode.MERGE
+    duplicationRule = DuplicateRule.GROUP
+    excludeFields = arrayOf("generated")
 }
 
 buildkonfig {
@@ -114,6 +123,7 @@ kotlin {
             implementation(libs.serialization.json)
             implementation(libs.serialization.protobuf)
             implementation(libs.oidc)
+            implementation(libs.aboutlibraries)
             implementation("dev.datlag.sheets-compose-dialogs:option:2.0.0-SNAPSHOT")
 
             implementation(project(":settings"))

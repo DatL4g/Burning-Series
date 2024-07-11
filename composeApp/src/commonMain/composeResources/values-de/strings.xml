@@ -71,4 +71,6 @@
     <string name="release_text_2">Das solltest du dir ansehen!</string>
     <string name="syncing_enabled">Synchronisieren aktiviert</string>
     <string name="pip_unsupported">Bild in Bild ist hier nicht verfügbar.</string>
+    <string name="open_source_licenses">Open-Source Lizenzen</string>
+    <string name="open_source_licenses_text">Das ist eine Liste von (allen) Bibliotheken, die in diesem Projekt verwendet werden und deren Lizenzen</string>
 </resources>

@@ -13,6 +13,8 @@ data object Constants {
     const val SYNCING_DOMAIN = "burningseries.datlag"
     const val SYNCING_URL = "https://burningseries.datlag/sync/"
 
+    const val SPDX_LICENSE_BASE = "https://spdx.org/licenses/"
+
     data object Sponsor {
         const val GITHUB = "https://github.com/sponsors/DatL4g"
         const val POLAR = "https://polar.sh/DatL4g"

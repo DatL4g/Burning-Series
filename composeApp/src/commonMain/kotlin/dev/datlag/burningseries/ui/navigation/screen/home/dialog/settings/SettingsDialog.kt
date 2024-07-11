@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.LocalEdgeToEdge
 import dev.datlag.burningseries.common.isFullyExpandedOrTargeted
 import dev.datlag.burningseries.common.merge
+import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.AboutSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.GitHubOwnerSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.GitHubRepoSection
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.component.InfoSection
@@ -91,6 +92,12 @@ fun SettingsDialog(component: SettingsComponent) {
             }
             item {
                 GitHubOwnerSection(modifier = Modifier.fillParentMaxWidth())
+            }
+            item {
+                AboutSection(
+                    modifier = Modifier.fillParentMaxWidth(),
+                    onClick = component::about
+                )
             }
         }
     }

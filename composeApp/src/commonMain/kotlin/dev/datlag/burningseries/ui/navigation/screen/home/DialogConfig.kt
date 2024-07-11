@@ -17,4 +17,7 @@ sealed class DialogConfig {
 
     @Serializable
     data class Sync(val id: String) : DialogConfig()
+
+    @Serializable
+    data object About : DialogConfig()
 }

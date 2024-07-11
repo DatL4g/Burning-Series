@@ -28,6 +28,7 @@ import dev.datlag.burningseries.other.UserHelper
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.navigation.DialogComponent
+import dev.datlag.burningseries.ui.navigation.screen.home.dialog.about.AboutDialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.qrcode.QrCodeDialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.release.ReleaseDialogComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.settings.SettingsDialogComponent
@@ -98,7 +99,10 @@ class HomeScreenComponent(
             is DialogConfig.Settings -> SettingsDialogComponent(
                 componentContext = context,
                 di = di,
-                onDismiss = dialogNavigation::dismiss
+                onDismiss = dialogNavigation::dismiss,
+                onAbout = {
+                    dialogNavigation.activate(DialogConfig.About)
+                }
             )
             is DialogConfig.Release -> ReleaseDialogComponent(
                 componentContext = context,
@@ -119,6 +123,11 @@ class HomeScreenComponent(
                 componentContext = context,
                 di = di,
                 connectId = config.id,
+                onDismiss = dialogNavigation::dismiss
+            )
+            is DialogConfig.About -> AboutDialogComponent(
+                componentContext = context,
+                di = di,
                 onDismiss = dialogNavigation::dismiss
             )
         }

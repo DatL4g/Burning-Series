@@ -13,4 +13,5 @@ interface SettingsComponent : DialogComponent {
     fun setLanguage(language: Language)
     fun login()
     fun logout()
+    fun about()
 }
