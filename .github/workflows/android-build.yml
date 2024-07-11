@@ -21,31 +21,34 @@ jobs:
 
       - name: Create Sekrets
         run: |
-          ./gradlew createSekretProperties -Pkey=MONGO_APPLICATION -Pvalue=${{ secrets.MONGO_APPLICATION }};
-          ./gradlew createSekretProperties -Pkey=WRAP_API -Pvalue=${{ secrets.WRAP_API }};
+          ./gradlew createSekretProperties -Pkey=GITHUB_CLIENT_ID -Pvalue=${{ secrets.GITHUB_CLIENT_ID }};
+          ./gradlew createSekretProperties -Pkey=GITHUB_CLIENT_SECRET -Pvalue=${{ secrets.GITHUB_CLIENT_SECRET }};
           ./gradlew createSekretProperties -Pkey=FIREBASE_PROJECT -Pvalue=${{ secrets.FIREBASE_PROJECT }};
           ./gradlew createSekretProperties -Pkey=FIREBASE_APPLICATION -Pvalue=${{ secrets.FIREBASE_APPLICATION }};
           ./gradlew createSekretProperties -Pkey=FIREBASE_API_KEY -Pvalue=${{ secrets.FIREBASE_API_KEY }}
 
-      - name: Create native library
-        run: ./gradlew app:shared:createNativeLib
+      - name: Generate Sekret binary
+        run: ./gradlew composeApp:createSekretNativeBinary
+
+      - name: Copy Sekrets
+        run: ./gradlew composeApp:copySekretNativeBinary
 
       - name: Execute Build
-        run: ./gradlew app:android:assembleRelease && ./gradlew app:android:bundleRelease
+        run: ./gradlew composeApp:assembleRelease && ./gradlew composeApp:bundleRelease
 
       - name: Move APK file(s)
-        run: mv ./app/android/build/outputs/apk/release/*.apk ./app/android/release/
+        run: mv ./composeApp/build/outputs/apk/release/*.apk ./composeApp/release/
 
       - name: Move AAB file(s)
-        run: mv ./app/android/build/outputs/bundle/release/*.aab ./app/android/release/
+        run: mv ./composeApp/build/outputs/bundle/release/*.aab ./composeApp/release/
 
       - name: Remove "-unsigned" from filename(s)
-        run: for filename in ./app/android/release/*-unsigned*; do mv "./$filename" "./$(echo "$filename" | sed -e 's/-unsigned//g')";  done
+        run: for filename in ./composeApp/release/*-unsigned*; do mv "./$filename" "./$(echo "$filename" | sed -e 's/-unsigned//g')";  done
 
       - uses: ilharp/sign-android-release@v1
         id: sign_app
         with:
-          releaseDir: app/android/release
+          releaseDir: composeApp/release
           signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
           keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}

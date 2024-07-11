@@ -21,19 +21,23 @@ jobs:
 
       - name: Create Sekrets
         run: |
-          gradle createSekretProperties -Pkey=MONGO_APPLICATION -Pvalue=${{ secrets.MONGO_APPLICATION }};
-          gradle createSekretProperties -Pkey=WRAP_API -Pvalue=${{ secrets.WRAP_API }};
+          gradle createSekretProperties -Pkey=GITHUB_CLIENT_ID -Pvalue=${{ secrets.GITHUB_CLIENT_ID }};
+          gradle createSekretProperties -Pkey=GITHUB_CLIENT_SECRET -Pvalue=${{ secrets.GITHUB_CLIENT_SECRET }};
           gradle createSekretProperties -Pkey=FIREBASE_PROJECT -Pvalue=${{ secrets.FIREBASE_PROJECT }};
           gradle createSekretProperties -Pkey=FIREBASE_APPLICATION -Pvalue=${{ secrets.FIREBASE_APPLICATION }};
           gradle createSekretProperties -Pkey=FIREBASE_API_KEY -Pvalue=${{ secrets.FIREBASE_API_KEY }}
         working-directory: ${{ github.workspace }}
 
-      - name: Create native library
-        run: gradle app:shared:createNativeLib
+      - name: Generate Sekret binary
+        run: gradle composeApp:createSekretNativeBinary
+        working-directory: ${{ github.workspace }}
+
+      - name: Copy Sekrets
+        run: gradle composeApp:copySekretNativeBinary
         working-directory: ${{ github.workspace }}
 
       - name: Package
-        run: gradle app:desktop:packageExe; gradle app:desktop:packageMsi; gradle app:desktop:packageUberJarForCurrentOS
+        run: gradle composeApp:packageExe; gradle composeApp:packageMsi; gradle composeApp:packageUberJarForCurrentOS
         working-directory: ${{ github.workspace }}
 
       - name: Upload artifact
@@ -42,5 +46,5 @@ jobs:
           path: |
             build/release/main/exe/*.exe
             build/release/main/msi/*.msi
-            app/desktop/build/compose/jars/Burning-Series-*.jar
+            composeApp/build/compose/jars/Burning-Series-*.jar
           retention-days: 1

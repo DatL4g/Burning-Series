@@ -27,17 +27,20 @@ jobs:
 
       - name: Create Sekrets
         run: |
-          ./gradlew createSekretProperties -Pkey=MONGO_APPLICATION -Pvalue=${{ secrets.MONGO_APPLICATION }};
-          ./gradlew createSekretProperties -Pkey=WRAP_API -Pvalue=${{ secrets.WRAP_API }};
+          ./gradlew createSekretProperties -Pkey=GITHUB_CLIENT_ID -Pvalue=${{ secrets.GITHUB_CLIENT_ID }};
+          ./gradlew createSekretProperties -Pkey=GITHUB_CLIENT_SECRET -Pvalue=${{ secrets.GITHUB_CLIENT_SECRET }};
           ./gradlew createSekretProperties -Pkey=FIREBASE_PROJECT -Pvalue=${{ secrets.FIREBASE_PROJECT }};
           ./gradlew createSekretProperties -Pkey=FIREBASE_APPLICATION -Pvalue=${{ secrets.FIREBASE_APPLICATION }};
           ./gradlew createSekretProperties -Pkey=FIREBASE_API_KEY -Pvalue=${{ secrets.FIREBASE_API_KEY }}
 
-      - name: Create native library
-        run: ./gradlew app:shared:createNativeLib
+      - name: Generate Sekret binary
+        run: ./gradlew composeApp:createSekretNativeBinary
+
+      - name: Copy Sekrets
+        run: ./gradlew composeApp:copySekretNativeBinary
 
       - name: Create package on Ubuntu
-        run: ./gradlew app:desktop:packageDeb; ./gradlew app:desktop:packageAppImage; ./gradlew app:desktop:packageUberJarForCurrentOS
+        run: ./gradlew composeApp:packageDeb; ./gradlew composeApp:packageAppImage; ./gradlew composeApp:packageUberJarForCurrentOS
 
       - name: Create Browser Extensions on Ubuntu
         continue-on-error: true
@@ -51,7 +54,7 @@ jobs:
           curl --request GET --url https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-x86_64 --location --output ./build/release/main/image/Burning-Series/AppRun
           chmod +x ./build/release/main/image/appimagetool.AppImage
           chmod +x ./build/release/main/image/Burning-Series/AppRun
-          cp ./app/desktop/Burning-Series.desktop ./build/release/main/image/Burning-Series/
+          cp ./composeApp/Burning-Series.desktop ./build/release/main/image/Burning-Series/
           cp ./build/release/main/app/Burning-Series/lib/Burning-Series.png ./build/release/main/image/Burning-Series/
           cp -r ./build/release/main/app/Burning-Series/bin ./build/release/main/image/Burning-Series/usr/
           cp -r ./build/release/main/app/Burning-Series/lib ./build/release/main/image/Burning-Series/usr/
@@ -67,7 +70,7 @@ jobs:
             ./build/release/main/deb/*.deb
             ./build/release/main/extension/*.zip
             ./build/release/main/extension/*.xpi
-            ./app/desktop/build/compose/jars/Burning-Series-*.jar
+            ./composeApp/build/compose/jars/Burning-Series-*.jar
 
   release-windows:
     runs-on: windows-latest
@@ -86,19 +89,23 @@ jobs:
 
       - name: Create Sekrets
         run: |
-          gradle createSekretProperties -Pkey=MONGO_APPLICATION -Pvalue=${{ secrets.MONGO_APPLICATION }};
-          gradle createSekretProperties -Pkey=WRAP_API -Pvalue=${{ secrets.WRAP_API }};
+          gradle createSekretProperties -Pkey=GITHUB_CLIENT_ID -Pvalue=${{ secrets.GITHUB_CLIENT_ID }};
+          gradle createSekretProperties -Pkey=GITHUB_CLIENT_SECRET -Pvalue=${{ secrets.GITHUB_CLIENT_SECRET }};
           gradle createSekretProperties -Pkey=FIREBASE_PROJECT -Pvalue=${{ secrets.FIREBASE_PROJECT }};
           gradle createSekretProperties -Pkey=FIREBASE_APPLICATION -Pvalue=${{ secrets.FIREBASE_APPLICATION }};
           gradle createSekretProperties -Pkey=FIREBASE_API_KEY -Pvalue=${{ secrets.FIREBASE_API_KEY }}
         working-directory: ${{ github.workspace }}
 
-      - name: Create native library
-        run: gradle app:shared:createNativeLib
+      - name: Generate Sekret binary
+        run: gradle composeApp:createSekretNativeBinary
+        working-directory: ${{ github.workspace }}
+
+      - name: Copy Sekrets
+        run: gradle composeApp:copySekretNativeBinary
         working-directory: ${{ github.workspace }}
 
       - name: Package
-        run: gradle app:desktop:packageExe; gradle app:desktop:packageMsi; gradle app:desktop:packageUberJarForCurrentOS
+        run: gradle composeApp:packageExe; gradle composeApp:packageMsi; gradle composeApp:packageUberJarForCurrentOS
         working-directory: ${{ github.workspace }}
 
       - name: Upload release packages
@@ -107,7 +114,7 @@ jobs:
           files: |
             build/release/main/exe/*.exe
             build/release/main/msi/*.msi
-            app/desktop/build/compose/jars/Burning-Series-*.jar
+            composeApp/build/compose/jars/Burning-Series-*.jar
 
   release-mac:
     runs-on: macos-latest

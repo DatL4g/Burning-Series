@@ -21,22 +21,25 @@ jobs:
 
       - name: Create Sekrets
         run: |
-          ./gradlew createSekretProperties -Pkey=MONGO_APPLICATION -Pvalue=${{ secrets.MONGO_APPLICATION }};
-          ./gradlew createSekretProperties -Pkey=WRAP_API -Pvalue=${{ secrets.WRAP_API }};
+          ./gradlew createSekretProperties -Pkey=GITHUB_CLIENT_ID -Pvalue=${{ secrets.GITHUB_CLIENT_ID }};
+          ./gradlew createSekretProperties -Pkey=GITHUB_CLIENT_SECRET -Pvalue=${{ secrets.GITHUB_CLIENT_SECRET }};
           ./gradlew createSekretProperties -Pkey=FIREBASE_PROJECT -Pvalue=${{ secrets.FIREBASE_PROJECT }};
           ./gradlew createSekretProperties -Pkey=FIREBASE_APPLICATION -Pvalue=${{ secrets.FIREBASE_APPLICATION }};
           ./gradlew createSekretProperties -Pkey=FIREBASE_API_KEY -Pvalue=${{ secrets.FIREBASE_API_KEY }}
 
-      - name: Create native library
-        run: ./gradlew app:shared:createNativeLib
+      - name: Generate Sekret binary
+        run: ./gradlew composeApp:createSekretNativeBinary
+
+      - name: Copy Sekrets
+        run: ./gradlew composeApp:copySekretNativeBinary
 
       - name: Package
-        run: ./gradlew app:desktop:packageDmg; ./gradlew app:desktop:packageUberJarForCurrentOS
+        run: ./gradlew composeApp:packageDmg; ./gradlew composeApp:packageUberJarForCurrentOS
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           path: |
             build/release/main/dmg/*.dmg
-            app/desktop/build/compose/jars/Burning-Series-*.jar
+            composeApp/build/compose/jars/Burning-Series-*.jar
           retention-days: 1
