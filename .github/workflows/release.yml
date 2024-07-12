@@ -166,7 +166,7 @@ jobs:
         with:
           files: |
             ./build/release/main/dmg/*.dmg
-            ./app/desktop/build/compose/jars/Burning-Series-*.jar
+            ./composeApp/build/compose/jars/Burning-Series-*.jar
 
   release-android:
     runs-on: ubuntu-latest
@@ -216,7 +216,7 @@ jobs:
       - uses: ilharp/sign-android-release@v1
         id: sign_app
         with:
-          releaseDir: app/android/release
+          releaseDir: composeApp/release
           signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
           keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
