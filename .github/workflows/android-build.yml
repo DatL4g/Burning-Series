@@ -37,7 +37,7 @@ jobs:
         continue-on-error: true
         run: ./gradlew build
 
-      - name: Execute Build
+      - name: Package
         run: ./gradlew composeApp:assembleRelease && ./gradlew composeApp:bundleRelease
 
       - name: Move APK file(s)

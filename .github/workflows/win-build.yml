@@ -36,6 +36,11 @@ jobs:
         run: gradle composeApp:copySekretNativeBinary
         working-directory: ${{ github.workspace }}
 
+      - name: Build
+        continue-on-error: true
+        run: gradle build
+        working-directory: ${{ github.workspace }}
+
       - name: Package
         run: gradle composeApp:packageExe; gradle composeApp:packageMsi; gradle composeApp:packageUberJarForCurrentOS
         working-directory: ${{ github.workspace }}
