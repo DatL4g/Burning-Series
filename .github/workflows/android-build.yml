@@ -33,6 +33,10 @@ jobs:
       - name: Copy Sekrets
         run: ./gradlew composeApp:copySekretNativeBinary
 
+      - name: Build
+        continue-on-error: true
+        run: ./gradlew build
+
       - name: Execute Build
         run: ./gradlew composeApp:assembleRelease && ./gradlew composeApp:bundleRelease
 

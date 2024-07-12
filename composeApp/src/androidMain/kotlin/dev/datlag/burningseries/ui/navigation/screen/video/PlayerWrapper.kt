@@ -80,7 +80,6 @@ class PlayerWrapper(
     private val startingPos: Long,
     private val startingLength: Long,
     private val headers: ImmutableMap<String, String>,
-    private val coverData: ByteArray?,
     private val longTimeout: Boolean,
     private val onError: (PlaybackException) -> Unit = { },
     private val onFirstFrame: () -> Unit = { },
@@ -138,9 +137,7 @@ class PlayerWrapper(
         set(value) {
             field = value
 
-            if (castSupported && value) {
-                useCastPlayer = true
-            }
+            useCastPlayer = castSupported && value
         }
     private var useCastPlayer = castSupported && requestCasting
         set(value) {
@@ -165,10 +162,15 @@ class PlayerWrapper(
             field = value
 
             if (previous != value) {
-                mediaItem?.let {
-                    value.setMediaItem(it.forPlayer(value), max(progress.value, startingPos))
+                val metadata = mediaItem?.let {
+                    val prepared = it.forPlayer(value)
+                    value.setMediaItem(prepared, max(progress.value, startingPos))
                     value.prepare()
-                }
+
+                    prepared.mediaMetadata
+                } ?: mediaItem?.mediaMetadata ?: value.mediaMetadata
+
+                Session.createNew(context, value, metadata)
             }
         }
 

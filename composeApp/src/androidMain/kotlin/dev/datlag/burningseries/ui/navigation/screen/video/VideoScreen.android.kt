@@ -125,7 +125,6 @@ actual fun VideoScreen(component: VideoComponent) {
             startingPos = component.startingPos,
             startingLength = component.startingLength,
             headers = headers.toImmutableMap(),
-            coverData = SchemeTheme.getByteArray(component.series),
             longTimeout = useLongTimeout,
             onError = {
                 if (streamList.size - 1 > streamIndex) {
