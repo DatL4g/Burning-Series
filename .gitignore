@@ -1,8 +1,6 @@
 TODO*
 composeApp/sekret.properties
 composeApp/sekret/src
-composeApp/release/*
-composeApp/src/commonMain/moko-resources/assets/*
 
 *.so
 *.dll
