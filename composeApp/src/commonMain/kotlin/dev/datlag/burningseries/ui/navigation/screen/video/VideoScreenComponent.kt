@@ -13,6 +13,7 @@ import dev.datlag.burningseries.database.common.updateLength
 import dev.datlag.burningseries.database.common.updateProgress
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.network.EpisodeStateMachine
+import dev.datlag.burningseries.network.common.dispatchIgnoreCollect
 import dev.datlag.burningseries.network.state.EpisodeAction
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.skeo.DirectLink
@@ -76,7 +77,7 @@ class VideoScreenComponent(
 
             if (nextEpisode != null) {
                 launchIO {
-                    episodeState.dispatch(EpisodeAction.LoadNonSuccess(nextEpisode))
+                    episodeState.dispatchIgnoreCollect(EpisodeAction.LoadNonSuccess(nextEpisode))
                 }
             }
         }
@@ -96,7 +97,7 @@ class VideoScreenComponent(
 
     override fun next(episode: Series.Episode, streams: ImmutableCollection<DirectLink>) {
         launchIO {
-            episodeState.dispatch(EpisodeAction.Clear)
+            episodeState.dispatchIgnoreCollect(EpisodeAction.Clear)
             withMainContext {
                 onNext(episode, streams)
             }

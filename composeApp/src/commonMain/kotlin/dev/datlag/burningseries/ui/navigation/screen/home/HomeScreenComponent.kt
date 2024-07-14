@@ -21,6 +21,7 @@ import dev.datlag.burningseries.github.model.UserAndRelease
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.network.HomeStateMachine
 import dev.datlag.burningseries.network.SearchStateMachine
+import dev.datlag.burningseries.network.common.dispatchIgnoreCollect
 import dev.datlag.burningseries.network.state.HomeState
 import dev.datlag.burningseries.network.state.SearchAction
 import dev.datlag.burningseries.network.state.SearchState
@@ -159,13 +160,13 @@ class HomeScreenComponent(
 
     override fun search(query: String?) {
         launchIO {
-            searchStateMachine.dispatch(SearchAction.Query(query?.ifBlank { null }))
+            searchStateMachine.dispatchIgnoreCollect(SearchAction.Query(query?.ifBlank { null }))
         }
     }
 
     override fun retryLoadingSearch() {
         launchIO {
-            searchStateMachine.dispatch(SearchAction.Retry)
+            searchStateMachine.dispatchIgnoreCollect(SearchAction.Retry)
         }
     }
 

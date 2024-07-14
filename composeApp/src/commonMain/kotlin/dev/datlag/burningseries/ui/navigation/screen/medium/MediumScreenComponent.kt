@@ -32,6 +32,7 @@ import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.network.EpisodeStateMachine
 import dev.datlag.burningseries.network.SeriesStateMachine
+import dev.datlag.burningseries.network.common.dispatchIgnoreCollect
 import dev.datlag.burningseries.network.state.EpisodeAction
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
@@ -246,7 +247,7 @@ class MediumScreenComponent(
 
     override fun episode(episode: Series.Episode) {
         launchIO {
-            episodeStateMachine.dispatch(EpisodeAction.Load(episode))
+            episodeStateMachine.dispatchIgnoreCollect(EpisodeAction.Load(episode))
         }
     }
 
@@ -256,7 +257,7 @@ class MediumScreenComponent(
         streams: ImmutableCollection<DirectLink>
     ) {
         launchIO {
-            episodeStateMachine.dispatch(EpisodeAction.Clear)
+            episodeStateMachine.dispatchIgnoreCollect(EpisodeAction.Clear)
             withMainContext {
                 onWatch(series, episode, streams)
             }
@@ -265,7 +266,7 @@ class MediumScreenComponent(
 
     override fun activate(series: Series, episode: Series.Episode) {
         launchIO {
-            episodeStateMachine.dispatch(EpisodeAction.Clear)
+            episodeStateMachine.dispatchIgnoreCollect(EpisodeAction.Clear)
             withMainContext {
                 dialogNavigation.activate(DialogConfig.Activate(series, episode))
             }
@@ -301,7 +302,7 @@ class MediumScreenComponent(
         } else {
             launchMain {
                 if (withIOContext { userHelper.requiresSponsoring() }) {
-                    episodeStateMachine.dispatch(EpisodeAction.Clear)
+                    episodeStateMachine.dispatchIgnoreCollect(EpisodeAction.Clear)
                     dialogNavigation.activate(
                         DialogConfig.Sponsor(
                             series, episode, streams

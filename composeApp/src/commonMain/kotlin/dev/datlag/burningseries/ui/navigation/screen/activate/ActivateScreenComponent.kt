@@ -11,6 +11,7 @@ import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.model.HosterScraping
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.network.SaveStateMachine
+import dev.datlag.burningseries.network.common.dispatchIgnoreCollect
 import dev.datlag.burningseries.network.state.SaveAction
 import dev.datlag.burningseries.network.state.SaveState
 import dev.datlag.burningseries.ui.navigation.DialogComponent
@@ -116,7 +117,7 @@ class ActivateScreenComponent(
             if (converted != null) {
                 if (!savedData.contains(converted.href)) {
                     launchIO {
-                        saveStateMachine.dispatch(SaveAction.Save(episodeHref, converted))
+                        saveStateMachine.dispatchIgnoreCollect(SaveAction.Save(episodeHref, converted))
                     }
                 }
 
@@ -131,7 +132,7 @@ class ActivateScreenComponent(
         stream: ImmutableCollection<DirectLink>
     ) {
         launchIO {
-            saveStateMachine.dispatch(SaveAction.Clear)
+            saveStateMachine.dispatchIgnoreCollect(SaveAction.Clear)
             withMainContext {
                 dialogNavigation.activate(DialogConfig.Success(series, episode, stream))
             }
@@ -144,7 +145,7 @@ class ActivateScreenComponent(
         stream: ImmutableCollection<DirectLink>
     ) {
         launchIO {
-            saveStateMachine.dispatch(SaveAction.Clear)
+            saveStateMachine.dispatchIgnoreCollect(SaveAction.Clear)
             withMainContext {
                 dialogNavigation.activate(DialogConfig.Error(series, episode, stream))
             }
