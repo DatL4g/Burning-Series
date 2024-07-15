@@ -248,6 +248,7 @@ internal fun HomeSearchBar(component: HomeComponent) {
                     items(current.queriedItems.toImmutableList(), key = { it.href }) {
                         SearchResult(
                             item = it,
+                            filterGenres = filterSearch.toImmutableSet(),
                             modifier = Modifier.fillParentMaxWidth(),
                             onClick = { data ->
                                 component.details(data, language)

@@ -18,11 +18,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.model.SearchItem
+import dev.datlag.burningseries.ui.navigation.screen.home.HomeComponent
 import dev.datlag.tooling.compose.onClick
+import kotlinx.collections.immutable.ImmutableCollection
 
 @Composable
 internal fun SearchResult(
     item: SearchItem,
+    filterGenres: ImmutableCollection<String>,
     modifier: Modifier = Modifier,
     onClick: (SearchItem) -> Unit
 ) {
@@ -54,17 +57,33 @@ internal fun SearchResult(
             }
         }
         item.genre?.let { genre ->
+            val info = if (filterGenres.contains(item.genre ?: "")) {
+                HomeComponent.GenreFilterInfo(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    labelColor = MaterialTheme.colorScheme.onPrimary,
+                    border = null
+                )
+            } else if (item.isAnime) {
+                HomeComponent.GenreFilterInfo(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    labelColor = MaterialTheme.colorScheme.onSecondary,
+                    border = null
+                )
+            } else {
+                HomeComponent.GenreFilterInfo(
+                    containerColor = Color.Unspecified,
+                    labelColor = Color.Unspecified,
+                    border = SuggestionChipDefaults.suggestionChipBorder(true)
+                )
+            }
+
             SuggestionChip(
                 onClick = { },
                 label = { Text(text = genre) },
                 colors = SuggestionChipDefaults.suggestionChipColors(
-                    containerColor = if (item.isAnime) {
-                        MaterialTheme.colorScheme.primary
-                    } else Color.Unspecified,
-                    labelColor = if (item.isAnime) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else Color.Unspecified                                          ),
-                border = if (item.isAnime) null else SuggestionChipDefaults.suggestionChipBorder(true)
+                    containerColor = info.containerColor,
+                    labelColor = info.labelColor                                         ),
+                border = info.border
             )
         }
     }

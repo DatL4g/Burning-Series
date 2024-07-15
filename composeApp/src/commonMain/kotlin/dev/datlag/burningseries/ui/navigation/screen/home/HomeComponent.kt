@@ -1,5 +1,7 @@
 package dev.datlag.burningseries.ui.navigation.screen.home
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.graphics.Color
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
 import dev.datlag.burningseries.database.ExtendedSeries
@@ -35,4 +37,10 @@ interface HomeComponent : Component {
     fun settings()
     fun release(release: UserAndRelease.Release)
     fun showQrCode()
+
+    data class GenreFilterInfo(
+        val containerColor: Color,
+        val labelColor: Color,
+        val border: BorderStroke?
+    )
 }
