@@ -31,7 +31,6 @@ internal data object ConnectionServer {
 
                 socket.bind(socketAddress) {
                     reuseAddress = true
-                    reusePort = true
                 }.accept().use { boundSocket ->
                     suspendCatching {
                         val readChannel = boundSocket.openReadChannel()
