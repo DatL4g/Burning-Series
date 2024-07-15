@@ -2,10 +2,13 @@ package dev.datlag.burningseries.ui.navigation.screen.home.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,9 +20,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
@@ -30,6 +37,7 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -42,6 +50,7 @@ import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -70,8 +79,11 @@ import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.composeapp.generated.resources.error
 import dev.datlag.burningseries.composeapp.generated.resources.loading
 import dev.datlag.burningseries.other.isInstalled
+import kotlinx.collections.immutable.toImmutableSet
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalLayoutApi::class
+)
 @Composable
 internal fun HomeSearchBar(component: HomeComponent) {
     var query by remember { mutableStateOf("") }
@@ -79,6 +91,7 @@ internal fun HomeSearchBar(component: HomeComponent) {
     val windowInsets = SearchBarDefaults.windowInsets.asPaddingValues().merge(16.dp)
     var isActive by remember(searchState) { mutableStateOf(searchState.hasQueryItems) }
     val isDesktopOrTv = Platform.isDesktop || Platform.rememberIsTv()
+    val filterSearch = remember { mutableStateListOf<String>() }
 
     DockedSearchBar(
         modifier = Modifier
@@ -87,23 +100,21 @@ internal fun HomeSearchBar(component: HomeComponent) {
         query = query,
         onQueryChange = {
             query = it
-            component.search(query)
+            component.search(query, filterSearch)
         },
         active = isActive,
         enabled = searchState.isSuccess,
         onActiveChange = {
             if (it) {
-                isActive = searchState.hasQueryItems
                 if (searchState.isError) {
                     component.retryLoadingSearch()
                 }
-            } else {
-                isActive = false
             }
+            isActive = it
         },
         onSearch = {
             query = it
-            component.search(it)
+            component.search(it, filterSearch)
         },
         leadingIcon = {
             if (isActive) {
@@ -120,7 +131,7 @@ internal fun HomeSearchBar(component: HomeComponent) {
             } else {
                 AniFlowIconButton(
                     onClick = {
-                        component.search(query)
+                        component.search(query, filterSearch)
                     }
                 )
             }
@@ -192,6 +203,47 @@ internal fun HomeSearchBar(component: HomeComponent) {
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(1.dp)
                 ) {
+                    item {
+                        LazyRow(
+                            modifier = Modifier.fillParentMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+                            contentPadding = PaddingValues(
+                                horizontal = 8.dp,
+                                vertical = 4.dp
+                            )
+                        ) {
+                            items(current.queriedGenres.toList()) {
+                                var isSelected by remember { mutableStateOf(filterSearch.contains(it)) }
+
+                                FilterChip(
+                                    selected = isSelected,
+                                    onClick = {
+                                        isSelected = !isSelected
+
+                                        if (isSelected) {
+                                            filterSearch.add(it)
+                                        } else {
+                                            filterSearch.remove(it)
+                                        }
+
+                                        component.search(query, filterSearch)
+                                    },
+                                    leadingIcon = if (isSelected) {
+                                        {
+                                            Icon(
+                                                imageVector = Icons.Rounded.Check,
+                                                contentDescription = null
+                                            )
+                                        }
+                                    } else null,
+                                    label = {
+                                        Text(text = it)
+                                    }
+                                )
+                            }
+                        }
+                    }
                     items(current.queriedItems.toImmutableList(), key = { it.href }) {
                         SearchResult(
                             item = it,

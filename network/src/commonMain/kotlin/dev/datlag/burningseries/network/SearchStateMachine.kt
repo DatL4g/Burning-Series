@@ -6,6 +6,7 @@ import dev.datlag.burningseries.model.algorithm.JaroWinkler
 import dev.datlag.burningseries.network.state.SearchAction
 import dev.datlag.burningseries.network.state.SearchState
 import dev.datlag.tooling.async.suspendCatching
+import dev.datlag.tooling.safeSubSet
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.persistentSetOf
@@ -58,7 +59,7 @@ class SearchStateMachine(
             inState<SearchState.Success> {
                 on<SearchAction.Query> { action, state ->
                     val search = if (action.query.isNullOrBlank()) {
-                        persistentSetOf()
+                        state.snapshot.allItems
                     } else {
                         coroutineScope {
                             state.snapshot.allItems.map {
@@ -78,8 +79,16 @@ class SearchStateMachine(
                         }
                     }
 
+                    val filteredItems = if (action.genres.isEmpty()) {
+                        search.safeSubSet(0, 10)
+                    } else {
+                        search.filter {
+                            action.genres.contains(it.genre ?: "")
+                        }
+                    }
+
                     state.mutate {
-                        copy(queriedItems = search)
+                        copy(queriedItems = filteredItems.toImmutableSet())
                     }
                 }
             }

@@ -158,9 +158,9 @@ class HomeScreenComponent(
         }
     }
 
-    override fun search(query: String?) {
+    override fun search(query: String?, genres: Collection<String>) {
         launchIO {
-            searchStateMachine.dispatchIgnoreCollect(SearchAction.Query(query?.ifBlank { null }))
+            searchStateMachine.dispatchIgnoreCollect(SearchAction.Query(query?.ifBlank { null }, genres))
         }
     }
 

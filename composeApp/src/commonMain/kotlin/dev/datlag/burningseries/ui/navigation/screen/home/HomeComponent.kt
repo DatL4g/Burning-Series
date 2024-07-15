@@ -28,7 +28,8 @@ interface HomeComponent : Component {
 
     fun details(data: SeriesData) = details(data, null)
     fun details(data: SeriesData, language: Language?)
-    fun search(query: String?)
+    fun search(query: String?, genres: Collection<String>)
+
     fun retryLoadingSearch()
     fun toggleFavorites()
     fun settings()

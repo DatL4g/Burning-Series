@@ -27,7 +27,12 @@ sealed interface SearchState {
     data class Success(
         val allItems: ImmutableSet<SearchItem>,
         val queriedItems: ImmutableSet<SearchItem> = persistentSetOf(),
-    ) : PostLoading
+    ) : PostLoading {
+
+        val queriedGenres: ImmutableSet<String> = allItems.mapNotNull {
+            it.genre
+        }.toImmutableSet()
+    }
 
     data class Failure(
         internal val throwable: Throwable?
@@ -51,5 +56,5 @@ sealed interface SearchState {
 sealed interface SearchAction {
     data object Retry : SearchAction
 
-    data class Query(val query: String?) : SearchAction
+    data class Query(val query: String?, val genres: Collection<String> = emptySet()) : SearchAction
 }
