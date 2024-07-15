@@ -157,6 +157,7 @@ internal fun HomeSearchBar(component: HomeComponent) {
                             isActive = false
                         } else {
                             query = ""
+                            component.search(null, filterSearch)
                         }
                     }
                 ) {
