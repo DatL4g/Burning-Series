@@ -30,6 +30,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.max
 import com.kmpalette.DominantColorState
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.colorScheme
 
 @Composable
 operator fun PaddingValues.plus(other: PaddingValues): PaddingValues {
@@ -83,11 +85,11 @@ fun PaddingValues.merge(all: Dp): PaddingValues {
 
 val <T : Any> DominantColorState<T>?.primary
     @Composable
-    get() = this?.color ?: MaterialTheme.colorScheme.primary
+    get() = this?.color ?: Platform.colorScheme().primary
 
 val <T : Any> DominantColorState<T>?.onPrimary
     @Composable
-    get() = this?.onColor ?: MaterialTheme.colorScheme.onPrimary
+    get() = this?.onColor ?: Platform.colorScheme().onPrimary
 
 val Color.plainOnColor: Color
     get() = if (this.luminance() > 0.5F) {

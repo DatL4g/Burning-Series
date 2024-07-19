@@ -42,8 +42,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -77,7 +80,9 @@ import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class,
+    ExperimentalComposeUiApi::class
+)
 @Composable
 fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
     val listState = rememberLazyListState()
@@ -117,11 +122,14 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
 
     dialogState.child?.instance?.render()
 
+    val (seasonFocus, fabFocus) = FocusRequester.createRefs()
     Scaffold(
         topBar = {
             Toolbar(
                 component = component,
-                series = (seriesState as? SeriesState.Success)?.series
+                series = (seriesState as? SeriesState.Success)?.series,
+                seasonFocus = seasonFocus,
+                fabFocus = fabFocus
             )
         },
         floatingActionButton = {
@@ -129,6 +137,7 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
 
             nextEpisode?.ifHasHoster()?.let { episode ->
                 ExtendedFloatingActionButton(
+                    modifier = Modifier.focusRequester(fabFocus),
                     onClick = {
                         component.episode(episode)
                     },
@@ -179,7 +188,11 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
             item {
                 SeasonLanguageSection(
                     component = component,
-                    modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp).padding(top = 8.dp)
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp)
+                        .focusRequester(seasonFocus)
                 )
             }
             if (isAndroidPhone && isAnime && !isAniFlowInstalled) {

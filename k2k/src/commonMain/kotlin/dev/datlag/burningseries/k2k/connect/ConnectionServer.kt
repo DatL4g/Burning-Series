@@ -24,7 +24,8 @@ internal data object ConnectionServer {
         scope: CoroutineScope,
         listener: suspend (ByteArray) -> Unit
     ) {
-        receiveJob?.cancel()
+        stopServer()
+
         receiveJob = scope.launch(Dispatchers.IO) {
             while (true) {
                 val socketAddress = InetSocketAddress(NetInterface.getLocalAddress(), port)

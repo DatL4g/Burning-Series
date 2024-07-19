@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import com.maxkeppeker.sheets.core.models.base.Header
 import com.maxkeppeker.sheets.core.models.base.IconSource
@@ -38,6 +39,9 @@ import dev.datlag.burningseries.composeapp.generated.resources.select_language
 import dev.datlag.burningseries.composeapp.generated.resources.select_season
 import dev.datlag.burningseries.other.CountryImage
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumComponent
+import dev.datlag.tooling.compose.platform.PlatformButton
+import dev.datlag.tooling.compose.platform.PlatformButtonScale
+import dev.datlag.tooling.compose.platform.PlatformText
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import dev.icerock.moko.resources.compose.painterResource
 import kotlinx.collections.immutable.persistentListOf
@@ -158,36 +162,46 @@ internal fun SeasonLanguageSection(
             modifier = Modifier.weight(1F),
             visible = selectedSeason != null
         ) {
-            Button(
-                onClick = {
-                    seasonDialog.show()
-                },
-                enabled = seasonList.size > 1
-            ) {
-                Text(
-                    text = selectedSeason?.title?.toIntOrNull()?.let {
-                        stringResource(Res.string.season_placeholder, it)
-                    } ?: selectedSeason!!.title
-                )
+            selectedSeason?.let { season ->
+                PlatformButton(
+                    onClick = {
+                        seasonDialog.show()
+                    },
+                    enabled = seasonList.size > 1,
+                    scale = PlatformButtonScale.default(
+                        focusedScale = 1.02f,
+                    )
+                ) {
+                    PlatformText(
+                        text = season.title.toIntOrNull()?.let {
+                            stringResource(Res.string.season_placeholder, it)
+                        } ?: season.title
+                    )
+                }
             }
         }
         AnimatedVisibility(
             modifier = Modifier.weight(1F),
             visible = selectedLanguage != null
         ) {
-            Button(
-                onClick = {
-                    languageDialog.show()
-                },
-                enabled = languageList.size > 1
-            ) {
-                CountryImage.showFlags(
-                    code = selectedLanguage?.value,
-                    iconSize = ButtonDefaults.IconSize,
-                    showBorder = true
-                )
-                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = selectedLanguage!!.title)
+            selectedLanguage?.let { lang ->
+                PlatformButton(
+                    onClick = {
+                        languageDialog.show()
+                    },
+                    enabled = languageList.size > 1,
+                    scale = PlatformButtonScale.default(
+                        focusedScale = 1.02f
+                    )
+                ) {
+                    CountryImage.showFlags(
+                        code = lang.value,
+                        iconSize = ButtonDefaults.IconSize,
+                        showBorder = true
+                    )
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                    PlatformText(text = lang.title)
+                }
             }
         }
     }

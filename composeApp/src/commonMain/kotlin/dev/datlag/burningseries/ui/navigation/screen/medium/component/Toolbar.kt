@@ -34,6 +34,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -63,6 +65,11 @@ import dev.datlag.kast.DeviceType
 import dev.datlag.kast.Kast
 import dev.datlag.kast.UnselectReason
 import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.PlatformIcon
+import dev.datlag.tooling.compose.platform.PlatformIconButton
+import dev.datlag.tooling.compose.platform.PlatformText
+import dev.datlag.tooling.compose.platform.ProvideNonTvContentColor
+import dev.datlag.tooling.compose.platform.ProvideNonTvTextStyle
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 
@@ -70,43 +77,49 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun Toolbar(
     component: MediumComponent,
-    series: Series?
+    series: Series?,
+    seasonFocus: FocusRequester,
+    fabFocus: FocusRequester
 ) {
     TopAppBar(
         navigationIcon = {
-            IconButton(
-                onClick = {
-                    component.back()
+            ProvideNonTvContentColor {
+                PlatformIconButton(
+                    onClick = component::back
+                ) {
+                    PlatformIcon(
+                        imageVector = Icons.Rounded.ArrowBackIosNew,
+                        contentDescription = null
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.ArrowBackIosNew,
-                    contentDescription = null
-                )
             }
         },
         title = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
-            ) {
-                val seriesTitle by component.seriesTitle.collectAsStateWithLifecycle(component.seriesData.mainTitle)
-                val seriesSubTitle by component.seriesSubTitle.collectAsStateWithLifecycle(component.seriesData.subTitle)
+            ProvideNonTvContentColor {
+                ProvideNonTvTextStyle {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
+                    ) {
+                        val seriesTitle by component.seriesTitle.collectAsStateWithLifecycle(component.seriesData.mainTitle)
+                        val seriesSubTitle by component.seriesSubTitle.collectAsStateWithLifecycle(component.seriesData.subTitle)
 
-                Text(
-                    text = seriesTitle,
-                    softWrap = true,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-                )
-                seriesSubTitle?.ifBlank { null }?.let { sub ->
-                    Text(
-                        text = sub,
-                        softWrap = true,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        style = MaterialTheme.typography.labelMedium
-                    )
+                        PlatformText(
+                            text = seriesTitle,
+                            softWrap = true,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                        seriesSubTitle?.ifBlank { null }?.let { sub ->
+                            PlatformText(
+                                text = sub,
+                                softWrap = true,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
                 }
             }
         },
@@ -202,32 +215,42 @@ internal fun Toolbar(
                 }
             }
 
-            if (isFavorite) {
-                IconButton(
-                    onClick = {
-                        if (series != null) {
-                            component.unsetFavorite(series)
+            ProvideNonTvContentColor {
+                if (isFavorite) {
+                    PlatformIconButton(
+                        modifier = Modifier.focusProperties {
+                            end = fabFocus
+                            down = seasonFocus
+                        },
+                        onClick = {
+                            if (series != null) {
+                                component.unsetFavorite(series)
+                            }
                         }
+                    ) {
+                        PlatformIcon(
+                            imageVector = Icons.Rounded.Favorite,
+                            contentDescription = null,
+                            tint = Color.Red
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Favorite,
-                        contentDescription = null,
-                        tint = Color.Red
-                    )
-                }
-            } else {
-                IconButton(
-                    onClick = {
-                        if (series != null) {
-                            component.setFavorite(series)
+                } else {
+                    PlatformIconButton(
+                        modifier = Modifier.focusProperties {
+                            end = fabFocus
+                            down = seasonFocus
+                        },
+                        onClick = {
+                            if (series != null) {
+                                component.setFavorite(series)
+                            }
                         }
+                    ) {
+                        PlatformIcon(
+                            imageVector = Icons.Rounded.FavoriteBorder,
+                            contentDescription = null,
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.FavoriteBorder,
-                        contentDescription = null,
-                    )
                 }
             }
         },

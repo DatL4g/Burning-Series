@@ -8,4 +8,5 @@ interface SyncComponent : DialogComponent {
     val deviceNotFound: StateFlow<Boolean>
     val sendingTo: StateFlow<String?>
     val takingTime: StateFlow<Boolean>
+    val connectionRefused: StateFlow<Boolean>
 }

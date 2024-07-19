@@ -8,9 +8,9 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
-import dev.datlag.burningseries.k2k.connect.connection
-import dev.datlag.burningseries.k2k.discover.discovery
 import dev.datlag.burningseries.other.SyncHelper
+import dev.datlag.k2k.connect.connection
+import dev.datlag.k2k.discover.discovery
 import dev.datlag.nanoid.NanoIdUtils
 import dev.datlag.tooling.Platform
 import dev.datlag.tooling.decompose.ioScope
@@ -32,8 +32,8 @@ class QrCodeDialogComponent(
     override val identifier: String = NanoIdUtils.randomNanoId()
     private val discovery = ioScope().discovery {
         setPort(7331)
-        setDiscoverableTimeout(0L)
-        setDiscoveryTimeout(1L) // builder requires value, stop immediately if used for discovery
+        setShowTimeout(0L)
+        setSearchTimeout(1L) // builder requires value, stop immediately if used for discovery
     }
 
     private val connection = ioScope().connection {
@@ -42,21 +42,20 @@ class QrCodeDialogComponent(
     private val deviceName by instance<String>("DEVICE_NAME")
 
     init {
-        discovery.makeDiscoverable(
-            hostName = deviceName,
+        discovery.show(
+            name = deviceName,
             filterMatch = identifier
         )
 
-        connection.startReceiving { bytes ->
+        connection.receive { bytes ->
             if (syncHelper.updateSettingsFromByteArray(bytes))  {
                 syncedSettings.update { true }
             }
         }
 
         doOnDestroy {
-            discovery.stopDiscovery()
-            discovery.stopBeingDiscoverable()
-            connection.stopReceiving()
+            discovery.close()
+            connection.close()
         }
     }
 

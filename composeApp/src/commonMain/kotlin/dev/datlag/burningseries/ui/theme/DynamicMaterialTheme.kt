@@ -11,6 +11,7 @@ import com.materialkolor.Contrast
 import com.materialkolor.PaletteStyle
 import com.materialkolor.rememberDynamicColorScheme
 import dev.datlag.burningseries.LocalDarkMode
+import dev.datlag.tooling.compose.platform.CombinedPlatformMaterialTheme
 
 @Composable
 fun DynamicMaterialTheme(
@@ -73,7 +74,7 @@ fun DynamicMaterialTheme(
         )
     }
 
-    MaterialTheme(
+    CombinedPlatformMaterialTheme(
         colorScheme = animatedColorScheme
     ) {
         content()

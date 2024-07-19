@@ -30,6 +30,9 @@ import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.ui.theme.Colors
 import dev.datlag.burningseries.ui.theme.dynamicDark
 import dev.datlag.burningseries.ui.theme.dynamicLight
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.CombinedPlatformMaterialTheme
+import dev.datlag.tooling.compose.platform.rememberIsTv
 import dev.datlag.tooling.compose.toTypography
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.Font
@@ -43,14 +46,14 @@ val LocalHaze = compositionLocalOf<HazeState> { error("No Haze state provided") 
 @Composable
 internal fun App(
     di: DI,
-    systemDarkTheme: Boolean = isSystemInDarkTheme(),
+    systemDarkTheme: Boolean = isSystemInDarkTheme() || Platform.rememberIsTv(),
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
         LocalDarkMode provides systemDarkTheme,
         LocalDI provides di
     ) {
-        MaterialTheme(
+        CombinedPlatformMaterialTheme (
             colorScheme = if (systemDarkTheme) Colors.dynamicDark() else Colors.dynamicLight(),
             typography = ManropeFontFamily().toTypography()
         ) {

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Phonelink
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -24,12 +25,16 @@ import dev.datlag.burningseries.composeapp.generated.resources.sync_settings_con
 import dev.datlag.burningseries.composeapp.generated.resources.sync_settings_not_found
 import dev.datlag.burningseries.composeapp.generated.resources.sync_settings_sending
 import dev.datlag.burningseries.composeapp.generated.resources.sync_settings_time
+import dev.datlag.burningseries.composeapp.generated.resources.sync_connection_refused
+import dev.datlag.tooling.compose.platform.PlatformText
+import dev.datlag.tooling.compose.platform.ProvideNonTvTextStyle
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SyncDialog(component: SyncComponent) {
     val sendingTo by component.sendingTo.collectAsStateWithLifecycle()
+    val connectionRefused by component.connectionRefused.collectAsStateWithLifecycle()
 
     AlertDialog(
         onDismissRequest = { },
@@ -38,7 +43,7 @@ fun SyncDialog(component: SyncComponent) {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Phonelink,
+                    imageVector = if (connectionRefused) Icons.Rounded.Warning else Icons.Rounded.Phonelink,
                     contentDescription = null
                 )
                 if (!sendingTo.isNullOrBlank()) {
@@ -49,7 +54,12 @@ fun SyncDialog(component: SyncComponent) {
             }
         },
         title = {
-            Text(text = stringResource(Res.string.sync_settings))
+            ProvideNonTvTextStyle {
+                PlatformText(
+                    text = stringResource(Res.string.sync_settings),
+                    textAlign = TextAlign.Center
+                )
+            }
         },
         text = {
             Column(
@@ -64,6 +74,12 @@ fun SyncDialog(component: SyncComponent) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(Res.string.sync_settings_not_found),
+                        textAlign = TextAlign.Center
+                    )
+                } else if (connectionRefused) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(Res.string.sync_connection_refused),
                         textAlign = TextAlign.Center
                     )
                 } else {

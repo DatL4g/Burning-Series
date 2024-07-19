@@ -57,6 +57,7 @@
     <string name="sync_settings_connecting">Trying to sync, please wait.</string>
     <string name="sync_settings_sending">Syncing to %1$s, please wait.</string>
     <string name="sync_settings_time">This seems to take some time, maybe try again later.</string>
+    <string name="sync_connection_refused">The target device refused the connection.</string>
     <string name="github_repository">GitHub Repository</string>
     <string name="developed_by_datlag">Developed by DatLag</string>
     <string name="login">Login</string>

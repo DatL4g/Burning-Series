@@ -26,6 +26,9 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import dev.icerock.moko.resources.compose.painterResource
 import dev.datlag.burningseries.MokoRes
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.localContentColor
+import dev.datlag.tooling.compose.platform.shapes
 
 data object CountryImage {
 
@@ -95,7 +98,7 @@ data object CountryImage {
         description: String? = null,
         iconSize: Dp? = null,
         showBorder: Boolean = false,
-        shape: Shape = MaterialTheme.shapes.extraSmall
+        shape: Shape = Platform.shapes().extraSmall
     ) {
         var iconWidth by remember { mutableFloatStateOf(iconSize?.value ?: 24.dp.value) }
         var iconHeight by remember { mutableFloatStateOf(iconSize?.value ?: 24.dp.value) }
@@ -120,7 +123,7 @@ data object CountryImage {
                     .size(width = iconWidth.dp, height = iconHeight.dp)
                     .clip(shape)
                     .ifTrue(showBorder) {
-                        border(1.dp, LocalContentColor.current, shape)
+                        border(1.dp, Platform.localContentColor(), shape)
                     }
                     .ifTrue(collection.size >= 2) { this.align(Alignment.TopStart).alpha(0.75F) }
             )
@@ -132,7 +135,7 @@ data object CountryImage {
                         .size(width = iconWidth.dp, height = iconHeight.dp)
                         .clip(shape)
                         .ifTrue(showBorder) {
-                            border(1.dp, LocalContentColor.current, shape)
+                            border(1.dp, Platform.localContentColor(), shape)
                         }
                         .align(Alignment.BottomEnd)
                 )

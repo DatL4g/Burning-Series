@@ -27,7 +27,12 @@ import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.ui.theme.SchemeTheme
 import dev.datlag.burningseries.ui.theme.rememberSchemeThemeDominantColorState
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.focusScale
+import dev.datlag.tooling.compose.platform.PlatformCard
+import dev.datlag.tooling.compose.platform.PlatformText
+import dev.datlag.tooling.compose.platform.colorScheme
+import dev.datlag.tooling.compose.platform.typography
 import io.github.aakira.napier.Napier
 
 @Composable
@@ -39,16 +44,11 @@ fun HomeCard(
     SchemeTheme(
         key = episode
     ) { updater ->
-        val source = remember { MutableInteractionSource() }
-        Card(
-            modifier = modifier.focusScale(
-                scale = 1.05F,
-                interactionSource = source
-            ),
+        PlatformCard(
             onClick = {
                 onClick(episode)
             },
-            interactionSource = source
+            modifier = modifier
         ) {
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -56,7 +56,7 @@ fun HomeCard(
                 val colorState = rememberSchemeThemeDominantColorState(
                     key = episode.source,
                     applyMinContrast = true,
-                    minContrastBackgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                    minContrastBackgroundColor = Platform.colorScheme().surfaceVariant,
                 )
 
                 AsyncImage(
@@ -83,16 +83,16 @@ fun HomeCard(
                         .padding(top = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
+                    PlatformText(
                         text = episode.mainTitle,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = Platform.typography().titleLarge,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.fillMaxWidth(),
                         color = colorState.onPrimary
                     )
                     episode.subTitle?.let { sub ->
-                        Text(
+                        PlatformText(
                             text = sub,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.fillMaxWidth(),
@@ -115,15 +115,11 @@ fun HomeCard(
     SchemeTheme(
         key = series
     ) { updater ->
-        val source = remember { MutableInteractionSource() }
-        Card(
-            modifier = modifier.focusScale(
-                interactionSource = source
-            ),
+        PlatformCard(
+            modifier = modifier,
             onClick = {
                 onClick(series)
-            },
-            interactionSource = source
+            }
         ) {
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -131,7 +127,7 @@ fun HomeCard(
                 val colorState = rememberSchemeThemeDominantColorState(
                     key = series.source,
                     applyMinContrast = true,
-                    minContrastBackgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                    minContrastBackgroundColor = Platform.colorScheme().surfaceVariant,
                 )
 
                 AsyncImage(
@@ -153,16 +149,16 @@ fun HomeCard(
                         .padding(top = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
+                    PlatformText(
                         text = series.mainTitle,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = Platform.typography().titleLarge,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.fillMaxWidth(),
                         color = colorState.onPrimary
                     )
                     series.subTitle?.let { sub ->
-                        Text(
+                        PlatformText(
                             text = sub,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.fillMaxWidth(),

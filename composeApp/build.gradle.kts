@@ -125,13 +125,14 @@ kotlin {
             implementation(libs.oidc)
             implementation(libs.aboutlibraries)
             implementation("dev.datlag.sheets-compose-dialogs:option:2.0.0-SNAPSHOT")
+            implementation("dev.datlag.k2k:k2k:1.0.0-SNAPSHOT")
 
             implementation(project(":settings"))
             implementation(project(":network"))
             implementation(project(":firebase"))
             implementation(project(":database"))
             implementation(project(":github"))
-            implementation(project(":k2k"))
+            // implementation(project(":k2k"))
         }
 
         val androidMain by getting {

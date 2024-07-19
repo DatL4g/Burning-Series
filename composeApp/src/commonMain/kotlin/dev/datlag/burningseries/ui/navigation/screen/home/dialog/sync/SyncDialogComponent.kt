@@ -3,11 +3,11 @@ package dev.datlag.burningseries.ui.navigation.screen.home.dialog.sync
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
-import dev.datlag.burningseries.k2k.Host
-import dev.datlag.burningseries.k2k.connect.Connection
-import dev.datlag.burningseries.k2k.connect.connection
-import dev.datlag.burningseries.k2k.discover.discovery
 import dev.datlag.burningseries.other.SyncHelper
+import dev.datlag.k2k.Host
+import dev.datlag.k2k.connect.connection
+import dev.datlag.k2k.discover.discovery
+import dev.datlag.tooling.async.suspendCatching
 import dev.datlag.tooling.decompose.ioScope
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.currentCoroutineContext
@@ -31,27 +31,28 @@ class SyncDialogComponent(
     override val deviceNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val sendingTo: MutableStateFlow<String?> = MutableStateFlow(null)
     override val takingTime: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val connectionRefused: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val discovery = ioScope().discovery {
         setPort(7331)
-        setDiscoveryTimeout(5000L)
-        setDiscoveryTimeoutListener {
+        setSearchTimeout(5000L)
+        setSearchTimeoutListener {
             deviceNotFound.update { true }
         }
-        setDiscoverableTimeout(1L)
+        setShowTimeout(1L)
         setHostIsClient(false)
         setHostFilter("^$connectId$".toRegex())
     }
     private val connect = ioScope().connection {
         setPort(7337)
+        noDelay()
     }
 
     init {
-        discovery.startDiscovery()
+        discovery.search()
 
         doOnDestroy {
-            discovery.stopDiscovery()
-            discovery.stopBeingDiscoverable()
-            connect.stopReceiving()
+            discovery.close()
+            connect.close()
         }
 
         launchIO {
@@ -75,8 +76,9 @@ class SyncDialogComponent(
     }
 
     private suspend fun connect(host: Host) {
-        discovery.stopDiscovery()
+        discovery.close()
 
+        connectionRefused.update { false }
         takingTime.update { false }
         sendingTo.update { host.name }
         deviceNotFound.update { false }
@@ -86,7 +88,13 @@ class SyncDialogComponent(
             if (syncData.isEmpty()) {
                 syncData = syncHelper.encodeSettingsToByteArray()
             }
-            connect.send(syncData, host)
+            suspendCatching {
+                connect.sendNow(syncData, host)
+            }.onFailure {
+                connectionRefused.update { true }
+            }.onSuccess {
+                connectionRefused.update { false }
+            }
             delay(3000)
             if (counter >= 5) {
                 takingTime.update { true }
@@ -95,5 +103,6 @@ class SyncDialogComponent(
         }
         takingTime.update { false }
         sendingTo.update { null }
+        connectionRefused.update { false }
     }
 }

@@ -79,6 +79,10 @@ import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.composeapp.generated.resources.error
 import dev.datlag.burningseries.composeapp.generated.resources.loading
 import dev.datlag.burningseries.other.isInstalled
+import dev.datlag.tooling.compose.platform.PlatformFilterChip
+import dev.datlag.tooling.compose.platform.PlatformIcon
+import dev.datlag.tooling.compose.platform.PlatformSelectableChipBorder
+import dev.datlag.tooling.compose.platform.PlatformText
 import kotlinx.collections.immutable.toImmutableSet
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
@@ -217,7 +221,7 @@ internal fun HomeSearchBar(component: HomeComponent) {
                             items(current.queriedGenres.toList()) {
                                 var isSelected by remember { mutableStateOf(filterSearch.contains(it)) }
 
-                                FilterChip(
+                                PlatformFilterChip(
                                     selected = isSelected,
                                     onClick = {
                                         isSelected = !isSelected
@@ -232,14 +236,14 @@ internal fun HomeSearchBar(component: HomeComponent) {
                                     },
                                     leadingIcon = if (isSelected) {
                                         {
-                                            Icon(
+                                            PlatformIcon(
                                                 imageVector = Icons.Rounded.Check,
                                                 contentDescription = null
                                             )
                                         }
                                     } else null,
-                                    label = {
-                                        Text(text = it)
+                                    content = {
+                                        PlatformText(text = it)
                                     }
                                 )
                             }

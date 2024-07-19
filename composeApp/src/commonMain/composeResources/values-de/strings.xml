@@ -57,6 +57,7 @@
     <string name="sync_settings_connecting">Versuche zu Synchronisieren, bitte warten.</string>
     <string name="sync_settings_sending">Synchronisiere mit %1$s, bitte warten.</string>
     <string name="sync_settings_time">Das scheint etwas zu dauern, versuche es vielleicht später nochmal.</string>
+    <string name="sync_connection_refused">Das Zielgerät hat die Verbindung abgelehnt.</string>
     <string name="github_repository">GitHub Repository</string>
     <string name="developed_by_datlag">Entwickelt von DatLag</string>
     <string name="login">Einloggen</string>

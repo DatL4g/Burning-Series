@@ -43,6 +43,7 @@ import ru.solrudev.ackpine.session.await
 import ru.solrudev.ackpine.session.parameters.Confirmation
 import ru.solrudev.ackpine.session.progress
 import java.io.File
+import kotlin.math.max
 
 data object DownloadManager {
 
@@ -86,7 +87,7 @@ data object DownloadManager {
                 _progress.update {
                     Progress(
                         reached = bytesSentTotal,
-                        length = contentLength
+                        length = max(bytesSentTotal, contentLength)
                     )
                 }
             }
