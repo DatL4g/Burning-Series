@@ -9,9 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import dev.datlag.burningseries.other.StateSaver
 import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
 import dev.datlag.burningseries.ui.navigation.screen.home.component.CompactScreen
 import dev.datlag.burningseries.ui.navigation.screen.home.component.HomeSearchBar
+import dev.datlag.burningseries.ui.navigation.screen.home.component.TvScreen
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.rememberIsTv
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
@@ -21,6 +25,7 @@ fun HomeScreen(component: HomeComponent) {
         val dialogState by component.dialog.subscribeAsState()
         val release by component.release.collectAsStateWithLifecycle(null)
         val displayRelease by component.displayRelease.collectAsStateWithLifecycle()
+        val defaultView by StateSaver.defaultHome.collectAsStateWithLifecycle()
 
         LaunchedEffect(release, displayRelease) {
             if (displayRelease) {
@@ -30,18 +35,22 @@ fun HomeScreen(component: HomeComponent) {
 
         dialogState.child?.instance?.render()
 
-        Scaffold(
-            topBar = {
-                HomeSearchBar(component)
-            },
-        ) { padding ->
-            val state by component.home.collectAsStateWithLifecycle()
+        if (!defaultView && Platform.rememberIsTv()) {
+            TvScreen(component)
+        } else {
+            Scaffold(
+                topBar = {
+                    HomeSearchBar(component)
+                },
+            ) { padding ->
+                val state by component.home.collectAsStateWithLifecycle()
 
-            CompactScreen(
-                state = state,
-                padding = padding,
-                component = component
-            )
+                CompactScreen(
+                    state = state,
+                    padding = padding,
+                    component = component
+                )
+            }
         }
     }
 }

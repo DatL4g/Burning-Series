@@ -44,6 +44,7 @@ import dev.datlag.burningseries.common.icon
 import dev.datlag.burningseries.common.rememberIsTv
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.cast
+import dev.datlag.burningseries.other.K2Kast
 import dev.datlag.kast.ConnectionState
 import dev.datlag.kast.DeviceType
 import dev.datlag.kast.Kast
@@ -148,6 +149,7 @@ fun TopControls(
                                         Kast.unselect(UnselectReason.disconnected)
                                         Kast.Android.passiveDiscovery()
                                     } else {
+                                        K2Kast.disconnect()
                                         Kast.select(device)
                                     }
                                 }

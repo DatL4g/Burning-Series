@@ -32,6 +32,8 @@ import dev.datlag.burningseries.ui.theme.dynamicDark
 import dev.datlag.burningseries.ui.theme.dynamicLight
 import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.platform.CombinedPlatformMaterialTheme
+import dev.datlag.tooling.compose.platform.PlatformSurface
+import dev.datlag.tooling.compose.platform.colorScheme
 import dev.datlag.tooling.compose.platform.rememberIsTv
 import dev.datlag.tooling.compose.toTypography
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,10 +59,10 @@ internal fun App(
             colorScheme = if (systemDarkTheme) Colors.dynamicDark() else Colors.dynamicLight(),
             typography = ManropeFontFamily().toTypography()
         ) {
-            Surface(
+            PlatformSurface(
                 modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background,
-                contentColor = MaterialTheme.colorScheme.onBackground
+                containerColor = Platform.colorScheme().background,
+                contentColor = Platform.colorScheme().onBackground
             ) {
                 content()
             }

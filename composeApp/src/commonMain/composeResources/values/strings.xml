@@ -74,4 +74,9 @@
     <string name="pip_unsupported">Picture in Picture is not available in this screen.</string>
     <string name="open_source_licenses">Open-Source Licenses</string>
     <string name="open_source_licenses_text">This is a list of (all) libraries used in this project and it's licenses</string>
+    <string name="k2kast_loading">Loading Stream, please wait</string>
+    <string name="k2kast_connection_code">Connection Code</string>
+    <string name="k2kast_experimental">This feature is experimental and may not work as expected, please use Chromecasting if possible.</string>
+    <string name="k2kast_support">Please note that some devices do not support this feature.</string>
+    <string name="k2kast_default_home">Default View</string>
 </resources>

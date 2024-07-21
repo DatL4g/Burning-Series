@@ -5,6 +5,9 @@ import dev.datlag.skeo.DirectLink
 import kotlinx.collections.immutable.ImmutableCollection
 
 sealed interface EpisodeState {
+    val isTvLoading: Boolean
+        get() = this is Loading || this is SuccessHoster || this is SuccessStream
+
     data object None : EpisodeState
 
     sealed interface EpisodeHolder : EpisodeState {

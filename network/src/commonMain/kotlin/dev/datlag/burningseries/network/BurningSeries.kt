@@ -25,7 +25,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
-internal data object BurningSeries {
+data object BurningSeries {
 
     private suspend fun document(client: HttpClient, url: String): Document? = suspendCatching {
         return@suspendCatching suspendCatching {
@@ -140,7 +140,7 @@ internal data object BurningSeries {
         }?.flatten()?.toImmutableSet() ?: persistentSetOf()
     }
 
-    internal suspend fun series(client: HttpClient, href: String): Series? {
+    suspend fun series(client: HttpClient, href: String): Series? {
         val doc = document(client, BSUtil.fixSeriesHref(href)) ?: return null
 
         val titleElement = doc.firstClass("serie")?.firstTag("h2") ?: return null

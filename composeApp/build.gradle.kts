@@ -132,7 +132,6 @@ kotlin {
             implementation(project(":firebase"))
             implementation(project(":database"))
             implementation(project(":github"))
-            // implementation(project(":k2k"))
         }
 
         val androidMain by getting {

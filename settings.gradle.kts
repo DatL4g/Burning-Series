@@ -6,7 +6,6 @@ include(":network")
 include(":firebase")
 include(":database")
 include(":github")
-include(":k2k")
 
 pluginManagement {
     repositories {

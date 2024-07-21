@@ -74,4 +74,9 @@
     <string name="pip_unsupported">Bild in Bild ist hier nicht verfügbar.</string>
     <string name="open_source_licenses">Open-Source Lizenzen</string>
     <string name="open_source_licenses_text">Das ist eine Liste von (allen) Bibliotheken, die in diesem Projekt verwendet werden und deren Lizenzen</string>
+    <string name="k2kast_loading">Stream wird geladen, bitte warten</string>
+    <string name="k2kast_connection_code">Verbindungscode</string>
+    <string name="k2kast_experimental">Diese Funktion ist experimentell und funktioniert möglicherweise nicht wie erwartet, bitte verwende Chromecasting wenn verfügbar.</string>
+    <string name="k2kast_support">Beachte dass einige Geräte diese Funktion nicht unterstützen.</string>
+    <string name="k2kast_default_home">Normale Ansicht</string>
 </resources>

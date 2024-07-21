@@ -1,6 +1,7 @@
 package dev.datlag.burningseries.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.stack.Children
@@ -8,18 +9,30 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.predictiveBackAnimation
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.active
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.router.stack.replaceCurrent
+import com.arkivanov.essenty.lifecycle.doOnDestroy
+import dev.datlag.burningseries.model.BSUtil
 import dev.datlag.burningseries.model.SeriesData
+import dev.datlag.burningseries.network.BurningSeries
+import dev.datlag.burningseries.network.common.dispatchIgnoreCollect
+import dev.datlag.burningseries.network.state.EpisodeAction
+import dev.datlag.burningseries.other.K2Kast
 import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.ui.navigation.screen.activate.ActivateScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.video.VideoScreenComponent
 import dev.datlag.burningseries.ui.navigation.screen.welcome.WelcomeScreenComponent
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.rememberIsTv
+import dev.datlag.tooling.decompose.ioScope
+import io.github.aakira.napier.Napier
+import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.firstOrNull
@@ -84,6 +97,9 @@ class RootComponent(
                 syncId = rootConfig.syncId,
                 onMedium = { data, lang ->
                     navigation.bringToFront(RootConfig.Medium(data, lang))
+                },
+                onWatch = { series, episode, streams ->
+                    navigation.bringToFront(RootConfig.Video(series, episode, streams.toImmutableSet()))
                 }
             )
             is RootConfig.Medium -> MediumScreenComponent(
@@ -130,10 +146,26 @@ class RootComponent(
 
     override val handlesPIP: Boolean = true
 
+    private val deviceName by instance<String>("DEVICE_NAME")
+
+    init {
+        K2Kast.initialize(ioScope())
+
+        doOnDestroy {
+            K2Kast.close()
+        }
+    }
+
     @OptIn(ExperimentalDecomposeApi::class)
     @Composable
     override fun render() {
         onRender {
+            if (Platform.rememberIsTv()) {
+                LaunchedEffect(Unit) {
+                    showK2Kast()
+                }
+            }
+
             Children(
                 stack = stack,
                 animation = predictiveBackAnimation(
@@ -155,5 +187,15 @@ class RootComponent(
 
     fun onSeries(href: String) {
         navigation.bringToFront(RootConfig.Medium(SeriesData.fromHref(href), null))
+    }
+
+    private fun showK2Kast() {
+        K2Kast.show(name = deviceName)
+
+        K2Kast.receive { bytes ->
+            val episodeHref = BSUtil.matchingUrl(bytes.decodeToString(), null)?.ifBlank { null }
+
+            (stack.active.instance as? K2KastComponent)?.k2kastLoad(episodeHref)
+        }
     }
 }

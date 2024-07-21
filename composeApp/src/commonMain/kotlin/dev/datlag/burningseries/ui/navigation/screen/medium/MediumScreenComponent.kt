@@ -36,6 +36,7 @@ import dev.datlag.burningseries.network.common.dispatchIgnoreCollect
 import dev.datlag.burningseries.network.state.EpisodeAction
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.burningseries.network.state.SeriesState
+import dev.datlag.burningseries.other.K2Kast
 import dev.datlag.burningseries.other.UserHelper
 import dev.datlag.burningseries.settings.model.Language
 import dev.datlag.burningseries.ui.navigation.DialogComponent
@@ -43,6 +44,7 @@ import dev.datlag.burningseries.ui.navigation.screen.medium.dialog.activate.Acti
 import dev.datlag.burningseries.ui.navigation.screen.medium.dialog.sponsor.SponsorDialogComponent
 import dev.datlag.skeo.DirectLink
 import dev.datlag.tooling.compose.ioDispatcher
+import dev.datlag.tooling.compose.launchIO
 import dev.datlag.tooling.compose.withIOContext
 import dev.datlag.tooling.compose.withMainContext
 import dev.datlag.tooling.decompose.ioScope
@@ -247,7 +249,12 @@ class MediumScreenComponent(
 
     override fun episode(episode: Series.Episode) {
         launchIO {
-            episodeStateMachine.dispatchIgnoreCollect(EpisodeAction.Load(episode))
+            val device = K2Kast.connectedDevice
+            if (device != null) {
+                K2Kast.watch(episode, device)
+            } else {
+                episodeStateMachine.dispatchIgnoreCollect(EpisodeAction.Load(episode))
+            }
         }
     }
 
@@ -258,6 +265,7 @@ class MediumScreenComponent(
     ) {
         launchIO {
             episodeStateMachine.dispatchIgnoreCollect(EpisodeAction.Clear)
+
             withMainContext {
                 onWatch(series, episode, streams)
             }
