@@ -44,8 +44,12 @@ import dev.datlag.burningseries.common.decode
 import dev.datlag.burningseries.common.toDuration
 import dev.datlag.burningseries.database.CombinedEpisode
 import dev.datlag.burningseries.model.Series
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.TopStartCornerShape
 import dev.datlag.tooling.compose.onClick
+import dev.datlag.tooling.compose.platform.colorScheme
+import dev.datlag.tooling.compose.platform.shapes
+import dev.datlag.tooling.compose.platform.typography
 import kotlin.math.roundToInt
 
 @Composable
@@ -62,7 +66,7 @@ internal fun EpisodeItem(
 
     ElevatedCard(
         modifier = modifier
-            .clip(MaterialTheme.shapes.medium)
+            .clip(Platform.shapes().medium)
             .onClick(
                 enabled = !isLoading && item.hasHoster,
                 onClick = {
@@ -95,7 +99,7 @@ internal fun EpisodeItem(
                 modifier = Modifier
                     .height(84.dp)
                     .aspectRatio(1.75F, true)
-                    .clip(MaterialTheme.shapes.medium),
+                    .clip(Platform.shapes().medium),
                 contentAlignment = Alignment.Center
             ) {
                 val background = if (LocalDarkMode.current) {
@@ -125,13 +129,13 @@ internal fun EpisodeItem(
                     Icon(
                         imageVector = Icons.Rounded.CheckCircle,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = Platform.colorScheme().primary
                     )
                 } else if (item.isWatching) {
                     Icon(
                         imageVector = Icons.Rounded.PauseCircle,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = Platform.colorScheme().primary
                     )
                 } else {
                     Icon(
@@ -144,7 +148,7 @@ internal fun EpisodeItem(
                         modifier = Modifier
                             .clip(
                                 TopStartCornerShape(
-                                    baseShape = MaterialTheme.shapes.medium,
+                                    baseShape = Platform.shapes().medium,
                                     otherCorner = 0.dp
                                 )
                             ).background(Color.White)
@@ -188,7 +192,7 @@ internal fun EpisodeItem(
                         text = "${item.progress.toDuration()} - ${item.length.toDuration()}",
                         maxLines = 1,
                         overflow = TextOverflow.Clip,
-                        style = MaterialTheme.typography.labelSmall
+                        style = Platform.typography().labelSmall
                     )
                 }
             }

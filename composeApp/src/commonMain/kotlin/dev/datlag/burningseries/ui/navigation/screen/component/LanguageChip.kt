@@ -18,18 +18,20 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.common.languageByCode
 import dev.datlag.burningseries.model.Home
 import dev.datlag.burningseries.other.CountryImage
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.platform.PlatformClickableChipBorder
 import dev.datlag.tooling.compose.platform.PlatformClickableChipColors
 import dev.datlag.tooling.compose.platform.PlatformSuggestionChip
 import dev.datlag.tooling.compose.platform.PlatformText
+import dev.datlag.tooling.compose.platform.colorScheme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun LanguageChip(
     flag: Home.Episode.Flag?,
     modifier: Modifier = Modifier,
-    labelColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-    containerColor: Color = MaterialTheme.colorScheme.primaryContainer
+    labelColor: Color = Platform.colorScheme().onPrimaryContainer,
+    containerColor: Color = Platform.colorScheme().primaryContainer
 ) {
     if (flag != null) {
         PlatformSuggestionChip(

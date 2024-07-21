@@ -23,6 +23,7 @@ import dev.datlag.burningseries.composeapp.generated.resources.open_domains_text
 import dev.datlag.burningseries.composeapp.generated.resources.open_domains_title
 import dev.datlag.burningseries.other.DomainVerifier
 import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.typography
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.stringResource
 
@@ -37,7 +38,7 @@ actual fun LazyListScope.LinkSupportSection(
             Text(
                 modifier = Modifier.padding(headerPadding),
                 text = stringResource(Res.string.open_domains_title),
-                style = MaterialTheme.typography.headlineMedium,
+                style = Platform.typography().headlineMedium,
                 fontWeight = FontWeight.Bold
             )
         }

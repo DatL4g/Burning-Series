@@ -25,6 +25,8 @@ import dev.datlag.tooling.compose.onClick
 import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.github_repository
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.shapes
 import dev.icerock.moko.resources.compose.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -37,7 +39,7 @@ fun GitHubRepoSection(
     Row(
         modifier = modifier
             .defaultMinSize(minHeight = ButtonDefaults.MinHeight)
-            .clip(MaterialTheme.shapes.small)
+            .clip(Platform.shapes().small)
             .onClick {
                 uriHandler.openUri(Constants.GITHUB_REPO)
             },

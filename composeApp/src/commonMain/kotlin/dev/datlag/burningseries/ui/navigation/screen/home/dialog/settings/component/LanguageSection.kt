@@ -45,6 +45,9 @@ import dev.datlag.burningseries.composeapp.generated.resources.select_default_la
 import dev.datlag.burningseries.composeapp.generated.resources.select_language
 import dev.datlag.burningseries.other.CountryImage
 import dev.datlag.burningseries.settings.model.Language
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.colorScheme
+import dev.datlag.tooling.compose.platform.typography
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -74,9 +77,9 @@ fun LanguageSection(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             val textColor = if (selected) {
-                                MaterialTheme.colorScheme.primary
+                                Platform.colorScheme().primary
                             } else {
-                                MaterialTheme.colorScheme.onSurface
+                                Platform.colorScheme().onSurface
                             }
 
                             Box(
@@ -100,7 +103,7 @@ fun LanguageSection(
                                     .wrapContentHeight(),
                                 text = stringResource(lang.title),
                                 maxLines = 1,
-                                style = MaterialTheme.typography.labelLarge,
+                                style = Platform.typography().labelLarge,
                                 color = textColor
                             )
                         }

@@ -52,6 +52,7 @@ import dev.datlag.burningseries.other.Constants
 import dev.datlag.burningseries.other.DownloadManager
 import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.launchIO
+import dev.datlag.tooling.compose.platform.colorScheme
 import dev.datlag.tooling.compose.withMainContext
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import dev.icerock.moko.resources.compose.painterResource
@@ -134,7 +135,7 @@ actual fun ReleaseDialog(component: ReleaseComponent) {
                     contentPadding = PaddingValues(0.dp),
                     colors = ButtonDefaults.textButtonColors(
                         disabledContainerColor = Color.Transparent,
-                        disabledContentColor = MaterialTheme.colorScheme.secondary
+                        disabledContentColor = Platform.colorScheme().secondary
                     )
                 ) {
                     Row(

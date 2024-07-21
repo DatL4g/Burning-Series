@@ -36,6 +36,8 @@ import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.composeapp.generated.resources.app_name
 import dev.datlag.burningseries.github.model.UserAndRelease
 import dev.datlag.burningseries.other.Constants
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.typography
 
 @Composable
 fun InfoSection(
@@ -101,7 +103,7 @@ fun InfoSection(
         }
         Text(
             text = user?.name ?: stringResource(Res.string.app_name),
-            style = MaterialTheme.typography.headlineMedium,
+            style = Platform.typography().headlineMedium,
             fontWeight = FontWeight.Bold
         )
     }

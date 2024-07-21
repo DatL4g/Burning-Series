@@ -74,7 +74,7 @@ data object CountryImage {
         description: String? = null,
         iconSize: Dp? = null,
         showBorder: Boolean = false,
-        shape: Shape = MaterialTheme.shapes.extraSmall
+        shape: Shape = Platform.shapes().extraSmall
     ) {
         code?.let {
             val flags = getByFlag(code)
@@ -82,6 +82,7 @@ data object CountryImage {
             if (flags.isNotEmpty()) {
                 showFlags(
                     collection = flags,
+                    modifier = modifier,
                     description = description,
                     iconSize = iconSize,
                     showBorder = showBorder,

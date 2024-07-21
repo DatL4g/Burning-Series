@@ -18,11 +18,13 @@ import dev.datlag.burningseries.common.plainOnColor
 import dev.datlag.burningseries.model.SeriesData
 import dev.datlag.burningseries.model.coroutines.Executor
 import dev.datlag.burningseries.settings.Settings
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.async.scopeCatching
 import dev.datlag.tooling.async.suspendCatching
 import dev.datlag.tooling.compose.ioDispatcher
 import dev.datlag.tooling.compose.launchDefault
 import dev.datlag.tooling.compose.launchIO
+import dev.datlag.tooling.compose.platform.colorScheme
 import dev.datlag.tooling.compose.toTypography
 import dev.datlag.tooling.compose.withIOContext
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
@@ -121,8 +123,8 @@ data object SchemeTheme {
         }
         val state = rememberSchemeThemeDominantColorState(
             key = key,
-            defaultColor = defaultColor ?: MaterialTheme.colorScheme.primary,
-            defaultOnColor = onColor ?: MaterialTheme.colorScheme.onPrimary,
+            defaultColor = defaultColor ?: Platform.colorScheme().primary,
+            defaultOnColor = onColor ?: Platform.colorScheme().onPrimary,
         )
         val scope = rememberCoroutineScope()
         return remember(state, scope) {
@@ -185,8 +187,8 @@ data object SchemeTheme {
 @Composable
 fun rememberSchemeThemeDominantColorState(
     key: Any?,
-    defaultColor: Color = MaterialTheme.colorScheme.primary,
-    defaultOnColor: Color = MaterialTheme.colorScheme.onPrimary,
+    defaultColor: Color = Platform.colorScheme().primary,
+    defaultOnColor: Color = Platform.colorScheme().onPrimary,
     isSwatchValid: (Palette.Swatch) -> Boolean = { true },
     builder: Palette.Builder.() -> Unit = {},
 ): DominantColorState<Painter>? {
@@ -226,8 +228,8 @@ fun rememberSchemeThemeDominantColorState(
 @Composable
 fun rememberSchemeThemeDominantColorState(
     key: Any?,
-    defaultColor: Color = MaterialTheme.colorScheme.primary,
-    defaultOnColor: Color = MaterialTheme.colorScheme.onPrimary,
+    defaultColor: Color = Platform.colorScheme().primary,
+    defaultOnColor: Color = Platform.colorScheme().onPrimary,
     clearFilter: Boolean = false,
     applyMinContrast: Boolean = false,
     minContrastBackgroundColor: Color = Color.Transparent
@@ -275,8 +277,8 @@ fun SchemeTheme(
     }
     val state = rememberSchemeThemeDominantColorState(
         key = usingKey,
-        defaultColor = defaultColor ?: MaterialTheme.colorScheme.primary,
-        defaultOnColor = onColor ?: MaterialTheme.colorScheme.onPrimary,
+        defaultColor = defaultColor ?: Platform.colorScheme().primary,
+        defaultOnColor = onColor ?: Platform.colorScheme().onPrimary,
     )
     val updater = SchemeTheme.create(usingKey)
     val appSettings by LocalDI.current.instance<Settings.PlatformAppSettings>()

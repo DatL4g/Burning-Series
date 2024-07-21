@@ -39,6 +39,9 @@ import dev.datlag.burningseries.ui.custom.AndroidFixWindowSize
 import dev.datlag.burningseries.ui.navigation.screen.welcome.component.CompactScreen
 import dev.datlag.burningseries.ui.navigation.screen.welcome.component.LanguageSelection
 import dev.datlag.burningseries.ui.navigation.screen.welcome.component.WideScreen
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.colorScheme
+import dev.datlag.tooling.compose.platform.typography
 import dev.icerock.moko.resources.compose.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -92,7 +95,7 @@ private fun LazyListScope.content(
                 append(' ')
                 withStyle(
                     SpanStyle(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = Platform.colorScheme().primary,
                         fontWeight = FontWeight.Bold
                     )
                 ) {
@@ -100,7 +103,7 @@ private fun LazyListScope.content(
                 }
             },
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium
+            style = Platform.typography().headlineMedium
         )
     }
     item {

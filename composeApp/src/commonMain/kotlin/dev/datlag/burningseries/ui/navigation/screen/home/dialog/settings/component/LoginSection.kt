@@ -29,6 +29,8 @@ import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.login
 import dev.datlag.burningseries.composeapp.generated.resources.logout
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.shapes
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -41,7 +43,7 @@ fun LoginSection(
     Row(
         modifier = modifier
             .defaultMinSize(minHeight = ButtonDefaults.MinHeight)
-            .clip(MaterialTheme.shapes.small)
+            .clip(Platform.shapes().small)
             .onClick {
                 if (isLoggedIn) {
                     onLogout()

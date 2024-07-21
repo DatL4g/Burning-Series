@@ -29,7 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPlacement
 import dev.datlag.burningseries.LocalWindow
 import dev.datlag.burningseries.common.toDuration
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.async.scopeCatching
+import dev.datlag.tooling.compose.platform.colorScheme
 
 @Composable
 fun VideoControls(mediaPlayer: MediaPlayer) {
@@ -98,8 +100,8 @@ fun VideoControls(mediaPlayer: MediaPlayer) {
             },
             valueRange = 0F..length.toDouble().toFloat(),
             colors = SliderDefaults.colors(
-                thumbColor = MaterialTheme.colorScheme.primary,
-                activeTrackColor = MaterialTheme.colorScheme.primary,
+                thumbColor = Platform.colorScheme().primary,
+                activeTrackColor = Platform.colorScheme().primary,
                 inactiveTrackColor = Color.White.copy(alpha = 0.2F)
             )
         )

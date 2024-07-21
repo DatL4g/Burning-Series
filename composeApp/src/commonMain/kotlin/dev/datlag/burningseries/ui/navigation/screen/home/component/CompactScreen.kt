@@ -48,7 +48,9 @@ import dev.datlag.burningseries.ui.custom.HorizontalScrollbar
 import dev.datlag.burningseries.ui.custom.rememberScrollbarAdapter
 import dev.datlag.burningseries.ui.custom.localScrollbarStyle
 import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.colorScheme
 import dev.datlag.tooling.compose.platform.rememberIsTv
+import dev.datlag.tooling.compose.platform.typography
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -77,7 +79,7 @@ internal fun CompactScreen(
                 Text(
                     modifier = Modifier.padding(headerPadding),
                     text = stringResource(Res.string.favorites),
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = Platform.typography().headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -113,8 +115,8 @@ internal fun CompactScreen(
                         adapter = rememberScrollbarAdapter(rowState),
                         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                         style = localScrollbarStyle().copy(
-                            unhoverColor = MaterialTheme.colorScheme.secondary,
-                            hoverColor = MaterialTheme.colorScheme.primary
+                            unhoverColor = Platform.colorScheme().secondary,
+                            hoverColor = Platform.colorScheme().primary
                         )
                     )
                 }
@@ -124,7 +126,7 @@ internal fun CompactScreen(
             Text(
                 modifier = Modifier.padding(headerPadding),
                 text = stringResource(Res.string.episodes),
-                style = MaterialTheme.typography.headlineMedium,
+                style = Platform.typography().headlineMedium,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -176,8 +178,8 @@ internal fun CompactScreen(
                             adapter = rememberScrollbarAdapter(rowState),
                             modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                             style = localScrollbarStyle().copy(
-                                unhoverColor = MaterialTheme.colorScheme.secondary,
-                                hoverColor = MaterialTheme.colorScheme.primary
+                                unhoverColor = Platform.colorScheme().secondary,
+                                hoverColor = Platform.colorScheme().primary
                             )
                         )
                     }
@@ -188,7 +190,7 @@ internal fun CompactScreen(
             Text(
                 modifier = Modifier.padding(headerPadding),
                 text = stringResource(Res.string.series),
-                style = MaterialTheme.typography.headlineMedium,
+                style = Platform.typography().headlineMedium,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -241,8 +243,8 @@ internal fun CompactScreen(
                             adapter = rememberScrollbarAdapter(rowState),
                             modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                             style = localScrollbarStyle().copy(
-                                unhoverColor = MaterialTheme.colorScheme.secondary,
-                                hoverColor = MaterialTheme.colorScheme.primary
+                                unhoverColor = Platform.colorScheme().secondary,
+                                hoverColor = Platform.colorScheme().primary
                             )
                         )
                     }

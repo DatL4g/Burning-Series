@@ -32,6 +32,8 @@ import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.open_source_licenses
 import dev.datlag.burningseries.composeapp.generated.resources.open_source_licenses_text
 import dev.datlag.burningseries.ui.navigation.screen.home.dialog.about.component.LibraryCard
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.typography
 import dev.datlag.tooling.compose.withIOContext
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
@@ -74,7 +76,7 @@ fun AboutDialog(component: AboutComponent) {
                 Text(
                     modifier = Modifier.fillParentMaxWidth(),
                     text = stringResource(Res.string.open_source_licenses),
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = Platform.typography().headlineMedium,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )

@@ -28,6 +28,8 @@ import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.select_default_language_text
 import dev.datlag.burningseries.other.CountryImage
 import dev.datlag.burningseries.settings.model.Language
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.typography
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,7 +72,7 @@ fun LanguageSelection(
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(Res.string.select_default_language_text),
-                        style = MaterialTheme.typography.labelSmall
+                        style = Platform.typography().labelSmall
                     )
                 },
                 leadingIcon = {

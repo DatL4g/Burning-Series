@@ -11,7 +11,9 @@ import com.materialkolor.Contrast
 import com.materialkolor.PaletteStyle
 import com.materialkolor.rememberDynamicColorScheme
 import dev.datlag.burningseries.LocalDarkMode
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.platform.CombinedPlatformMaterialTheme
+import dev.datlag.tooling.compose.platform.colorScheme
 
 @Composable
 fun DynamicMaterialTheme(
@@ -29,7 +31,7 @@ fun DynamicMaterialTheme(
             isExtendedFidelity = false
         )
     } else {
-        MaterialTheme.colorScheme
+        Platform.colorScheme()
     }
     val animatedColorScheme = if (!animate) {
         dynamicColorScheme

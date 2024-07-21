@@ -23,6 +23,8 @@ import coil3.compose.AsyncImage
 import dev.datlag.burningseries.common.display
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumComponent
 import dev.datlag.burningseries.ui.theme.SchemeTheme
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.shapes
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.persistentListOf
 
@@ -43,7 +45,7 @@ internal fun CoverSection(
             modifier = Modifier
                 .width(140.dp)
                 .height(200.dp)
-                .clip(MaterialTheme.shapes.medium),
+                .clip(Platform.shapes().medium),
             model = cover,
             contentScale = ContentScale.Crop,
             contentDescription = null,

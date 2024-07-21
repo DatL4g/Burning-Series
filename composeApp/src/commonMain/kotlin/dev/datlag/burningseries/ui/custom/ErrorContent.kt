@@ -22,6 +22,8 @@ import dev.datlag.burningseries.MokoRes
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.error_try_again
 import dev.datlag.burningseries.composeapp.generated.resources.oh_noo
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.typography
 
 @Composable
 fun ErrorContent(
@@ -49,7 +51,7 @@ fun ErrorContent(
             ) {
                 Text(
                     text = stringResource(title),
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = Platform.typography().headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(text = stringResource(text))
@@ -68,7 +70,7 @@ fun ErrorContent(
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 text = stringResource(title),
-                style = MaterialTheme.typography.headlineMedium,
+                style = Platform.typography().headlineMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )

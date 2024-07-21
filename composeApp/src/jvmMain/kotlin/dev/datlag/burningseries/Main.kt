@@ -39,8 +39,10 @@ import dev.datlag.burningseries.settings.Settings
 import dev.datlag.burningseries.ui.navigation.RootComponent
 import dev.datlag.kast.Kast
 import dev.datlag.sekret.NativeLoader
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.Tooling
 import dev.datlag.tooling.applicationTitle
+import dev.datlag.tooling.compose.platform.colorScheme
 import dev.datlag.tooling.decompose.lifecycle.LocalLifecycleOwner
 import dev.datlag.tooling.scopeCatching
 import dev.datlag.tooling.systemProperty
@@ -161,8 +163,8 @@ private fun runWindow(di: DI) {
                             PredictiveBackGestureIcon(
                                 imageVector = Icons.Rounded.ArrowBackIosNew,
                                 progress = progress,
-                                iconTintColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+                                iconTintColor = Platform.colorScheme().onSecondaryContainer,
+                                backgroundColor = Platform.colorScheme().secondaryContainer
                             )
                         },
                         modifier = Modifier.fillMaxSize()

@@ -11,6 +11,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mikepenz.aboutlibraries.entity.Library
 import dev.datlag.burningseries.other.Constants
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.colorScheme
+import dev.datlag.tooling.compose.platform.typography
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -49,13 +52,13 @@ fun LibraryCard(
                 library.artifactVersion?.let {
                     Text(
                         text = it,
-                        style = MaterialTheme.typography.bodySmall
+                        style = Platform.typography().bodySmall
                     )
                 }
             }
             Text(
                 text = library.organization?.name?.ifBlank { null } ?: library.developers.map { it.name }.joinToString(),
-                style = MaterialTheme.typography.bodySmall,
+                style = Platform.typography().bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 softWrap = true
@@ -79,8 +82,8 @@ fun LibraryCard(
                             Text(text = lic.name)
                         },
                         colors = SuggestionChipDefaults.suggestionChipColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary,
-                            labelColor = MaterialTheme.colorScheme.onTertiary
+                            containerColor = Platform.colorScheme().tertiary,
+                            labelColor = Platform.colorScheme().onTertiary
                         ),
                         border = null
                     )

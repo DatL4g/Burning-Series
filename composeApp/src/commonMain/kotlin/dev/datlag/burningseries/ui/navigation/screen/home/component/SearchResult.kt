@@ -19,7 +19,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.model.SearchItem
 import dev.datlag.burningseries.ui.navigation.screen.home.HomeComponent
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.onClick
+import dev.datlag.tooling.compose.platform.colorScheme
+import dev.datlag.tooling.compose.platform.shapes
+import dev.datlag.tooling.compose.platform.typography
 import kotlinx.collections.immutable.ImmutableCollection
 
 @Composable
@@ -32,7 +36,7 @@ internal fun SearchResult(
     Row(
         modifier = modifier
             .defaultMinSize(minHeight = 48.dp)
-            .clip(MaterialTheme.shapes.extraSmall)
+            .clip(Platform.shapes().extraSmall)
             .onClick {
                 onClick(item)
             }.padding(8.dp),
@@ -46,7 +50,7 @@ internal fun SearchResult(
             Text(
                 text = item.mainTitle,
                 fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.titleMedium,
+                style = Platform.typography().titleMedium,
                 maxLines = if (item.hasSubtitle) 1 else 2
             )
             item.subTitle?.let { sub ->
@@ -59,14 +63,14 @@ internal fun SearchResult(
         item.genre?.let { genre ->
             val info = if (filterGenres.contains(item.genre ?: "")) {
                 HomeComponent.GenreFilterInfo(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    labelColor = MaterialTheme.colorScheme.onPrimary,
+                    containerColor = Platform.colorScheme().primary,
+                    labelColor = Platform.colorScheme().onPrimary,
                     border = null
                 )
             } else if (item.isAnime) {
                 HomeComponent.GenreFilterInfo(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    labelColor = MaterialTheme.colorScheme.onSecondary,
+                    containerColor = Platform.colorScheme().secondary,
+                    labelColor = Platform.colorScheme().onSecondary,
                     border = null
                 )
             } else {

@@ -18,6 +18,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.other.AniFlow
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.shapes
+import dev.datlag.tooling.compose.platform.typography
 import dev.icerock.moko.resources.compose.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -39,7 +42,7 @@ fun AniFlowCard(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Image(
-                modifier = Modifier.size(48.dp).clip(MaterialTheme.shapes.medium),
+                modifier = Modifier.size(48.dp).clip(Platform.shapes().medium),
                 painter = painterResource(AniFlow.icon),
                 contentDescription = stringResource(AniFlow.title)
             )
@@ -49,7 +52,7 @@ fun AniFlowCard(
                 Text(
                     text = stringResource(AniFlow.title),
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleLarge
+                    style = Platform.typography().titleLarge
                 )
                 Text(text = stringResource(AniFlow.subTitle))
             }

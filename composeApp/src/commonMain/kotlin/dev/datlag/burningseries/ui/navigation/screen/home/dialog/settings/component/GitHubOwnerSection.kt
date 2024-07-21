@@ -18,7 +18,9 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.developed_by_datlag
 import dev.datlag.burningseries.other.Constants
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.onClick
+import dev.datlag.tooling.compose.platform.shapes
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -30,7 +32,7 @@ fun GitHubOwnerSection(
     Row(
         modifier = modifier
             .defaultMinSize(minHeight = ButtonDefaults.MinHeight)
-            .clip(MaterialTheme.shapes.medium)
+            .clip(Platform.shapes().medium)
             .onClick {
                 uriHandler.openUri(Constants.GITHUB_OWNER)
             },

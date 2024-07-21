@@ -39,9 +39,12 @@ import dev.datlag.burningseries.composeapp.generated.resources.select_language
 import dev.datlag.burningseries.composeapp.generated.resources.select_season
 import dev.datlag.burningseries.other.CountryImage
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumComponent
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.platform.PlatformButton
 import dev.datlag.tooling.compose.platform.PlatformButtonScale
 import dev.datlag.tooling.compose.platform.PlatformText
+import dev.datlag.tooling.compose.platform.colorScheme
+import dev.datlag.tooling.compose.platform.typography
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import dev.icerock.moko.resources.compose.painterResource
 import kotlinx.collections.immutable.persistentListOf
@@ -110,9 +113,9 @@ internal fun SeasonLanguageSection(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 val textColor = if (selected) {
-                                    MaterialTheme.colorScheme.primary
+                                    Platform.colorScheme().primary
                                 } else {
-                                    MaterialTheme.colorScheme.onSurface
+                                    Platform.colorScheme().onSurface
                                 }
 
                                 Box(
@@ -136,7 +139,7 @@ internal fun SeasonLanguageSection(
                                         .wrapContentHeight(),
                                     text = lang.title,
                                     maxLines = 1,
-                                    style = MaterialTheme.typography.labelLarge,
+                                    style = Platform.typography().labelLarge,
                                     color = textColor
                                 )
                             }

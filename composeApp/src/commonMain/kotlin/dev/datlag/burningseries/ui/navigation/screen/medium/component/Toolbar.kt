@@ -81,6 +81,9 @@ import dev.datlag.tooling.compose.platform.PlatformIconButton
 import dev.datlag.tooling.compose.platform.PlatformText
 import dev.datlag.tooling.compose.platform.ProvideNonTvContentColor
 import dev.datlag.tooling.compose.platform.ProvideNonTvTextStyle
+import dev.datlag.tooling.compose.platform.colorScheme
+import dev.datlag.tooling.compose.platform.shapes
+import dev.datlag.tooling.compose.platform.typography
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import dev.datlag.tooling.safeSubString
 import dev.datlag.tooling.setFrom
@@ -129,7 +132,7 @@ internal fun Toolbar(
                                 softWrap = true,
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
-                                style = MaterialTheme.typography.labelMedium
+                                style = Platform.typography().labelMedium
                             )
                         }
                     }
@@ -205,7 +208,7 @@ internal fun Toolbar(
                                         textAlign = TextAlign.Center
                                     )
                                 },
-                                shape = MaterialTheme.shapes.medium,
+                                shape = Platform.shapes().medium,
                                 textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     keyboardType = KeyboardType.Number,
@@ -311,7 +314,7 @@ internal fun Toolbar(
         modifier = Modifier.hazeChild(
             state = LocalHaze.current,
             style = HazeMaterials.thin(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = Platform.colorScheme().surface
             )
         ).fillMaxWidth()
     )

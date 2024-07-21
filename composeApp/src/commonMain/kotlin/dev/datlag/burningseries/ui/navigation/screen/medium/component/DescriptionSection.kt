@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.description
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumComponent
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.typography
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.max
@@ -55,7 +57,7 @@ internal fun DescriptionSection(
                 Text(
                     modifier = Modifier.weight(1F),
                     text = stringResource(Res.string.description),
-                    style = MaterialTheme.typography.headlineSmall
+                    style = Platform.typography().headlineSmall
                 )
             }
 

@@ -50,6 +50,7 @@ import dev.datlag.kast.DeviceType
 import dev.datlag.kast.Kast
 import dev.datlag.kast.UnselectReason
 import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.typography
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 
@@ -104,7 +105,7 @@ fun TopControls(
                                 softWrap = true,
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
-                                style = MaterialTheme.typography.labelMedium
+                                style = Platform.typography().labelMedium
                             )
                         }
                     }

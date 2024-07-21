@@ -32,7 +32,9 @@ import dev.datlag.burningseries.composeapp.generated.resources.patreon
 import dev.datlag.burningseries.composeapp.generated.resources.polar
 import dev.datlag.burningseries.composeapp.generated.resources.sponsor
 import dev.datlag.burningseries.other.Constants
+import dev.datlag.tooling.Platform
 import dev.datlag.tooling.compose.onClick
+import dev.datlag.tooling.compose.platform.shapes
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,7 +82,7 @@ fun SponsorSection(
     Row(
         modifier = modifier
             .defaultMinSize(minHeight = ButtonDefaults.MinHeight)
-            .clip(MaterialTheme.shapes.medium)
+            .clip(Platform.shapes().medium)
             .onClick {
                 sponsorDialog.show()
             },
