@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.apollo)
     alias(libs.plugins.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.ktorfit)
 }
 
 val artifact = "dev.datlag.burningseries.github"
@@ -41,15 +42,6 @@ kotlin {
             implementation(project(":firebase"))
         }
     }
-}
-
-dependencies {
-    add("kspCommonMainMetadata", libs.ktorfit.ksp)
-    add("kspAndroid", libs.ktorfit.ksp)
-    add("kspJvm", libs.ktorfit.ksp)
-    add("kspIosX64", libs.ktorfit.ksp)
-    add("kspIosArm64", libs.ktorfit.ksp)
-    add("kspIosSimulatorArm64", libs.ktorfit.ksp)
 }
 
 android {

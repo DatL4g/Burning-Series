@@ -17,6 +17,7 @@ import dev.datlag.burningseries.BuildKonfig
 import dev.datlag.burningseries.Sekret
 import dev.datlag.burningseries.common.nullableFirebaseInstance
 import dev.datlag.burningseries.github.GitHub
+import dev.datlag.burningseries.github.createGitHub
 import dev.datlag.burningseries.network.EpisodeStateMachine
 import dev.datlag.burningseries.network.HomeStateMachine
 import dev.datlag.burningseries.network.SaveStateMachine
@@ -113,7 +114,7 @@ data object NetworkModule {
                 httpClient(instance<HttpClient>())
                 baseUrl("https://api.github.com/")
             }
-            ktorfit.create<GitHub>()
+            ktorfit.createGitHub()
         }
         bindSingleton<OpenIdConnectClient> {
             OpenIdConnectClient {

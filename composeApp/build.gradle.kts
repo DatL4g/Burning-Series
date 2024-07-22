@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.konfig)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.ktorfit)
     alias(libs.plugins.moko.resources)
     alias(libs.plugins.osdetector)
