@@ -31,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.util.UnstableApi
 import dev.datlag.burningseries.common.toDuration
+import dev.datlag.tooling.compose.platform.PlatformText
+import dev.datlag.tooling.compose.platform.ProvideNonTvContentColor
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.StateFlow
@@ -58,42 +60,44 @@ fun BottomControls(
             containerColor = Color.Black.copy(alpha = 0.5F),
             contentColor = Color.White
         ) {
-            val source = remember { MutableInteractionSource() }
-            val dragging by source.collectIsDraggedAsState()
-            var changingProgress by remember { mutableLongStateOf(progress) }
-            val displayProgress = remember(dragging, progress, changingProgress) {
-                if (dragging) {
-                    changingProgress
-                } else {
-                    progress
+            ProvideNonTvContentColor {
+                val source = remember { MutableInteractionSource() }
+                val dragging by source.collectIsDraggedAsState()
+                var changingProgress by remember { mutableLongStateOf(progress) }
+                val displayProgress = remember(dragging, progress, changingProgress) {
+                    if (dragging) {
+                        changingProgress
+                    } else {
+                        progress
+                    }
                 }
-            }
 
-            Text(
-                text = displayProgress.toDuration(),
-                maxLines = 1
-            )
-            Slider(
-                modifier = Modifier.weight(1F),
-                value = displayProgress.toFloat(),
-                valueRange = 0F..length.toFloat(),
-                onValueChange = {
-                    if (dragging) {
-                        changingProgress = it.toLong()
-                        playerWrapper.showControls()
-                    }
-                },
-                onValueChangeFinished = {
-                    if (dragging) {
-                        playerWrapper.seekTo(changingProgress)
-                    }
-                },
-                interactionSource = source
-            )
-            Text(
-                text = length.toDuration(),
-                maxLines = 1
-            )
+                PlatformText(
+                    text = displayProgress.toDuration(),
+                    maxLines = 1
+                )
+                Slider(
+                    modifier = Modifier.weight(1F),
+                    value = displayProgress.toFloat(),
+                    valueRange = 0F..length.toFloat(),
+                    onValueChange = {
+                        if (dragging) {
+                            changingProgress = it.toLong()
+                            playerWrapper.showControls()
+                        }
+                    },
+                    onValueChangeFinished = {
+                        if (dragging) {
+                            playerWrapper.seekTo(changingProgress)
+                        }
+                    },
+                    interactionSource = source
+                )
+                PlatformText(
+                    text = length.toDuration(),
+                    maxLines = 1
+                )
+            }
         }
     }
 }

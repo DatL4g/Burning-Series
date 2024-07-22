@@ -50,6 +50,10 @@ import dev.datlag.kast.DeviceType
 import dev.datlag.kast.Kast
 import dev.datlag.kast.UnselectReason
 import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.PlatformIcon
+import dev.datlag.tooling.compose.platform.PlatformIconButton
+import dev.datlag.tooling.compose.platform.PlatformText
+import dev.datlag.tooling.compose.platform.ProvideNonTvContentColor
 import dev.datlag.tooling.compose.platform.typography
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
@@ -79,34 +83,38 @@ fun TopControls(
             Box(modifier = Modifier.matchParentSize().background(Color.Black.copy(alpha = 0.5F)))
             TopAppBar(
                 navigationIcon = {
-                    IconButton(
-                        onClick = onBack
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.ArrowBackIosNew,
-                            contentDescription = null
-                        )
+                    ProvideNonTvContentColor {
+                        PlatformIconButton(
+                            onClick = onBack
+                        ) {
+                            PlatformIcon(
+                                imageVector = Icons.Rounded.ArrowBackIosNew,
+                                contentDescription = null
+                            )
+                        }
                     }
                 },
                 title = {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
-                    ) {
-                        Text(
-                            text = mainTitle,
-                            softWrap = true,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
-                        )
-                        subTitle?.ifBlank { null }?.let { sub ->
-                            Text(
-                                text = sub,
+                    ProvideNonTvContentColor {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
+                        ) {
+                            PlatformText(
+                                text = mainTitle,
                                 softWrap = true,
                                 overflow = TextOverflow.Ellipsis,
-                                maxLines = 1,
-                                style = Platform.typography().labelMedium
+                                maxLines = 1
                             )
+                            subTitle?.ifBlank { null }?.let { sub ->
+                                PlatformText(
+                                    text = sub,
+                                    softWrap = true,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
+                                    style = Platform.typography().labelMedium
+                                )
+                            }
                         }
                     }
                 },

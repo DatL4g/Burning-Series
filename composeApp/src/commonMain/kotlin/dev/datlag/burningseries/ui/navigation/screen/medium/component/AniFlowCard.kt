@@ -19,6 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.other.AniFlow
 import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.PlatformCard
+import dev.datlag.tooling.compose.platform.PlatformText
 import dev.datlag.tooling.compose.platform.shapes
 import dev.datlag.tooling.compose.platform.typography
 import dev.icerock.moko.resources.compose.painterResource
@@ -30,7 +32,7 @@ fun AniFlowCard(
 ) {
     val uriHandler = LocalUriHandler.current
 
-    Card(
+    PlatformCard(
         modifier = modifier,
         onClick = {
             uriHandler.openUri(AniFlow.googlePlay)
@@ -49,12 +51,12 @@ fun AniFlowCard(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
+                PlatformText(
                     text = stringResource(AniFlow.title),
                     fontWeight = FontWeight.Bold,
                     style = Platform.typography().titleLarge
                 )
-                Text(text = stringResource(AniFlow.subTitle))
+                PlatformText(text = stringResource(AniFlow.subTitle))
             }
         }
     }

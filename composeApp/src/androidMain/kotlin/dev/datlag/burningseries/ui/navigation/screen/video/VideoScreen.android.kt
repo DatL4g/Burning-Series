@@ -32,9 +32,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
@@ -85,6 +84,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
 import kotlin.random.Random
 
+@ExperimentalComposeUiApi
 @OptIn(UnstableApi::class)
 @Composable
 actual fun VideoScreen(component: VideoComponent) {
@@ -179,6 +179,9 @@ actual fun VideoScreen(component: VideoComponent) {
     }
 
     Scaffold(
+        modifier = Modifier.focusable().onKeyEvent { key ->
+            playerWrapper.dispatchKey(controlsVisible, key)
+        },
         topBar = {
             TopControls(
                 isVisible = controlsVisible,
@@ -205,11 +208,7 @@ actual fun VideoScreen(component: VideoComponent) {
             AndroidView(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black)
-                    .focusable()
-                    .onKeyEvent { key ->
-                        playerWrapper.dispatchKey(controlsVisible, key)
-                    },
+                    .background(Color.Black),
                 factory = { viewContext ->
                     PlayerView(viewContext)
                 },

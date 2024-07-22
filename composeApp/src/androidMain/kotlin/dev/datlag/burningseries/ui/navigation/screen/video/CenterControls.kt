@@ -25,11 +25,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
@@ -41,9 +50,15 @@ import dev.datlag.burningseries.common.drawProgress
 import dev.datlag.burningseries.model.Series
 import dev.datlag.burningseries.network.state.EpisodeState
 import dev.datlag.skeo.DirectLink
+import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.PlatformIcon
+import dev.datlag.tooling.compose.platform.PlatformIconButton
+import dev.datlag.tooling.compose.platform.localContentColor
+import dev.datlag.tooling.compose.platform.rememberIsTv
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableCollection
 
+@ExperimentalComposeUiApi
 @OptIn(UnstableApi::class)
 @Composable
 fun CenterControls(
@@ -58,6 +73,9 @@ fun CenterControls(
     onNext: (Series.Episode, ImmutableCollection<DirectLink>) -> Unit
 ) {
     val isFinished by playerWrapper.isFinished.collectAsStateWithLifecycle()
+    val (replay, play, forward) = remember { FocusRequester.createRefs() }
+
+    var focusPlay by remember { mutableStateOf(true) }
 
     AnimatedVisibility(
         modifier = modifier,
@@ -69,31 +87,44 @@ fun CenterControls(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(
+            PlatformIconButton(
                 modifier = Modifier.background(
                     color = Color.Black.copy(alpha = 0.5F),
                     shape = CircleShape
-                ),
+                ).focusRequester(replay).focusProperties {
+                    next = play
+                },
                 onClick = onReplayClick
             ) {
-                Icon(
+                PlatformIcon(
                     imageVector = Icons.Rounded.FastRewind,
                     contentDescription = null,
-                    tint = Color.White
+                    tint = if (Platform.rememberIsTv()) {
+                        Platform.localContentColor()
+                    } else {
+                        Color.White
+                    }
                 )
             }
 
-            IconButton(
+            PlatformIconButton(
                 modifier = Modifier.background(
                     color = Color.Black.copy(alpha = 0.5F),
                     shape = CircleShape
-                ),
+                ).focusRequester(play).focusProperties {
+                    previous = replay
+                    next = forward
+                },
                 onClick = onPauseToggle
             ) {
-                Icon(
+                PlatformIcon(
                     imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                     contentDescription = null,
-                    tint = Color.White
+                    tint = if (Platform.rememberIsTv()) {
+                        Platform.localContentColor()
+                    } else {
+                        Color.White
+                    }
                 )
             }
 
@@ -112,37 +143,71 @@ fun CenterControls(
                 }
             )
             if (isFinished && nextState is EpisodeState.SuccessStream) {
-                IconButton(
+                PlatformIconButton(
                     modifier = Modifier.background(
                         color = Color.Black.copy(alpha = 0.5F),
                         shape = CircleShape
-                    ),
+                    ).focusRequester(forward).focusProperties {
+                        previous = play
+                    },
                     onClick = {
                         onNext(nextState.episode, nextState.results)
                     }
                 ) {
-                    Icon(
-                        modifier = Modifier.fillMaxSize().drawProgress(Color.White, animatedProgress).padding(8.dp),
+                    PlatformIcon(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .drawProgress(
+                                if (Platform.rememberIsTv()) {
+                                    Platform.localContentColor()
+                                } else {
+                                    Color.White
+                                },
+                                animatedProgress
+                            ).padding(8.dp),
                         imageVector = Icons.Rounded.SkipNext,
                         contentDescription = null,
-                        tint = Color.White
+                        tint = if (Platform.rememberIsTv()) {
+                            Platform.localContentColor()
+                        } else {
+                            Color.White
+                        }
                     )
                 }
             } else {
-                IconButton(
+                PlatformIconButton(
                     modifier = Modifier.background(
                         color = Color.Black.copy(alpha = 0.5F),
                         shape = CircleShape
-                    ),
+                    ).focusRequester(forward).focusProperties {
+                        previous = play
+                    },
                     onClick = onForwardClick,
                     enabled = !isFinished
                 ) {
-                    Icon(
+                    PlatformIcon(
                         imageVector = Icons.Rounded.FastForward,
                         contentDescription = null,
-                        tint = Color.White
+                        tint = if (Platform.rememberIsTv()) {
+                            Platform.localContentColor()
+                        } else {
+                            Color.White
+                        }
                     )
                 }
+            }
+        }
+
+        SideEffect {
+            if (focusPlay) {
+                play.requestFocus()
+                focusPlay = false
+            }
+        }
+
+        DisposableEffect(focusPlay) {
+            onDispose {
+                focusPlay = true
             }
         }
     }

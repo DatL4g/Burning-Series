@@ -29,6 +29,10 @@ import dev.datlag.burningseries.composeapp.generated.resources.Res
 import dev.datlag.burningseries.composeapp.generated.resources.description
 import dev.datlag.burningseries.ui.navigation.screen.medium.MediumComponent
 import dev.datlag.tooling.Platform
+import dev.datlag.tooling.compose.platform.PlatformButtonScale
+import dev.datlag.tooling.compose.platform.PlatformIcon
+import dev.datlag.tooling.compose.platform.PlatformIconButton
+import dev.datlag.tooling.compose.platform.PlatformText
 import dev.datlag.tooling.compose.platform.typography
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
@@ -54,7 +58,7 @@ internal fun DescriptionSection(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text(
+                PlatformText(
                     modifier = Modifier.weight(1F),
                     text = stringResource(Res.string.description),
                     style = Platform.typography().headlineSmall
@@ -71,7 +75,7 @@ internal fun DescriptionSection(
             )
 
             SelectionContainer {
-                Text(
+                PlatformText(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     text = description!!,
                     maxLines = max(animatedLines, 1),
@@ -85,11 +89,12 @@ internal fun DescriptionSection(
                 )
             }
             if (descriptionExpandable) {
-                IconButton(
-                    modifier = Modifier.fillMaxWidth(),
+                PlatformIconButton(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     onClick = {
                         descriptionExpanded = !descriptionExpanded
-                    }
+                    },
+                    scale = PlatformButtonScale.icon(scale = 1F, focusedScale = 1.02F)
                 ) {
                     val icon = if (descriptionExpanded) {
                         Icons.Rounded.ExpandLess
@@ -97,7 +102,7 @@ internal fun DescriptionSection(
                         Icons.Rounded.ExpandMore
                     }
 
-                    Icon(
+                    PlatformIcon(
                         imageVector = icon,
                         contentDescription = null
                     )
