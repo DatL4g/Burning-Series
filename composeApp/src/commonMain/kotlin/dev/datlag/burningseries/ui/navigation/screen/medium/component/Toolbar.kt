@@ -93,14 +93,15 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun Toolbar(
     component: MediumComponent,
-    series: Series?,
-    seasonFocus: FocusRequester,
-    fabFocus: FocusRequester
+    series: Series?
 ) {
     TopAppBar(
         navigationIcon = {
             ProvideNonTvContentColor {
                 PlatformIconButton(
+                    modifier = Modifier.focusProperties {
+                        down = component.focus.seasonAndLanguageButtons
+                    },
                     onClick = component::back
                 ) {
                     PlatformIcon(
@@ -272,8 +273,8 @@ internal fun Toolbar(
                 if (isFavorite) {
                     PlatformIconButton(
                         modifier = Modifier.focusProperties {
-                            end = fabFocus
-                            down = seasonFocus
+                            end = component.focus.floatingActionButton
+                            down = component.focus.seasonAndLanguageButtons
                         },
                         onClick = {
                             if (series != null) {
@@ -290,8 +291,8 @@ internal fun Toolbar(
                 } else {
                     PlatformIconButton(
                         modifier = Modifier.focusProperties {
-                            end = fabFocus
-                            down = seasonFocus
+                            end = component.focus.floatingActionButton
+                            down = component.focus.seasonAndLanguageButtons
                         },
                         onClick = {
                             if (series != null) {

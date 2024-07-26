@@ -5,6 +5,8 @@ import androidx.compose.material.icons.rounded.Devices
 import androidx.compose.material.icons.rounded.Speaker
 import androidx.compose.material.icons.rounded.Tv
 import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
@@ -50,6 +52,8 @@ interface MediumComponent : Component {
 
     val isFavorite: StateFlow<Boolean>
 
+    val focus: Focus
+
     fun back()
     fun season(value: Series.Season)
     fun language(value: Series.Language)
@@ -68,6 +72,25 @@ interface MediumComponent : Component {
         episode: Series.Episode,
         streams: ImmutableCollection<DirectLink>
     )
+
+    data class Focus(
+        val seasonAndLanguageButtons: FocusRequester,
+        val floatingActionButton: FocusRequester,
+        val descriptionExtender: FocusRequester
+    ) {
+        companion object {
+            @OptIn(ExperimentalComposeUiApi::class)
+            fun create(): Focus {
+                val (sl, fab, desc) = FocusRequester.createRefs()
+
+                return Focus(
+                    seasonAndLanguageButtons = sl,
+                    floatingActionButton = fab,
+                    descriptionExtender = desc
+                )
+            }
+        }
+    }
 
     sealed interface Device {
         val icon: ImageVector

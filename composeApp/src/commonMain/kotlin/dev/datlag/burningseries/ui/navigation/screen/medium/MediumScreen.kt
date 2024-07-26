@@ -46,6 +46,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
@@ -122,14 +123,11 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
 
     dialogState.child?.instance?.render()
 
-    val (seasonFocus, fabFocus) = FocusRequester.createRefs()
     Scaffold(
         topBar = {
             Toolbar(
                 component = component,
-                series = (seriesState as? SeriesState.Success)?.series,
-                seasonFocus = seasonFocus,
-                fabFocus = fabFocus
+                series = (seriesState as? SeriesState.Success)?.series
             )
         },
         floatingActionButton = {
@@ -137,7 +135,11 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
 
             nextEpisode?.ifHasHoster()?.let { episode ->
                 ExtendedFloatingActionButton(
-                    modifier = Modifier.focusRequester(fabFocus),
+                    modifier = Modifier
+                        .focusRequester(component.focus.floatingActionButton)
+                        .focusProperties {
+                            start = component.focus.seasonAndLanguageButtons
+                        },
                     onClick = {
                         component.episode(episode)
                     },
@@ -192,7 +194,11 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
                         .fillParentMaxWidth()
                         .padding(horizontal = 16.dp)
                         .padding(top = 8.dp)
-                        .focusRequester(seasonFocus)
+                        .focusRequester(component.focus.seasonAndLanguageButtons)
+                        .focusProperties {
+                            down = component.focus.descriptionExtender
+                            next = component.focus.descriptionExtender
+                        }
                 )
             }
             if (isAndroidPhone && isAnime && !isAniFlowInstalled) {

@@ -1,8 +1,11 @@
 package dev.datlag.burningseries.ui.navigation.screen.medium.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +26,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.datlag.burningseries.composeapp.generated.resources.Res
@@ -88,9 +93,19 @@ internal fun DescriptionSection(
                     }
                 )
             }
-            if (descriptionExpandable) {
+            AnimatedVisibility(
+                visible = descriptionExpandable,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
                 PlatformIconButton(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .focusRequester(component.focus.descriptionExtender)
+                        .focusProperties {
+                            previous = component.focus.seasonAndLanguageButtons
+                        },
                     onClick = {
                         descriptionExpanded = !descriptionExpanded
                     },

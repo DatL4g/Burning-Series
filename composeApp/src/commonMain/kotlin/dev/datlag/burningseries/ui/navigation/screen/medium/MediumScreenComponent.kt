@@ -212,6 +212,8 @@ class MediumScreenComponent(
 
     private val userHelper by instance<UserHelper>()
 
+    override val focus: MediumComponent.Focus = MediumComponent.Focus.create()
+
     init {
         val hrefWithLanguage = if (initialLanguage != null) {
             seriesData.toHref(newLanguage = initialLanguage.code)
