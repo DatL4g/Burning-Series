@@ -6,6 +6,7 @@ import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.framework.CastOptions
 import com.google.android.gms.cast.framework.OptionsProvider
 import com.google.android.gms.cast.framework.SessionProvider
+import com.google.android.gms.cast.framework.media.CastMediaOptions
 
 @UnstableApi
 class CastOptionsProvider : OptionsProvider {
@@ -16,6 +17,11 @@ class CastOptionsProvider : OptionsProvider {
             .setEnableReconnectionService(true)
             .setRemoteToLocalEnabled(true)
             .setReceiverApplicationId(DefaultCastOptionsProvider.APP_ID_DEFAULT_RECEIVER_WITH_DRM)
+            .setCastMediaOptions(
+                CastMediaOptions.Builder()
+                    .setMediaSessionEnabled(false)
+                    .build()
+            )
             .build()
     }
 
