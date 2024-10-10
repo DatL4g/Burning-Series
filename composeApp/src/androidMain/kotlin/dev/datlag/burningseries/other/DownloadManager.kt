@@ -26,10 +26,12 @@ import io.ktor.client.statement.bodyAsChannel
 import io.ktor.utils.io.core.isEmpty
 import io.ktor.utils.io.core.readBytes
 import io.ktor.utils.io.core.use
+import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.io.readByteArray
 import kotlinx.serialization.Serializable
 import okhttp3.internal.closeQuietly
 import okio.Path.Companion.toOkioPath
@@ -87,7 +89,7 @@ data object DownloadManager {
                 _progress.update {
                     Progress(
                         reached = bytesSentTotal,
-                        length = max(bytesSentTotal, contentLength)
+                        length = max(bytesSentTotal, contentLength ?: bytesSentTotal)
                     )
                 }
             }
@@ -97,8 +99,8 @@ data object DownloadManager {
             while (!channel.isClosedForRead) {
                 val packet = channel.readRemaining(BUFFER_SIZE)
 
-                while (!packet.isEmpty) {
-                    val bytes = packet.readBytes()
+                while (!packet.exhausted()) {
+                    val bytes = packet.readByteArray()
 
                     file.appendBytes(bytes)
                 }
