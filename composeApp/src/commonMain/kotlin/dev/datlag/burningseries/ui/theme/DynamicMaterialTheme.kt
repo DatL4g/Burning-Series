@@ -24,8 +24,9 @@ fun DynamicMaterialTheme(
 ) {
     val dynamicColorScheme = if (seedColor != null) {
         rememberDynamicColorScheme(
-            seedColor = seedColor,
+            primary = seedColor,
             isDark = LocalDarkMode.current,
+            isAmoled = false,
             style = PaletteStyle.TonalSpot,
             contrastLevel = Contrast.Default.value,
             isExtendedFidelity = false
