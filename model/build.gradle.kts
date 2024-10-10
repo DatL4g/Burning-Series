@@ -2,9 +2,11 @@ plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.serialization)
     alias(libs.plugins.atomicfu)
+    alias(libs.plugins.android.library)
 }
 
 kotlin {
+    androidTarget()
     jvm()
 
     iosX64()
@@ -34,5 +36,26 @@ kotlin {
             implementation(libs.coroutines)
             implementation(libs.tooling)
         }
+
+        androidMain.dependencies {
+            implementation(libs.service)
+        }
+    }
+}
+
+android {
+    compileSdk = 34
+    namespace = "dev.datlag.burningseries.model"
+    sourceSets["main"].aidl.srcDirs("src/androidMain/aidl")
+
+    defaultConfig {
+        minSdk = 23
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    buildFeatures {
+        aidl = true
     }
 }

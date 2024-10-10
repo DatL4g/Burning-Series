@@ -46,7 +46,7 @@ fun SettingsDialog(component: SettingsComponent) {
 
     ModalBottomSheet(
         onDismissRequest = component::dismiss,
-        windowInsets = insets,
+        contentWindowInsets = { insets },
         sheetState = sheetState
     ) {
         val userState by component.user.collectAsStateWithLifecycle(null)

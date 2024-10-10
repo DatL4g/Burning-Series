@@ -55,7 +55,7 @@ fun AboutDialog(component: AboutComponent) {
 
     ModalBottomSheet(
         onDismissRequest = component::dismiss,
-        windowInsets = insets,
+        contentWindowInsets = { insets },
         sheetState = sheetState
     ) {
         val libs by produceState<Libs?>(null) {
