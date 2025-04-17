@@ -78,7 +78,11 @@ class EpisodeStateMachine(
                                 Skeo.loadVideos(client, it)
                             }
                         }.awaitAll()
-                    }.flatten()
+                    }.flatten().map { stream ->
+                        stream.copy(
+                            url = stream.url.replace("&amp;", "&")
+                        )
+                    }
 
                     state.override {
                         if (streams.isEmpty()) {
