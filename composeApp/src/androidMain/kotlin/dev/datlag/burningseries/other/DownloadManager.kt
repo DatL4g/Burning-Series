@@ -40,7 +40,7 @@ import ru.solrudev.ackpine.DisposableSubscriptionContainer
 import ru.solrudev.ackpine.installer.InstallFailure
 import ru.solrudev.ackpine.installer.PackageInstaller
 import ru.solrudev.ackpine.installer.createSession
-import ru.solrudev.ackpine.session.SessionResult
+import ru.solrudev.ackpine.session.Session
 import ru.solrudev.ackpine.session.await
 import ru.solrudev.ackpine.session.parameters.Confirmation
 import ru.solrudev.ackpine.session.progress
@@ -111,13 +111,13 @@ data object DownloadManager {
         return@withIOContext file
     }
 
-    suspend fun install(context: Context, file: File = this.file): SessionResult<InstallFailure> {
+    suspend fun install(context: Context, file: File = this.file): Session.State<InstallFailure> {
         val packageInstaller = PackageInstaller.getInstance(context)
         return suspendCatching {
             packageInstaller.createSession(file.toUri()) {
                 confirmation = Confirmation.IMMEDIATE
             }.await()
-        }.getOrNull() ?: SessionResult.Error(InstallFailure.Generic())
+        }.getOrNull() ?: Session.State.Failed(InstallFailure.Generic())
     }
 
     @Serializable

@@ -57,7 +57,7 @@ import dev.datlag.tooling.compose.withMainContext
 import dev.datlag.tooling.decompose.lifecycle.collectAsStateWithLifecycle
 import dev.icerock.moko.resources.compose.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.solrudev.ackpine.session.SessionResult
+import ru.solrudev.ackpine.session.Session
 
 @Composable
 actual fun ReleaseDialog(component: ReleaseComponent) {
@@ -120,14 +120,15 @@ actual fun ReleaseDialog(component: ReleaseComponent) {
                             val file = DownloadManager.download(androidAsset) ?: return@launchIO
 
                             when (DownloadManager.install(context, file)) {
-                                is SessionResult.Success -> {
+                                is Session.State.Succeeded -> {
                                     withMainContext {
                                         component.dismiss()
                                     }
                                 }
-                                is SessionResult.Error -> {
+                                is Session.State.Failed -> {
                                     uriHandler.openUri(component.release.url ?: Constants.GITHUB_RELEASE)
                                 }
+                                else -> {}
                             }
                         }
                     },

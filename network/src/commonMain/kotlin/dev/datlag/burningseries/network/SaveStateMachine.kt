@@ -61,15 +61,19 @@ class SaveStateMachine(
                         }
                     }
 
-                    val stream = suspendCatching {
+                    val streams = suspendCatching {
                         Skeo.loadVideos(streamClient ?: client, state.snapshot.data.url)
-                    }.getOrNull().orEmpty().toImmutableSet()
+                    }.getOrNull().orEmpty().map { stream ->
+                        stream.copy(
+                            url = stream.url.replace("&amp;", "&")
+                        )
+                    }.toImmutableSet()
 
                     state.override {
                         if (firebaseSaved) {
-                            SaveState.Success(series, episode, stream)
+                            SaveState.Success(series, episode, streams)
                         } else {
-                            SaveState.Error(seriesResult.exceptionOrNull(), series, episode, stream)
+                            SaveState.Error(seriesResult.exceptionOrNull(), series, episode, streams)
                         }
                     }
                 }
