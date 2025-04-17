@@ -64,6 +64,7 @@ sekret {
 }
 
 kotlin {
+    jvmToolchain(21)
     androidTarget()
     jvm()
 
@@ -203,7 +204,7 @@ android {
         isCoreLibraryDesugaringEnabled = true
 
         sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
         buildConfig = true

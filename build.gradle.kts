@@ -26,45 +26,6 @@ plugins {
     alias(libs.plugins.versions)
 }
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-        maven("https://jitpack.io")
-        maven("https://jogamp.org/deployment/maven")
-        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-    }
-    dependencies {
-        classpath(libs.moko.resources.generator)
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-        maven("https://jitpack.io")
-        maven("https://jogamp.org/deployment/maven")
-        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-    }
-
-    tasks.withType<KotlinCompile>().configureEach {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
-    plugins.withType<YarnPlugin> {
-        yarn.yarnLockAutoReplace = true
-    }
-}
-
-
 tasks.withType<DependencyUpdatesTask> {
     outputFormatter {
         val updatable = this.outdated.dependencies
