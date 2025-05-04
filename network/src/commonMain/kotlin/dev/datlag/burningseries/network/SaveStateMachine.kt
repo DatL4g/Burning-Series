@@ -7,7 +7,6 @@ import dev.datlag.burningseries.network.state.SaveState
 import dev.datlag.skeo.Skeo
 import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
-import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -67,9 +66,7 @@ class SaveStateMachine(
                         stream.copy(
                             url = stream.url.replace("&amp;", "&")
                         )
-                    }.filterNot {
-                        Constants.testVideos.any { test -> test.equals(it.url, ignoreCase = true) }
-                    }.toImmutableSet()
+                    }.let(TestVideo::filter)
 
                     state.override {
                         if (firebaseSaved) {

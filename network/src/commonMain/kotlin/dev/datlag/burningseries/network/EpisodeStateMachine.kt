@@ -82,9 +82,7 @@ class EpisodeStateMachine(
                         stream.copy(
                             url = stream.url.replace("&amp;", "&")
                         )
-                    }.filterNot {
-                        Constants.testVideos.any { test -> test.equals(it.url, ignoreCase = true) }
-                    }
+                    }.let(TestVideo::filter)
 
                     state.override {
                         if (streams.isEmpty()) {
