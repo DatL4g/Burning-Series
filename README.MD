@@ -19,11 +19,38 @@ Watch any series or videos on [Burning Series](https://bs.to/) easily with this 
 You can see the latest series and episodes, get an overview of all available series, save your favorites and start watching directly inside the app.
 **You can't log in to your [Burning Series](https://bs.to/) Account because it's not using an official API.** Read the [Important Notice](#important-notice) for more info.
 
+- [Status](#status)
 - [Important Notice](#important-notice)
 - [Supported devices and Installation](#supported-devices-and-installation)
 - [Contributing](#contributing)
     - [Maintainers](#maintainers)
 - [Support the project](#support-the-project)
+
+## Status
+
+What's the current development status of Burning-Series?
+
+### Is this app maintained?
+
+Clearly Yes and No.  
+Unless I finished https://github.com/DatL4g/Mimasu/tree/v1 this app will receive maintenance updates but no feature updates.
+
+### What happens when Mimasu is released?
+
+This app will receive further and new updates.
+
+### What's the difference between these two apps then?
+
+To keep watching videos you'll need both apps!  
+You can search for Movies and Series in Mimasu and they will be directly watchable in the app.  
+
+However to be able to watch content in Mimasu you'll have to install Burning-Series.  
+Burning-Series (will be renamed) will provide the content from various providers (not limited to Burning-Series anymore then) to Mimasu.
+
+### How do I get notified about this change?
+
+Just keep using Burning-Series for now.  
+As soon as both apps are ready, there will be a new Burning-Series release and got renamed to Mimasu-Extension.
 
 ## Important Notice
 

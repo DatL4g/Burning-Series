@@ -20,8 +20,8 @@ plugins {
 }
 
 val artifact = "dev.datlag.burningseries"
-val appVersion = "6.1.1"
-val appVersionCode = 611
+val appVersion = "6.1.2"
+val appVersionCode = 612
 
 group = artifact
 version = appVersion
