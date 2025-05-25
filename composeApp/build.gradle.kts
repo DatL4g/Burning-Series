@@ -45,6 +45,9 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(libs.tooling)
+            implementation(libs.kodein)
+
+            implementation(project(":github"))
         }
 
         val androidMain by getting {
@@ -60,6 +63,10 @@ kotlin {
                 implementation(libs.ktor.jvm)
                 implementation(libs.coroutines.android)
                 implementation(libs.okhttp.doh)
+                implementation("androidx.lifecycle:lifecycle-service:2.9.0")
+                implementation(libs.serialization.protobuf)
+
+                implementation("org.htmlunit:htmlunit3-android:4.3.0")
             }
         }
     }
@@ -72,12 +79,13 @@ dependencies {
 android {
     sourceSets["main"].setRoot("src/androidMain/")
     sourceSets["main"].res.srcDirs("src/androidMain/res", "src/commonMain/resources")
+    sourceSets["main"].aidl.srcDirs("src/androidMain/aidl")
     compileSdk = 35
     namespace = artifact
 
     defaultConfig {
         applicationId = artifact
-        minSdk = 23
+        minSdk = 26
         targetSdk = 35
         versionCode = appVersionCode
         versionName = appVersion
@@ -93,5 +101,6 @@ android {
     }
     buildFeatures {
         buildConfig = true
+        aidl = true
     }
 }
