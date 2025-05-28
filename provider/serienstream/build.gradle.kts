@@ -57,6 +57,8 @@ kotlin {
             api(libs.ktor.serialization.json)
             api(libs.tooling)
             implementation(libs.ksoup)
+
+            implementation(project(":matcher"))
         }
     }
 }

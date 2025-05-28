@@ -30,7 +30,7 @@ data object Tokenizer {
 
                 if (WanaKana.isJapanese(chunk)) {
                     WanaKana.toRomaji(chunk).ifBlank { null }?.let(::add)
-                    WanaKana.stripOkurigana(chunk).ifBlank { null }?.let(::add)
+                    WanaKana.stripOkurigana(chunk).ifBlank { null }?.let(WanaKana::toRomaji)?.ifBlank { null }?.let(::add)
                 }
 
                 val hasDash = chunk.any { it == STANDARD_HYPHEN || it == FULL_WIDTH_HYPHEN || it == KANA_LONG_VOWEL }
