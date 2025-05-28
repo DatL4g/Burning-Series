@@ -2,6 +2,7 @@ rootProject.name = "Burning-Series"
 
 include(":composeApp")
 include(":github")
+include(":matcher")
 include(":provider:serienstream", ":provider:burningseries", ":provider:animebase")
 
 pluginManagement {
