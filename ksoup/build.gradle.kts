@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.ktorfit)
 }
 
-val artifact = "dev.datlag.mimasu.extension.provider.burningseries"
+val artifact = "dev.datlag.mimasu.extension.ksoup"
 
 kotlin {
     jvmToolchain(21)
@@ -50,16 +50,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(libs.coroutines)
-            api(libs.serialization.json)
-            api(libs.ktorfit)
-            api(libs.ktor)
-            api(libs.ktor.content.negotiation)
-            api(libs.ktor.serialization.json)
             api(libs.tooling)
-            implementation(libs.datetime)
-
-            implementation(project(":matcher"))
-            implementation(project(":ksoup"))
+            api(libs.ksoup)
+            api(libs.ktor)
         }
     }
 }

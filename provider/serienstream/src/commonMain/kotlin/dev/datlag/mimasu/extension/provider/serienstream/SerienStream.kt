@@ -11,7 +11,4 @@ interface SerienStream {
         @Query("keyword") keyword: String
     ): Set<SearchResult>
 
-    companion object {
-
-    }
 }
