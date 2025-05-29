@@ -28,9 +28,20 @@ data object BurningSeries {
 
     private var searchItemsCacheTime = 0L
     private var cachedSearchItems = setOf<SearchItem>()
+        get() {
+            if (searchItemsCacheTime <= 0L || Clock.System.now().minus(12.hours).epochSeconds > searchItemsCacheTime) {
+                return emptySet()
+            }
+            return field
+        }
         set(value) {
-            field = value
-            searchItemsCacheTime = Clock.System.now().epochSeconds
+            if (value.isNotEmpty()) {
+                field = value.also {
+                    if (it.isNotEmpty()) {
+                        searchItemsCacheTime = Clock.System.now().epochSeconds
+                    }
+                }
+            }
         }
 
     internal fun createLink(href: String): String {
@@ -58,8 +69,10 @@ data object BurningSeries {
     }.getOrNull()
 
     internal suspend fun search(client: HttpClient): Set<SearchItem> {
-        if (cachedSearchItems.isNotEmpty() && searchItemsCacheTime > 0L && Clock.System.now().minus(12.hours).epochSeconds < searchItemsCacheTime) {
-            cachedSearchItems
+        cachedSearchItems.also {
+            if (it.isNotEmpty()) {
+                return it
+            }
         }
 
         val doc = document(client, SEARCH_PATH) ?: return emptySet()
@@ -70,7 +83,7 @@ data object BurningSeries {
             element.allByTag("li").mapNotNull { li ->
                 val linkElement = li.firstByTag("a")
                 val title = linkElement?.text()?.ifBlank { null }?.trim()
-                val href = linkElement?.href()?.ifBlank { null }?.trim()
+                val href = linkElement?.href()?.ifBlank { null }?.trim()?.let(::normalize)?.trim()
 
                 if (!title.isNullOrBlank() && !href.isNullOrBlank()) {
                     SearchItem(
@@ -82,7 +95,7 @@ data object BurningSeries {
                     null
                 }
             }
-        }?.flatten()?.toSet()?.ifEmpty { null }?.also {
+        }?.flatten()?.toSet()?.also {
             cachedSearchItems = it
         } ?: emptySet()
     }

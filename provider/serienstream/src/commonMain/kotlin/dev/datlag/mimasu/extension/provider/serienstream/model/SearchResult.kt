@@ -1,6 +1,7 @@
 package dev.datlag.mimasu.extension.provider.serienstream.model
 
 import dev.datlag.mimasu.extension.matcher.TokenAware
+import dev.datlag.mimasu.extension.matcher.TokenResult
 import dev.datlag.mimasu.extension.matcher.Tokenizer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -19,7 +20,7 @@ data class SearchResult(
     val releaseYear = productionYear?.split("-")?.firstOrNull()?.replace(productionSanitizeRegex, "")?.trim()?.toIntOrNull()
 
     @Transient
-    override val tokens: List<String> = Tokenizer.tokenize(name)
+    override val tokenResult: TokenResult = Tokenizer.tokenize(name)
 
     companion object {
         private val productionSanitizeRegex = "\\D".toRegex()

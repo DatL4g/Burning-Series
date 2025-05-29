@@ -235,4 +235,24 @@ data object WanaKana {
         leading: Boolean = false,
         matchKanji: String? = null
     ): String = input.stripOkurigana(leading, matchKanji)
+
+    /**
+     * Splits input into a list of strings separated by opinionated [TokenType]s.
+     * @param input the text to tokenize.
+     * @param compact if `true`, then many same-language tokens are combined (spaces + text, kanji +
+     * kana, numeral + punctuation). Defaults to `false`.
+     * @return the text split into [String] tokens.
+     *
+     * For example:
+     * - `tokenize("ふふフフ")` => `["ふふ", "フフ"]`
+     * - `tokenize("感じ")` => `["感", "じ"]`
+     * - `tokenize("truly 私は悲しい")` => ["truly", " ", "私", "は", "悲", "しい"]`
+     * - `tokenize("truly 私は悲しい", compact = true)` => ["truly ", "私は悲しい"]`
+     * - `tokenize("5romaji here...!?漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！")`
+     *   => `[ "5", "romaji", " ", "here", "...!?", "漢字", "ひらがな", "カタ", "　", "カナ", "４", "「", "ＳＨＩＯ", "」。！"]`
+     * - `tokenize("5romaji here...!?漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！", compact = true)`
+     *   => `[ "5", "romaji here", "...!?", "漢字ひらがなカタ　カナ", "４「", "ＳＨＩＯ", "」。！"]`
+     */
+    @JvmStatic
+    fun tokenize(input: String, compact: Boolean = false): List<String> = input.tokenize(compact)
 }

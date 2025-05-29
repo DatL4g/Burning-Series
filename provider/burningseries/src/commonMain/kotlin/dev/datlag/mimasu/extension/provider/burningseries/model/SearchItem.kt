@@ -1,6 +1,7 @@
 package dev.datlag.mimasu.extension.provider.burningseries.model
 
 import dev.datlag.mimasu.extension.matcher.TokenAware
+import dev.datlag.mimasu.extension.matcher.TokenResult
 import dev.datlag.mimasu.extension.matcher.Tokenizer
 import dev.datlag.mimasu.extension.provider.burningseries.BurningSeries
 import kotlinx.serialization.Serializable
@@ -14,10 +15,10 @@ data class SearchItem(
 ): TokenAware {
 
     @Transient
-    override val tokens: List<String> = Tokenizer.tokenize(title)
+    override val tokenResult: TokenResult = Tokenizer.tokenize(title)
 
     @Transient
-    private val numbers = tokens.mapNotNull { token -> token.toIntOrNull() }
+    private val numbers = tokenResult.tokens.mapNotNull { token -> token.value.toIntOrNull() }
 
     @Transient
     val releaseYear = numbers.firstNotNullOfOrNull { token ->
