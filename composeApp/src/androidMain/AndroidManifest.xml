@@ -63,6 +63,13 @@
             </intent-filter>
         </service>
 
+        <service android:name=".service.ShowService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="dev.datlag.mimasu.extension.IShowInfoProvider" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

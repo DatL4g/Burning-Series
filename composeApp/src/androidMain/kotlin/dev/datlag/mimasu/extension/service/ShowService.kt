@@ -5,10 +5,10 @@ import android.os.IBinder
 import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import dev.datlag.mimasu.extension.IMovieInfoProvider
-import dev.datlag.mimasu.extension.movie.Callback
+import dev.datlag.mimasu.extension.IShowInfoProvider
 import dev.datlag.mimasu.extension.provider.SearchManager
-import dev.datlag.mimasu.extension.provider.model.Movie
+import dev.datlag.mimasu.extension.provider.model.Show
+import dev.datlag.mimasu.extension.show.Callback
 import dev.datlag.tooling.safeCast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,12 +17,12 @@ import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.instanceOrNull
 
-class MovieService : LifecycleService() {
+class ShowService : LifecycleService() {
 
     override fun onBind(intent: Intent): IBinder? {
         val result = super.onBind(intent)
 
-        Log.e("Extension Movie", "Bind Service")
+        Log.e("Extension Show", "Bind Show Service")
 
         val di = applicationContext.safeCast<DIAware>()?.di
             ?: (application as? DIAware)?.di
@@ -34,7 +34,7 @@ class MovieService : LifecycleService() {
     class Binder(
         val scope: CoroutineScope,
         override val di: DI
-    ) : IMovieInfoProvider.Stub(), DIAware {
+    ) : IShowInfoProvider.Stub(), DIAware {
 
         private val searchManager by instanceOrNull<SearchManager>()
 
@@ -45,9 +45,9 @@ class MovieService : LifecycleService() {
             } ?: return
 
             scope.launch(Dispatchers.IO) {
-                val requestInfo = Movie.Request(request)
+                val requestInfo = Show.Request(request)
 
-                Log.e("Extension Movie", requestInfo?.tokenResult?.tokens?.joinToString() ?: "No RequestInfo")
+                Log.e("Extension Show", requestInfo?.tokenResult?.tokens?.joinToString() ?: "No show tokens")
             }
         }
     }

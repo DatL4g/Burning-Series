@@ -2,6 +2,7 @@ package dev.datlag.mimasu.extension.provider
 
 import de.jensklingenberg.ktorfit.ktorfit
 import dev.datlag.mimasu.extension.provider.model.Movie
+import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.createAniWorld
 import dev.datlag.mimasu.extension.provider.serienstream.createSerienStream
 import io.ktor.client.HttpClient
@@ -37,6 +38,10 @@ class SearchManager(
 
     suspend fun search(request: Movie.Request) {
         // ToDo("movies will work a bit different")
+    }
+
+    suspend fun search(request: Show.Request) {
+
     }
 
     companion object {
