@@ -48,6 +48,7 @@ kotlin {
             implementation(libs.kodein)
 
             implementation(project(":github"))
+            implementation(project(":provider"))
         }
 
         val androidMain by getting {

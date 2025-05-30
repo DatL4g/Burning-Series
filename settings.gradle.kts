@@ -4,7 +4,7 @@ include(":composeApp")
 include(":github")
 include(":matcher")
 include(":ksoup")
-include(":provider:serienstream", ":provider:burningseries", ":provider:animebase")
+include(":provider", ":provider:serienstream", ":provider:burningseries", ":provider:animebase")
 
 pluginManagement {
     repositories {

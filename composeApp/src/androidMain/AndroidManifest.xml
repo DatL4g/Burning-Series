@@ -56,6 +56,13 @@
             </intent-filter>
         </service>
 
+        <service android:name=".service.MovieService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="dev.datlag.mimasu.extension.IMovieInfoProvider" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

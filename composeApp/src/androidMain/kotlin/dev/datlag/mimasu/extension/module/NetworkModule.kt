@@ -3,6 +3,7 @@ package dev.datlag.mimasu.extension.module
 import de.jensklingenberg.ktorfit.ktorfit
 import dev.datlag.mimasu.extension.github.GitHub
 import dev.datlag.mimasu.extension.github.createGitHub
+import dev.datlag.mimasu.extension.provider.SearchManager
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import org.kodein.di.DI
@@ -28,6 +29,12 @@ data object NetworkModule {
                 baseUrl("https://api.github.com/")
             }
             ktorfit.createGitHub()
+        }
+        bindSingleton<SearchManager> {
+            SearchManager(
+                httpClient = instance(),
+                fallbackClient = null
+            )
         }
     }
 }

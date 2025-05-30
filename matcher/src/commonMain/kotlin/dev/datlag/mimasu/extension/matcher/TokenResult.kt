@@ -9,11 +9,11 @@ data class TokenResult(
 ) {
 
     operator fun plus(other: TokenResult): TokenResult = TokenResult(
-        tokens = tokens + other.tokens,
-        extraTokens = extraTokens + other.extraTokens,
-        japaneseTokens = japaneseTokens + other.japaneseTokens,
-        japaneseExtraTokens = japaneseExtraTokens + other.japaneseExtraTokens,
-        romajiTokens = romajiTokens + other.romajiTokens
+        tokens = (tokens + other.tokens).distinctBy { it.value },
+        extraTokens = (extraTokens + other.extraTokens).distinctBy { it.value },
+        japaneseTokens = (japaneseTokens + other.japaneseTokens).distinctBy { it.value },
+        japaneseExtraTokens = (japaneseExtraTokens + other.japaneseExtraTokens).distinctBy { it.value },
+        romajiTokens = (romajiTokens + other.romajiTokens).distinctBy { it.value }
     )
 
     data class Token(

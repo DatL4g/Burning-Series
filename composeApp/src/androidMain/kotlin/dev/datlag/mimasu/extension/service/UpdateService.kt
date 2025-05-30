@@ -63,9 +63,9 @@ class UpdateService : LifecycleService() {
         private val github by instanceOrNull<GitHub>()
 
         override fun requestUpdate(callback: Callback?) {
-            scope.launch(Dispatchers.IO) {
-                val git = github ?: return@launch
+            val git = github ?: return
 
+            scope.launch(Dispatchers.IO) {
                 val release = suspendCatching {
                     git.latestRelease(
                         owner = "DatL4g",

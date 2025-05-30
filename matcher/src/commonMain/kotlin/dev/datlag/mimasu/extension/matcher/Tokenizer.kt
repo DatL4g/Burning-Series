@@ -77,4 +77,10 @@ data object Tokenizer {
             left + right
         }
     }
+
+    fun tokenize(vararg multiple: String?): TokenResult {
+        return multiple.mapNotNull { it?.ifBlank { null } }.fold(TokenResult.Empty) { left, right ->
+            left + tokenize(value = right)
+        }
+    }
 }
