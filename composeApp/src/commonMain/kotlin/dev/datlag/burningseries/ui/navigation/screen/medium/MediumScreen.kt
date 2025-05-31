@@ -201,7 +201,7 @@ fun MediumScreen(component: MediumComponent, updater: SchemeTheme.Updater?) {
                         }
                 )
             }
-            if (isAndroidPhone && isAnime && !isAniFlowInstalled) {
+            if (isAndroidPhone && !isAniFlowInstalled) {
                 item {
                     AniFlowCard(modifier = Modifier.fillParentMaxWidth().padding(horizontal = 16.dp).padding(top = 8.dp))
                 }

@@ -12,7 +12,7 @@ data object AniFlow {
     val icon: ImageResource = MokoRes.images.AniFlow
     val title: StringResource = Res.string.aniflow
     val subTitle: StringResource = Res.string.aniflow_subtitle
-    const val packageName = "dev.datlag.aniflow"
+    const val packageName = "dev.datlag.mimasu"
     const val googlePlay = "https://play.google.com/store/apps/details?id=$packageName"
 }
 

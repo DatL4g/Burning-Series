@@ -11,8 +11,8 @@
     <string name="english_subtitle">Englisch Untertitel</string>
     <string name="welcome_to">Willkommen bei</string>
     <string name="lets_go">Los gehts</string>
-    <string name="aniflow">AniFlow</string>
-    <string name="aniflow_subtitle">Synchronisier deinen Anime Fortschritt mit AniList.</string>
+    <string name="aniflow">Mimasu</string>
+    <string name="aniflow_subtitle">Entdecke, verfolge und speichere deine Lieblingsfilme und -serien.</string>
     <string name="description">Beschreibung</string>
     <string name="season_placeholder">Staffel %1$d</string>
     <string name="select_season">Staffel wählen</string>
