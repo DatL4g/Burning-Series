@@ -1,6 +1,8 @@
 package dev.datlag.mimasu.extension.provider
 
 import de.jensklingenberg.ktorfit.ktorfit
+import dev.datlag.mimasu.extension.provider.burningseries.BurningSeries
+import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.model.Movie
 import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.createAniWorld
@@ -36,12 +38,31 @@ class SearchManager(
         }.createAniWorld()
     }
 
+    private val burningSeriesMappings = mutableMapOf<Int, SearchItem>()
+
     suspend fun search(request: Movie.Request) {
         // ToDo("movies will work a bit different")
     }
 
-    suspend fun search(request: Show.Request) {
+    suspend fun search(request: Show.Request): Int? {
+        burningSeriesMappings[request.tmdbId]?.let {
+            return request.tmdbId
+        }
 
+        val searchItems = BurningSeries.search(httpClient).ifEmpty {
+            fallbackClient?.let { BurningSeries.search(fallbackClient) }
+        }?.ifEmpty { null } ?: return null
+
+        val matching = searchItems.firstOrNull {
+            it.title.equals(request.title, ignoreCase = true)
+        } ?: searchItems.firstOrNull {
+            it.title.equals(request.originalTitle, ignoreCase = true)
+        }
+        return matching?.let { item ->
+            request.tmdbId?.also {
+                burningSeriesMappings[it] = item
+            }
+        }
     }
 
     companion object {

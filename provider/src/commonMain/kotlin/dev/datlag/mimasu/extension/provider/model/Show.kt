@@ -26,8 +26,6 @@ sealed interface Show {
         val numberOfNormalSeasons: Int? = null,
         val hasSpecialSeason: Boolean? = null,
         val season: Int? = null,
-        val episodeNumber: Int? = null,
-        val episodeTitle: String? = null,
     ) : Show, TokenAware {
 
         @Transient
@@ -35,9 +33,6 @@ sealed interface Show {
 
         @Transient
         val originalTokenResult: TokenResult = Tokenizer.tokenize(originalTitle)
-
-        @Transient
-        val episodeTokenResult: TokenResult = Tokenizer.tokenize(episodeTitle)
 
         companion object {
             @OptIn(ExperimentalSerializationApi::class)

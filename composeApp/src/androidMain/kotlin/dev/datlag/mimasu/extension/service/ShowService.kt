@@ -8,7 +8,8 @@ import androidx.lifecycle.lifecycleScope
 import dev.datlag.mimasu.extension.IShowInfoProvider
 import dev.datlag.mimasu.extension.provider.SearchManager
 import dev.datlag.mimasu.extension.provider.model.Show
-import dev.datlag.mimasu.extension.show.Callback
+import dev.datlag.mimasu.extension.show.EpisodeCallback
+import dev.datlag.mimasu.extension.show.ShowCallback
 import dev.datlag.tooling.safeCast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,17 +39,21 @@ class ShowService : LifecycleService() {
 
         private val searchManager by instanceOrNull<SearchManager>()
 
-        override fun requestInfo(request: ByteArray?, callback: Callback?) {
+        override fun requestShowId(request: ByteArray?, callback: ShowCallback?) {
             val manager = searchManager ?: run {
                 val newInstance by instanceOrNull<SearchManager>()
                 newInstance
             } ?: return
 
             scope.launch(Dispatchers.IO) {
-                val requestInfo = Show.Request(request)
-
-                Log.e("Extension Show", requestInfo?.tokenResult?.tokens?.joinToString() ?: "No show tokens")
+                val requestInfo = Show.Request(request) ?: return@launch
+                val id = manager.search(requestInfo) ?: return@launch
+                callback?.onResult(id)
             }
+        }
+
+        override fun requestEpisode(showId: Int, request: ByteArray?, callback: EpisodeCallback?) {
+
         }
     }
 }

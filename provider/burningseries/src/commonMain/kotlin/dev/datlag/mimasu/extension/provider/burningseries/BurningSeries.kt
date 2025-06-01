@@ -10,6 +10,8 @@ import dev.datlag.mimasu.extension.ksoup.parseGet
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -44,6 +46,8 @@ data object BurningSeries {
             }
         }
 
+    private val searchMutex = Mutex()
+
     internal fun createLink(href: String): String {
         return if (!href.matches("^\\w+?://.*".toRegex())) {
             if (!href.startsWith('/')) {
@@ -68,7 +72,17 @@ data object BurningSeries {
         )
     }.getOrNull()
 
-    internal suspend fun search(client: HttpClient): Set<SearchItem> {
+    suspend fun search(client: HttpClient): Set<SearchItem> {
+        cachedSearchItems.also {
+            if (it.isNotEmpty()) {
+                return it
+            }
+        }
+
+        return atomicSearch(client)
+    }
+
+    internal suspend fun atomicSearch(client: HttpClient): Set<SearchItem> = searchMutex.withLock {
         cachedSearchItems.also {
             if (it.isNotEmpty()) {
                 return it
