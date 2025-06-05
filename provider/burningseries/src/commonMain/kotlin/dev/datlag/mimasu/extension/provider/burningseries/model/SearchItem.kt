@@ -12,7 +12,10 @@ data class SearchItem(
     val title: String,
     val alternativeTitles: Set<String>,
     val href: String,
-    val genre: String?
+    val genre: String?,
+    val isAnimation: Boolean? = genre?.let {
+        it.equals("animation", ignoreCase = true) || it.contains("anime", ignoreCase = true)
+    },
 ): TokenAware {
 
     constructor(title: String, href: String, genre: String?) : this(

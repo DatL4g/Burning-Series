@@ -1,5 +1,6 @@
 package dev.datlag.mimasu.extension.provider
 
+import co.touchlab.kermit.Logger
 import de.jensklingenberg.ktorfit.ktorfit
 import dev.datlag.mimasu.extension.matcher.SearchMatcher
 import dev.datlag.mimasu.extension.provider.burningseries.BurningSeries
@@ -48,17 +49,42 @@ class SearchManager(
         // ToDo("movies will work a bit different")
     }
 
-    suspend fun search(request: Show.Request): Int? = coroutineScope {
+    suspend fun search(request: Show.Request): Int? {
         burningSeriesMappings[request.tmdbId]?.let {
-            return@coroutineScope request.tmdbId
+            return request.tmdbId
         }
 
         val searchItems = BurningSeries.search(httpClient).ifEmpty {
             fallbackClient?.let { BurningSeries.search(fallbackClient) }
-        }?.ifEmpty { null } ?: return@coroutineScope null
+        }?.ifEmpty { null } ?: return null
 
+        val (filteredSearchItems, otherSearchItems) = when (request.isAnimation) {
+            true -> searchItems.filter {
+                it.isAnimation == true
+            } to searchItems.filterNot { it.isAnimation == true }
+            false -> searchItems.filter {
+                it.isAnimation == false
+            } to searchItems.filterNot { it.isAnimation == false }
+            else -> searchItems to emptyList()
+        }
+
+        val bestSearch = search(request, filteredSearchItems) ?: search(request, otherSearchItems)
+
+        Logger.e("Best Result: ${bestSearch?.first?.title} [${bestSearch?.second}]")
+
+        return bestSearch?.first?.let { item ->
+            request.tmdbId?.also {
+                burningSeriesMappings[it] = item
+            }
+        }
+    }
+
+    private suspend fun search(
+        request: Show.Request,
+        items: Collection<SearchItem>
+    ) = coroutineScope {
         val requestReleaseYear = request.firstReleaseYear
-        val matched = searchItems.map { item -> async {
+        val matched = items.map { item -> async {
             val itemTokenList = listOf(
                 item.tokenResult,
                 *item.alternativeTokenResults.toTypedArray()
@@ -81,16 +107,12 @@ class SearchManager(
             }
             Pair(item, score)
         }.filter {
-            it.second > 0.3
+            it.second > 0.5
         }
 
         val found = matched.maxByOrNull { it.second }
 
-        return@coroutineScope found?.first?.let { item ->
-            request.tmdbId?.also {
-                burningSeriesMappings[it] = item
-            }
-        }
+        return@coroutineScope found
     }
 
     companion object {

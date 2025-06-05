@@ -64,11 +64,16 @@ data object SearchMatcher {
         }
 
         var currentCategoryScore = 0.0
+        var currentCategoryMaxScore = 0.0
         val secondTokenValues = secondTokens.map { it.value.lowercase() }
 
         for (firstToken in firstTokens) {
             val firstValue = firstToken.value.lowercase()
+            val tokenLength = firstValue.length
+            val maxScoreForThisToken = 1.0 + (0.05 * tokenLength)
             var bestMatchScore = 0.0
+
+            currentCategoryMaxScore += maxScoreForThisToken
 
             for (secondToken in secondTokenValues) {
                 val similarity = JaroWinkler.Default.similarity(firstValue, secondToken)
@@ -78,11 +83,15 @@ data object SearchMatcher {
             }
 
             if (bestMatchScore > 0.7) {
-                currentCategoryScore += bestMatchScore
+                if (bestMatchScore == 1.0) {
+                    currentCategoryScore += maxScoreForThisToken
+                } else {
+                    currentCategoryScore += bestMatchScore
+                }
             }
         }
 
-        val maxPossibleForCategory = firstTokens.size * categoryWeight
+        val maxPossibleForCategory = currentCategoryMaxScore * categoryWeight
         val achievedForCategory = currentCategoryScore * categoryWeight
 
         return CalculatedCategory(

@@ -51,6 +51,7 @@ kotlin {
             api(libs.tooling)
             api(libs.ktor)
             implementation(libs.serialization.protobuf)
+            implementation(libs.kermit)
 
             api(project(":matcher"))
             implementation(project("burningseries"))
