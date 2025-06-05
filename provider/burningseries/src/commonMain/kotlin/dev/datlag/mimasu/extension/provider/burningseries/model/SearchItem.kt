@@ -10,15 +10,36 @@ import kotlinx.serialization.Transient
 @Serializable
 data class SearchItem(
     val title: String,
+    val alternativeTitles: Set<String>,
     val href: String,
     val genre: String?
 ): TokenAware {
+
+    constructor(title: String, href: String, genre: String?) : this(
+        title = title.split('|').filterNot { it.isBlank() }.firstOrNull()?.trim() ?: title,
+        alternativeTitles = title.split('|').filterNot { it.isBlank() }.drop(1).map { it.trim() }.toSet(),
+        href = href,
+        genre = genre
+    )
 
     @Transient
     override val tokenResult: TokenResult = Tokenizer.tokenize(title)
 
     @Transient
-    private val numbers = tokenResult.tokens.mapNotNull { token -> token.value.toIntOrNull() }
+    val alternativeTokenResults: Set<TokenResult> = alternativeTitles.mapNotNull {
+        if (it.isBlank()) {
+            return@mapNotNull null
+        }
+
+        Tokenizer.tokenize(it)
+    }.toSet()
+
+    @Transient
+    private val numbers = (tokenResult.tokens.mapNotNull { token ->
+        token.value.toIntOrNull()
+    } + alternativeTokenResults.flatMap { alternative ->
+        alternative.tokens.mapNotNull { token -> token.value.toIntOrNull() }
+    }).toSet()
 
     @Transient
     val releaseYear = numbers.firstNotNullOfOrNull { token ->

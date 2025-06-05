@@ -24,6 +24,7 @@ firebase-android-crashlytics = "19.4.3"
 immutable = "0.4.0"
 kache = "2.1.1"
 kast = "0.2.1"
+kermit = "2.0.5"
 kmpalette = "3.1.0"
 kodein = "7.26.1"
 kolor = "2.1.1"
@@ -84,6 +85,7 @@ firebase-android-crashlytics = { group = "com.google.firebase", name = "firebase
 immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "immutable" }
 kache = { group = "com.mayakapps.kache", name = "kache", version.ref = "kache" }
 kast = { group = "dev.datlag.kast", name = "kast", version.ref = "kast" }
+kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
 kmpalette = { group = "com.kmpalette", name = "kmpalette-core", version.ref = "kmpalette" }
 kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }
 kodein-compose = { group = "org.kodein.di", name = "kodein-di-framework-compose", version.ref = "kodein" }

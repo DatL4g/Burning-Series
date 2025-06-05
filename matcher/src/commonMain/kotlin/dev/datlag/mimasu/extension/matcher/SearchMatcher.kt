@@ -1,14 +1,21 @@
 package dev.datlag.mimasu.extension.matcher
 
 import dev.datlag.mimasu.extension.matcher.distance.JaroWinkler
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 data object SearchMatcher {
 
-    fun calculateSymmetricSimilarity(first: TokenResult, second: TokenResult): Double {
-        val scoreAtoB = calculateSimilarity(first, second)
-        val scoreBtoA = calculateSimilarity(second, first)
+    suspend fun calculateSymmetricSimilarity(first: TokenResult, second: TokenResult): Double = coroutineScope {
+        val score = listOf(
+            first to second,
+            second to first
+        ).map { (a, b) -> async {
+            calculateSimilarity(a, b)
+        } }.awaitAll().sum()
 
-        return ((scoreAtoB + scoreBtoA) / 2.0).coerceIn(0.0, 1.0)
+        return@coroutineScope (score / 2.0).coerceIn(0.0, 1.0)
     }
 
     fun calculateSimilarity(first: TokenResult, second: TokenResult): Double {

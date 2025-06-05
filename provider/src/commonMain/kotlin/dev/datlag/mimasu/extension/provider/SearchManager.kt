@@ -57,25 +57,36 @@ class SearchManager(
             fallbackClient?.let { BurningSeries.search(fallbackClient) }
         }?.ifEmpty { null } ?: return@coroutineScope null
 
-
-        val matched = searchItems.firstOrNull {
-            it.title.equals(request.title, ignoreCase = true)
-        }  ?: searchItems.firstOrNull {
-            it.title.equals(request.originalTitle, ignoreCase = true)
-        } ?: searchItems.map { item -> async {
+        val requestReleaseYear = request.firstReleaseYear
+        val matched = searchItems.map { item -> async {
+            val itemTokenList = listOf(
+                item.tokenResult,
+                *item.alternativeTokenResults.toTypedArray()
+            )
             val similarity = listOf(
                 request.tokenResult,
                 request.originalTokenResult
             ).map { tokens -> async {
-                SearchMatcher.calculateSymmetricSimilarity(item.tokenResult, tokens)
-            } }.awaitAll().max()
+                itemTokenList.maxOfOrNull { searchToken ->
+                    SearchMatcher.calculateSymmetricSimilarity(searchToken, tokens)
+                }
+            } }.awaitAll().filterNotNull().max()
 
             Pair(item, similarity)
         } }.awaitAll().filter {
             it.second > 0.1
-        }.maxByOrNull { it.second }?.first
+        }.map { (item, score) ->
+            if (requestReleaseYear != null && item.releaseYear != null && requestReleaseYear == item.releaseYear) {
+                return@map Pair(item, score + 0.15)
+            }
+            Pair(item, score)
+        }.filter {
+            it.second > 0.3
+        }
 
-        return@coroutineScope matched?.let { item ->
+        val found = matched.maxByOrNull { it.second }
+
+        return@coroutineScope found?.first?.let { item ->
             request.tmdbId?.also {
                 burningSeriesMappings[it] = item
             }
