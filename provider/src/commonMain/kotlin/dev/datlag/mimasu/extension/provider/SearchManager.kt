@@ -1,6 +1,7 @@
 package dev.datlag.mimasu.extension.provider
 
 import de.jensklingenberg.ktorfit.ktorfit
+import dev.datlag.mimasu.extension.matcher.SearchMatcher
 import dev.datlag.mimasu.extension.provider.burningseries.BurningSeries
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.model.Movie
@@ -8,6 +9,9 @@ import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.createAniWorld
 import dev.datlag.mimasu.extension.provider.serienstream.createSerienStream
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 class SearchManager(
     val httpClient: HttpClient,
@@ -26,12 +30,12 @@ class SearchManager(
         }.createSerienStream()
     }
 
-    private val aniworld = ktorfit {
+    private val aniWorld = ktorfit {
         baseUrl(ANIWORLD_BASE_URL)
         httpClient(httpClient)
     }.createAniWorld()
 
-    private val fallbackAniworld = fallbackClient?.let {
+    private val fallbackAniWorld = fallbackClient?.let {
         ktorfit {
             baseUrl(ANIWORLD_BASE_URL)
             httpClient(it)
@@ -44,21 +48,34 @@ class SearchManager(
         // ToDo("movies will work a bit different")
     }
 
-    suspend fun search(request: Show.Request): Int? {
+    suspend fun search(request: Show.Request): Int? = coroutineScope {
         burningSeriesMappings[request.tmdbId]?.let {
-            return request.tmdbId
+            return@coroutineScope request.tmdbId
         }
 
         val searchItems = BurningSeries.search(httpClient).ifEmpty {
             fallbackClient?.let { BurningSeries.search(fallbackClient) }
-        }?.ifEmpty { null } ?: return null
+        }?.ifEmpty { null } ?: return@coroutineScope null
 
-        val matching = searchItems.firstOrNull {
+
+        val matched = searchItems.firstOrNull {
             it.title.equals(request.title, ignoreCase = true)
-        } ?: searchItems.firstOrNull {
+        }  ?: searchItems.firstOrNull {
             it.title.equals(request.originalTitle, ignoreCase = true)
-        }
-        return matching?.let { item ->
+        } ?: searchItems.map { item -> async {
+            val similarity = listOf(
+                request.tokenResult,
+                request.originalTokenResult
+            ).map { tokens -> async {
+                SearchMatcher.calculateSymmetricSimilarity(item.tokenResult, tokens)
+            } }.awaitAll().max()
+
+            Pair(item, similarity)
+        } }.awaitAll().filter {
+            it.second > 0.1
+        }.maxByOrNull { it.second }?.first
+
+        return@coroutineScope matched?.let { item ->
             request.tmdbId?.also {
                 burningSeriesMappings[it] = item
             }

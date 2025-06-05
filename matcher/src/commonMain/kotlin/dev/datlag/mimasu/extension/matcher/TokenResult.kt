@@ -43,5 +43,20 @@ data class TokenResult(
             TOKEN_EXTRA_WEIGHTING to 0.6,
             TOKEN_JAPANESE_EXTRA_WEIGHTING to 0.3
         )
+
+        val primaryTokenWeight: Double
+            get() = tokenWeights[TOKEN_BASIC_WEIGHTING] ?: 1.0
+
+        val japaneseTokenWeight: Double
+            get() = tokenWeights[TOKEN_JAPANESE_WEIGHTING] ?: 0.95
+
+        val romajiTokenWeight: Double
+            get() = tokenWeights[TOKEN_ROMAJI_WEIGHTING] ?: 0.8
+
+        val extraTokenWeight: Double
+            get() = tokenWeights[TOKEN_EXTRA_WEIGHTING] ?: 0.6
+
+        val japaneseExtraTokenWeight: Double
+            get() = tokenWeights[TOKEN_JAPANESE_EXTRA_WEIGHTING] ?: 0.3
     }
 }
