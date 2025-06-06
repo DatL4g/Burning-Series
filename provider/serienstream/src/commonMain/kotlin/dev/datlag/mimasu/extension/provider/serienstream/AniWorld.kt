@@ -8,7 +8,12 @@ import io.ktor.client.statement.HttpResponse
 interface AniWorld {
 
     @GET("ajax/seriesSearch")
-    suspend fun search(
-        @Query("keyword") keyword: String
+    suspend fun searchPlain(
+        @Query("keyword", encoded = true) keyword: String
+    ): Set<SearchResult>
+
+    @GET("ajax/seriesSearch")
+    suspend fun searchEncoded(
+        @Query("keyword", encoded = false) keyword: String
     ): Set<SearchResult>
 }

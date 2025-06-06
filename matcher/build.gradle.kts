@@ -56,6 +56,7 @@ kotlin {
         commonMain.dependencies {
             api(libs.coroutines)
             api(libs.tooling)
+            api(libs.immutable)
             implementation(libs.serialization)
         }
     }
