@@ -89,9 +89,15 @@ class CombinedSearchManager(
         filterItems: Collection<SearchResult>
     ) = coroutineScope {
         val matched = filterItems.map { item -> async {
+            val itemTokenList = listOfNotNull(
+                item.tokenResult,
+                item.alternativeTokenResult
+            )
             val similarity = tokens.map { tokens -> async {
-                SearchMatcher.calculateSymmetricSimilarity(item.tokenResult, tokens)
-            } }.awaitAll().max()
+                itemTokenList.maxOfOrNull { searchToken ->
+                    SearchMatcher.calculateSymmetricSimilarity(searchToken, tokens)
+                }
+            } }.awaitAll().filterNotNull().max()
 
             MatchResult(
                 similarity = similarity,

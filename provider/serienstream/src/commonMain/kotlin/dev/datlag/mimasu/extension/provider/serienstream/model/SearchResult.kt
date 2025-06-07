@@ -22,6 +22,13 @@ data class SearchResult(
     @Transient
     override val tokenResult: TokenResult = Tokenizer.tokenize(name)
 
+    @Transient
+    val alternativeTokenResult: TokenResult? = releaseYear?.let { year ->
+        tokenResult.copy(
+            tokens = tokenResult.tokens.filterNot { it.value == year.toString() }
+        )
+    }
+
     companion object {
         private val productionSanitizeRegex = "\\D".toRegex()
     }
