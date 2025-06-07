@@ -59,7 +59,14 @@ class ShowService : LifecycleService() {
         }
 
         override fun requestEpisode(showId: Int, request: ByteArray?, callback: EpisodeCallback?) {
+            val showHolder = searchManager ?: return
 
+            scope.launch(Dispatchers.IO) {
+                val requestInfo = Show.EpisodeRequest(request) ?: return@launch
+                val showInfo = showHolder.matchedShowResults(showId) ?: return@launch
+
+
+            }
         }
     }
 }

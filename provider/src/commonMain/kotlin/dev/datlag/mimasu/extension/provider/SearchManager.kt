@@ -4,6 +4,7 @@ import de.jensklingenberg.ktorfit.ktorfit
 import dev.datlag.mimasu.extension.matcher.MatchResult
 import dev.datlag.mimasu.extension.provider.burningseries.BSSearchManager
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
+import dev.datlag.mimasu.extension.provider.model.MatchedShowResults
 import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.CombinedSearchManager
 import dev.datlag.mimasu.extension.provider.serienstream.createAniWorld
@@ -54,10 +55,14 @@ class SearchManager(
         fallbackAniWorld = fallbackAniWorld
     )
 
-    private val mappings = mutableMapOf<Int, AllShowResults>()
+    private val mappings = mutableMapOf<Int, MatchedShowResults>()
 
     suspend fun initialize() {
         burningSeriesSearchManager.initialize()
+    }
+
+    fun matchedShowResults(showId: Int): MatchedShowResults? {
+        return mappings[showId]?.takeUnless { it.isEmpty() }
     }
 
     suspend fun search(request: Show.Request): Int? = coroutineScope {
@@ -83,7 +88,7 @@ class SearchManager(
                 releaseYear = request.firstReleaseYear,
                 isAnimation = request.isAnimation
             )?.also {
-                mappings[id]?.plus(AllShowResults(serienStream = it))
+                mappings[id]?.plus(MatchedShowResults(serienStream = it))
             }
         }
         val burningSeries = async {
@@ -96,11 +101,11 @@ class SearchManager(
                 releaseYear = request.firstReleaseYear,
                 isAnimation = request.isAnimation
             )?.also {
-                mappings[id]?.plus(AllShowResults(burningSeries = it))
+                mappings[id]?.plus(MatchedShowResults(burningSeries = it))
             }
         }
 
-        AllShowResults(
+        MatchedShowResults(
             burningSeries = burningSeries.await(),
             serienStream = serienStream.await()
         ).takeUnless { it.isEmpty() }?.let {
@@ -110,21 +115,6 @@ class SearchManager(
             id
         } else {
             null
-        }
-    }
-
-    data class AllShowResults(
-        val burningSeries: MatchResult<SearchItem>? = null,
-        val serienStream: MatchResult<SearchResult>? = null
-    ) {
-
-        operator fun plus(other: AllShowResults): AllShowResults = this.copy(
-            burningSeries = burningSeries ?: other.burningSeries,
-            serienStream = serienStream ?: other.serienStream
-        )
-
-        fun isEmpty(): Boolean {
-            return burningSeries == null && serienStream == null
         }
     }
 

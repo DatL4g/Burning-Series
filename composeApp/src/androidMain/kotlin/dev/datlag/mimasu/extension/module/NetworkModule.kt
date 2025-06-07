@@ -3,6 +3,7 @@ package dev.datlag.mimasu.extension.module
 import de.jensklingenberg.ktorfit.ktorfit
 import dev.datlag.mimasu.extension.github.GitHub
 import dev.datlag.mimasu.extension.github.createGitHub
+import dev.datlag.mimasu.extension.provider.EpisodeManager
 import dev.datlag.mimasu.extension.provider.SearchManager
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
@@ -32,6 +33,12 @@ data object NetworkModule {
         }
         bindSingleton<SearchManager> {
             SearchManager(
+                httpClient = instance(),
+                fallbackClient = null
+            )
+        }
+        bindSingleton<EpisodeManager> {
+            EpisodeManager(
                 httpClient = instance(),
                 fallbackClient = null
             )

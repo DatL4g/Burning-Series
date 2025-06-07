@@ -49,6 +49,29 @@ sealed interface Show {
     }
 
     @Serializable
+    data class EpisodeRequest(
+        val episodeNumber: Int? = null,
+        val episodeTitle: String? = null,
+        val numberOfNormalSeasons: Int? = null,
+        val hasSpecialSeason: Boolean? = null,
+        val season: Int? = null,
+    ) : Show {
+
+        companion object {
+            @OptIn(ExperimentalSerializationApi::class)
+            operator fun invoke(bytes: ByteArray?): EpisodeRequest? {
+                if (bytes == null || bytes.isEmpty()) {
+                    return null
+                }
+
+                return scopeCatching {
+                    protobuf.decodeFromByteArray<EpisodeRequest>(bytes)
+                }.getOrNull()
+            }
+        }
+    }
+
+    @Serializable
     data class Response(
         val recapRange: Skipable? = null,
         val introRange: Skipable? = null,
