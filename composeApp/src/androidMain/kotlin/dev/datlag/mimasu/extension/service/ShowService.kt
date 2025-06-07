@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import dev.datlag.mimasu.extension.IShowInfoProvider
+import dev.datlag.mimasu.extension.provider.EpisodeManager
 import dev.datlag.mimasu.extension.provider.SearchManager
 import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.show.EpisodeCallback
@@ -42,6 +43,13 @@ class ShowService : LifecycleService() {
                 newInstance
             }
 
+        private val _episodeManager by instanceOrNull<EpisodeManager>()
+        private val episodeManager: EpisodeManager?
+            get() = _episodeManager ?: run {
+                val newInstance by instanceOrNull<EpisodeManager>()
+                newInstance
+            }
+
         init {
             scope.launch(Dispatchers.IO) {
                 searchManager?.initialize()
@@ -60,12 +68,16 @@ class ShowService : LifecycleService() {
 
         override fun requestEpisode(showId: Int, request: ByteArray?, callback: EpisodeCallback?) {
             val showHolder = searchManager ?: return
+            val manager = episodeManager ?: return
 
             scope.launch(Dispatchers.IO) {
                 val requestInfo = Show.EpisodeRequest(request) ?: return@launch
                 val showInfo = showHolder.matchedShowResults(showId) ?: return@launch
 
-
+                manager.watchInfo(
+                    matchedShowResults = showInfo,
+                    request = requestInfo
+                )
             }
         }
     }

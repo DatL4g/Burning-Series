@@ -57,6 +57,7 @@ kotlin {
             api(libs.ktor.serialization.json)
             api(libs.tooling)
             implementation(libs.datetime)
+            implementation(libs.kermit)
 
             implementation(project(":matcher"))
             implementation(project(":ksoup"))

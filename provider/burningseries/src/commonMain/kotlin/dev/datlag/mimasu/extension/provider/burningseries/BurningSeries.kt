@@ -4,10 +4,12 @@ import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
 import dev.datlag.mimasu.extension.ksoup.allByClass
 import dev.datlag.mimasu.extension.ksoup.allByTag
+import dev.datlag.mimasu.extension.ksoup.firstByClass
 import dev.datlag.mimasu.extension.ksoup.firstByTag
 import dev.datlag.mimasu.extension.ksoup.href
 import dev.datlag.mimasu.extension.ksoup.parseGet
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
+import dev.datlag.mimasu.extension.provider.burningseries.model.Series
 import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.sync.Mutex
@@ -72,7 +74,7 @@ data object BurningSeries {
         )
     }.getOrNull()
 
-    suspend fun search(client: HttpClient): Set<SearchItem> {
+    internal suspend fun search(client: HttpClient): Set<SearchItem> {
         cachedSearchItems.also {
             if (it.isNotEmpty()) {
                 return it
@@ -80,6 +82,43 @@ data object BurningSeries {
         }
 
         return atomicSearch(client)
+    }
+
+    internal suspend fun series(client: HttpClient, href: String): Series? {
+        val doc = document(client, normalize(href)) ?: return null
+        val episodeElements = doc.firstByClass("serie")?.firstByClass("episodes")?.allByTag("tr").orEmpty().ifEmpty { null } ?: return null
+        val episodeInfoList = episodeElements.mapNotNull { element ->
+            val episodeList = element.allByTag("td").flatMap { it.allByTag("a") }.map { data ->
+                val text = data.text()
+                val episodeHref = data.href()?.let(::normalize)
+
+                text.trim() to episodeHref
+            }
+
+            val episodeHref = when {
+                episodeList.isEmpty() -> return@mapNotNull null
+                !episodeList[0].second.isNullOrBlank() -> episodeList[0].second
+                episodeList.size > 1 && !episodeList[1].second.isNullOrBlank() -> episodeList[1].second
+                else -> return@mapNotNull null
+            } ?: return@mapNotNull null
+
+            val episodeTitle = if (episodeList.size > 1) episodeList[1].first.trim() else ""
+            val hoster = episodeList.map { it.second }.filterNot { it.isNullOrBlank() }.toMutableList().apply {
+                remove(episodeHref)
+                remove(episodeHref.trim())
+            }.filterNot { it.isNullOrBlank() }.filterNotNull()
+
+            Series.Episode(
+                number = episodeList[0].first.trim().toIntOrNull(),
+                title = episodeTitle,
+                href = episodeHref,
+                hoster = hoster
+            )
+        }
+
+        return Series(
+            episodes = episodeInfoList
+        )
     }
 
     internal suspend fun atomicSearch(client: HttpClient): Set<SearchItem> = searchMutex.withLock {

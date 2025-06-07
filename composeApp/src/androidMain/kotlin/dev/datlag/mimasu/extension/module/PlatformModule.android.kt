@@ -2,6 +2,7 @@ package dev.datlag.mimasu.extension.module
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
 import okhttp3.Dns
@@ -39,6 +40,7 @@ actual object PlatformModule {
                     json(instance(), ContentType.Application.Json)
                     json(instance(), ContentType.Text.Plain)
                 }
+                install(HttpCache)
             }
         }
     }
