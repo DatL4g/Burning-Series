@@ -1,6 +1,7 @@
 package dev.datlag.mimasu.extension.provider
 
 import co.touchlab.kermit.Logger
+import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
 import dev.datlag.mimasu.extension.provider.burningseries.BSEpisodeManager
 import dev.datlag.mimasu.extension.provider.burningseries.BurningSeries
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
@@ -11,11 +12,13 @@ import io.ktor.client.HttpClient
 class EpisodeManager(
     val httpClient: HttpClient,
     val fallbackClient: HttpClient?,
+    val firebaseWrapper: FirebaseWrapper?
 ) {
 
     private val burningSeriesEpisodeManager = BSEpisodeManager(
         httpClient = httpClient,
-        fallbackClient = fallbackClient
+        fallbackClient = fallbackClient,
+        firebaseWrapper = firebaseWrapper
     )
 
     suspend fun watchInfo(matchedShowResults: MatchedShowResults, request: Show.EpisodeRequest) {

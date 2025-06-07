@@ -10,6 +10,7 @@ import kotlinx.serialization.json.Json
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
 import org.kodein.di.instance
+import org.kodein.di.instanceOrNull
 
 data object NetworkModule {
 
@@ -40,7 +41,8 @@ data object NetworkModule {
         bindSingleton<EpisodeManager> {
             EpisodeManager(
                 httpClient = instance(),
-                fallbackClient = null
+                fallbackClient = null,
+                firebaseWrapper = instanceOrNull()
             )
         }
     }

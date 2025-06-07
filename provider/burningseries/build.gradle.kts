@@ -18,35 +18,6 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
-    macosX64()
-    macosArm64()
-
-    tvosX64()
-    tvosArm64()
-    tvosSimulatorArm64()
-
-    js(IR) {
-        browser()
-        nodejs()
-        binaries.executable()
-    }
-
-    wasmJs {
-        browser()
-        nodejs()
-        binaries.executable()
-    }
-
-    linuxX64()
-    linuxArm64()
-
-    mingwX64()
-
-    androidNativeX64()
-    androidNativeArm32()
-    androidNativeArm64()
-    androidNativeX86()
-
     sourceSets {
         commonMain.dependencies {
             api(libs.coroutines)
@@ -61,6 +32,7 @@ kotlin {
 
             implementation(project(":matcher"))
             implementation(project(":ksoup"))
+            implementation(project(":firebase"))
         }
     }
 }
