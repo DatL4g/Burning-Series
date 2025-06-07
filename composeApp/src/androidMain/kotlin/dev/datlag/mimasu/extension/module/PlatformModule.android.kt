@@ -1,5 +1,7 @@
 package dev.datlag.mimasu.extension.module
 
+import dev.datlag.mimasu.extension.AppInitializer
+import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.cache.HttpCache
@@ -41,6 +43,13 @@ actual object PlatformModule {
                     json(instance(), ContentType.Text.Plain)
                 }
                 install(HttpCache)
+            }
+        }
+        bindSingleton<FirebaseWrapper.Creator> {
+            if (AppInitializer.isSekretLoaded(instance())) {
+                FirebaseWrapper.Creator.Available(FirebaseWrapper())
+            } else {
+                FirebaseWrapper.Creator.Empty
             }
         }
     }

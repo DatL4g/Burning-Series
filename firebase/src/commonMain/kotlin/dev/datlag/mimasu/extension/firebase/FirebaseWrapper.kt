@@ -2,10 +2,11 @@ package dev.datlag.mimasu.extension.firebase
 
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseApp
+import dev.gitlive.firebase.app
 import dev.gitlive.firebase.firestore.firestore
 
 class FirebaseWrapper(
-    private val app: FirebaseApp
+    private val app: FirebaseApp = Firebase.app
 ) {
 
     val store = Store()
@@ -24,4 +25,8 @@ class FirebaseWrapper(
         }
     }
 
+    sealed interface Creator {
+        data class Available(val wrapper: FirebaseWrapper) : Creator
+        data object Empty : Creator
+    }
 }

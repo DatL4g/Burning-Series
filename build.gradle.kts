@@ -25,6 +25,17 @@ plugins {
     alias(libs.plugins.versions)
 }
 
+// Force new atomicfu version, compose uses 0.23.2
+allprojects {
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlinx" && requested.name.startsWith("atomicfu")) {
+                useVersion(libs.versions.atomicfu.get())
+            }
+        }
+    }
+}
+
 tasks.withType<DependencyUpdatesTask> {
     outputFormatter {
         val updatable = this.outdated.dependencies
@@ -107,29 +118,6 @@ fun isNonStable(version: String): Boolean {
     val regex = "^[0-9,.v-]+(-r)?$".toRegex()
     val isStable = stableKeyword || regex.matches(version)
     return isStable.not()
-}
-
-tasks.create("createSekretProperties") {
-    var file = File(project(":composeApp").projectDir, "sekret.properties")
-    val key = properties["key"] as? String ?: return@create
-    val value = properties["value"] as? String ?: return@create
-
-    val append = if (!file.existsSafely()) {
-        file = file.create()
-        false
-    } else {
-        true
-    }
-
-    if (append) {
-        file.appendText(
-            "\n$key=$value"
-        )
-    } else {
-        file.writeText(
-            "$key=$value"
-        )
-    }
 }
 
 fun File.existsSafely() = runCatching {

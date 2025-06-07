@@ -1,6 +1,9 @@
 TODO*
 composeApp/sekret.properties
 composeApp/sekret/src
+composeApp/src/androidMain/google-services.json
+composeApp/google-services.json
+composeApp/release
 
 *.so
 *.dll

@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.sekret)
     alias(libs.plugins.serialization)
 }
 
@@ -49,6 +50,7 @@ kotlin {
 
             implementation(project(":github"))
             implementation(project(":provider"))
+            implementation(project(":firebase"))
         }
 
         val androidMain by getting {
@@ -60,6 +62,7 @@ kotlin {
                 implementation(libs.activity)
                 implementation(libs.activity.compose)
                 implementation(libs.multidex)
+                implementation(libs.android.startup)
 
                 implementation(libs.ktor.jvm)
                 implementation(libs.coroutines.android)
@@ -75,6 +78,14 @@ kotlin {
 
 dependencies {
     coreLibraryDesugaring(libs.desugar)
+}
+
+sekret {
+    properties {
+        enabled.set(true)
+
+        googleServicesFile.set(project.layout.projectDirectory.file("google-services.json"))
+    }
 }
 
 android {

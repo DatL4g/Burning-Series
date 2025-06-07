@@ -49,6 +49,16 @@
             android:name="open_source_license"
             android:value="GNU GENERAL PUBLIC LICENSE Version 3" />
 
+        <provider
+            android:authorities="${applicationId}.androidx-startup"
+            android:name="androidx.startup.InitializationProvider"
+            android:exported="false"
+            tools:node="merge">
+
+            <meta-data android:name="dev.datlag.mimasu.extension.AppInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
         <service android:name=".service.UpdateService"
             android:exported="true">
             <intent-filter>

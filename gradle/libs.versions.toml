@@ -7,6 +7,7 @@ android = "8.9.3"
 android-core = "1.16.0"
 android-firebase = "33.14.0"
 android-sqlite = "2.5.1"
+android-startup = "1.2.0"
 apollo = "4.0.0-beta.7"
 atomicfu = "0.27.0"
 blurhash = "0.3.0"
@@ -58,8 +59,7 @@ ackpine = { group = "ru.solrudev.ackpine", name = "ackpine-ktx", version.ref = "
 activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
 android-firebase = { group = "com.google.firebase", name = "firebase-bom", version.ref = "android-firebase" }
-android-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
-android-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+android-startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "android-startup" }
 apollo = { group = "com.apollographql.apollo3", name = "apollo-runtime", version.ref = "apollo" }
 blurhash = { group = "com.vanniktech", name = "blurhash", version.ref = "blurhash" }
 coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }

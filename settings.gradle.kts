@@ -1,6 +1,6 @@
 rootProject.name = "Burning-Series"
 
-include(":composeApp")
+include(":composeApp", ":composeApp:sekret")
 include(":github")
 include(":matcher")
 include(":ksoup")

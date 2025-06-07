@@ -1,10 +1,13 @@
 package dev.datlag.mimasu.extension.module
 
 import de.jensklingenberg.ktorfit.ktorfit
+import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
 import dev.datlag.mimasu.extension.github.GitHub
 import dev.datlag.mimasu.extension.github.createGitHub
 import dev.datlag.mimasu.extension.provider.EpisodeManager
 import dev.datlag.mimasu.extension.provider.SearchManager
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.app
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import org.kodein.di.DI
@@ -42,7 +45,9 @@ data object NetworkModule {
             EpisodeManager(
                 httpClient = instance(),
                 fallbackClient = null,
-                firebaseWrapper = instanceOrNull()
+                firebaseWrapper = instanceOrNull<FirebaseWrapper.Creator>()?.let {
+                    (it as? FirebaseWrapper.Creator.Available)?.wrapper
+                } ?: instanceOrNull()
             )
         }
     }

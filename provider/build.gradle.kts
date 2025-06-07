@@ -25,6 +25,7 @@ kotlin {
             implementation(libs.kermit)
 
             api(project(":matcher"))
+            api(project(":firebase"))
             implementation(project("burningseries"))
             implementation(project("serienstream"))
         }
