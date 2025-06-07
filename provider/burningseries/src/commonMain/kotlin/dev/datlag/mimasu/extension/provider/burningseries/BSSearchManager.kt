@@ -1,5 +1,6 @@
 package dev.datlag.mimasu.extension.provider.burningseries
 
+import dev.datlag.mimasu.extension.matcher.MatchResult
 import dev.datlag.mimasu.extension.matcher.SearchMatcher
 import dev.datlag.mimasu.extension.matcher.TokenResult
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
@@ -13,16 +14,16 @@ class BSSearchManager(
     private val fallbackClient: HttpClient?,
 ) {
 
-    private val burningSeriesMappings = mutableMapOf<Int, SearchItem>()
+    private val burningSeriesMappings = mutableMapOf<Int, MatchResult<SearchItem>>()
 
     suspend fun search(
         tmdbId: Int?,
         tokens: Collection<TokenResult>,
         releaseYear: Int?,
         isAnimation: Boolean?
-    ): Int? {
+    ): MatchResult<SearchItem>? {
         burningSeriesMappings[tmdbId]?.let {
-            return tmdbId
+            return it
         }
 
         val searchItems = BurningSeries.search(httpClient).ifEmpty {
@@ -49,8 +50,8 @@ class BSSearchManager(
             filterItems = otherSearchItems
         )
 
-        return bestResult?.first?.let { item ->
-            tmdbId?.also {
+        return bestResult?.also { item ->
+            tmdbId?.let {
                 burningSeriesMappings[it] = item
             }
         }
@@ -72,19 +73,29 @@ class BSSearchManager(
                 }
             } }.awaitAll().filterNotNull().max()
 
-            Pair(item, similarity)
+            MatchResult(
+                similarity = similarity,
+                data = item
+            )
         } }.awaitAll().filter {
-            it.second > 0.1
-        }.map { (item, score) ->
+            it.similarity > 0.1
+        }.map { (score, item) ->
             if (releaseYear != null && item.releaseYear != null && releaseYear == item.releaseYear) {
-                return@map Pair(item, score + 0.15)
+                return@map MatchResult(
+                    similarity = score + 0.15,
+                    data = item
+                )
             }
-            Pair(item, score)
+
+            MatchResult(
+                similarity = score,
+                data = item
+            )
         }.filter {
-            it.second > 0.5
+            it.similarity > 0.5
         }
 
-        val found = matched.maxByOrNull { it.second }
+        val found = matched.maxByOrNull { it.similarity }
 
         return@coroutineScope found
     }
