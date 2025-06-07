@@ -21,25 +21,29 @@ class EpisodeManager(
         firebaseWrapper = firebaseWrapper
     )
 
-    suspend fun watchInfo(matchedShowResults: MatchedShowResults, request: Show.EpisodeRequest) {
-        val burningSeries = matchedShowResults.burningSeries ?: return
+    suspend fun watchInfo(
+        matchedShowResults: MatchedShowResults,
+        request: Show.EpisodeRequest
+    ): Show.Response? {
+        val burningSeries = matchedShowResults.burningSeries ?: return null
 
         Logger.e("Requested Episode [${request.episodeNumber}] ${request.episodeTitle}")
-        series(
+        val streamingUrls = series(
             request = request,
             searchItem = burningSeries.data
         )
+        Logger.e("Streaming Urls: $streamingUrls")
+
+        return null
     }
 
     private suspend fun series(
         request: Show.EpisodeRequest,
         searchItem: SearchItem
-    ) {
-        burningSeriesEpisodeManager.episode(
-            show = searchItem,
-            episodeNumber = request.episodeNumber,
-            season = request.season
-        )
-    }
+    ): Collection<String> = burningSeriesEpisodeManager.episode(
+        show = searchItem,
+        episodeNumber = request.episodeNumber,
+        season = request.season
+    )
 
 }

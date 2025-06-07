@@ -29,6 +29,7 @@ kotlin {
             api(libs.tooling)
             implementation(libs.datetime)
             implementation(libs.kermit)
+            implementation(libs.skeo)
 
             implementation(project(":matcher"))
             implementation(project(":ksoup"))
