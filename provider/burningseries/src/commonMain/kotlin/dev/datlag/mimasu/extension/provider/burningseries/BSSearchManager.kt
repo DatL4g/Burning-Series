@@ -16,6 +16,12 @@ class BSSearchManager(
 
     private val burningSeriesMappings = mutableMapOf<Int, MatchResult<SearchItem>>()
 
+    suspend fun initialize(): Set<SearchItem> {
+        return BurningSeries.search(httpClient).ifEmpty {
+            fallbackClient?.let { BurningSeries.search(fallbackClient) }
+        }.orEmpty()
+    }
+
     suspend fun search(
         tmdbId: Int?,
         tokens: Collection<TokenResult>,
@@ -26,9 +32,7 @@ class BSSearchManager(
             return it
         }
 
-        val searchItems = BurningSeries.search(httpClient).ifEmpty {
-            fallbackClient?.let { BurningSeries.search(fallbackClient) }
-        }?.ifEmpty { null } ?: return null
+        val searchItems = initialize().ifEmpty { null } ?: return null
 
         val (filteredSearchItems, otherSearchItems) = when (isAnimation) {
             true -> searchItems.filter {
@@ -63,7 +67,7 @@ class BSSearchManager(
         filterItems: Collection<SearchItem>
     ) = coroutineScope {
         val matched = filterItems.map { item -> async {
-            val itemTokenList = listOf(
+            val itemTokenList = setOf(
                 item.tokenResult,
                 *item.alternativeTokenResults.toTypedArray()
             )

@@ -56,6 +56,10 @@ class SearchManager(
 
     private val mappings = mutableMapOf<Int, AllShowResults>()
 
+    suspend fun initialize() {
+        burningSeriesSearchManager.initialize()
+    }
+
     suspend fun search(request: Show.Request): Int? = coroutineScope {
         val id = request.tmdbId ?: return@coroutineScope null
 

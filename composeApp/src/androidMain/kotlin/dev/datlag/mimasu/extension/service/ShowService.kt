@@ -23,8 +23,6 @@ class ShowService : LifecycleService() {
     override fun onBind(intent: Intent): IBinder? {
         val result = super.onBind(intent)
 
-        Log.e("Extension Show", "Bind Show Service")
-
         val di = applicationContext.safeCast<DIAware>()?.di
             ?: (application as? DIAware)?.di
             ?: return result
@@ -37,13 +35,21 @@ class ShowService : LifecycleService() {
         override val di: DI
     ) : IShowInfoProvider.Stub(), DIAware {
 
-        private val searchManager by instanceOrNull<SearchManager>()
-
-        override fun requestShowId(request: ByteArray?, callback: ShowCallback?) {
-            val manager = searchManager ?: run {
+        private val _searchManager by instanceOrNull<SearchManager>()
+        private val searchManager: SearchManager?
+            get() = _searchManager ?: run {
                 val newInstance by instanceOrNull<SearchManager>()
                 newInstance
-            } ?: return
+            }
+
+        init {
+            scope.launch(Dispatchers.IO) {
+                searchManager?.initialize()
+            }
+        }
+
+        override fun requestShowId(request: ByteArray?, callback: ShowCallback?) {
+            val manager = searchManager ?: return
 
             scope.launch(Dispatchers.IO) {
                 val requestInfo = Show.Request(request) ?: return@launch

@@ -89,7 +89,7 @@ class CombinedSearchManager(
         filterItems: Collection<SearchResult>
     ) = coroutineScope {
         val matched = filterItems.map { item -> async {
-            val itemTokenList = listOfNotNull(
+            val itemTokenList = setOfNotNull(
                 item.tokenResult,
                 item.alternativeTokenResult
             )
