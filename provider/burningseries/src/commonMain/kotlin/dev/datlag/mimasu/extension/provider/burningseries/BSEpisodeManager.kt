@@ -90,14 +90,20 @@ class BSEpisodeManager(
             }
         }.toSet().map { langLink -> async {
             getSeries(langLink)
-        } }.awaitAll().filterNotNull().toSet()
+        } }.awaitAll().filterNotNull().toSet().distinctBy {
+            it.selectedLanguage
+        }.filterNot {
+            it.selectedLanguage.isNullOrBlank()
+        }
 
         val mappedStreams = allSeries.map { s -> async {
             val requestedEpisode = s.episodes.firstOrNull { it.number == episodeNumber } ?: return@async null
             val hosterUrls = firebaseWrapper?.store?.streams(requestedEpisode.hoster)?.ifEmpty { null } ?: return@async null
 
-            (s.selectedLanguage ?: return@async null) to streams(httpClient, hosterUrls).toList()
-        } }.awaitAll().filterNotNull().toMap()
+            (s.selectedLanguage ?: return@async null) to hosterUrls.ifEmpty { return@async null }
+        } }.awaitAll().filterNotNull().toSet().map { (key, urls) -> async {
+            key to streams(httpClient, urls).toList()
+        } }.awaitAll().toMap()
 
         return@coroutineScope mappedStreams
     }
