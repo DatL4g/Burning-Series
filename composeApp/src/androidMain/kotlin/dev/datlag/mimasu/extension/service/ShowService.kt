@@ -98,9 +98,10 @@ class ShowService : LifecycleService() {
                 val streams = manager.episodeStreams(
                     matchedShowResults = showInfo,
                     request = requestInfo
-                ).toSet().ifEmpty { null } ?: return@launch
+                ).ifEmpty { null } ?: return@launch
+
                 val result = Show.Response(
-                    sources = mapOf("de" to streams.toList())
+                    sources = streams
                 )
 
                 callback?.onResult(result.toByteArray())

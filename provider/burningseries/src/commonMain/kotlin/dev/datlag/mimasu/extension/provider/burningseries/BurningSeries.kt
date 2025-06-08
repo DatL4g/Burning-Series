@@ -86,6 +86,28 @@ data object BurningSeries {
 
     internal suspend fun series(client: HttpClient, href: String): Series? {
         val doc = document(client, normalize(href)) ?: return null
+
+        val selectedLanguageValue = doc.firstByClass("series-language")?.selectFirst("option[selected]")?.value()?.ifBlank { null }?.trim()
+        var selectedLanguage: String? = null
+        val languageElements = doc.firstByClass("series-language")?.select("option").orEmpty()
+
+        val languages = languageElements.mapNotNull {
+            val value = it.value().ifBlank { null }?.trim()
+            val selected = it.selectFirst("option[selected]")?.value()
+
+            if (!selected.isNullOrBlank() || (!selectedLanguageValue.isNullOrBlank() && selectedLanguageValue == value)) {
+                selectedLanguage = value
+            }
+            value
+        }.toSet()
+
+        if (selectedLanguage.isNullOrBlank()) {
+            selectedLanguage = selectedLanguageValue
+            if (selectedLanguage.isNullOrBlank()) {
+                selectedLanguage = languages.firstOrNull()
+            }
+        }
+
         val episodeElements = doc.firstByClass("serie")?.firstByClass("episodes")?.allByTag("tr").orEmpty().ifEmpty { null } ?: return null
         val episodeInfoList = episodeElements.mapNotNull { element ->
             val episodeList = element.allByTag("td").flatMap { it.allByTag("a") }.map { data ->
@@ -117,6 +139,8 @@ data object BurningSeries {
         }
 
         return Series(
+            selectedLanguage = selectedLanguage?.ifBlank { null }?.trim(),
+            languages = languages,
             episodes = episodeInfoList
         )
     }

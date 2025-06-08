@@ -1,6 +1,5 @@
 package dev.datlag.mimasu.extension.provider.burningseries
 
-import co.touchlab.kermit.Logger
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
@@ -40,32 +39,75 @@ class BSEpisodeManager(
             "${show.href}/${season}"
         }
 
-        val series = seriesKache.getIfAvailable(link) ?: BurningSeries.series(httpClient, link)?.also {
-            seriesKache.put(link, it)
+        val series = getSeries(link) ?: return false
+
+        val requestedEpisode = series.episodes.firstOrNull {
+            it.number == episodeNumber
         } ?: return false
 
-        val requestedEpisode = series.episodes.firstOrNull { it.number == episodeNumber } ?: return false
-        return requestedEpisode.hoster.isNotEmpty()
+        return requestedEpisode.hoster.isNotEmpty() || run {
+            val languageSpecificLinks = series.languages.map { lang ->
+                if (link.endsWith('/')) {
+                    "${link}$lang"
+                } else {
+                    "${link}/$lang"
+                }
+            }.toSet()
+
+            coroutineScope {
+                val languageSpecificSeries = languageSpecificLinks.map { langLink -> async {
+                    getSeries(langLink)
+                } }.awaitAll().filterNotNull().toSet()
+
+                languageSpecificSeries.any { langSeries ->
+                    val langEpisode = langSeries.episodes.firstOrNull {
+                        it.number == episodeNumber
+                    } ?: return@any false
+
+                    langEpisode.hoster.isNotEmpty()
+                }
+            }
+        }
     }
 
     suspend fun episodeStreams(
         show: SearchItem,
         episodeNumber: Int?,
         season: Int?
-    ): Collection<String> {
+    ): Map<String, List<String>> = coroutineScope {
         val link = if (show.href.endsWith('/')) {
             "${show.href}${season}"
         } else {
             "${show.href}/${season}"
         }
 
-        val series = seriesKache.getIfAvailable(link) ?: BurningSeries.series(httpClient, link)?.also {
-            seriesKache.put(link, it)
-        } ?: return emptyList()
+        val series = getSeries(link) ?: return@coroutineScope emptyMap()
+        val allSeries = series.languages.map { lang ->
+            if (link.endsWith('/')) {
+                "${link}$lang"
+            } else {
+                "${link}/$lang"
+            }
+        }.toSet().map { langLink -> async {
+            getSeries(langLink)
+        } }.awaitAll().filterNotNull().toSet()
 
-        val requestedEpisode = series.episodes.firstOrNull { it.number == episodeNumber } ?: return emptyList()
-        val hosterUrls = firebaseWrapper?.store?.streams(requestedEpisode.hoster)?.ifEmpty { null } ?: return emptyList()
-        return streams(httpClient, hosterUrls)
+        val mappedStreams = allSeries.map { s -> async {
+            val requestedEpisode = s.episodes.firstOrNull { it.number == episodeNumber } ?: return@async null
+            val hosterUrls = firebaseWrapper?.store?.streams(requestedEpisode.hoster)?.ifEmpty { null } ?: return@async null
+
+            (s.selectedLanguage ?: return@async null) to streams(httpClient, hosterUrls).toList()
+        } }.awaitAll().filterNotNull().toMap()
+
+        return@coroutineScope mappedStreams
+    }
+
+    private suspend fun getSeries(link: String): Series? {
+        return seriesKache.getIfAvailable(link) ?: (BurningSeries.series(httpClient, link) ?: fallbackClient?.let {
+            BurningSeries.series(it, link)
+        })?.also {
+            seriesKache.put(link, it)
+        }
     }
 
     private suspend fun streams(client: HttpClient, urls: Collection<String>) = coroutineScope {

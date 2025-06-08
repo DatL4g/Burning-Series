@@ -55,8 +55,8 @@ class EpisodeManager(
     suspend fun episodeStreams(
         matchedShowResults: MatchedShowResults,
         request: Show.EpisodeRequest
-    ): Collection<String> {
-        val burningSeries = matchedShowResults.burningSeries ?: return emptyList()
+    ): Map<String, List<String>> {
+        val burningSeries = matchedShowResults.burningSeries ?: return emptyMap()
         return streams(
             request = request,
             searchItem = burningSeries.data
@@ -75,7 +75,7 @@ class EpisodeManager(
     private suspend fun streams(
         request: Show.EpisodeRequest,
         searchItem: SearchItem
-    ): Collection<String> = burningSeriesEpisodeManager.episodeStreams(
+    ): Map<String, List<String>> = burningSeriesEpisodeManager.episodeStreams(
         show = searchItem,
         episodeNumber = request.episodeNumber,
         season = request.season
