@@ -1,5 +1,7 @@
 package dev.datlag.mimasu.extension.provider.burningseries
 
+import com.mayakapps.kache.InMemoryKache
+import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.matcher.MatchResult
 import dev.datlag.mimasu.extension.matcher.SearchMatcher
 import dev.datlag.mimasu.extension.matcher.TokenResult
@@ -14,7 +16,11 @@ class BSSearchManager(
     private val fallbackClient: HttpClient?,
 ) {
 
-    private val burningSeriesMappings = mutableMapOf<Int, MatchResult<SearchItem>>()
+    private val kache = InMemoryKache<Int, MatchResult<SearchItem>>(
+        maxSize = 5L * 1024 * 1024
+    ) {
+        strategy = KacheStrategy.LRU
+    }
 
     suspend fun initialize(): Set<SearchItem> {
         return BurningSeries.search(httpClient).ifEmpty {
@@ -28,7 +34,7 @@ class BSSearchManager(
         releaseYear: Int?,
         isAnimation: Boolean?
     ): MatchResult<SearchItem>? {
-        burningSeriesMappings[tmdbId]?.let {
+        tmdbId?.let(kache::getIfAvailable)?.let {
             return it
         }
 
@@ -56,7 +62,7 @@ class BSSearchManager(
 
         return bestResult?.also { item ->
             tmdbId?.let {
-                burningSeriesMappings[it] = item
+                kache.put(it, item)
             }
         }
     }

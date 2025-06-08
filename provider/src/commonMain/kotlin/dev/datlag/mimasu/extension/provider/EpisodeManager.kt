@@ -1,6 +1,8 @@
 package dev.datlag.mimasu.extension.provider
 
 import co.touchlab.kermit.Logger
+import com.mayakapps.kache.InMemoryKache
+import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
 import dev.datlag.mimasu.extension.provider.burningseries.BSEpisodeManager
 import dev.datlag.mimasu.extension.provider.burningseries.BurningSeries
@@ -8,6 +10,7 @@ import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.model.MatchedShowResults
 import dev.datlag.mimasu.extension.provider.model.Show
 import io.ktor.client.HttpClient
+import kotlin.time.Duration.Companion.hours
 
 class EpisodeManager(
     val httpClient: HttpClient,
@@ -21,29 +24,66 @@ class EpisodeManager(
         firebaseWrapper = firebaseWrapper
     )
 
-    suspend fun watchInfo(
+    private val episodeKache = InMemoryKache<EpisodeKey, Boolean>(
+        maxSize = 5L * 1024 * 1024
+    ) {
+        strategy = KacheStrategy.LRU
+        expireAfterWriteDuration = 12.hours
+    }
+
+    suspend fun episodeAvailability(
+        showId: Int,
         matchedShowResults: MatchedShowResults,
         request: Show.EpisodeRequest
-    ): Show.Response? {
-        val burningSeries = matchedShowResults.burningSeries ?: return null
+    ): Boolean {
+        val episodeKey = EpisodeKey(
+            showId = showId,
+            season = request.season ?: return false,
+            episode = request.episodeNumber ?: return false
+        )
 
-        Logger.e("Requested Episode [${request.episodeNumber}] ${request.episodeTitle}")
-        val streamingUrls = series(
+        episodeKache.getIfAvailable(episodeKey)?.let {
+            return it
+        }
+        val burningSeries = matchedShowResults.burningSeries ?: return false
+        return series(
             request = request,
             searchItem = burningSeries.data
         )
-        Logger.e("Streaming Urls: $streamingUrls")
+    }
 
-        return null
+    suspend fun episodeStreams(
+        matchedShowResults: MatchedShowResults,
+        request: Show.EpisodeRequest
+    ): Collection<String> {
+        val burningSeries = matchedShowResults.burningSeries ?: return emptyList()
+        return streams(
+            request = request,
+            searchItem = burningSeries.data
+        )
     }
 
     private suspend fun series(
         request: Show.EpisodeRequest,
         searchItem: SearchItem
-    ): Collection<String> = burningSeriesEpisodeManager.episode(
+    ): Boolean = burningSeriesEpisodeManager.episodeAvailable(
         show = searchItem,
         episodeNumber = request.episodeNumber,
         season = request.season
     )
 
+    private suspend fun streams(
+        request: Show.EpisodeRequest,
+        searchItem: SearchItem
+    ): Collection<String> = burningSeriesEpisodeManager.episodeStreams(
+        show = searchItem,
+        episodeNumber = request.episodeNumber,
+        season = request.season
+    )
+
+    data class EpisodeKey(
+        val showId: Int,
+        val season: Int,
+        val episode: Int
+    )
 }

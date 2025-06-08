@@ -30,6 +30,7 @@ kotlin {
             implementation(libs.datetime)
             implementation(libs.kermit)
             implementation(libs.skeo)
+            implementation(libs.kache)
 
             implementation(project(":matcher"))
             implementation(project(":ksoup"))

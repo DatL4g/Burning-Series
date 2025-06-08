@@ -1,6 +1,8 @@
 package dev.datlag.mimasu.extension.provider.burningseries
 
 import co.touchlab.kermit.Logger
+import com.mayakapps.kache.InMemoryKache
+import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.burningseries.model.Series
@@ -12,6 +14,7 @@ import io.ktor.http.isSuccess
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlin.time.Duration.Companion.hours
 
 class BSEpisodeManager(
     private val httpClient: HttpClient,
@@ -19,9 +22,33 @@ class BSEpisodeManager(
     private val firebaseWrapper: FirebaseWrapper?
 ) {
 
-    private val mappings = mutableMapOf<String, Series>()
+    private val seriesKache = InMemoryKache<String, Series>(
+        maxSize = 5L * 1024 * 1024
+    ) {
+        strategy = KacheStrategy.LRU
+        expireAfterWriteDuration = 12.hours
+    }
 
-    suspend fun episode(
+    suspend fun episodeAvailable(
+        show: SearchItem,
+        episodeNumber: Int?,
+        season: Int?
+    ): Boolean {
+        val link = if (show.href.endsWith('/')) {
+            "${show.href}${season}"
+        } else {
+            "${show.href}/${season}"
+        }
+
+        val series = seriesKache.getIfAvailable(link) ?: BurningSeries.series(httpClient, link)?.also {
+            seriesKache.put(link, it)
+        } ?: return false
+
+        val requestedEpisode = series.episodes.firstOrNull { it.number == episodeNumber } ?: return false
+        return requestedEpisode.hoster.isNotEmpty()
+    }
+
+    suspend fun episodeStreams(
         show: SearchItem,
         episodeNumber: Int?,
         season: Int?
@@ -32,19 +59,16 @@ class BSEpisodeManager(
             "${show.href}/${season}"
         }
 
-        val series = mappings[link] ?: BurningSeries.series(httpClient, link)?.also {
-            mappings[link] = it
+        val series = seriesKache.getIfAvailable(link) ?: BurningSeries.series(httpClient, link)?.also {
+            seriesKache.put(link, it)
         } ?: return emptyList()
 
         val requestedEpisode = series.episodes.firstOrNull { it.number == episodeNumber } ?: return emptyList()
-        val wrapper = firebaseWrapper ?: return emptyList()
-        val hosterUrls = wrapper.store.streams(requestedEpisode.hoster.toList())
-        val streamingUrls = stream(httpClient, hosterUrls)
-
-        return streamingUrls
+        val hosterUrls = firebaseWrapper?.store?.streams(requestedEpisode.hoster)?.ifEmpty { null } ?: return emptyList()
+        return streams(httpClient, hosterUrls)
     }
 
-    suspend fun stream(client: HttpClient, urls: Collection<String>) = coroutineScope {
+    private suspend fun streams(client: HttpClient, urls: Collection<String>) = coroutineScope {
         val directLinks = urls.map { url -> async {
             Skeo.loadVideos(client, url)
         } }.awaitAll().flatten().toSet()

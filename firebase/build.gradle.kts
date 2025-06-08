@@ -19,6 +19,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.tooling)
             implementation(libs.coroutines)
+            implementation(libs.kache)
 
             api(libs.firebase)
             api(libs.firebase.firestore)

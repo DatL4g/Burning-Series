@@ -11,6 +11,7 @@ import dev.datlag.mimasu.extension.provider.SearchManager
 import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.show.EpisodeCallback
 import dev.datlag.mimasu.extension.show.ShowCallback
+import dev.datlag.mimasu.extension.show.StreamCallback
 import dev.datlag.tooling.safeCast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,18 +67,43 @@ class ShowService : LifecycleService() {
             }
         }
 
-        override fun requestEpisode(showId: Int, request: ByteArray?, callback: EpisodeCallback?) {
+        override fun requestEpisodeAvailability(
+            showId: Int,
+            request: ByteArray?,
+            callback: EpisodeCallback?
+        ) {
             val showHolder = searchManager ?: return
             val manager = episodeManager ?: return
 
             scope.launch(Dispatchers.IO) {
                 val requestInfo = Show.EpisodeRequest(request) ?: return@launch
                 val showInfo = showHolder.matchedShowResults(showId) ?: return@launch
-
-                manager.watchInfo(
+                val available = manager.episodeAvailability(
+                    showId = showId,
                     matchedShowResults = showInfo,
                     request = requestInfo
                 )
+
+                callback?.onResult(available)
+            }
+        }
+
+        override fun requestStream(showId: Int, request: ByteArray?, callback: StreamCallback?) {
+            val showHolder = searchManager ?: return
+            val manager = episodeManager ?: return
+
+            scope.launch(Dispatchers.IO) {
+                val requestInfo = Show.EpisodeRequest(request) ?: return@launch
+                val showInfo = showHolder.matchedShowResults(showId) ?: return@launch
+                val streams = manager.episodeStreams(
+                    matchedShowResults = showInfo,
+                    request = requestInfo
+                ).toSet().ifEmpty { null } ?: return@launch
+                val result = Show.Response(
+                    sources = mapOf("de" to streams.toList())
+                )
+
+                callback?.onResult(result.toByteArray())
             }
         }
     }

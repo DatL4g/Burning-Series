@@ -1,9 +1,12 @@
 package dev.datlag.mimasu.extension.firebase
 
+import com.mayakapps.kache.InMemoryKache
+import com.mayakapps.kache.KacheStrategy
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseApp
 import dev.gitlive.firebase.app
 import dev.gitlive.firebase.firestore.firestore
+import kotlin.time.Duration.Companion.hours
 
 class FirebaseWrapper(
     private val app: FirebaseApp = Firebase.app
@@ -13,11 +16,16 @@ class FirebaseWrapper(
 
     inner class Store internal constructor() {
 
-        private val streamCache = mutableMapOf<String, String>()
+        private val streamKache = InMemoryKache<String, String>(
+            maxSize = 5L * 1024 * 1024
+        ) {
+            strategy = KacheStrategy.LRU
+            expireAfterWriteDuration = 12.hours
+        }
 
-        suspend fun streams(hrefList: List<String>): List<String> {
+        suspend fun streams(hrefList: Collection<String>): List<String> {
             val all = hrefList.map {
-                it to streamCache[it]?.ifBlank { null }
+                it to streamKache.getIfAvailable(it)?.ifBlank { null }
             }
             val nonCached = all.filter {
                 it.second.isNullOrBlank()
@@ -37,7 +45,7 @@ class FirebaseWrapper(
                 val id = doc.get<String>("id")
                 val url = doc.get<String>("url")
 
-                streamCache[id] = url
+                streamKache.put(id, url)
                 url
             }
 
