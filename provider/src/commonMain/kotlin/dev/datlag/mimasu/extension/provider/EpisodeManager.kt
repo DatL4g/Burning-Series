@@ -60,7 +60,9 @@ class EpisodeManager(
         return streams(
             request = request,
             searchItem = burningSeries.data
-        )
+        ).map { (key, value) ->
+            key to TestVideo.filter(value)
+        }.toMap()
     }
 
     private suspend fun series(
