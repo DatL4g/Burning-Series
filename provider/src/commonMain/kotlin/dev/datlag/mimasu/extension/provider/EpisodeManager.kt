@@ -60,8 +60,8 @@ class EpisodeManager(
         return streams(
             request = request,
             searchItem = burningSeries.data
-        ).map { (key, value) ->
-            key to TestVideo.filter(value)
+        ).mapNotNull { (key, value) ->
+            key to TestVideo.filter(value).ifEmpty { return@mapNotNull null }
         }.toMap()
     }
 
