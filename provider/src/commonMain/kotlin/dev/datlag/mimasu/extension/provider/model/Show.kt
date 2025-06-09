@@ -26,6 +26,7 @@ sealed interface Show {
         val numberOfNormalSeasons: Int? = null,
         val hasSpecialSeason: Boolean? = null,
         val season: Int? = null,
+        val appLocale: String? = null
     ) : Show, TokenAware {
 
         @Transient
@@ -77,7 +78,7 @@ sealed interface Show {
         val introRange: Skipable? = null,
         val outroRange: Skipable? = null,
         val previewRange: Skipable? = null,
-        val sources: Map<String, List<String>> = emptyMap()
+        val sources: Map<SourceInfo, List<String>> = emptyMap()
     ) : Show {
 
         @OptIn(ExperimentalSerializationApi::class)
@@ -89,6 +90,13 @@ sealed interface Show {
         data class Skipable(
             val start: Long? = null,
             val end: Long? = null
+        )
+
+        @Serializable
+        data class SourceInfo(
+            val sourceTitle: String? = null,
+            val sourceKey: String? = null,
+            val locale: String? = null
         )
     }
 

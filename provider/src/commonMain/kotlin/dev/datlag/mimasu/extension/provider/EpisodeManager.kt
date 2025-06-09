@@ -55,14 +55,20 @@ class EpisodeManager(
     suspend fun episodeStreams(
         matchedShowResults: MatchedShowResults,
         request: Show.EpisodeRequest
-    ): Map<String, List<String>> {
+    ): Map<Show.Response.SourceInfo, List<String>> {
         val burningSeries = matchedShowResults.burningSeries ?: return emptyMap()
         return streams(
             request = request,
             searchItem = burningSeries.data
         ).mapNotNull { (key, value) ->
             key to TestVideo.filter(value).ifEmpty { return@mapNotNull null }
-        }.toMap()
+        }.associate { (k, v) ->
+            Show.Response.SourceInfo(
+                sourceTitle = BurningSeries.TITLE,
+                sourceKey = k,
+                locale = k
+            ) to v
+        }
     }
 
     private suspend fun series(

@@ -25,6 +25,7 @@ data object BurningSeries {
     private const val PROTOCOL_HTTPS = "https://"
     private const val HOST = "bs.to"
     private const val SEARCH_PATH = "andere-serien"
+    const val TITLE = "Burning Series"
 
     internal val currentYear by lazy {
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year

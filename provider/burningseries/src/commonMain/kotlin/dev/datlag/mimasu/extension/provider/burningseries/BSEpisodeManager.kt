@@ -14,6 +14,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 class BSEpisodeManager(
     private val httpClient: HttpClient,
@@ -26,6 +27,13 @@ class BSEpisodeManager(
     ) {
         strategy = KacheStrategy.LRU
         expireAfterWriteDuration = 12.hours
+    }
+
+    private val streamKache = InMemoryKache<String, Collection<String>>(
+        maxSize = 2L * 1024 * 1024
+    ) {
+        strategy = KacheStrategy.LRU
+        expireAfterWriteDuration = 10.minutes
     }
 
     suspend fun episodeAvailable(
@@ -118,12 +126,14 @@ class BSEpisodeManager(
 
     private suspend fun streams(client: HttpClient, urls: Collection<String>) = coroutineScope {
         val directLinks = urls.map { url -> async {
-            Skeo.loadVideos(client, url)
-        } }.awaitAll().flatten().toSet()
+            streamKache.getOrPut(url) {
+                Skeo.loadVideos(client, url).map { it.url }
+            }?.toSet()
+        } }.awaitAll().filterNotNull().flatten().toSet()
 
         val reachableLinks = directLinks.map { link -> async {
             suspendCatching {
-                val response = client.head(link.url)
+                val response = client.head(link)
 
                 if (response.status.isSuccess()) {
                     link
@@ -133,7 +143,7 @@ class BSEpisodeManager(
             }.getOrNull()
         } }.awaitAll().filterNotNull()
 
-        reachableLinks.map { it.url }.toSet()
+        reachableLinks.map { it }.toSet()
     }
 
 }
