@@ -26,6 +26,7 @@
         android:allowAudioPlaybackCapture="false"
         android:enableOnBackInvokedCallback="true"
         android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security"
         android:theme="@style/AppTheme">
 
         <activity

@@ -10,6 +10,7 @@ import dev.datlag.mimasu.extension.ksoup.href
 import dev.datlag.mimasu.extension.ksoup.parseGet
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.burningseries.model.Series
+import dev.datlag.mimasu.extension.provider.burningseries.model.SeriesData
 import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.sync.Mutex
@@ -51,7 +52,7 @@ data object BurningSeries {
 
     private val searchMutex = Mutex()
 
-    internal fun createLink(href: String): String {
+    private fun createLink(href: String): String {
         return if (!href.matches("^\\w+?://.*".toRegex())) {
             if (!href.startsWith('/')) {
                 "$PROTOCOL_HTTPS$HOST/$href"
@@ -63,12 +64,26 @@ data object BurningSeries {
         }
     }
 
-    private fun normalize(href: String): String {
+    internal fun normalize(href: String): String {
         val regex = "serie\\S+".toRegex(RegexOption.IGNORE_CASE)
         return regex.find(href)?.value ?: href
     }
 
-    internal suspend fun document(client: HttpClient, href: String): Document? = suspendCatching {
+    internal fun fixSeriesHref(href: String): String {
+        return SeriesData.fromHref(normalize(href)).toHref()
+    }
+
+    internal fun commonSeriesHref(href: String): String {
+        return SeriesData.fromHref(normalize(href)).copy(
+            season = null,
+            language = null
+        ).toHref(
+            newSeason = null,
+            newLanguage = null
+        )
+    }
+
+    private suspend fun document(client: HttpClient, href: String): Document? = suspendCatching {
         Ksoup.parseGet(
             url = createLink(href),
             client = client
@@ -86,7 +101,7 @@ data object BurningSeries {
     }
 
     internal suspend fun series(client: HttpClient, href: String): Series? {
-        val doc = document(client, normalize(href)) ?: return null
+        val doc = document(client, fixSeriesHref(href)) ?: return null
 
         val selectedLanguageValue = doc.firstByClass("series-language")?.selectFirst("option[selected]")?.value()?.ifBlank { null }?.trim()
         var selectedLanguage: String? = null
@@ -140,13 +155,14 @@ data object BurningSeries {
         }
 
         return Series(
+            href = doc.location()?.let(::fixSeriesHref) ?: fixSeriesHref(href),
             selectedLanguage = selectedLanguage?.ifBlank { null }?.trim(),
             languages = languages,
             episodes = episodeInfoList
         )
     }
 
-    internal suspend fun atomicSearch(client: HttpClient): Set<SearchItem> = searchMutex.withLock {
+    private suspend fun atomicSearch(client: HttpClient): Set<SearchItem> = searchMutex.withLock {
         cachedSearchItems.also {
             if (it.isNotEmpty()) {
                 return it

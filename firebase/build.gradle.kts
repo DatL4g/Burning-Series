@@ -20,6 +20,7 @@ kotlin {
             implementation(libs.tooling)
             implementation(libs.coroutines)
             implementation(libs.kache)
+            implementation(libs.kermit)
 
             api(libs.firebase)
             api(libs.firebase.firestore)

@@ -35,18 +35,20 @@ class FirebaseWrapper(
                 return all.mapNotNull { it.second?.ifBlank { null } }.distinct()
             }
 
-            val loaded = Firebase.firestore(app).collection("stream").where {
+            val query = Firebase.firestore(app).collection("stream").where {
                 all(
                     *listOfNotNull(
                         nonCached.let { "id" inArray it }
                     ).toTypedArray()
                 )
-            }.get().documents.map { doc ->
+            }
+            val loaded = query.get().documents.ifEmpty {
+                return emptyList()
+            }.map { doc ->
                 val id = doc.get<String>("id")
                 val url = doc.get<String>("url")
 
-                streamKache.put(id, url)
-                url
+                streamKache.put(id, url) ?: url
             }
 
             return (all.mapNotNull {

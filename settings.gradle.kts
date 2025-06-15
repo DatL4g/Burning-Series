@@ -5,7 +5,7 @@ include(":github")
 include(":matcher")
 include(":ksoup")
 include(":firebase")
-include(":provider", ":provider:serienstream", ":provider:burningseries", ":provider:animebase")
+include(":provider", ":provider:serienstream", ":provider:burningseries")
 
 pluginManagement {
     repositories {

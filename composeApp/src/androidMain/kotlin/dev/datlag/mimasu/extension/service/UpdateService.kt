@@ -65,7 +65,13 @@ class UpdateService : LifecycleService() {
         override fun requestUpdate(callback: Callback?) {
             val git = github ?: return
 
-            scope.launch(Dispatchers.IO) {
+            callback?.onResult(Update(
+                _available = true,
+                _viewUrl = "https://datlag.dev"
+            ).toByteArray())
+
+            // Cache, mutex and check app version
+            /*scope.launch(Dispatchers.IO) {
                 val release = suspendCatching {
                     git.latestRelease(
                         owner = "DatL4g",
@@ -90,7 +96,7 @@ class UpdateService : LifecycleService() {
                 withContext(Dispatchers.Main) {
                     callback?.onResult(info)
                 }
-            }
+            }*/
         }
     }
 }

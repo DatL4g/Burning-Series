@@ -16,7 +16,7 @@ data class SearchItem(
     val isAnimation: Boolean? = genre?.let {
         it.equals("animation", ignoreCase = true) || it.contains("anime", ignoreCase = true)
     },
-): TokenAware {
+): TokenAware, SeriesData {
 
     constructor(title: String, href: String, genre: String?) : this(
         title = title.split('|').filterNot { it.isBlank() }.firstOrNull()?.trim() ?: title,
@@ -24,6 +24,9 @@ data class SearchItem(
         href = href,
         genre = genre
     )
+
+    @Transient
+    override val info: SeriesData.Info = SeriesData.fromHref(href)
 
     @Transient
     override val tokenResult: TokenResult = Tokenizer.tokenize(title)

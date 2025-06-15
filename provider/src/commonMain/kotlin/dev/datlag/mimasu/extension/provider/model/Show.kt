@@ -95,7 +95,7 @@ sealed interface Show {
         @Serializable
         data class SourceInfo(
             val sourceTitle: String? = null,
-            val sourceKey: String? = null,
+            val sourceLocale: String? = null,
             val locale: String? = null
         )
     }

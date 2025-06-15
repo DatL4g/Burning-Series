@@ -56,16 +56,22 @@ class EpisodeManager(
         matchedShowResults: MatchedShowResults,
         request: Show.EpisodeRequest
     ): Map<Show.Response.SourceInfo, List<String>> {
-        val burningSeries = matchedShowResults.burningSeries ?: return emptyMap()
+        val burningSeries = matchedShowResults.burningSeries ?: return run {
+            Logger.e("No Burning Series Result")
+            emptyMap()
+        }
         return streams(
             request = request,
             searchItem = burningSeries.data
         ).mapNotNull { (key, value) ->
-            key to TestVideo.filter(value).ifEmpty { return@mapNotNull null }
+            key to TestVideo.filter(value).ifEmpty {
+                Logger.e("Empty streams after filtering")
+                return@mapNotNull null
+            }
         }.associate { (k, v) ->
             Show.Response.SourceInfo(
                 sourceTitle = BurningSeries.TITLE,
-                sourceKey = k,
+                sourceLocale = k,
                 locale = k
             ) to v
         }

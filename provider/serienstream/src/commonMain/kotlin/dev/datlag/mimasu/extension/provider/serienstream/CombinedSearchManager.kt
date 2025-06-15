@@ -3,7 +3,7 @@ package dev.datlag.mimasu.extension.provider.serienstream
 import dev.datlag.mimasu.extension.matcher.MatchResult
 import dev.datlag.mimasu.extension.matcher.SearchMatcher
 import dev.datlag.mimasu.extension.matcher.TokenResult
-import dev.datlag.mimasu.extension.provider.serienstream.model.SearchResult
+import dev.datlag.mimasu.extension.provider.serienstream.model.SearchItem
 import dev.datlag.tooling.async.suspendCatching
 import dev.datlag.tooling.setFrom
 import kotlinx.coroutines.async
@@ -17,7 +17,7 @@ class CombinedSearchManager(
     private val fallbackAniWorld: AniWorld?
 ) {
 
-    private val mappings = mutableMapOf<Int, MatchResult<SearchResult>>()
+    private val mappings = mutableMapOf<Int, MatchResult<SearchItem>>()
 
     suspend fun search(
         tmdbId: Int?,
@@ -25,7 +25,7 @@ class CombinedSearchManager(
         tokens: Collection<TokenResult>,
         releaseYear: Int?,
         isAnimation: Boolean?
-    ): MatchResult<SearchResult>? {
+    ): MatchResult<SearchItem>? {
         mappings[tmdbId]?.let {
             return it
         }
@@ -86,7 +86,7 @@ class CombinedSearchManager(
     private suspend fun search(
         tokens: Collection<TokenResult>,
         releaseYear: Int?,
-        filterItems: Collection<SearchResult>
+        filterItems: Collection<SearchItem>
     ) = coroutineScope {
         val matched = filterItems.map { item -> async {
             val itemTokenList = setOfNotNull(
@@ -128,7 +128,7 @@ class CombinedSearchManager(
 
     private suspend fun searchDefault(
         query: String
-    ): Set<SearchResult> = coroutineScope {
+    ): Set<SearchItem> = coroutineScope {
         val encodedSearch = async {
             suspendCatching {
                 serienStream.searchEncoded(query)
@@ -152,7 +152,7 @@ class CombinedSearchManager(
 
     private suspend fun searchAnimation(
         query: String
-    ): Set<SearchResult> = coroutineScope {
+    ): Set<SearchItem> = coroutineScope {
         val encodedSearch = async {
             suspendCatching {
                 aniWorld.searchEncoded(query)

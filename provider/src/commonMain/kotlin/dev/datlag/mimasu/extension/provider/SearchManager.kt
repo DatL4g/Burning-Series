@@ -9,7 +9,6 @@ import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.CombinedSearchManager
 import dev.datlag.mimasu.extension.provider.serienstream.createAniWorld
 import dev.datlag.mimasu.extension.provider.serienstream.createSerienStream
-import dev.datlag.mimasu.extension.provider.serienstream.model.SearchResult
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope

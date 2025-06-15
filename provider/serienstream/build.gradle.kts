@@ -56,9 +56,9 @@ kotlin {
             api(libs.ktor.content.negotiation)
             api(libs.ktor.serialization.json)
             api(libs.tooling)
-            implementation(libs.ksoup)
             implementation(libs.kermit)
 
+            implementation(project(":ksoup"))
             implementation(project(":matcher"))
         }
     }

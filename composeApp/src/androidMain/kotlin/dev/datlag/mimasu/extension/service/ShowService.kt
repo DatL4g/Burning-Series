@@ -37,6 +37,10 @@ class ShowService : LifecycleService() {
         override val di: DI
     ) : IShowInfoProvider.Stub(), DIAware {
 
+        init {
+            Log.e("ShowService", "Binding service for shows")
+        }
+
         private val _searchManager by instanceOrNull<SearchManager>()
         private val searchManager: SearchManager?
             get() = _searchManager ?: run {
@@ -58,11 +62,18 @@ class ShowService : LifecycleService() {
         }
 
         override fun requestShowId(request: ByteArray?, callback: ShowCallback?) {
-            val manager = searchManager ?: return
+            val manager = searchManager ?: return run {
+                Log.e("ShowService", "No Search Manager")
+            }
 
             scope.launch(Dispatchers.IO) {
-                val requestInfo = Show.Request(request) ?: return@launch
-                val id = manager.search(requestInfo) ?: return@launch
+                val requestInfo = Show.Request(request) ?: return@launch run {
+                    Log.e("ShowService", "No valid RequestInfo")
+                }
+                val id = manager.search(requestInfo) ?: return@launch run {
+                    Log.e("ShowService", "No ID found for RequestInfo")
+                }
+                Log.e("ShowService", "Found ID: $id")
                 callback?.onResult(id)
             }
         }
@@ -72,33 +83,58 @@ class ShowService : LifecycleService() {
             request: ByteArray?,
             callback: EpisodeCallback?
         ) {
-            val showHolder = searchManager ?: return
-            val manager = episodeManager ?: return
+            val showHolder = searchManager ?: return run {
+                Log.e("ShowService", "No Search Manager for Episode")
+            }
+            val manager = episodeManager ?: return run {
+                Log.e("ShowService", "No Episode Manager")
+            }
 
             scope.launch(Dispatchers.IO) {
-                val requestInfo = Show.EpisodeRequest(request) ?: return@launch
-                val showInfo = showHolder.matchedShowResults(showId) ?: return@launch
+                val requestInfo = Show.EpisodeRequest(request) ?: return@launch run {
+                    Log.e("ShowService", "Episode RequestInfo invalid")
+                }
+                val showInfo = showHolder.matchedShowResults(showId) ?: return@launch run {
+                    Log.e("ShowService", "No Matched ShowInfo")
+                }
                 val available = manager.episodeAvailability(
                     showId = showId,
                     matchedShowResults = showInfo,
                     request = requestInfo
                 )
+                Log.e("ShowService", "Available: $available")
 
                 callback?.onResult(available)
             }
         }
 
         override fun requestStream(showId: Int, request: ByteArray?, callback: StreamCallback?) {
-            val showHolder = searchManager ?: return
-            val manager = episodeManager ?: return
+            val showHolder = searchManager ?: return run {
+                Log.e("ShowService", "No Search Manager for Stream")
+                callback?.onResult(null)
+            }
+            val manager = episodeManager ?: return run {
+                Log.e("ShowService", "No Episode Manager for Stream")
+                callback?.onResult(null)
+            }
 
             scope.launch(Dispatchers.IO) {
-                val requestInfo = Show.EpisodeRequest(request) ?: return@launch
-                val showInfo = showHolder.matchedShowResults(showId) ?: return@launch
+                val requestInfo = Show.EpisodeRequest(request) ?: return@launch run {
+                    Log.e("ShowService", "Invalid EpisodeRequest for Stream")
+                    callback?.onResult(null)
+                }
+                val showInfo = showHolder.matchedShowResults(showId) ?: return@launch run {
+                    Log.e("ShowService", "No Matched Show for Stream")
+                    callback?.onResult(null)
+                }
                 val streams = manager.episodeStreams(
                     matchedShowResults = showInfo,
                     request = requestInfo
-                ).ifEmpty { null } ?: return@launch
+                ).ifEmpty { null } ?: return@launch run {
+                    Log.e("ShowService", "Empty Stream Results")
+                    callback?.onResult(null)
+                }
+                Log.e("ShowService", "Found Streams: $streams")
 
                 val result = Show.Response(
                     sources = streams
