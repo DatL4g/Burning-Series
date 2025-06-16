@@ -2,6 +2,7 @@ package dev.datlag.mimasu.extension.firebase
 
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
+import dev.datlag.tooling.listFrom
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseApp
 import dev.gitlive.firebase.app
@@ -43,7 +44,7 @@ class FirebaseWrapper(
                 )
             }
             val loaded = query.get().documents.ifEmpty {
-                return emptyList()
+                return all.mapNotNull { it.second?.ifBlank { null } }.distinct()
             }.map { doc ->
                 val id = doc.get<String>("id")
                 val url = doc.get<String>("url")
@@ -51,9 +52,10 @@ class FirebaseWrapper(
                 streamKache.put(id, url) ?: url
             }
 
-            return (all.mapNotNull {
-                it.second?.ifBlank { null }
-            } + loaded).distinct()
+            return listFrom(
+                all.mapNotNull { it.second?.ifBlank { null } },
+                loaded
+            ).distinct()
         }
     }
 
