@@ -45,14 +45,11 @@ class BSEpisodeManager(
         val link = show.toHref(newSeason = season, newLanguage = null)
 
         val series = getSeries(link) ?: return false
+        val foundEpisode = findEpisode(series, episodeNumber) ?: return false
 
-        val requestedEpisode = series.episodes.firstOrNull {
-            it.number == episodeNumber
-        } ?: return false
-
-        return requestedEpisode.hoster.isNotEmpty() || run {
-            val languageSpecificLinks = series.languages.map { lang ->
-                show.toHref(newSeason = season, newLanguage = lang)
+        return foundEpisode.target.hoster.isNotEmpty() || run {
+            val languageSpecificLinks = foundEpisode.relatedSeries.languages.map { lang ->
+                foundEpisode.relatedSeries.toHref(newLanguage = lang)
             }.toSet()
 
             coroutineScope {
@@ -61,11 +58,13 @@ class BSEpisodeManager(
                 } }.awaitAll().filterNotNull().toSet()
 
                 languageSpecificSeries.any { langSeries ->
-                    val langEpisode = langSeries.episodes.firstOrNull {
-                        it.number == episodeNumber
-                    } ?: return@any false
+                    val langEpisode = findEpisode(
+                        series = langSeries,
+                        episodeNumber = foundEpisode.episodeNumber,
+                        searchInNextSeason = false
+                    ) ?: return@any false
 
-                    langEpisode.hoster.isNotEmpty()
+                    langEpisode.target.hoster.isNotEmpty()
                 }
             }
         }
@@ -77,14 +76,17 @@ class BSEpisodeManager(
         season: Int?
     ): Map<String, List<String>> = coroutineScope {
         val link = show.toHref(newSeason = season, newLanguage = null)
-        Logger.e("Requested Series Href: $link")
-
         val series = getSeries(link) ?: return@coroutineScope run {
             Logger.e("No Series found for BS")
             emptyMap()
         }
-        val allSeries = series.languages.map { lang ->
-            show.toHref(newSeason = season, newLanguage = lang)
+        val foundEpisode = findEpisode(series, episodeNumber) ?: return@coroutineScope run {
+            Logger.e("No Episode found for Series")
+            emptyMap()
+        }
+
+        val allSeries = foundEpisode.relatedSeries.languages.map { lang ->
+            foundEpisode.relatedSeries.toHref(newLanguage = lang)
         }.toSet().map { langLink -> async {
             getSeries(langLink)
         } }.awaitAll().filterNotNull().toSet().distinctBy {
@@ -96,11 +98,11 @@ class BSEpisodeManager(
         Logger.e("Found Series: ${allSeries.size}")
 
         val mappedStreams = allSeries.map { s -> async {
-            val requestedEpisode = s.episodes.firstOrNull { it.number == episodeNumber } ?: return@async run {
+            val requestedEpisode = findEpisode(s, foundEpisode.episodeNumber, searchInNextSeason = false) ?: return@async run {
                 Logger.e("No requested episode")
                 null
             }
-            val hosterUrls = firebaseWrapper?.store?.streams(requestedEpisode.hoster)?.ifEmpty {
+            val hosterUrls = firebaseWrapper?.store?.streams(requestedEpisode.target.hoster)?.ifEmpty {
                 Logger.e("FirebaseWrapper gave empty stream collection")
                 null
             } ?: return@async run {
@@ -130,6 +132,45 @@ class BSEpisodeManager(
         }
     }
 
+    private suspend fun findEpisode(
+        series: Series,
+        episodeNumber: Int?,
+        searchInNextSeason: Boolean = true
+    ): FoundEpisode? {
+        val found = series.episodes.firstOrNull {
+            it.number == episodeNumber
+        } ?: episodeNumber?.let { series.episodes.elementAtOrNull(it - 1) }
+
+        if (found != null) {
+            return FoundEpisode(
+                relatedSeries = series,
+                target = found,
+                episodeNumber = episodeNumber
+            )
+        }
+
+        if (!searchInNextSeason) {
+            return null
+        }
+
+        val nextSeriesEpisodeNumber = episodeNumber?.let {
+            val subtracted = it - series.episodes.size
+            if (subtracted > 0) {
+                subtracted
+            } else {
+                null
+            }
+        } ?: return null
+        val nextSeason = (series.nextSeason ?: series.season?.takeUnless {
+            it <= 0
+        }?.plus(1)) ?: return null
+        val nextSeries = getSeries(series.toHref(newSeason = nextSeason))?.takeIf {
+            it.season == nextSeason
+        } ?: return null
+
+        return findEpisode(nextSeries, nextSeriesEpisodeNumber, searchInNextSeason)
+    }
+
     private suspend fun streams(client: HttpClient, urls: Collection<String>) = coroutineScope {
         val directLinks = urls.map { url -> async {
             streamKache.getOrPut(url) {
@@ -151,5 +192,11 @@ class BSEpisodeManager(
 
         reachableLinks.map { it }.toSet()
     }
+
+    data class FoundEpisode(
+        val relatedSeries: Series,
+        val target: Series.Episode,
+        val episodeNumber: Int?
+    )
 
 }

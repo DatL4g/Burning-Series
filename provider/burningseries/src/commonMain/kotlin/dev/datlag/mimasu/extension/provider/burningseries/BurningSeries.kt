@@ -1,5 +1,6 @@
 package dev.datlag.mimasu.extension.provider.burningseries
 
+import co.touchlab.kermit.Logger
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
 import dev.datlag.mimasu.extension.ksoup.allByClass
@@ -73,6 +74,10 @@ data object BurningSeries {
         return SeriesData.fromHref(normalize(href)).toHref()
     }
 
+    internal fun seasonFrom(href: String): Int? {
+        return SeriesData.fromHref(href).season
+    }
+
     internal fun commonSeriesHref(href: String): String {
         return SeriesData.fromHref(normalize(href)).copy(
             season = null,
@@ -102,6 +107,19 @@ data object BurningSeries {
 
     internal suspend fun series(client: HttpClient, href: String): Series? {
         val doc = document(client, fixSeriesHref(href)) ?: return null
+
+        val seasons = doc.firstByClass("serie")
+            ?.getElementById("seasons")
+            ?.firstByTag("ul")
+            ?.allByTag("li")
+            ?.mapIndexed { index, element ->
+                val link = (element.firstByTag("a")?.href() ?: element.href())?.let(::fixSeriesHref)
+                if (link.isNullOrBlank()) {
+                    index
+                } else {
+                    link.let(::seasonFrom) ?: index
+                }
+            }?.toSet()
 
         val selectedLanguageValue = doc.firstByClass("series-language")?.selectFirst("option[selected]")?.value()?.ifBlank { null }?.trim()
         var selectedLanguage: String? = null
@@ -157,6 +175,7 @@ data object BurningSeries {
         return Series(
             href = doc.location()?.let(::fixSeriesHref) ?: fixSeriesHref(href),
             selectedLanguage = selectedLanguage?.ifBlank { null }?.trim(),
+            seasons = seasons ?: emptySet(),
             languages = languages,
             episodes = episodeInfoList
         )
