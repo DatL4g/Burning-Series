@@ -47,6 +47,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(libs.tooling)
             implementation(libs.kodein)
+            implementation(libs.semver)
 
             implementation(project(":github"))
             implementation(project(":provider"))
@@ -67,7 +68,7 @@ kotlin {
                 implementation(libs.ktor.jvm)
                 implementation(libs.coroutines.android)
                 implementation(libs.okhttp.doh)
-                implementation("androidx.lifecycle:lifecycle-service:2.9.0")
+                implementation(libs.service)
                 implementation(libs.serialization.protobuf)
 
                 implementation("org.htmlunit:htmlunit3-android:4.3.0")

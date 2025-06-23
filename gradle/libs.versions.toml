@@ -40,6 +40,7 @@ okhttp = "4.12.0"
 osdetector = "1.7.3"
 qrose = "1.0.1"
 sekret = "2.1.2"
+semver = "3.0.0"
 serialization = "1.8.1"
 service = "2.9.1"
 skeo = "0.2.5"
@@ -52,73 +53,37 @@ webview = "0.33.6"
 windowsize = "0.5.0"
 
 [libraries]
-aboutlibraries = { group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutlibraries" }
 android = { group = "androidx.core", name = "core-ktx", version.ref = "android-core" }
-android-sqlite-framework = { group = "androidx.sqlite", name = "sqlite-framework", version.ref = "android-sqlite" }
-ackpine = { group = "ru.solrudev.ackpine", name = "ackpine-ktx", version.ref = "ackpine" }
 activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
 android-firebase = { group = "com.google.firebase", name = "firebase-bom", version.ref = "android-firebase" }
 android-startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "android-startup" }
-apollo = { group = "com.apollographql.apollo3", name = "apollo-runtime", version.ref = "apollo" }
-blurhash = { group = "com.vanniktech", name = "blurhash", version.ref = "blurhash" }
-coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
-coil-network = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
-coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
-coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil" }
 coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
 datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "datetime" }
-decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
-decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-compose", version.ref = "decompose" }
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 firebase = { group = "dev.gitlive", name = "firebase-app", version.ref = "firebase" }
 firebase-firestore = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "firebase" }
 immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "immutable" }
 kache = { group = "com.mayakapps.kache", name = "kache", version.ref = "kache" }
-kast = { group = "dev.datlag.kast", name = "kast", version.ref = "kast" }
 kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
-kmpalette = { group = "com.kmpalette", name = "kmpalette-core", version.ref = "kmpalette" }
 kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }
-kodein-compose = { group = "org.kodein.di", name = "kodein-di-framework-compose", version.ref = "kodein" }
-kolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "kolor" }
 ksoup = { group = "com.fleeksoft.ksoup", name = "ksoup", version.ref = "ksoup" }
 ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-jvm = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
-ktor-js = { group = "io.ktor", name = "ktor-client-js", version.ref = "ktor" }
-ktor-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-network = { group = "io.ktor", name = "ktor-network", version.ref = "ktor" }
-ktor-network-tls = { group = "io.ktor", name = "ktor-network-tls", version.ref = "ktor" }
 ktorfit = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-lib", version.ref = "ktorfit" }
-ktorfit-ksp = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-ksp", version.ref = "ktorfit" }
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
-nanoid = { group = "dev.datlag.nanoid", name = "nanoid", version.ref = "nanoid" }
-napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
-oidc = { group = "io.github.kalinjul.kotlin.multiplatform", name = "oidc-appsupport", version.ref = "oidc" }
-oidc-tokenstore = { group = "io.github.kalinjul.kotlin.multiplatform", name = "oidc-tokenstore", version.ref = "oidc" }
 okhttp-doh = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttp" }
-qrose = { group = "io.github.alexzhirkevich", name = "qrose", version.ref = "qrose" }
 sekret = { group = "dev.datlag.sekret", name = "sekret", version.ref = "sekret" }
+semver = { group = "io.github.z4kn4fein", name = "semver", version.ref = "semver" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "serialization" }
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serialization" }
 service = { group = "androidx.lifecycle", name = "lifecycle-service", version.ref = "service" }
 skeo = { group = "dev.datlag.skeo", name = "skeo", version.ref = "skeo" }
-sqldelight-coroutines = { group = "app.cash.sqldelight", name = "coroutines-extensions", version.ref = "sqldelight" }
-sqldelight-android = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
-sqldelight-jvm = { group = "app.cash.sqldelight", name = "sqlite-driver", version.ref = "sqldelight" }
-sqldelight-native = { group = "app.cash.sqldelight", name = "native-driver", version.ref = "sqldelight" }
-sqldelight-adapter = { group = "app.cash.sqldelight", name = "primitive-adapters", version.ref = "sqldelight" }
-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 tooling = { group = "dev.datlag.tooling", name = "tooling-async", version.ref = "tooling" }
-tooling-country = { group = "dev.datlag.tooling", name = "tooling-country", version.ref = "tooling" }
-tooling-decompose = { group = "dev.datlag.tooling", name = "tooling-decompose", version.ref = "tooling" }
-vlcj = { group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
-webview = { group = "io.github.kevinnzou", name = "compose-webview", version.ref = "webview" }
-windowsize = { group = "dev.chrisbanes.material3", name = "material3-window-size-class-multiplatform", version.ref = "windowsize" }
 
 [plugins]
 aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }
