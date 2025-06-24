@@ -3,7 +3,6 @@ package dev.datlag.mimasu.extension.provider
 import de.jensklingenberg.ktorfit.ktorfit
 import dev.datlag.mimasu.extension.matcher.MatchResult
 import dev.datlag.mimasu.extension.provider.burningseries.BSSearchManager
-import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.model.MatchedShowResults
 import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.CombinedSearchManager
@@ -12,6 +11,7 @@ import dev.datlag.mimasu.extension.provider.serienstream.createSerienStream
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import dev.datlag.mimasu.extension.provider.serienstream.model.SearchItem as SerienStreamItem
 
 class SearchManager(
     val httpClient: HttpClient,
@@ -19,25 +19,25 @@ class SearchManager(
 ) {
 
     private val serienStream = ktorfit {
-        baseUrl(SERIENSTREAM_BASE_URL)
+        baseUrl(SerienStreamItem.SerienStream.BASE_URL)
         httpClient(httpClient)
     }.createSerienStream()
 
     private val fallbackSerienStream = fallbackClient?.let {
         ktorfit {
-            baseUrl(SERIENSTREAM_BASE_URL)
+            baseUrl(SerienStreamItem.SerienStream.BASE_URL)
             httpClient(it)
         }.createSerienStream()
     }
 
     private val aniWorld = ktorfit {
-        baseUrl(ANIWORLD_BASE_URL)
+        baseUrl(SerienStreamItem.AniWorld.BASE_URL)
         httpClient(httpClient)
     }.createAniWorld()
 
     private val fallbackAniWorld = fallbackClient?.let {
         ktorfit {
-            baseUrl(ANIWORLD_BASE_URL)
+            baseUrl(SerienStreamItem.AniWorld.BASE_URL)
             httpClient(it)
         }.createAniWorld()
     }
@@ -115,10 +115,5 @@ class SearchManager(
         } else {
             null
         }
-    }
-
-    companion object {
-        private const val SERIENSTREAM_BASE_URL = "https://s.to/"
-        private const val ANIWORLD_BASE_URL = "https://aniworld.to/"
     }
 }

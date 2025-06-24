@@ -58,7 +58,9 @@ data object BurningSeries {
             if (!href.startsWith('/')) {
                 "$PROTOCOL_HTTPS$HOST/$href"
             } else {
-                "$PROTOCOL_HTTPS$HOST${"(?!:|/{2,})(/.*)".toRegex().find(href)?.value}"
+                val part = "(?!:|/{2,})(/.*)".toRegex().find(href)?.value?.ifBlank { null } ?: href
+
+                "$PROTOCOL_HTTPS$HOST${part}"
             }
         } else {
             href

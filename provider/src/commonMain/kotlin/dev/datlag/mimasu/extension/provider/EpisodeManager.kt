@@ -1,6 +1,5 @@
 package dev.datlag.mimasu.extension.provider
 
-import co.touchlab.kermit.Logger
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
@@ -9,8 +8,13 @@ import dev.datlag.mimasu.extension.provider.burningseries.BurningSeries
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.model.MatchedShowResults
 import dev.datlag.mimasu.extension.provider.model.Show
+import dev.datlag.mimasu.extension.provider.serienstream.CombinedEpisodeManager
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlin.time.Duration.Companion.hours
+import dev.datlag.mimasu.extension.provider.serienstream.model.SearchItem as SerienStreamItem
 
 class EpisodeManager(
     val httpClient: HttpClient,
@@ -22,6 +26,11 @@ class EpisodeManager(
         httpClient = httpClient,
         fallbackClient = fallbackClient,
         firebaseWrapper = firebaseWrapper
+    )
+
+    private val serienStreamEpisodeManager = CombinedEpisodeManager(
+        httpClient = httpClient,
+        fallbackClient = fallbackClient
     )
 
     private val episodeKache = InMemoryKache<EpisodeKey, Boolean>(
@@ -45,35 +54,82 @@ class EpisodeManager(
         episodeKache.getIfAvailable(episodeKey)?.let {
             return it
         }
-        val burningSeries = matchedShowResults.burningSeries ?: return false
-        return series(
-            request = request,
-            searchItem = burningSeries.data
-        )
+
+        return coroutineScope {
+            val burningSeries = async {
+                matchedShowResults.burningSeries?.let {
+                    series(
+                        request = request,
+                        searchItem = it.data
+                    )
+                }
+            }
+            val serienStream = async {
+                matchedShowResults.serienStream?.let {
+                    series(
+                        request = request,
+                        searchItem = it.data
+                    )
+                }
+            }
+
+            listOf(burningSeries, serienStream).awaitAll().any { it == true }
+        }
     }
 
     suspend fun episodeStreams(
         matchedShowResults: MatchedShowResults,
         request: Show.EpisodeRequest
     ): Map<Show.Response.SourceInfo, List<String>> {
-        val burningSeries = matchedShowResults.burningSeries ?: return run {
-            Logger.e("No Burning Series Result")
-            emptyMap()
-        }
-        return streams(
-            request = request,
-            searchItem = burningSeries.data
-        ).mapNotNull { (key, value) ->
-            key to TestVideo.filter(value).ifEmpty {
-                Logger.e("Empty streams after filtering")
-                return@mapNotNull null
+        return coroutineScope {
+            val burningSeries = async { matchedShowResults.burningSeries?.let {
+                streams(
+                    request = request,
+                    searchItem = it.data
+                ).mapNotNull { (key, value) ->
+                    key to TestVideo.filter(value).ifEmpty {
+                        return@mapNotNull null
+                    }
+                }.associate { (k, v) ->
+                    Show.Response.SourceInfo(
+                        sourceTitle = BurningSeries.TITLE,
+                        sourceLocale = k,
+                        locale = k
+                    ) to v
+                }
+            } }
+
+            val serienStream = async { matchedShowResults.serienStream?.let {
+                streams(
+                    request = request,
+                    searchItem = it.data
+                ).mapNotNull { (key, value) ->
+                    key to TestVideo.filter(value).ifEmpty {
+                        return@mapNotNull null
+                    }
+                }.associate { (k, v) ->
+                    Show.Response.SourceInfo(
+                        sourceTitle = it.data.sourceTitle,
+                        sourceLocale = k,
+                        locale = k
+                    ) to v
+                }
+            } }
+
+            buildMap {
+                if (matchedShowResults.burningSeries != null && matchedShowResults.serienStream != null) {
+                    if (matchedShowResults.burningSeries.similarity > matchedShowResults.serienStream.similarity) {
+                        burningSeries.await()?.let(::putAll)
+                        serienStream.await()?.let(::putAll)
+                    } else {
+                        serienStream.await()?.let(::putAll)
+                        burningSeries.await()?.let(::putAll)
+                    }
+                } else {
+                    serienStream.await()?.let(::putAll)
+                    burningSeries.await()?.let(::putAll)
+                }
             }
-        }.associate { (k, v) ->
-            Show.Response.SourceInfo(
-                sourceTitle = BurningSeries.TITLE,
-                sourceLocale = k,
-                locale = k
-            ) to v
         }
     }
 
@@ -86,10 +142,28 @@ class EpisodeManager(
         season = request.season
     )
 
+    private suspend fun series(
+        request: Show.EpisodeRequest,
+        searchItem: SerienStreamItem
+    ): Boolean = serienStreamEpisodeManager.episodeAvailable(
+        show = searchItem,
+        episodeNumber = request.episodeNumber,
+        season = request.season
+    )
+
     private suspend fun streams(
         request: Show.EpisodeRequest,
         searchItem: SearchItem
     ): Map<String, List<String>> = burningSeriesEpisodeManager.episodeStreams(
+        show = searchItem,
+        episodeNumber = request.episodeNumber,
+        season = request.season
+    )
+
+    private suspend fun streams(
+        request: Show.EpisodeRequest,
+        searchItem: SerienStreamItem
+    ): Map<String, List<String>> = serienStreamEpisodeManager.episodeStreams(
         show = searchItem,
         episodeNumber = request.episodeNumber,
         season = request.season

@@ -118,7 +118,7 @@ class BSEpisodeManager(
                 null
             } }
         } }.awaitAll().filterNotNull().toSet().map { (key, urls) -> async {
-            key to streams(httpClient, urls).toList()
+            key to streams(urls).toList()
         } }.awaitAll().toMap()
 
         return@coroutineScope mappedStreams
@@ -171,16 +171,16 @@ class BSEpisodeManager(
         return findEpisode(nextSeries, nextSeriesEpisodeNumber, searchInNextSeason)
     }
 
-    private suspend fun streams(client: HttpClient, urls: Collection<String>) = coroutineScope {
+    private suspend fun streams(urls: Collection<String>) = coroutineScope {
         val directLinks = urls.map { url -> async {
             streamKache.getOrPut(url) {
-                Skeo.loadVideos(client, url).map { it.url }
+                Skeo.loadVideos(httpClient, url).map { it.url }
             }?.toSet()
         } }.awaitAll().filterNotNull().flatten().toSet()
 
         val reachableLinks = directLinks.map { link -> async {
             suspendCatching {
-                val response = client.head(link)
+                val response = httpClient.head(link)
 
                 if (response.status.isSuccess()) {
                     link

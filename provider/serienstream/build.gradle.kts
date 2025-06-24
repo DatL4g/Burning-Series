@@ -31,21 +31,10 @@ kotlin {
         binaries.executable()
     }
 
-    wasmJs {
-        browser()
-        nodejs()
-        binaries.executable()
-    }
-
     linuxX64()
     linuxArm64()
 
     mingwX64()
-
-    androidNativeX64()
-    androidNativeArm32()
-    androidNativeArm64()
-    androidNativeX86()
 
     sourceSets {
         commonMain.dependencies {
@@ -57,6 +46,8 @@ kotlin {
             api(libs.ktor.serialization.json)
             api(libs.tooling)
             implementation(libs.kermit)
+            implementation(libs.kache)
+            implementation(libs.skeo)
 
             implementation(project(":ksoup"))
             implementation(project(":matcher"))
