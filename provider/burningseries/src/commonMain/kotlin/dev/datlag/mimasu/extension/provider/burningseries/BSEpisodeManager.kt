@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
+import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.burningseries.model.Series
 import dev.datlag.skeo.Skeo
@@ -125,10 +126,10 @@ class BSEpisodeManager(
     }
 
     private suspend fun getSeries(link: String): Series? {
-        return seriesKache.getIfAvailable(link) ?: (BurningSeries.series(httpClient, link) ?: fallbackClient?.let {
+        return seriesKache.async(link) ?:  (BurningSeries.series(httpClient, link) ?: fallbackClient?.let {
             BurningSeries.series(it, link)
-        })?.also {
-            seriesKache.put(link, it)
+        })?.also { s ->
+            seriesKache.async(link) { s }
         }
     }
 
@@ -173,22 +174,13 @@ class BSEpisodeManager(
 
     private suspend fun streams(urls: Collection<String>) = coroutineScope {
         val directLinks = urls.map { url -> async {
-            streamKache.getOrPut(url) {
-                Skeo.loadVideos(httpClient, url).map { it.url }
+            streamKache.async(url) {
+                Skeo.resolveStreams(url, httpClient)
             }?.toSet()
         } }.awaitAll().filterNotNull().flatten().toSet()
+        val items = Skeo.filterNotSample(directLinks)
 
-        val reachableLinks = directLinks.map { link -> async {
-            suspendCatching {
-                val response = httpClient.head(link)
-
-                if (response.status.isSuccess()) {
-                    link
-                } else {
-                    null
-                }
-            }.getOrNull()
-        } }.awaitAll().filterNotNull()
+        val reachableLinks = Skeo.filterReachable(items, httpClient)
 
         reachableLinks.map { it }.toSet()
     }

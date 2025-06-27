@@ -3,12 +3,14 @@ package dev.datlag.mimasu.extension.provider
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
+import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.provider.burningseries.BSEpisodeManager
 import dev.datlag.mimasu.extension.provider.burningseries.BurningSeries
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.model.MatchedShowResults
 import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.CombinedEpisodeManager
+import dev.datlag.skeo.Skeo
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -51,7 +53,7 @@ class EpisodeManager(
             episode = request.episodeNumber ?: return false
         )
 
-        episodeKache.getIfAvailable(episodeKey)?.let {
+        episodeKache.async(episodeKey)?.let {
             return it
         }
 
@@ -87,9 +89,9 @@ class EpisodeManager(
                     request = request,
                     searchItem = it.data
                 ).mapNotNull { (key, value) ->
-                    key to TestVideo.filter(value).ifEmpty {
+                    key to Skeo.filterNotSample(value).ifEmpty {
                         return@mapNotNull null
-                    }
+                    }.toList()
                 }.associate { (k, v) ->
                     Show.Response.SourceInfo(
                         sourceTitle = BurningSeries.TITLE,
@@ -104,9 +106,9 @@ class EpisodeManager(
                     request = request,
                     searchItem = it.data
                 ).mapNotNull { (key, value) ->
-                    key to TestVideo.filter(value).ifEmpty {
+                    key to Skeo.filterNotSample(value).ifEmpty {
                         return@mapNotNull null
-                    }
+                    }.toList()
                 }.associate { (k, v) ->
                     Show.Response.SourceInfo(
                         sourceTitle = it.data.sourceTitle,

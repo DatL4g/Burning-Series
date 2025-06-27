@@ -23,8 +23,9 @@ kotlin {
             api(libs.ktor)
             implementation(libs.serialization.protobuf)
             implementation(libs.kermit)
-            implementation(libs.kache)
+            implementation(libs.skeo)
 
+            implementation(project(":kache"))
             api(project(":matcher"))
             api(project(":firebase"))
             implementation(project("burningseries"))

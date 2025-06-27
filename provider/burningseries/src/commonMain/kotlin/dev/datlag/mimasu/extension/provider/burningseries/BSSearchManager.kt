@@ -2,6 +2,7 @@ package dev.datlag.mimasu.extension.provider.burningseries
 
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
+import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.matcher.MatchResult
 import dev.datlag.mimasu.extension.matcher.SearchMatcher
 import dev.datlag.mimasu.extension.matcher.TokenResult
@@ -34,9 +35,7 @@ class BSSearchManager(
         releaseYear: Int?,
         isAnimation: Boolean?
     ): MatchResult<SearchItem>? {
-        tmdbId?.let(kache::getIfAvailable)?.let {
-            return it
-        }
+        tmdbId?.let { kache.async(it) }?.let { return it }
 
         val searchItems = initialize().ifEmpty { null } ?: return null
 
@@ -62,7 +61,7 @@ class BSSearchManager(
 
         return bestResult?.also { item ->
             tmdbId?.let {
-                kache.put(it, item)
+                kache.async(it) { item }
             }
         }
     }

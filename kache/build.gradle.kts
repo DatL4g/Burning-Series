@@ -1,12 +1,9 @@
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.serialization)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.ktorfit)
 }
 
-val artifact = "dev.datlag.mimasu.extension.provider.serienstream"
+val artifact = "dev.datlag.mimasu.extension.kache"
 
 kotlin {
     jvmToolchain(21)
@@ -20,6 +17,11 @@ kotlin {
 
     macosX64()
     macosArm64()
+
+    watchosX64()
+    watchosArm32()
+    watchosArm64()
+    watchosSimulatorArm64()
 
     tvosX64()
     tvosArm64()
@@ -36,21 +38,16 @@ kotlin {
 
     mingwX64()
 
+    androidNativeX64()
+    androidNativeArm32()
+    androidNativeArm64()
+    androidNativeX86()
+
     sourceSets {
         commonMain.dependencies {
             api(libs.coroutines)
-            api(libs.serialization.json)
-            api(libs.ktorfit)
-            api(libs.ktor)
-            api(libs.ktor.content.negotiation)
-            api(libs.ktor.serialization.json)
             api(libs.tooling)
-            implementation(libs.kermit)
-            implementation(libs.skeo)
-
-            implementation(project(":kache"))
-            implementation(project(":ksoup"))
-            implementation(project(":matcher"))
+            api(libs.kache)
         }
     }
 }

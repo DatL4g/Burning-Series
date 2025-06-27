@@ -3,6 +3,7 @@ rootProject.name = "Burning-Series"
 include(":composeApp", ":composeApp:sekret")
 include(":github")
 include(":matcher")
+include(":kache")
 include(":ksoup")
 include(":firebase")
 include(":provider", ":provider:serienstream", ":provider:burningseries")

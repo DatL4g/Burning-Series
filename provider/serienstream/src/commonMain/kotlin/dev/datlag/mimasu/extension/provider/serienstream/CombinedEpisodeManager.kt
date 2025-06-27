@@ -4,6 +4,7 @@ import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
+import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.ksoup.parseGet
 import dev.datlag.mimasu.extension.provider.serienstream.model.SearchItem
 import dev.datlag.mimasu.extension.provider.serienstream.model.Series
@@ -52,16 +53,15 @@ class CombinedEpisodeManager(
         val link = show.toSlug(newSeason = season)
         val series = getSeries(link, show) ?: return false
         val foundEpisode = findEpisode(show, series, episodeNumber) ?: return false
-        val episodeInfo = episodeKache.getIfAvailable(foundEpisode.target.slug)
+        val episodeInfo = episodeKache.async(foundEpisode.target.slug)
             ?: episodeDocument(show, foundEpisode.target)?.let {
                 EpisodeInfo(
                     languages = foundEpisode.target.availableLanguages(it),
                     provider = foundEpisode.target.providers(it)
                 )
-            }?.also {
-                episodeKache.put(foundEpisode.target.slug, it)
-            }
-            ?: return false
+            }?.also { e ->
+                episodeKache.async(foundEpisode.target.slug) { e }
+            } ?: return false
 
         return episodeInfo.provider.isNotEmpty()
     }
@@ -74,14 +74,14 @@ class CombinedEpisodeManager(
         val link = show.toSlug(newSeason = season)
         val series = getSeries(link, show) ?: return@coroutineScope emptyMap()
         val foundEpisode = findEpisode(show, series, episodeNumber) ?: return@coroutineScope emptyMap()
-        val episodeInfo = episodeKache.getIfAvailable(foundEpisode.target.slug)
+        val episodeInfo = episodeKache.async(foundEpisode.target.slug)
             ?: episodeDocument(show, foundEpisode.target)?.let {
                 EpisodeInfo(
                     languages = foundEpisode.target.availableLanguages(it),
                     provider = foundEpisode.target.providers(it)
                 )
-            }?.also {
-                episodeKache.put(foundEpisode.target.slug, it)
+            }?.also { e ->
+                episodeKache.async(foundEpisode.target.slug) { e }
             } ?: return@coroutineScope emptyMap()
 
         episodeInfo.provider.groupBy { it.languageKey }.mapNotNull { (key, provider) ->
@@ -98,10 +98,10 @@ class CombinedEpisodeManager(
     }
 
     private suspend fun getSeries(link: String, item: SearchItem): Series? {
-        return seriesKache.getIfAvailable(link) ?: (Series.from(item, link, httpClient) ?: fallbackClient?.let {
+        return seriesKache.async(link) ?: (Series.from(item, link, httpClient) ?: fallbackClient?.let {
             Series.from(item, link, it)
-        })?.also {
-            seriesKache.put(link, it)
+        })?.also { s ->
+            seriesKache.async(link) { s }
         }
     }
 
@@ -161,22 +161,13 @@ class CombinedEpisodeManager(
 
     private suspend fun streams(urls: Collection<String>) = coroutineScope {
         val directLinks = urls.map { url -> async {
-            streamKache.getOrPut(url) {
-                Skeo.loadVideos(httpClient, url).map { it.url }
+            streamKache.async(url) {
+                Skeo.resolveStreams(url, httpClient)
             }?.toSet()
         } }.awaitAll().filterNotNull().flatten().toSet()
+        val items = Skeo.filterNotSample(directLinks)
 
-        val reachableLinks = directLinks.map { link -> async {
-            suspendCatching {
-                val response = httpClient.head(link)
-
-                if (response.status.isSuccess()) {
-                    link
-                } else {
-                    null
-                }
-            }.getOrNull()
-        } }.awaitAll().filterNotNull()
+        val reachableLinks = Skeo.filterReachable(items, httpClient)
 
         reachableLinks.map { it }.toSet()
     }

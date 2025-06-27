@@ -2,6 +2,7 @@ package dev.datlag.mimasu.extension.firebase
 
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
+import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.tooling.listFrom
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseApp
@@ -26,7 +27,7 @@ class FirebaseWrapper(
 
         suspend fun streams(hrefList: Collection<String>): List<String> {
             val all = hrefList.map {
-                it to streamKache.getIfAvailable(it)?.ifBlank { null }
+                it to streamKache.async(it)?.ifBlank { null }
             }
             val nonCached = all.filter {
                 it.second.isNullOrBlank()
@@ -49,7 +50,7 @@ class FirebaseWrapper(
                 val id = doc.get<String>("id")
                 val url = doc.get<String>("url")
 
-                streamKache.put(id, url) ?: url
+                streamKache.async(id) { url } ?: url
             }
 
             return listFrom(
