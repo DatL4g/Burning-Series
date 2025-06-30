@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.sekret)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.crashlytics)
+    alias(libs.plugins.google.services)
 }
 
 val artifact = "dev.datlag.mimasu.extension"
@@ -61,25 +63,20 @@ kotlin {
             implementation(project(":kache"))
         }
 
-        val androidMain by getting {
-            apply(plugin = "kotlin-parcelize")
-            apply(plugin = libs.plugins.crashlytics.get().pluginId)
+        androidMain.dependencies {
+            implementation(libs.android)
+            implementation(libs.activity)
+            implementation(libs.activity.compose)
+            implementation(libs.multidex)
+            implementation(libs.android.startup)
+            implementation(libs.google.fonts)
 
-            dependencies {
-                implementation(libs.android)
-                implementation(libs.activity)
-                implementation(libs.activity.compose)
-                implementation(libs.multidex)
-                implementation(libs.android.startup)
-                implementation(libs.google.fonts)
-
-                implementation(libs.ktor.jvm)
-                implementation(libs.coroutines.android)
-                implementation(libs.okhttp.doh)
-                implementation(libs.service)
-                implementation(libs.serialization.protobuf)
-                implementation(libs.webview)
-            }
+            implementation(libs.ktor.jvm)
+            implementation(libs.coroutines.android)
+            implementation(libs.okhttp.doh)
+            implementation(libs.service)
+            implementation(libs.serialization.protobuf)
+            implementation(libs.webview)
         }
     }
 }
@@ -122,6 +119,16 @@ android {
     buildFeatures {
         buildConfig = true
         aidl = true
+    }
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                file("src/androidMain/proguard-rules.pro")
+            )
+        }
     }
 }
 

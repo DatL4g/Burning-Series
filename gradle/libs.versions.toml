@@ -15,6 +15,7 @@ datetime = "0.6.2"
 desugar = "2.1.5"
 firebase = "2.1.0"
 google-fonts = "1.8.3"
+google-services = "4.4.3"
 immutable = "0.4.0"
 kache = "2.1.1"
 kermit = "2.0.6"
@@ -93,6 +94,7 @@ cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotli
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics-plugin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 konfig = { id = "com.codingfeline.buildkonfig", version.ref = "konfig" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
