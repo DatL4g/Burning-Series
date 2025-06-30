@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Mimasu Extension</string>
+    <string name="home_features_text">This app provides the necessary video content and streams for the Mimasu app. It runs in the background and is called directly from the main app to ensure a seamless streaming experience.</string>
+    <string name="home_services">Supported Services</string>
+    <string-array name="home_services_list">
+        <item>Burning Series</item>
+        <item>SerienStream</item>
+        <item>AniWorld</item>
+    </string-array>
+    <string name="home_integration">Integration</string>
+    <string name="home_integration_text">As mentioned above, this automatically integrates to Mimasu. It uses a self-build AI to match the shows in the app with the available services. This AI is currently limited to match the shows itself, it may fail and episode matching is unavailable, resulting in wrong streams. You can report such occurrences on GitHub.</string>
+    <string name="home_updates">Updates</string>
+    <string name="home_updates_text">You will be notified about updates in the main app. Please download them from GitHub directly.</string>
+    <string name="github">GitHub</string>
+    <string name="burning_series">Burning Series</string>
+</resources>

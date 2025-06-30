@@ -28,7 +28,7 @@ kotlin {
             implementation(project(":kache"))
             api(project(":matcher"))
             api(project(":firebase"))
-            implementation(project("burningseries"))
+            api(project("burningseries"))
             implementation(project("serienstream"))
         }
     }

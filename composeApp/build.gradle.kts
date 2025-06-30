@@ -24,7 +24,7 @@ kotlin {
     jvmToolchain(21)
     androidTarget()
 
-    /*listOf(
+    listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
@@ -33,7 +33,7 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
         }
-    }*/
+    }
 
     applyDefaultHierarchyTemplate()
 
@@ -45,9 +45,13 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
-            implementation(libs.tooling)
+            implementation(libs.tooling.compose)
             implementation(libs.kodein)
+            implementation(libs.kodein.compose)
             implementation(libs.semver)
+            implementation(libs.kermit)
+            implementation(libs.lifecycle)
+            implementation(libs.navigation)
 
             implementation(project(":github"))
             implementation(project(":provider"))
@@ -64,14 +68,14 @@ kotlin {
                 implementation(libs.activity.compose)
                 implementation(libs.multidex)
                 implementation(libs.android.startup)
+                implementation(libs.google.fonts)
 
                 implementation(libs.ktor.jvm)
                 implementation(libs.coroutines.android)
                 implementation(libs.okhttp.doh)
                 implementation(libs.service)
                 implementation(libs.serialization.protobuf)
-
-                implementation("org.htmlunit:htmlunit3-android:4.3.0")
+                implementation(libs.webview)
             }
         }
     }
@@ -115,5 +119,11 @@ android {
     buildFeatures {
         buildConfig = true
         aidl = true
+    }
+}
+
+compose {
+    resources {
+        generateResClass = auto
     }
 }

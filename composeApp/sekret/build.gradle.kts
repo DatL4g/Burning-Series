@@ -26,6 +26,24 @@ kotlin {
         }
     }
 
+    iosX64 {
+        binaries {
+            sharedLib()
+        }
+    }
+
+    iosArm64 {
+        binaries {
+            sharedLib()
+        }
+    }
+
+    iosSimulatorArm64 {
+        binaries {
+            sharedLib()
+        }
+    }
+
     applyDefaultHierarchyTemplate()
 
     sourceSets {

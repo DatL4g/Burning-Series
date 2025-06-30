@@ -14,6 +14,11 @@ import dev.datlag.mimasu.extension.provider.burningseries.model.Series
 import dev.datlag.mimasu.extension.provider.burningseries.model.SeriesData
 import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
+import io.ktor.client.request.head
+import io.ktor.http.isSuccess
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
@@ -25,7 +30,7 @@ import kotlin.time.Duration.Companion.hours
 data object BurningSeries {
 
     private const val PROTOCOL_HTTPS = "https://"
-    private const val HOST = "bs.to"
+    const val HOST = "bs.to"
     private const val SEARCH_PATH = "andere-serien"
     const val TITLE = "Burning Series"
 
@@ -52,6 +57,10 @@ data object BurningSeries {
         }
 
     private val searchMutex = Mutex()
+    private val _reachable = MutableStateFlow(false)
+    val reachable = _reachable.asStateFlow()
+
+    val homePage = createLink("")
 
     private fun createLink(href: String): String {
         return if (!href.matches("^\\w+?://.*".toRegex())) {
@@ -90,21 +99,40 @@ data object BurningSeries {
         )
     }
 
-    private suspend fun document(client: HttpClient, href: String): Document? = suspendCatching {
+    fun matchingUrl(url1: String?, url2: String?): String? {
+        val fixedUrl1 = url1?.let(::normalize)
+        val regex = "serie\\S+".toRegex(RegexOption.IGNORE_CASE)
+
+        if (regex.containsMatchIn(fixedUrl1 ?: "")) {
+            return fixedUrl1
+        }
+
+        val fixedUrl2 = url2?.let(::normalize)
+        if (regex.containsMatchIn(fixedUrl2 ?: "")) {
+            return fixedUrl2
+        }
+
+        return null
+    }
+
+    private suspend fun document(
+        client: HttpClient,
+        href: String,
+    ): Document? = suspendCatching {
         Ksoup.parseGet(
             url = createLink(href),
             client = client
         )
     }.getOrNull()
 
-    internal suspend fun search(client: HttpClient): Set<SearchItem> {
+    internal suspend fun search(client: HttpClient, updateReachable: Boolean = false): Set<SearchItem> {
         cachedSearchItems.also {
             if (it.isNotEmpty()) {
                 return it
             }
         }
 
-        return atomicSearch(client)
+        return atomicSearch(client, updateReachable)
     }
 
     internal suspend fun series(client: HttpClient, href: String): Series? {
@@ -183,7 +211,7 @@ data object BurningSeries {
         )
     }
 
-    private suspend fun atomicSearch(client: HttpClient): Set<SearchItem> = searchMutex.withLock {
+    private suspend fun atomicSearch(client: HttpClient, updateReachable: Boolean): Set<SearchItem> = searchMutex.withLock {
         cachedSearchItems.also {
             if (it.isNotEmpty()) {
                 return it
@@ -212,6 +240,10 @@ data object BurningSeries {
             }
         }?.flatten()?.toSet()?.also {
             cachedSearchItems = it
+
+            if (updateReachable) {
+                _reachable.update { _ -> it.isNotEmpty() }
+            }
         } ?: emptySet()
     }
 

@@ -6,8 +6,6 @@ import dev.datlag.mimasu.extension.github.GitHub
 import dev.datlag.mimasu.extension.github.createGitHub
 import dev.datlag.mimasu.extension.provider.EpisodeManager
 import dev.datlag.mimasu.extension.provider.SearchManager
-import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.app
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import org.kodein.di.DI

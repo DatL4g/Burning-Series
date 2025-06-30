@@ -4,74 +4,74 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.htmlunit.BrowserVersion
-import org.htmlunit.NicelyResynchronizingAjaxController
-import org.htmlunit.Page
-import org.htmlunit.SilentCssErrorHandler
-import org.htmlunit.WebClient
-import org.htmlunit.WebRequest
-import org.htmlunit.html.HtmlPage
-import org.htmlunit.javascript.SilentJavaScriptErrorListener
-import java.net.URL
+import androidx.lifecycle.lifecycleScope
+import co.touchlab.kermit.Logger
+import dev.datlag.mimasu.extension.provider.SearchManager
+import dev.datlag.mimasu.extension.ui.theme.Font
+import dev.datlag.tooling.compose.launchIO
+import dev.datlag.tooling.compose.toTypography
+import dev.datlag.tooling.safeCast
+import org.kodein.di.DI
+import org.kodein.di.DIAware
+import org.kodein.di.instanceOrNull
+import kotlin.reflect.safeCast
 
 class MainActivity : ComponentActivity() {
 
+    private val di: DI?
+        get() = applicationContext.safeCast<DIAware>()?.di
+            ?: application.safeCast<DIAware>()?.di
+            ?: DIAware::class.safeCast(applicationContext)?.di
+            ?: DIAware::class.safeCast(application)?.di
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        fun exit(reason: String?) {
+            reason?.let { Logger.e(messageString = it) }
+            finishAffinity()
+        }
+
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
 
+        val di = this.di ?: return exit("Could not find dependency injection.")
+        initializeSearchManager(di)
+
         setContent {
-            App {
-                var html by remember { mutableStateOf("") }
-
-                LaunchedEffect(Unit) {
-                    withContext(Dispatchers.IO) {
-                        html = runCatching { fetch() }.getOrNull() ?: "Failed fetching"
-                    }
-                }
-
-                Text(
-                    text = html.ifBlank { "Loading..." },
-                    color = Color.White
-                )
-            }
+            App(
+                di = di,
+                typography = Font.manrope.toTypography()
+            )
         }
     }
 
-    private suspend fun fetch(): String? {
-        val client = WebClient(BrowserVersion.BEST_SUPPORTED).also {
-            it.options.apply {
-                isJavaScriptEnabled = false
-                isCssEnabled = false
-                isRedirectEnabled = true
-            }
-            it.ajaxController = NicelyResynchronizingAjaxController()
-            it.cssErrorHandler = SilentCssErrorHandler()
-            it.javaScriptErrorListener = SilentJavaScriptErrorListener()
-        }
-        val request = WebRequest(URL("https://filmpalast.to/"))
-        val page: Page = client.getPage(request)
-        val document = when {
-            page.isHtmlPage -> (page as HtmlPage).asXml()
-            else -> page.webResponse.contentAsString
-        }
+    override fun onStart() {
+        super.onStart()
 
-        client.javaScriptEngine.shutdown()
-        client.close()
-        client.cache.clear()
-        return document
+        initializeSearchManager()
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+
+        initializeSearchManager()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        initializeSearchManager()
+    }
+
+    private fun initializeSearchManager(di: DI? = this.di) {
+        val dependencyInjection = di ?: return
+        val searchManager by dependencyInjection.instanceOrNull<SearchManager>()
+
+        searchManager?.let { lifecycleScope.launchIO {
+            it.initialize()
+        } }
     }
 
 }
