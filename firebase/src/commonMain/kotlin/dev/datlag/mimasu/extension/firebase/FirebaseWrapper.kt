@@ -2,19 +2,58 @@ package dev.datlag.mimasu.extension.firebase
 
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
+import dev.datlag.mimasu.extension.firebase.model.ScrapedData
 import dev.datlag.mimasu.extension.kache.async
+import dev.datlag.tooling.async.scopeCatching
+import dev.datlag.tooling.async.suspendCatching
 import dev.datlag.tooling.listFrom
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseApp
 import dev.gitlive.firebase.app
+import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.firestore
+import kotlinx.coroutines.flow.map
 import kotlin.time.Duration.Companion.hours
 
 class FirebaseWrapper(
     private val app: FirebaseApp = Firebase.app
 ) {
 
+    val auth = Auth()
     val store = Store()
+
+    inner class Auth internal constructor() {
+
+        val isSignedIn: Boolean
+            get() = scopeCatching {
+                Firebase.auth(app).currentUser
+            }.getOrNull() != null
+
+        val signedIn = Firebase.auth(app).authStateChanged.map { u ->
+            u != null
+        }
+
+        suspend fun signInAnonymously(): Boolean {
+            if (isSignedIn) {
+                return true
+            }
+
+            return suspendCatching {
+                Firebase.auth(app).signInAnonymously().user
+            }.getOrNull() != null
+        }
+
+        suspend fun signOut(): Boolean {
+            val deleted = suspendCatching {
+                Firebase.auth(app).currentUser?.delete()
+            }.isSuccess
+            val signedOut = suspendCatching {
+                Firebase.auth(app).signOut()
+            }.isSuccess
+
+            return deleted && signedOut
+        }
+    }
 
     inner class Store internal constructor() {
 
@@ -23,6 +62,18 @@ class FirebaseWrapper(
         ) {
             strategy = KacheStrategy.LRU
             expireAfterWriteDuration = 12.hours
+        }
+
+        suspend fun addStream(data: ScrapedData): Boolean {
+            val fireStore = Firebase.firestore(app)
+            val document = fireStore.collection("stream").where {
+                "id" equalTo data.fireStore.id
+            }.get().documents.firstOrNull()?.reference ?: fireStore.collection("stream").document
+
+            fireStore.runTransaction {
+                set(document, data = data.fireStore, merge = true)
+            }
+            return true
         }
 
         suspend fun streams(hrefList: Collection<String>): List<String> {

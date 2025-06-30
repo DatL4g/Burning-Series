@@ -6,6 +6,7 @@ import dev.datlag.mimasu.extension.github.GitHub
 import dev.datlag.mimasu.extension.github.createGitHub
 import dev.datlag.mimasu.extension.provider.EpisodeManager
 import dev.datlag.mimasu.extension.provider.SearchManager
+import dev.datlag.mimasu.extension.viewmodel.KodeinViewModelFactory
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import org.kodein.di.DI
@@ -47,6 +48,9 @@ data object NetworkModule {
                     (it as? FirebaseWrapper.Creator.Available)?.wrapper
                 } ?: instanceOrNull()
             )
+        }
+        bindSingleton<KodeinViewModelFactory> {
+            KodeinViewModelFactory(this)
         }
     }
 }

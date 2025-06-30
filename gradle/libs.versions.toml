@@ -51,6 +51,7 @@ coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutin
 datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "datetime" }
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 firebase = { group = "dev.gitlive", name = "firebase-app", version.ref = "firebase" }
+firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "firebase" }
 firebase-firestore = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "firebase" }
 google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "google-fonts" }
 immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "immutable" }
@@ -68,6 +69,7 @@ lifecycle = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runt
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 okhttp-doh = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttp" }
+reflection = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 sekret = { group = "dev.datlag.sekret", name = "sekret", version.ref = "sekret" }
 semver = { group = "io.github.z4kn4fein", name = "semver", version.ref = "semver" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "serialization" }
@@ -77,6 +79,7 @@ service = { group = "androidx.lifecycle", name = "lifecycle-service", version.re
 skeo = { group = "dev.datlag.skeo", name = "skeo", version.ref = "skeo" }
 tooling = { group = "dev.datlag.tooling", name = "tooling-async", version.ref = "tooling" }
 tooling-compose = { group = "dev.datlag.tooling", name = "tooling-compose", version.ref = "tooling" }
+viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 webview = { group = "com.google.accompanist", name = "accompanist-webview", version.ref = "webview" }
 
 [plugins]

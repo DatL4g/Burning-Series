@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import co.touchlab.kermit.Logger
+import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
 import dev.datlag.mimasu.extension.provider.SearchManager
 import dev.datlag.mimasu.extension.ui.theme.Font
 import dev.datlag.tooling.compose.launchIO
@@ -24,6 +25,20 @@ class MainActivity : ComponentActivity() {
             ?: application.safeCast<DIAware>()?.di
             ?: DIAware::class.safeCast(applicationContext)?.di
             ?: DIAware::class.safeCast(application)?.di
+
+    private val firebaseWrapper: FirebaseWrapper?
+        get() = di?.let {
+            val creator by it.instanceOrNull<FirebaseWrapper.Creator>()
+            val instance = creator?.let { c ->
+                (c as? FirebaseWrapper.Creator.Available)?.wrapper
+            }
+            if (instance != null) {
+                return@let instance
+            }
+
+            val fallbackInstance by it.instanceOrNull<FirebaseWrapper>()
+            fallbackInstance
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         fun exit(reason: String?) {
@@ -63,6 +78,14 @@ class MainActivity : ComponentActivity() {
         super.onResume()
 
         initializeSearchManager()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        lifecycleScope.launchIO {
+            firebaseWrapper?.auth?.signOut()
+        }
     }
 
     private fun initializeSearchManager(di: DI? = this.di) {

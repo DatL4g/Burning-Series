@@ -24,3 +24,11 @@ suspend fun <K : Any, V : Any> ObjectKache<K, V>.async(key: K, creationFunction:
         this@async.put(key) { creationFunction.invoke(key).also { created = it } }
     }.getOrNull() ?: created
 }
+
+suspend fun <K : Any, V : Any> ObjectKache<K, V>.asyncPutAndGet(key: K, value: V): V {
+    suspendCatching {
+        this@asyncPutAndGet.put(key, value)
+    }.getOrNull()
+
+    return async(key) ?: value
+}

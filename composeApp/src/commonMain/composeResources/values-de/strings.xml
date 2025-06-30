@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Mimasu Extension</string>
+    <string name="home_features_text">Diese App stellt die notwendingen Videoinhalte und Streams für Mimasu bereit. Sie funktioniert im Hintergrund und wird direkt von der Haupt-App aufgerufen, um ein nahtloses Streaming-Erlebnis zu gewährleisten.</string>
+    <string name="home_services">Unterstützte Dienste</string>
+    <string-array name="home_services_list">
+        <item>Burning Series</item>
+        <item>SerienStream</item>
+        <item>AniWorld</item>
+    </string-array>
+    <string name="home_integration">Integration</string>
+    <string name="home_integration_text">Wie oben erwähnt, integriert sich dies automatisch in Mimasu. Es nutzt eine selbst entwickelte KI, um die Serien in der App den verfügbaren Diensten zuzuordnen. Diese KI ist derzeit darauf beschränkt, die Serien selbst zuzuordnen. Sie kann fehlerhaft sein und die Episodenzuordnung ist nicht verfügbar, was zu falschen Streams führen kann. Du kannst solche Fehler auf GitHub melden.</string>
+    <string name="home_updates">Updates</string>
+    <string name="home_updates_text">Du wirst über Updates in der Haupt-App benachrichtigt. Bitte lade diese direkt von GitHub herunter.</string>
+    <string name="github">GitHub</string>
+    <string name="burning_series">Burning Series</string>
+
+    <string name="burning_series_activate">Episode speichern</string>
+    <string name="burning_series_activate_subtitle">Lade einen Hoster um die Episode zu speichern</string>
+    <string name="burning_series_preparing">Wird vorbereitet, bitte wrate kurz</string>
+    <string name="burning_series_error">Etwas ist schiefgelaufen</string>
+    <string name="burning_series_success">Erfolgreich gespeichert</string>
+</resources>

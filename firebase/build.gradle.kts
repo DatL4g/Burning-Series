@@ -22,6 +22,7 @@ kotlin {
             implementation(libs.kermit)
 
             api(libs.firebase)
+            api(libs.firebase.auth)
             api(libs.firebase.firestore)
 
             implementation(project(":kache"))

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Mimasu Extension</string>
-    <string name="home_features_text">This app provides the necessary video content and streams for the Mimasu app. It runs in the background and is called directly from the main app to ensure a seamless streaming experience.</string>
+    <string name="home_features_text">This app provides the necessary video content and streams for Mimasu. It runs in the background and is called directly from the main app to ensure a seamless streaming experience.</string>
     <string name="home_services">Supported Services</string>
     <string-array name="home_services_list">
         <item>Burning Series</item>
@@ -13,4 +13,10 @@
     <string name="home_updates_text">You will be notified about updates in the main app. Please download them from GitHub directly.</string>
     <string name="github">GitHub</string>
     <string name="burning_series">Burning Series</string>
+
+    <string name="burning_series_activate">Save Episodes</string>
+    <string name="burning_series_activate_subtitle">Load any hoster to save the episode</string>
+    <string name="burning_series_preparing">Preparing Screen, please wait a second</string>
+    <string name="burning_series_error">Something went wrong</string>
+    <string name="burning_series_success">Saved successfully</string>
 </resources>

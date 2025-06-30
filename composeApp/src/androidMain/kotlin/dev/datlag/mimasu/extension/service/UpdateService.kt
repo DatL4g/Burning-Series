@@ -5,9 +5,12 @@ import android.os.IBinder
 import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import com.mayakapps.kache.InMemoryKache
+import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.BuildConfig
 import dev.datlag.mimasu.extension.IUpdateProvider
 import dev.datlag.mimasu.extension.github.GitHub
+import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.update.Callback
 import dev.datlag.tooling.async.suspendCatching
 import dev.datlag.tooling.safeCast
@@ -70,54 +73,47 @@ class UpdateService : LifecycleService() {
     ) : IUpdateProvider.Stub(), DIAware {
 
         private val github by instanceOrNull<GitHub>()
-        private var cachedRelease: Pair<Long, Update>? = null
-        private val mutex = Mutex()
-
-        @OptIn(ExperimentalTime::class)
-        private fun getCachedRelease(): Update? {
-            return cachedRelease?.let { (writeTime, value) ->
-                if (!value.hasDownloadUrl()) {
-                    return@let null
-                }
-
-                if (Clock.System.now().minus(12.hours).epochSeconds > writeTime) {
-                    return@let null
-                }
-
-                value
-            }
+        private val updateKache = InMemoryKache<UpdateCacheKey, Update>(
+            maxSize = 2L * 1024 * 1024
+        ) {
+            strategy = KacheStrategy.LRU
+            expireAfterWriteDuration = 12.hours
         }
 
-        @OptIn(ExperimentalTime::class)
-        private suspend fun getUpdate(git: GitHub): Update? = mutex.withLock {
-            return@withLock getCachedRelease() ?: suspendCatching {
-                git.latestRelease(
-                    owner = "DatL4g",
-                    repo = "Burning-Series"
-                )
-            }.getOrNull()?.let { release ->
-                val releaseVersion = release.tagName.toVersionOrNull(strict = false)
-                val appVersion = BuildConfig.VERSION_NAME.toVersionOrNull(strict = false)
+        private suspend fun getUpdate(git: GitHub): Update? {
+            val key = UpdateCacheKey(
+                owner = "DatL4g",
+                repository = "Mimasu-Extension"
+            )
 
-                if (releaseVersion == null || appVersion == null) {
-                    return@withLock null
-                }
-
-                if (releaseVersion > appVersion) {
-                    Update(
-                        _available = !release.draft,
-                        _viewUrl = release.htmlUrl.ifBlank { null },
-                        _downloadUrl = release.assets.maxByOrNull {
-                            it.apkIdentifier
-                        }?.takeIf {
-                            it.hasAnyApkIdentifier
-                        }?.downloadUrl?.toString()?.ifBlank { null }
+            return updateKache.async(key) {
+                suspendCatching {
+                    git.latestRelease(
+                        owner = key.owner,
+                        repo = key.repository
                     )
-                } else {
-                    null
+                }.getOrNull()?.let { release ->
+                    val releaseVersion = release.tagName.toVersionOrNull(strict = false)
+                    val appVersion = BuildConfig.VERSION_NAME.toVersionOrNull(strict = false)
+
+                    if (releaseVersion == null || appVersion == null) {
+                        null
+                    } else {
+                        if (releaseVersion > appVersion) {
+                            Update(
+                                _available = !release.draft,
+                                _viewUrl = release.htmlUrl.ifBlank { null },
+                                _downloadUrl = release.assets.maxByOrNull {
+                                    it.apkIdentifier
+                                }?.takeIf {
+                                    it.hasAnyApkIdentifier
+                                }?.downloadUrl?.toString()?.ifBlank { null }
+                            )
+                        } else {
+                            null
+                        }
+                    }
                 }
-            }?.also {
-                cachedRelease = Clock.System.now().epochSeconds to it
             }
         }
 
@@ -134,5 +130,10 @@ class UpdateService : LifecycleService() {
                 }
             }
         }
+
+        data class UpdateCacheKey(
+            val owner: String,
+            val repository: String
+        )
     }
 }

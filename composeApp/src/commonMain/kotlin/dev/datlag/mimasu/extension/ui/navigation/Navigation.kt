@@ -33,7 +33,9 @@ fun Navigation() {
             )
         }
         composable<Navigation.BurningSeries> {
-            BurningSeries()
+            BurningSeries(
+                onBack = { controller.navigateUp() }
+            )
         }
     }
 }

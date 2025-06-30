@@ -52,10 +52,13 @@ kotlin {
             implementation(libs.kermit)
             implementation(libs.lifecycle)
             implementation(libs.navigation)
+            implementation(libs.viewmodel)
+            implementation(libs.reflection)
 
             implementation(project(":github"))
             implementation(project(":provider"))
             implementation(project(":firebase"))
+            implementation(project(":kache"))
         }
 
         val androidMain by getting {
