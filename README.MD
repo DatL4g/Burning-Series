@@ -7,14 +7,12 @@
 [![License](https://img.shields.io/github/license/DATL4G/Burning-Series.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/blob/master/LICENSE)
 [![Github all releases](https://img.shields.io/github/downloads/DATL4G/Burning-Series/total.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/releases)
 
-[![Release Status](https://github.com/DatL4g/Burning-Series/actions/workflows/release.yml/badge.svg)](https://github.com/DATL4G/Burning-Series/actions/workflows/release.yml)
-
 ## Installation
 
 Download the Extension App here: https://github.com/DatL4g/Burning-Series/releases/latest  
 Install it as usual and you are done for the extension.
 
-Download the Main App here: https://play.google.com/store/apps/details?id=dev.datlag.mimasu
+Download the Main App here: https://play.google.com/store/apps/details?id=dev.datlag.mimasu  
 Install it as usual and start using it.
 
 ## Usage
