@@ -10,6 +10,7 @@ import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.model.MatchedShowResults
 import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.CombinedEpisodeManager
+import dev.datlag.mimasu.extension.provider.serienstream.model.LanguageInfo as SerienStreamLang
 import dev.datlag.skeo.Skeo
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
@@ -17,6 +18,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlin.time.Duration.Companion.hours
 import dev.datlag.mimasu.extension.provider.serienstream.model.SearchItem as SerienStreamItem
+import dev.datlag.mimasu.extension.provider.burningseries.model.LanguageInfo as BSLang
 
 class EpisodeManager(
     val httpClient: HttpClient,
@@ -95,8 +97,8 @@ class EpisodeManager(
                 }.associate { (k, v) ->
                     Show.Response.SourceInfo(
                         sourceTitle = BurningSeries.TITLE,
-                        sourceLocale = k,
-                        locale = k
+                        sourceLocale = k.localeTitle,
+                        locale = k.locale
                     ) to v
                 }
             } }
@@ -112,8 +114,8 @@ class EpisodeManager(
                 }.associate { (k, v) ->
                     Show.Response.SourceInfo(
                         sourceTitle = it.data.sourceTitle,
-                        sourceLocale = k,
-                        locale = k
+                        sourceLocale = k.localeTitle,
+                        locale = k.locale
                     ) to v
                 }
             } }
@@ -156,7 +158,7 @@ class EpisodeManager(
     private suspend fun streams(
         request: Show.EpisodeRequest,
         searchItem: SearchItem
-    ): Map<String, List<String>> = burningSeriesEpisodeManager.episodeStreams(
+    ): Map<BSLang, List<String>> = burningSeriesEpisodeManager.episodeStreams(
         show = searchItem,
         episodeNumber = request.episodeNumber,
         season = request.season
@@ -165,7 +167,7 @@ class EpisodeManager(
     private suspend fun streams(
         request: Show.EpisodeRequest,
         searchItem: SerienStreamItem
-    ): Map<String, List<String>> = serienStreamEpisodeManager.episodeStreams(
+    ): Map<SerienStreamLang, List<String>> = serienStreamEpisodeManager.episodeStreams(
         show = searchItem,
         episodeNumber = request.episodeNumber,
         season = request.season

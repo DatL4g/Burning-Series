@@ -21,6 +21,8 @@ sealed interface SearchItem : SeriesData, TokenAware {
     val baseUrl: String
     val sourceTitle: String
 
+    val localeCodes: Map<Int, String>
+
     fun normalize(slug: String = this.slug): String
 
     fun createLink(slug: String = normalize()) = createLink(baseUrl, slug)
@@ -83,6 +85,13 @@ sealed interface SearchItem : SeriesData, TokenAware {
 
         @Transient
         override val sourceTitle: String = SOURCE_TITLE
+
+        @Transient
+        override val localeCodes: Map<Int, String> = mapOf(
+            1 to "de",
+            2 to "ens",
+            3 to "des"
+        )
 
         override fun normalize(slug: String): String = Companion.normalize(slug)
 
@@ -151,6 +160,13 @@ sealed interface SearchItem : SeriesData, TokenAware {
 
         @Transient
         override val sourceTitle: String = SOURCE_TITLE
+
+        @Transient
+        override val localeCodes: Map<Int, String> = mapOf(
+            1 to "de",
+            2 to "en",
+            3 to "des"
+        )
 
         override fun normalize(slug: String): String = Companion.normalize(slug)
 

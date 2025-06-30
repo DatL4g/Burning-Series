@@ -9,6 +9,7 @@ import dev.datlag.mimasu.extension.ksoup.firstByClass
 import dev.datlag.mimasu.extension.ksoup.firstByTag
 import dev.datlag.mimasu.extension.ksoup.href
 import dev.datlag.mimasu.extension.ksoup.parseGet
+import dev.datlag.mimasu.extension.provider.burningseries.model.LanguageInfo
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.burningseries.model.Series
 import dev.datlag.mimasu.extension.provider.burningseries.model.SeriesData
@@ -157,18 +158,26 @@ data object BurningSeries {
 
         val languages = languageElements.mapNotNull {
             val value = it.value().ifBlank { null }?.trim()
+            val text = it.text().ifBlank { null }?.trim()
             val selected = it.selectFirst("option[selected]")?.value()
 
             if (!selected.isNullOrBlank() || (!selectedLanguageValue.isNullOrBlank() && selectedLanguageValue == value)) {
                 selectedLanguage = value
             }
-            value
+            if (!value.isNullOrBlank()) {
+                LanguageInfo(
+                    localeTitle = text ?: value,
+                    locale = value
+                )
+            } else {
+                null
+            }
         }.toSet()
 
         if (selectedLanguage.isNullOrBlank()) {
             selectedLanguage = selectedLanguageValue
             if (selectedLanguage.isNullOrBlank()) {
-                selectedLanguage = languages.firstOrNull()
+                selectedLanguage = languages.firstOrNull()?.locale
             }
         }
 

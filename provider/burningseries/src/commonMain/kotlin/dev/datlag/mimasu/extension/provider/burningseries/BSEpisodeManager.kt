@@ -5,6 +5,7 @@ import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
 import dev.datlag.mimasu.extension.kache.async
+import dev.datlag.mimasu.extension.provider.burningseries.model.LanguageInfo
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.burningseries.model.Series
 import dev.datlag.skeo.Skeo
@@ -50,7 +51,7 @@ class BSEpisodeManager(
 
         return foundEpisode.target.hoster.isNotEmpty() || run {
             val languageSpecificLinks = foundEpisode.relatedSeries.languages.map { lang ->
-                foundEpisode.relatedSeries.toHref(newLanguage = lang)
+                foundEpisode.relatedSeries.toHref(newLanguage = lang.locale)
             }.toSet()
 
             coroutineScope {
@@ -75,19 +76,13 @@ class BSEpisodeManager(
         show: SearchItem,
         episodeNumber: Int?,
         season: Int?
-    ): Map<String, List<String>> = coroutineScope {
+    ): Map<LanguageInfo, List<String>> = coroutineScope {
         val link = show.toHref(newSeason = season, newLanguage = null)
-        val series = getSeries(link) ?: return@coroutineScope run {
-            Logger.e("No Series found for BS")
-            emptyMap()
-        }
-        val foundEpisode = findEpisode(series, episodeNumber) ?: return@coroutineScope run {
-            Logger.e("No Episode found for Series")
-            emptyMap()
-        }
+        val series = getSeries(link) ?: return@coroutineScope emptyMap()
+        val foundEpisode = findEpisode(series, episodeNumber) ?: return@coroutineScope emptyMap()
 
         val allSeries = foundEpisode.relatedSeries.languages.map { lang ->
-            foundEpisode.relatedSeries.toHref(newLanguage = lang)
+            foundEpisode.relatedSeries.toHref(newLanguage = lang.locale)
         }.toSet().map { langLink -> async {
             getSeries(langLink)
         } }.awaitAll().filterNotNull().toSet().distinctBy {
@@ -95,31 +90,24 @@ class BSEpisodeManager(
         }.filterNot {
             it.selectedLanguage.isNullOrBlank()
         }
-
-        Logger.e("Found Series: ${allSeries.size}")
+        val allLanguages = allSeries.flatMap { it.languages }.toSet()
 
         val mappedStreams = allSeries.map { s -> async {
-            val requestedEpisode = findEpisode(s, foundEpisode.episodeNumber, searchInNextSeason = false) ?: return@async run {
-                Logger.e("No requested episode")
-                null
-            }
-            val hosterUrls = firebaseWrapper?.store?.streams(requestedEpisode.target.hoster)?.ifEmpty {
-                Logger.e("FirebaseWrapper gave empty stream collection")
-                null
-            } ?: return@async run {
-                Logger.e("No Firebase Hoster URLs")
-                null
-            }
+            val requestedEpisode = findEpisode(s, foundEpisode.episodeNumber, searchInNextSeason = false) ?: return@async null
+            val hosterUrls = firebaseWrapper?.store?.streams(requestedEpisode.target.hoster)?.ifEmpty { null } ?: return@async null
 
-            (s.selectedLanguage ?: return@async run {
-                Logger.e("No Selected Language")
-                null
-            }) to hosterUrls.ifEmpty { return@async run {
-                Logger.e("No Associated Hoster URL for language")
-                null
-            } }
+            (s.selectedLanguage ?: return@async null) to hosterUrls.ifEmpty { return@async null }
         } }.awaitAll().filterNotNull().toSet().map { (key, urls) -> async {
-            key to streams(urls).toList()
+            val lang = allLanguages.firstOrNull {
+                it.locale == key
+            } ?: allLanguages.firstOrNull {
+                it.localeTitle == key
+            } ?: LanguageInfo(
+                localeTitle = key,
+                locale = key
+            )
+
+            lang to streams(urls).toList()
         } }.awaitAll().toMap()
 
         return@coroutineScope mappedStreams

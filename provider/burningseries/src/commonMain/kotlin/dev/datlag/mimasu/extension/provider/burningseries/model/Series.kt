@@ -4,7 +4,7 @@ data class Series(
     val href: String,
     val selectedLanguage: String?,
     val seasons: Collection<Int>,
-    val languages: Collection<String>,
+    val languages: Collection<LanguageInfo>,
     val episodes: Collection<Episode>
 ) : SeriesData {
 

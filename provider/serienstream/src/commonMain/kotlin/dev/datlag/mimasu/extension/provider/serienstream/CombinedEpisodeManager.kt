@@ -6,6 +6,7 @@ import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.ksoup.parseGet
+import dev.datlag.mimasu.extension.provider.serienstream.model.LanguageInfo
 import dev.datlag.mimasu.extension.provider.serienstream.model.SearchItem
 import dev.datlag.mimasu.extension.provider.serienstream.model.Series
 import dev.datlag.skeo.Skeo
@@ -70,7 +71,7 @@ class CombinedEpisodeManager(
         show: SearchItem,
         episodeNumber: Int?,
         season: Int?
-    ): Map<String, List<String>> = coroutineScope {
+    ): Map<LanguageInfo, List<String>> = coroutineScope {
         val link = show.toSlug(newSeason = season)
         val series = getSeries(link, show) ?: return@coroutineScope emptyMap()
         val foundEpisode = findEpisode(show, series, episodeNumber) ?: return@coroutineScope emptyMap()
@@ -91,9 +92,13 @@ class CombinedEpisodeManager(
             val title = episodeInfo.languages.firstOrNull {
                 it.key == key
             }?.title ?: key.toString()
+            val lang = LanguageInfo(
+                localeTitle = title,
+                locale = show.localeCodes[key] ?: title
+            )
 
             val streams = streams(urls).ifEmpty { null } ?: return@async null
-            title to streams.toList()
+            lang to streams.toList()
         } }.awaitAll().filterNotNull().toMap()
     }
 

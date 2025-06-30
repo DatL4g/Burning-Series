@@ -152,8 +152,7 @@ fun Home(
                             vertical = 8.dp
                         ),
                     text = stringResource(Res.string.home_integration_text),
-                    softWrap = true,
-                    textAlign = TextAlign.Center
+                    softWrap = true
                 )
             }
             item {
