@@ -1,4 +1,4 @@
-# Burning-Series
+# Mimasu-Extension
 
 [![Issues](https://img.shields.io/github/issues/DATL4G/Burning-Series.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/issues)
 [![Stars](https://img.shields.io/github/stars/DATL4G/Burning-Series.svg?style=for-the-badge)](https://github.com/DATL4G/Burning-Series/stargazers)
@@ -9,79 +9,25 @@
 
 [![Release Status](https://github.com/DatL4g/Burning-Series/actions/workflows/release.yml/badge.svg)](https://github.com/DATL4G/Burning-Series/actions/workflows/release.yml)
 
-![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
-![Kotlin](https://img.shields.io/badge/kotlin-%230095D5.svg?style=for-the-badge&logo=kotlin&logoColor=white)
-![Android Studio](https://img.shields.io/badge/Android%20Studio-3DDC84.svg?style=for-the-badge&logo=android-studio&logoColor=white)
-![IntelliJ IDEA](https://img.shields.io/badge/IntelliJIDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white)
-![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+## Installation
 
-Watch any series or videos on [Burning Series](https://bs.to/) easily with this app.
-You can see the latest series and episodes, get an overview of all available series, save your favorites and start watching directly inside the app.
-**You can't log in to your [Burning Series](https://bs.to/) Account because it's not using an official API.** Read the [Important Notice](#important-notice) for more info.
+Download the Extension App here: https://github.com/DatL4g/Burning-Series/releases/latest  
+Install it as usual and you are done for the extension.
 
-- [Status](#status)
-- [Important Notice](#important-notice)
-- [Supported devices and Installation](#supported-devices-and-installation)
-- [Contributing](#contributing)
-    - [Maintainers](#maintainers)
-- [Support the project](#support-the-project)
+Download the Main App here: https://play.google.com/store/apps/details?id=dev.datlag.mimasu
+Install it as usual and start using it.
 
-## Status
+## Usage
 
-What's the current development status of Burning-Series?
+After installing both apps, simply start the Mimasu App and search for you favorite series.  
+If everything is setup both apps are doing everything automatically.
 
-### Is this app maintained?
+### Series - Episode Icon Types
 
-Clearly Yes and No.  
-Unless I finished https://github.com/DatL4g/Mimasu/tree/v1 this app will receive maintenance updates but no feature updates.
+If a series is available it will show icons on the episode preview images.
 
-### What happens when Mimasu is released?
-
-This app will receive further and new updates.
-
-### What's the difference between these two apps then?
-
-To keep watching videos you'll need both apps!  
-You can search for Movies and Series in Mimasu and they will be directly watchable in the app.  
-
-However to be able to watch content in Mimasu you'll have to install Burning-Series.  
-Burning-Series (will be renamed) will provide the content from various providers (not limited to Burning-Series anymore then) to Mimasu.
-
-### How do I get notified about this change?
-
-Just keep using Burning-Series for now.  
-As soon as both apps are ready, there will be a new Burning-Series release and got renamed to Mimasu-Extension.
-
-## Important Notice
-
-This app is **NOT OFFICIAL** by [Burning Series](https://bs.to/)!!!
-
-This is a personal project and doesn't rely on any official API by [Burning Series](https://bs.to/), that means it could break any time.
-It's not guaranteed that this project will be maintained, especially not by any owner or developer of [Burning Series](https://bs.to/).
-If the app stops working don't report that in any form on [Burning Series](https://bs.to/), instead open an [Issue](https://github.com/DATL4G/BurningSeries-Android/issues/new/choose) or fix it yourself and create a pull request here.
-
-**This project is not related to any owner, developer or other staff from [Burning Series](https://bs.to/)**
-
-**Furthermore, this project is for personal and educational purposes only**
-
-## Supported devices and Installation
-
-All Android smartphones with version >=8.0 (Oreo and up) are supported, furthermore Android TVs should work as well.
-
-To install the app head over to the [Release Section](https://github.com/DATL4G/Burning-Series/releases) and download the ```.apk``` file. For more advanced users is an ```.aab``` file provided which can be installed using [bundletool](https://developer.android.com/studio/command-line/bundletool).
-Installing the ```.apk``` file is easy, just copy it to your phone (or download it directly on your phone) and open it to install. If this won't work you can use [ADB](https://developer.android.com/studio/command-line/adb) sideloading to install it from your pc on your phone.
-
-Search on the internet if you face any problems. Don't ask for help here!
-
-### Desktop
-
-- **Windows**
-- **MacOS**
-- **Linux**
-    - Fedora
-    - AppImage
-    - Debian / Ubuntu
-    - Tarball
+- Play Arrow: Episode can be watched
+- Warning: Episode cant be watched
 
 ### Browser (Activation Extension)
 
@@ -89,7 +35,7 @@ If you can't access [bs.to](https://bs.to) you have to enable DoH (DNS over HTTP
 Setting this up may differ depending on your browser, however I suggest to use **Google** as provider.
 
 The extension doesn't need to be updated every version, it just follows the overall versioning scheme.
-If an update is required/recommended, then there is a hint in the [release notes](https://github.com/DATL4G/Burning-Series/releases/latest).
+If an update is required/recommended, then there is a hint in the [release notes](https://github.com/DatL4g/Burning-Series/releases/tag/v5.0.0).
 
 - **Chromium**
     - Chrome
