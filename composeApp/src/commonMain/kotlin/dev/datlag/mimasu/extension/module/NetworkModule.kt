@@ -17,6 +17,7 @@ import org.kodein.di.instanceOrNull
 data object NetworkModule {
 
     const val NAME = "NetworkModule"
+    const val FALLBACK_CLIENT_TAG = "FALLBACK_CLIENT"
 
     val di = DI.Module(NAME) {
         import(PlatformModule.di)
@@ -37,13 +38,13 @@ data object NetworkModule {
         bindSingleton<SearchManager> {
             SearchManager(
                 httpClient = instance(),
-                fallbackClient = null
+                fallbackClient = instanceOrNull(tag = FALLBACK_CLIENT_TAG)
             )
         }
         bindSingleton<EpisodeManager> {
             EpisodeManager(
                 httpClient = instance(),
-                fallbackClient = null,
+                fallbackClient = instanceOrNull(tag = FALLBACK_CLIENT_TAG),
                 firebaseWrapper = instanceOrNull<FirebaseWrapper.Creator>()?.let {
                     (it as? FirebaseWrapper.Creator.Available)?.wrapper
                 } ?: instanceOrNull()

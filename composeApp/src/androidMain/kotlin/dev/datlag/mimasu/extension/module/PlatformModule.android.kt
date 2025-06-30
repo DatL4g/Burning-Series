@@ -45,6 +45,23 @@ actual object PlatformModule {
                 install(HttpCache)
             }
         }
+        bindSingleton<HttpClient>(tag = NetworkModule.FALLBACK_CLIENT_TAG) {
+            HttpClient(OkHttp) {
+                followRedirects = true
+                engine {
+                    config {
+                        followRedirects(true)
+                        followSslRedirects(true)
+                        dns(instance())
+                    }
+                }
+                install(ContentNegotiation) {
+                    json(instance(), ContentType.Application.Json)
+                    json(instance(), ContentType.Text.Plain)
+                }
+                install(HttpCache)
+            }
+        }
         bindSingleton<FirebaseWrapper.Creator> {
             if (AppInitializer.isSekretLoaded(instance())) {
                 FirebaseWrapper.Creator.Available(FirebaseWrapper())
