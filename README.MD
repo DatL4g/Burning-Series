@@ -27,7 +27,7 @@ If a series is available it will show icons on the episode preview images.
 - Play Arrow: Episode can be watched
 - Warning: Episode cant be watched
 
-![Example Image](https://github.com/DatL4g/Burning-Series/raw/refs/heads/mimasu/media/Mimasu.png)
+![Example Image](https://github.com/DatL4g/Burning-Series/raw/refs/heads/mimasu/media/Mimasu.png | width=300)
 
 ### Browser (Activation Extension)
 
