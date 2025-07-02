@@ -27,8 +27,6 @@ If a series is available it will show icons on the episode preview images.
 - Play Arrow: Episode can be watched
 - Warning: Episode cant be watched
 
-![Video](https://github.com/DatL4g/Burning-Series/raw/refs/heads/mimasu/media/Usage.mp4)
-
 ### Browser (Activation Extension)
 
 If you can't access [bs.to](https://bs.to) you have to enable DoH (DNS over HTTPS).
