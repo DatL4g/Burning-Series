@@ -22,10 +22,31 @@ class CombinedSearchManager(
 
     private val mappings = mutableMapOf<Int, MatchResult<SearchItem>>()
 
-    suspend fun initializeAniWorld(): Set<SearchItem.AniWorld> {
+    private suspend fun initializeAniWorld(): Set<SearchItem.AniWorld> {
         return SearchItem.AniWorld.searchIndex(httpClient).ifEmpty {
             fallbackClient?.let { SearchItem.AniWorld.searchIndex(it) }
         }.orEmpty()
+    }
+
+    private suspend fun initializeSerienStream(): Set<SearchItem.SerienStream> {
+        return SearchItem.SerienStream.searchIndex(httpClient).ifEmpty {
+            fallbackClient?.let { SearchItem.SerienStream.searchIndex(it) }
+        }.orEmpty()
+    }
+
+    suspend fun initializeCombined(): Set<SearchItem> = coroutineScope {
+        val aniWorld = async {
+            initializeAniWorld()
+        }
+
+        val serienStream = async {
+            initializeSerienStream()
+        }
+
+        return@coroutineScope setFrom(
+            aniWorld.await(),
+            serienStream.await()
+        )
     }
 
     suspend fun search(
@@ -95,7 +116,10 @@ class CombinedSearchManager(
                 releaseYear = releaseYear
             )
         } else {
-            null
+            searchDefaultFromIndex(
+                tokens = tokens,
+                releaseYear = releaseYear
+            )
         }
     }
 
@@ -188,6 +212,19 @@ class CombinedSearchManager(
             encodedSearch,
             plainSearch
         ).awaitAll().flatten().toSet()
+    }
+
+    private suspend fun searchDefaultFromIndex(
+        tokens: Collection<TokenResult>,
+        releaseYear: Int?
+    ): MatchResult<SearchItem>? {
+        val searchIndex = initializeSerienStream().ifEmpty { null } ?: return null
+
+        return search(
+            tokens = tokens,
+            releaseYear = releaseYear,
+            filterItems = searchIndex
+        )
     }
 
     private suspend fun searchAnimationFromIndex(

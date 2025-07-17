@@ -47,6 +47,7 @@ kotlin {
             api(libs.tooling)
             implementation(libs.kermit)
             implementation(libs.skeo)
+            implementation(libs.datetime)
 
             implementation(project(":kache"))
             implementation(project(":ksoup"))

@@ -14,12 +14,15 @@ import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.ExperimentalTime
+import kotlinx.datetime.toLocalDateTime
+import kotlin.getValue
 
 sealed interface SearchItem : SeriesData, TokenAware {
 
@@ -85,7 +88,20 @@ sealed interface SearchItem : SeriesData, TokenAware {
         override val tokenResult: TokenResult = Tokenizer.tokenize(name)
 
         @Transient
-        override val releaseYear: Int? = productionYear?.split("-")?.firstOrNull()?.replace(productionSanitizeRegex, "")?.trim()?.toIntOrNull()
+        private val numbers = tokenResult.tokens.mapNotNull { token ->
+            token.value.toIntOrNull()
+        }.toSet()
+
+        @Transient
+        override val releaseYear: Int? = productionYear
+            ?.split("-")
+            ?.firstOrNull()
+            ?.replace(productionSanitizeRegex, "")
+            ?.trim()
+            ?.toIntOrNull()
+            ?: numbers.firstNotNullOfOrNull { token ->
+                token.takeIf { it in 1000..currentYear }
+            }
 
         @Transient
         override val alternativeTokenResult: TokenResult? = releaseYear?.let { year ->
@@ -225,7 +241,20 @@ sealed interface SearchItem : SeriesData, TokenAware {
         override val tokenResult: TokenResult = Tokenizer.tokenize(name)
 
         @Transient
-        override val releaseYear: Int? = productionYear?.split("-")?.firstOrNull()?.replace(productionSanitizeRegex, "")?.trim()?.toIntOrNull()
+        private val numbers = tokenResult.tokens.mapNotNull { token ->
+            token.value.toIntOrNull()
+        }.toSet()
+
+        @Transient
+        override val releaseYear: Int? = productionYear
+            ?.split("-")
+            ?.firstOrNull()
+            ?.replace(productionSanitizeRegex, "")
+            ?.trim()
+            ?.toIntOrNull()
+            ?: numbers.firstNotNullOfOrNull { token ->
+                token.takeIf { it in 1000..currentYear }
+            }
 
         @Transient
         override val alternativeTokenResult: TokenResult? = releaseYear?.let { year ->
@@ -268,6 +297,29 @@ sealed interface SearchItem : SeriesData, TokenAware {
             const val BASE_URL = "https://s.to/"
             private const val SERIES_PREFIX = "serie/stream"
             const val SOURCE_TITLE = "SerienStream"
+            private const val SEARCH_HREF = "serien"
+
+            private var indexedItemsCacheTime = 0L
+
+            @OptIn(ExperimentalTime::class)
+            private var indexedSearchItems = setOf<SerienStream>()
+                get() {
+                    if (indexedItemsCacheTime <= 0L || Clock.System.now().minus(12.hours).epochSeconds > indexedItemsCacheTime) {
+                        return emptySet()
+                    }
+                    return field
+                }
+                set(value) {
+                    if (value.isNotEmpty()) {
+                        field = value.also {
+                            if (it.isNotEmpty()) {
+                                indexedItemsCacheTime = Clock.System.now().epochSeconds
+                            }
+                        }
+                    }
+                }
+
+            private val searchIndexMutex = Mutex()
 
             fun normalize(slug: String): String {
                 val regex = "serie\\S+".toRegex(RegexOption.IGNORE_CASE)
@@ -281,6 +333,48 @@ sealed interface SearchItem : SeriesData, TokenAware {
                     "$SERIES_PREFIX$path"
                 }
             }
+
+            suspend fun searchIndex(client: HttpClient): Set<SerienStream> {
+                indexedSearchItems.also {
+                    if (it.isNotEmpty()) {
+                        return it
+                    }
+                }
+
+                return atomicSearch(client)
+            }
+
+            private suspend fun atomicSearch(client: HttpClient): Set<SerienStream> = searchIndexMutex.withLock {
+                indexedSearchItems.also {
+                    if (it.isNotEmpty()) {
+                        return it
+                    }
+                }
+
+                val doc = document(
+                    client = client,
+                    baseUrl = BASE_URL,
+                    href = SEARCH_HREF
+                ) ?: return emptySet()
+
+                return doc.getElementById("seriesContainer")?.allByTag("li")?.mapNotNull { li ->
+                    val linkElement = li.firstByTag("a") ?: return@mapNotNull null
+
+                    val title = linkElement.text().ifBlank { null }?.trim() ?: linkElement.title()?.ifBlank { null }?.trim()
+                    val href = linkElement.href()?.ifBlank { null }?.trim()?.let(::normalize)?.trim()
+
+                    if (!title.isNullOrBlank() && !href.isNullOrBlank()) {
+                        SerienStream(
+                            name = title,
+                            slug = href,
+                        )
+                    } else {
+                        null
+                    }
+                }?.toSet()?.also {
+                    indexedSearchItems = it
+                } ?: emptySet()
+            }
         }
     }
 
@@ -288,6 +382,11 @@ sealed interface SearchItem : SeriesData, TokenAware {
         private val productionSanitizeRegex = "\\D".toRegex()
         private val seasonRegex = "(staffel|season)[-+]?(\\d+)".toRegex(RegexOption.IGNORE_CASE)
         private val episodeRegex = "(episode|folge|film)[-+]?(\\d+)".toRegex(RegexOption.IGNORE_CASE)
+
+        @OptIn(ExperimentalTime::class)
+        private val currentYear by lazy {
+            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
+        }
 
         fun createLink(baseUrl: String, slug: String): String {
             return if (!slug.matches("^\\w+?://.*".toRegex())) {

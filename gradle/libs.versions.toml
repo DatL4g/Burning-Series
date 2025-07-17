@@ -1,7 +1,7 @@
 [versions]
 aboutlibraries = "12.2.3"
 activity = "1.10.1"
-android = "8.11.0"
+android = "8.11.1"
 android-core = "1.16.0"
 android-firebase = "33.16.0"
 android-startup = "1.2.0"
@@ -36,7 +36,6 @@ semver = "3.0.0"
 serialization = "1.8.1"
 service = "2.9.1"
 skeo = "0.3.0"
-sqldelight = "2.0.2"
 tooling = "1.7.0"
 versions = "0.52.0"
 webview = "0.36.0"
@@ -102,5 +101,4 @@ multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotl
 osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }
 sekret = { id = "dev.datlag.sekret", version.ref = "sekret" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

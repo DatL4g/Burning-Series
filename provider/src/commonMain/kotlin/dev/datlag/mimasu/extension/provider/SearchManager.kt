@@ -62,12 +62,14 @@ class SearchManager(
         val burningSeriesSearchIndex = async {
             burningSeriesSearchManager.initialize()
         }
-        val aniWorldSearchIndex = async {
-            serienStreamSearchManager.initializeAniWorld()
+        val serienStreamSearchIndex = async {
+            serienStreamSearchManager.initializeCombined()
         }
 
-        burningSeriesSearchIndex.await()
-        aniWorldSearchIndex.await()
+        val burningSeriesResult = burningSeriesSearchIndex.await()
+        val serienStreamResult = serienStreamSearchIndex.await()
+
+        return@coroutineScope burningSeriesResult.size + serienStreamResult.size
     }
 
     fun matchedShowResults(showId: Int): MatchedShowResults? {
