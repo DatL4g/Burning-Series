@@ -46,7 +46,9 @@ class BSEpisodeManager(
     ): Boolean {
         val link = show.toHref(newSeason = season, newLanguage = null)
 
-        val series = getSeries(link) ?: return false
+        val series = getSeries(link)?.takeIf {
+            season == null || it.season == season
+        } ?: return false
         val foundEpisode = findEpisode(series, episodeNumber) ?: return false
 
         return foundEpisode.target.hoster.isNotEmpty() || run {
@@ -78,7 +80,9 @@ class BSEpisodeManager(
         season: Int?
     ): Map<LanguageInfo, List<String>> = coroutineScope {
         val link = show.toHref(newSeason = season, newLanguage = null)
-        val series = getSeries(link) ?: return@coroutineScope emptyMap()
+        val series = getSeries(link)?.takeIf {
+            season == null || it.season == season
+        } ?: return@coroutineScope emptyMap()
         val foundEpisode = findEpisode(series, episodeNumber) ?: return@coroutineScope emptyMap()
 
         val allSeries = foundEpisode.relatedSeries.languages.map { lang ->

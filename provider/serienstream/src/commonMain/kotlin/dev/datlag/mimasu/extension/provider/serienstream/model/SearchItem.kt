@@ -1,11 +1,25 @@
 package dev.datlag.mimasu.extension.provider.serienstream.model
 
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Document
+import dev.datlag.mimasu.extension.ksoup.allByTag
+import dev.datlag.mimasu.extension.ksoup.firstByTag
+import dev.datlag.mimasu.extension.ksoup.href
+import dev.datlag.mimasu.extension.ksoup.parseGet
+import dev.datlag.mimasu.extension.ksoup.title
 import dev.datlag.mimasu.extension.matcher.TokenAware
 import dev.datlag.mimasu.extension.matcher.TokenResult
 import dev.datlag.mimasu.extension.matcher.Tokenizer
+import dev.datlag.tooling.async.suspendCatching
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
 
 sealed interface SearchItem : SeriesData, TokenAware {
 
@@ -114,6 +128,29 @@ sealed interface SearchItem : SeriesData, TokenAware {
             const val BASE_URL = "https://aniworld.to/"
             private const val SERIES_PREFIX = "anime/stream"
             const val SOURCE_TITLE = "AniWorld"
+            private const val SEARCH_HREF = "animes"
+
+            private var indexedItemsCacheTime = 0L
+
+            @OptIn(ExperimentalTime::class)
+            private var indexedSearchItems = setOf<AniWorld>()
+                get() {
+                    if (indexedItemsCacheTime <= 0L || Clock.System.now().minus(12.hours).epochSeconds > indexedItemsCacheTime) {
+                        return emptySet()
+                    }
+                    return field
+                }
+                set(value) {
+                    if (value.isNotEmpty()) {
+                        field = value.also {
+                            if (it.isNotEmpty()) {
+                                indexedItemsCacheTime = Clock.System.now().epochSeconds
+                            }
+                        }
+                    }
+                }
+
+            private val searchIndexMutex = Mutex()
 
             fun normalize(slug: String): String {
                 val regex = "anime\\S+".toRegex(RegexOption.IGNORE_CASE)
@@ -126,6 +163,48 @@ sealed interface SearchItem : SeriesData, TokenAware {
 
                     "$SERIES_PREFIX$path"
                 }
+            }
+
+            suspend fun searchIndex(client: HttpClient): Set<AniWorld> {
+                indexedSearchItems.also {
+                    if (it.isNotEmpty()) {
+                        return it
+                    }
+                }
+
+                return atomicSearch(client)
+            }
+
+            private suspend fun atomicSearch(client: HttpClient): Set<AniWorld> = searchIndexMutex.withLock {
+                indexedSearchItems.also {
+                    if (it.isNotEmpty()) {
+                        return it
+                    }
+                }
+
+                val doc = document(
+                    client = client,
+                    baseUrl = BASE_URL,
+                    href = SEARCH_HREF
+                ) ?: return emptySet()
+
+                return doc.getElementById("seriesContainer")?.allByTag("li")?.mapNotNull { li ->
+                    val linkElement = li.firstByTag("a") ?: return@mapNotNull null
+
+                    val title = linkElement.text().ifBlank { null }?.trim() ?: linkElement.title()?.ifBlank { null }?.trim()
+                    val href = linkElement.href()?.ifBlank { null }?.trim()?.let(::normalize)?.trim()
+
+                    if (!title.isNullOrBlank() && !href.isNullOrBlank()) {
+                        AniWorld(
+                            name = title,
+                            slug = href,
+                        )
+                    } else {
+                        null
+                    }
+                }?.toSet()?.also {
+                    indexedSearchItems = it
+                } ?: emptySet()
             }
         }
     }
@@ -228,5 +307,16 @@ sealed interface SearchItem : SeriesData, TokenAware {
                 slug
             }
         }
+
+        private suspend fun document(
+            client: HttpClient,
+            baseUrl: String,
+            href: String
+        ): Document? = suspendCatching {
+            Ksoup.parseGet(
+                url = createLink(baseUrl, href),
+                client = client
+            )
+        }.getOrNull()
     }
 }

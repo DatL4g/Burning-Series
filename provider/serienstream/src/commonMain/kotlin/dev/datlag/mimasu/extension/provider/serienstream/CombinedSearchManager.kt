@@ -6,6 +6,7 @@ import dev.datlag.mimasu.extension.matcher.TokenResult
 import dev.datlag.mimasu.extension.provider.serienstream.model.SearchItem
 import dev.datlag.tooling.async.suspendCatching
 import dev.datlag.tooling.setFrom
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -14,10 +15,18 @@ class CombinedSearchManager(
     private val serienStream: SerienStream,
     private val fallbackSerienStream: SerienStream?,
     private val aniWorld: AniWorld,
-    private val fallbackAniWorld: AniWorld?
+    private val fallbackAniWorld: AniWorld?,
+    private val httpClient: HttpClient,
+    private val fallbackClient: HttpClient?
 ) {
 
     private val mappings = mutableMapOf<Int, MatchResult<SearchItem>>()
+
+    suspend fun initializeAniWorld(): Set<SearchItem.AniWorld> {
+        return SearchItem.AniWorld.searchIndex(httpClient).ifEmpty {
+            fallbackClient?.let { SearchItem.AniWorld.searchIndex(it) }
+        }.orEmpty()
+    }
 
     suspend fun search(
         tmdbId: Int?,
@@ -80,7 +89,14 @@ class CombinedSearchManager(
             tokens = tokens,
             releaseYear = releaseYear,
             filterItems = allFound
-        )
+        ) ?: if (isAnimation == true) {
+            searchAnimationFromIndex(
+                tokens = tokens,
+                releaseYear = releaseYear
+            )
+        } else {
+            null
+        }
     }
 
     private suspend fun search(
@@ -172,5 +188,18 @@ class CombinedSearchManager(
             encodedSearch,
             plainSearch
         ).awaitAll().flatten().toSet()
+    }
+
+    private suspend fun searchAnimationFromIndex(
+        tokens: Collection<TokenResult>,
+        releaseYear: Int?
+    ): MatchResult<SearchItem>? {
+        val searchIndex = initializeAniWorld().ifEmpty { null } ?: return null
+
+        return search(
+            tokens = tokens,
+            releaseYear = releaseYear,
+            filterItems = searchIndex
+        )
     }
 }

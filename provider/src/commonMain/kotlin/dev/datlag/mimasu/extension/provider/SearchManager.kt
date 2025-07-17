@@ -51,13 +51,23 @@ class SearchManager(
         serienStream = serienStream,
         fallbackSerienStream = fallbackSerienStream,
         aniWorld = aniWorld,
-        fallbackAniWorld = fallbackAniWorld
+        fallbackAniWorld = fallbackAniWorld,
+        httpClient = httpClient,
+        fallbackClient = fallbackClient
     )
 
     private val mappings = mutableMapOf<Int, MatchedShowResults>()
 
-    suspend fun initialize() {
-        burningSeriesSearchManager.initialize()
+    suspend fun initialize() = coroutineScope {
+        val burningSeriesSearchIndex = async {
+            burningSeriesSearchManager.initialize()
+        }
+        val aniWorldSearchIndex = async {
+            serienStreamSearchManager.initializeAniWorld()
+        }
+
+        burningSeriesSearchIndex.await()
+        aniWorldSearchIndex.await()
     }
 
     fun matchedShowResults(showId: Int): MatchedShowResults? {
