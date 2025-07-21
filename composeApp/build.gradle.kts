@@ -120,10 +120,19 @@ android {
         buildConfig = true
         aidl = true
     }
+    signingConfigs {
+        maybeCreate("release").apply {
+            storeFile = rootProject.layout.projectDirectory.file("keystore.jks").asFile
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 file("src/androidMain/proguard-rules.pro")

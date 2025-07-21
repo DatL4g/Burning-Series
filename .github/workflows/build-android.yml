@@ -56,7 +56,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Upload Release Packages
-        uses: ospfranco/action-gh-release@v2 # Use softprops when merged/fixed
+        uses: ospfranco/action-gh-release@2.3.4 # Use softprops when merged/fixed
         if: ${{ github.event_name == 'release' }}
         with:
           files: |
