@@ -41,6 +41,7 @@ import dev.datlag.mimasu.extension.composeapp.generated.resources.burning_series
 import dev.datlag.mimasu.extension.composeapp.generated.resources.burning_series_preparing
 import dev.datlag.mimasu.extension.composeapp.generated.resources.burning_series_success
 import dev.datlag.mimasu.extension.provider.burningseries.BurningSeries
+import dev.datlag.mimasu.extension.ui.navigation.WebViewClient
 import dev.datlag.mimasu.extension.viewmodel.BurningSeriesViewModel
 import dev.datlag.mimasu.extension.viewmodel.kodeinViewModel
 import dev.datlag.tooling.Platform

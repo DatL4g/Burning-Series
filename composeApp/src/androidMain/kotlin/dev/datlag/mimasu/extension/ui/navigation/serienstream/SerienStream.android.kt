@@ -1,4 +1,4 @@
-package dev.datlag.mimasu.extension.ui.navigation.aniworld
+package dev.datlag.mimasu.extension.ui.navigation.serienstream
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,17 +21,13 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import dev.datlag.mimasu.extension.composeapp.generated.resources.Res
-import dev.datlag.mimasu.extension.composeapp.generated.resources.aniworld
-import dev.datlag.mimasu.extension.composeapp.generated.resources.burning_series_activate
-import dev.datlag.mimasu.extension.composeapp.generated.resources.burning_series_activate_subtitle
+import dev.datlag.mimasu.extension.composeapp.generated.resources.serienstream
 import dev.datlag.mimasu.extension.ui.navigation.WebViewClient
-import dev.datlag.tooling.Platform
-import dev.datlag.tooling.compose.platform.typography
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-actual fun AniWorld(onBack: () -> Unit) {
+actual fun SerienStream(onBack: () -> Unit) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -55,7 +51,7 @@ actual fun AniWorld(onBack: () -> Unit) {
                         verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
                     ) {
                         Text(
-                            text = stringResource(Res.string.aniworld),
+                            text = stringResource(Res.string.serienstream),
                             softWrap = true,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1
@@ -66,11 +62,14 @@ actual fun AniWorld(onBack: () -> Unit) {
         },
     ) { contentPadding ->
         WebView(
-            state = rememberWebViewState("https://aniworld.to"),
+            state = rememberWebViewState("https://s.to"),
             modifier = Modifier.padding(contentPadding).fillMaxSize(),
             captureBackPresses = true,
             client = WebViewClient(
-                allowedHosts = setOf("aniworld.to")
+                allowedHosts = setOf(
+                    "s.to",
+                    "serienstream.to"
+                )
             ),
             onCreated = {
                 it.settings.allowFileAccess = false

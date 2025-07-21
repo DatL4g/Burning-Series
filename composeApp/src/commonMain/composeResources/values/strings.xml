@@ -19,4 +19,10 @@
     <string name="burning_series_preparing">Preparing Screen, please wait a second</string>
     <string name="burning_series_error">Something went wrong</string>
     <string name="burning_series_success">Saved successfully</string>
+
+    <string name="home_content_not_loading">Content not loading</string>
+    <string name="home_content_not_loading_text">Sometimes services might block your connection, just open the websites below and you will be unblocked.</string>
+    <string name="home_content_activate">You can save episodes here as well</string>
+    <string name="aniworld">AniWorld</string>
+    <string name="serienstream">SerienStream</string>
 </resources>

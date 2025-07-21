@@ -1,4 +1,4 @@
-package dev.datlag.mimasu.extension.ui.navigation.burningseries
+package dev.datlag.mimasu.extension.ui.navigation
 
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
