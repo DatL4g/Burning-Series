@@ -29,6 +29,10 @@ If a series is available it will show icons on the episode preview images.
 
 <img src="https://github.com/DatL4g/Burning-Series/raw/refs/heads/mimasu/media/Mimasu.png" width=300  alt="Example Image"/>
 
+### Videos not playing
+
+AdBlock software like apps or custom DNS might break this functionality!
+
 ### Browser (Activation Extension)
 
 If you can't access [bs.to](https://bs.to) you have to enable DoH (DNS over HTTPS).
