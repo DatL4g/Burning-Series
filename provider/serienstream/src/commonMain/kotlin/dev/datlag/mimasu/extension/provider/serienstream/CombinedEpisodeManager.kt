@@ -139,9 +139,7 @@ class CombinedEpisodeManager(
             }
         } ?: return null
 
-        val nextSeason = (series.nextSeason ?: series.season?.takeUnless {
-            it <= 0
-        }?.plus(1)) ?: return null
+        val nextSeason = series.nextSeason ?: return null
         val nextSeries = getSeries(searchItem.toSlug(newSeason = nextSeason), searchItem)?.takeIf {
             it.season == nextSeason
         } ?: return null
