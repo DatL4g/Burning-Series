@@ -1,4 +1,4 @@
-rootProject.name = "Burning-Series"
+rootProject.name = "Mimasu-Extension"
 
 include(":composeApp", ":composeApp:sekret")
 include(":github")

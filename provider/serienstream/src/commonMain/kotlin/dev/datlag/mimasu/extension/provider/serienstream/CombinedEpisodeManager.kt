@@ -12,8 +12,6 @@ import dev.datlag.mimasu.extension.provider.serienstream.model.Series
 import dev.datlag.skeo.Skeo
 import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
-import io.ktor.client.request.head
-import io.ktor.http.isSuccess
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

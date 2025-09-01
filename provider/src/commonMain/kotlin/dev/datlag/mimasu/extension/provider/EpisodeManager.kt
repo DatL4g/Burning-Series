@@ -161,7 +161,8 @@ class EpisodeManager(
     ): Map<BSLang, List<String>> = burningSeriesEpisodeManager.episodeStreams(
         show = searchItem,
         episodeNumber = request.episodeNumber,
-        season = request.season
+        season = request.season,
+        appLocale = request.appLocale
     )
 
     private suspend fun streams(

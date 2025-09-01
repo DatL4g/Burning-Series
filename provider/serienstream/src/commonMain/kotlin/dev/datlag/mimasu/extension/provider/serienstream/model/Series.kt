@@ -33,6 +33,10 @@ data class Series(
         }
     }
 
+    fun isEmpty(): Boolean {
+        return seasons.isEmpty() && episodes.isEmpty()
+    }
+
     data class Episode(
         val number: Int,
         val title: String,
@@ -127,7 +131,7 @@ data class Series(
                 info = SeriesData.fromSearchItem(searchItem, searchItem.slugInfoStart(locationSlug)),
                 seasons = seasonLinks,
                 episodes = episodeEntries
-            )
+            ).takeUnless { it.isEmpty() }
         }
     }
 }

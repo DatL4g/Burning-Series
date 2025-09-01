@@ -72,12 +72,21 @@ class ShowService : LifecycleService() {
             request: ByteArray?,
             callback: EpisodeCallback?
         ) {
-            val showHolder = searchManager ?: return
-            val manager = episodeManager ?: return
+            val showHolder = searchManager ?: return run {
+                callback?.onResult(false)
+            }
+            val manager = episodeManager ?: return run {
+                callback?.onResult(false)
+            }
 
             scope.launch(Dispatchers.IO) {
-                val requestInfo = Show.EpisodeRequest(request) ?: return@launch
-                val showInfo = showHolder.matchedShowResults(showId) ?: return@launch
+                val requestInfo = Show.EpisodeRequest(request) ?: return@launch run {
+                    callback?.onResult(false)
+                }
+
+                val showInfo = showHolder.matchedShowResults(showId) ?: return@launch run {
+                    callback?.onResult(false)
+                }
                 val available = manager.episodeAvailability(
                     showId = showId,
                     matchedShowResults = showInfo,

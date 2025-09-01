@@ -77,7 +77,8 @@ class BSEpisodeManager(
     suspend fun episodeStreams(
         show: SearchItem,
         episodeNumber: Int?,
-        season: Int?
+        season: Int?,
+        appLocale: String?
     ): Map<LanguageInfo, List<String>> = coroutineScope {
         val link = show.toHref(newSeason = season, newLanguage = null)
         val series = getSeries(link)?.takeIf {

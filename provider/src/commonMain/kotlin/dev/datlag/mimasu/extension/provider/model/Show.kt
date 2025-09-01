@@ -56,6 +56,7 @@ sealed interface Show {
         val numberOfNormalSeasons: Int? = null,
         val hasSpecialSeason: Boolean? = null,
         val season: Int? = null,
+        val appLocale: String? = null
     ) : Show {
 
         companion object {

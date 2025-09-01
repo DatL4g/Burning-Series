@@ -12,7 +12,13 @@ kotlin {
     }
     androidNativeX64 {
         binaries {
-            sharedLib()
+            sharedLib {
+                linkerOpts += listOf(
+                    "-Wl,-z,max-page-size=16384",
+                    "-Wl,-z,common-page-size=16384",
+                    "-v"
+                )
+            }
         }
     }
     androidNativeArm32 {
