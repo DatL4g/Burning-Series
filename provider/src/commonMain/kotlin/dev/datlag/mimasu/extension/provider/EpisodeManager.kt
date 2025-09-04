@@ -143,7 +143,8 @@ class EpisodeManager(
     ): Boolean = burningSeriesEpisodeManager.episodeAvailable(
         show = searchItem,
         episodeNumber = request.episodeNumber,
-        season = request.season
+        season = request.season,
+        appLanguage = request.appLanguage
     )
 
     private suspend fun series(
@@ -162,7 +163,7 @@ class EpisodeManager(
         show = searchItem,
         episodeNumber = request.episodeNumber,
         season = request.season,
-        appLocale = request.appLocale
+        appLanguage = request.appLanguage
     )
 
     private suspend fun streams(
@@ -171,7 +172,8 @@ class EpisodeManager(
     ): Map<SerienStreamLang, List<String>> = serienStreamEpisodeManager.episodeStreams(
         show = searchItem,
         episodeNumber = request.episodeNumber,
-        season = request.season
+        season = request.season,
+        appLanguage = request.appLanguage
     )
 
     data class EpisodeKey(

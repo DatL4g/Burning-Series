@@ -11,6 +11,7 @@ import dev.datlag.mimasu.extension.provider.serienstream.model.SearchItem
 import dev.datlag.mimasu.extension.provider.serienstream.model.Series
 import dev.datlag.skeo.Skeo
 import dev.datlag.tooling.async.suspendCatching
+import dev.datlag.tooling.setFrom
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -68,7 +69,8 @@ class CombinedEpisodeManager(
     suspend fun episodeStreams(
         show: SearchItem,
         episodeNumber: Int?,
-        season: Int?
+        season: Int?,
+        appLanguage: String?
     ): Map<LanguageInfo, List<String>> = coroutineScope {
         val link = show.toSlug(newSeason = season)
         val series = getSeries(link, show) ?: return@coroutineScope emptyMap()
@@ -83,10 +85,10 @@ class CombinedEpisodeManager(
                 episodeKache.async(foundEpisode.target.slug) { e }
             } ?: return@coroutineScope emptyMap()
 
-        episodeInfo.provider.groupBy { it.languageKey }.mapNotNull { (key, provider) ->
+        val mappedHoster = episodeInfo.provider.groupBy { it.languageKey }.mapNotNull { (key, provider) ->
             val links = provider.map { show.createLink(it.redirectSlug) }.ifEmpty { null } ?: return@mapNotNull null
             key to links.toSet()
-        }.toSet().map { (key, urls) -> async {
+        }.toSet().map { (key, urls) ->
             val title = episodeInfo.languages.firstOrNull {
                 it.key == key
             }?.title ?: key.toString()
@@ -95,9 +97,27 @@ class CombinedEpisodeManager(
                 locale = show.localeCodes[key] ?: title
             )
 
+            lang to urls
+        }
+
+        val (preferred, other) = mappedHoster.partition { (lang, _) ->
+            !appLanguage.isNullOrBlank()
+                    && (lang.locale.equals(appLanguage, ignoreCase = true)
+                    || lang.locale.startsWith(appLanguage, ignoreCase = true)
+                    || appLanguage.startsWith(lang.locale, ignoreCase = true))
+        }
+
+        val preferredStreams = preferred.map { (lang, urls) -> async {
             val streams = streams(urls).ifEmpty { null } ?: return@async null
             lang to streams.toList()
-        } }.awaitAll().filterNotNull().toMap()
+        } }.awaitAll().filterNotNull().toSet()
+
+        val otherStreams = other.map { (lang, urls) -> async {
+            val streams = streams(urls).ifEmpty { null } ?: return@async null
+            lang to streams.toList()
+        } }.awaitAll().filterNotNull().toSet()
+
+        return@coroutineScope setFrom(preferredStreams, otherStreams).toMap()
     }
 
     private suspend fun getSeries(link: String, item: SearchItem): Series? {

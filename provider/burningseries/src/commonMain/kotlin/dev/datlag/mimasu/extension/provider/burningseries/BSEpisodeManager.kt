@@ -1,6 +1,5 @@
 package dev.datlag.mimasu.extension.provider.burningseries
 
-import co.touchlab.kermit.Logger
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
@@ -9,10 +8,8 @@ import dev.datlag.mimasu.extension.provider.burningseries.model.LanguageInfo
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.burningseries.model.Series
 import dev.datlag.skeo.Skeo
-import dev.datlag.tooling.async.suspendCatching
+import dev.datlag.tooling.setFrom
 import io.ktor.client.HttpClient
-import io.ktor.client.request.head
-import io.ktor.http.isSuccess
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -42,9 +39,10 @@ class BSEpisodeManager(
     suspend fun episodeAvailable(
         show: SearchItem,
         episodeNumber: Int?,
-        season: Int?
+        season: Int?,
+        appLanguage: String?
     ): Boolean {
-        val link = show.toHref(newSeason = season, newLanguage = null)
+        val link = show.toHref(newSeason = season, newLanguage = appLanguage)
 
         val series = getSeries(link)?.takeIf {
             season == null || it.season == season
@@ -78,9 +76,9 @@ class BSEpisodeManager(
         show: SearchItem,
         episodeNumber: Int?,
         season: Int?,
-        appLocale: String?
+        appLanguage: String?
     ): Map<LanguageInfo, List<String>> = coroutineScope {
-        val link = show.toHref(newSeason = season, newLanguage = null)
+        val link = show.toHref(newSeason = season, newLanguage = appLanguage)
         val series = getSeries(link)?.takeIf {
             season == null || it.season == season
         } ?: return@coroutineScope emptyMap()
@@ -97,12 +95,21 @@ class BSEpisodeManager(
         }
         val allLanguages = allSeries.flatMap { it.languages }.toSet()
 
-        val mappedStreams = allSeries.map { s -> async {
+        val mappedHoster = allSeries.map { s -> async {
             val requestedEpisode = findEpisode(s, foundEpisode.episodeNumber, searchInNextSeason = false) ?: return@async null
             val hosterUrls = firebaseWrapper?.store?.streams(requestedEpisode.target.hoster)?.ifEmpty { null } ?: return@async null
 
             (s.selectedLanguage ?: return@async null) to hosterUrls.ifEmpty { return@async null }
-        } }.awaitAll().filterNotNull().toSet().map { (key, urls) -> async {
+        } }.awaitAll().filterNotNull().toSet()
+
+        val (preferred, other) = mappedHoster.partition { (lang, _) ->
+            !appLanguage.isNullOrBlank()
+                    && (lang.equals(appLanguage, ignoreCase = true)
+                    || lang.startsWith(appLanguage, ignoreCase = true)
+                    || appLanguage.startsWith(lang, ignoreCase = true))
+        }
+
+        val preferredStreams = preferred.map { (key, urls) -> async {
             val lang = allLanguages.firstOrNull {
                 it.locale == key
             } ?: allLanguages.firstOrNull {
@@ -113,9 +120,22 @@ class BSEpisodeManager(
             )
 
             lang to streams(urls).toList()
-        } }.awaitAll().toMap()
+        } }.awaitAll().toSet()
 
-        return@coroutineScope mappedStreams
+        val otherStreams = other.map { (key, urls) -> async {
+            val lang = allLanguages.firstOrNull {
+                it.locale == key
+            } ?: allLanguages.firstOrNull {
+                it.localeTitle == key
+            } ?: LanguageInfo(
+                localeTitle = key,
+                locale = key
+            )
+
+            lang to streams(urls).toList()
+        } }.awaitAll().toSet()
+
+        return@coroutineScope setFrom(preferredStreams, otherStreams).toMap()
     }
 
     private suspend fun getSeries(link: String): Series? {

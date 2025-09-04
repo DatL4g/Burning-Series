@@ -59,6 +59,13 @@ sealed interface Show {
         val appLocale: String? = null
     ) : Show {
 
+        @Transient
+        val appLanguage = appLocale
+            ?.substringBefore('-')
+            ?.substringBefore('_')
+            ?.ifBlank { null }
+            ?.trim()
+
         companion object {
             @OptIn(ExperimentalSerializationApi::class)
             operator fun invoke(bytes: ByteArray?): EpisodeRequest? {
