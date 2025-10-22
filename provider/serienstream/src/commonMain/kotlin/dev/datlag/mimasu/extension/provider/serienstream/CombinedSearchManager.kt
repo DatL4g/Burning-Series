@@ -66,12 +66,16 @@ class CombinedSearchManager(
             }.joinToString(separator = " ", truncated = "") { t -> t.value }.trim().ifBlank { null }
         }.toSet()
         val allQueries = setFrom(tokenQueries, titles).toSet()
+        val useAniWorld = SearchItem.useAniWorld(
+            tmdbId = tmdbId,
+            isAnimation = isAnimation == true
+        )
 
         return search(
             allQueries = allQueries,
             tokens = tokens,
             releaseYear = releaseYear,
-            isAnimation = isAnimation
+            useAniWorld = useAniWorld
         )?.also { item ->
             tmdbId?.let {
                 mappings[it] = item
@@ -83,10 +87,10 @@ class CombinedSearchManager(
         allQueries: Collection<String>,
         tokens: Collection<TokenResult>,
         releaseYear: Int?,
-        isAnimation: Boolean?
+        useAniWorld: Boolean
     ) = coroutineScope {
         val allFound = allQueries.map { query -> async {
-            if (isAnimation == true) {
+            if (useAniWorld) {
                 searchAnimation(query)
             } else {
                 searchDefault(query)
@@ -110,7 +114,7 @@ class CombinedSearchManager(
             tokens = tokens,
             releaseYear = releaseYear,
             filterItems = allFound
-        ) ?: if (isAnimation == true) {
+        ) ?: if (useAniWorld) {
             searchAnimationFromIndex(
                 tokens = tokens,
                 releaseYear = releaseYear

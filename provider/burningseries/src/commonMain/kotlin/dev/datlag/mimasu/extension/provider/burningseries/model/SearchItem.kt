@@ -14,7 +14,9 @@ data class SearchItem(
     val href: String,
     val genre: String?,
     val isAnimation: Boolean? = genre?.let {
-        it.equals("animation", ignoreCase = true) || it.contains("anime", ignoreCase = true)
+        it.equals("animation", ignoreCase = true)
+                || it.contains("anime", ignoreCase = true)
+                || it.equals("zeichentrick", ignoreCase = true)
     },
 ): TokenAware, SeriesData {
 

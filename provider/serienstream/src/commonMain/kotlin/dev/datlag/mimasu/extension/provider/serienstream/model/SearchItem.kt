@@ -417,5 +417,12 @@ sealed interface SearchItem : SeriesData, TokenAware {
                 client = client
             )
         }.getOrNull()
+
+        internal fun useAniWorld(tmdbId: Int?, isAnimation: Boolean): Boolean {
+            return when (tmdbId) {
+                246 -> false
+                else -> isAnimation
+            }
+        }
     }
 }
