@@ -63,7 +63,7 @@ kotlin {
 }
 
 android {
-    compileSdk = 35
+    compileSdk = 36
     namespace = artifact
 
     defaultConfig {

@@ -16,8 +16,8 @@ plugins {
 }
 
 val artifact = "dev.datlag.mimasu.extension"
-val appVersion = "10.1.1"
-val appVersionCode = 1011
+val appVersion = "10.2.0"
+val appVersionCode = 1020
 
 group = artifact
 version = appVersion
