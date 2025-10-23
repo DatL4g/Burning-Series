@@ -45,10 +45,10 @@ import dev.datlag.mimasu.extension.ui.navigation.WebViewClient
 import dev.datlag.mimasu.extension.viewmodel.BurningSeriesViewModel
 import dev.datlag.mimasu.extension.viewmodel.kodeinViewModel
 import dev.datlag.tooling.Platform
-import dev.datlag.tooling.compose.launchIO
+import dev.datlag.tooling.async.launchIO
+import dev.datlag.tooling.async.withMainContext
 import dev.datlag.tooling.compose.platform.colorScheme
 import dev.datlag.tooling.compose.platform.typography
-import dev.datlag.tooling.compose.withMainContext
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive

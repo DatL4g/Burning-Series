@@ -419,8 +419,22 @@ sealed interface SearchItem : SeriesData, TokenAware {
         }.getOrNull()
 
         internal fun useAniWorld(tmdbId: Int?, isAnimation: Boolean): Boolean {
+            val animationsOffAniWorld = listOf(
+                246, // Avatar
+                33880, // Korra
+                604, // Teen Titans
+                45140, // Teen Titans Go
+                2604, // Boondocks
+                123548, // Castlevania: Nocturne
+                89456, // Primal
+                2723, // Samurai Jack
+                98494, // Glitch Techs
+                66558, // Voltron
+                94605, // Arcane
+            )
+
             return when (tmdbId) {
-                246 -> false
+                in animationsOffAniWorld -> false
                 else -> isAnimation
             }
         }

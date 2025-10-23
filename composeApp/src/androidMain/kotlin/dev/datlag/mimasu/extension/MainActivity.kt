@@ -10,7 +10,7 @@ import co.touchlab.kermit.Logger
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
 import dev.datlag.mimasu.extension.provider.SearchManager
 import dev.datlag.mimasu.extension.ui.theme.Font
-import dev.datlag.tooling.compose.launchIO
+import dev.datlag.tooling.async.launchIO
 import dev.datlag.tooling.compose.toTypography
 import dev.datlag.tooling.safeCast
 import org.kodein.di.DI

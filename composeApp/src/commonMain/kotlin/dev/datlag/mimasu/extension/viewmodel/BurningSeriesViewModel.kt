@@ -9,9 +9,8 @@ import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
 import dev.datlag.mimasu.extension.firebase.model.ScrapedData
 import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.kache.asyncPutAndGet
+import dev.datlag.tooling.async.launchIO
 import dev.datlag.tooling.async.suspendCatching
-import dev.datlag.tooling.compose.launchIO
-import dev.datlag.tooling.compose.withIOContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Serializable
