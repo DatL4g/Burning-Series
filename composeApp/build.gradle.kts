@@ -72,6 +72,7 @@ kotlin {
             implementation(libs.google.fonts)
 
             implementation(libs.ktor.jvm)
+            implementation(libs.ktor.android)
             implementation(libs.coroutines.android)
             implementation(libs.okhttp.doh)
             implementation(libs.service)

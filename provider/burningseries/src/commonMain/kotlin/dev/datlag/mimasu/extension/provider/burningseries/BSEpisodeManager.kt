@@ -8,6 +8,7 @@ import dev.datlag.mimasu.extension.provider.burningseries.model.LanguageInfo
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.burningseries.model.Series
 import dev.datlag.skeo.Skeo
+import dev.datlag.tooling.async.suspendCatching
 import dev.datlag.tooling.setFrom
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
@@ -16,9 +17,19 @@ import kotlinx.coroutines.coroutineScope
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
+/**
+ * Resolve Episode and Streams of Series
+ *
+ * @param httpClient Default HttpClient, used for requesting everything
+ * @param fallbackClient Fallback Client, used for requesting streams
+ * @param dohClient DoH HttpClient, used for requesting websites
+ *
+ * Streams are not requested with DoH!
+ */
 class BSEpisodeManager(
     private val httpClient: HttpClient,
-    private val fallbackClient: HttpClient?,
+    private val fallbackClient: HttpClient,
+    private val dohClient: HttpClient?,
     private val firebaseWrapper: FirebaseWrapper?
 ) {
 
@@ -139,7 +150,7 @@ class BSEpisodeManager(
     }
 
     private suspend fun getSeries(link: String): Series? {
-        return seriesKache.async(link) ?:  (BurningSeries.series(httpClient, link) ?: fallbackClient?.let {
+        return seriesKache.async(link) ?:  (BurningSeries.series(httpClient, link) ?: dohClient?.let {
             BurningSeries.series(it, link)
         })?.also { s ->
             seriesKache.async(link) { s }
@@ -188,14 +199,18 @@ class BSEpisodeManager(
     private suspend fun streams(urls: Collection<String>) = coroutineScope {
         val directLinks = urls.map { url -> async {
             streamKache.async(url) {
-                Skeo.resolveStreams(url, httpClient)
+                suspendCatching {
+                    Skeo.resolveStreams(url, httpClient)
+                }.getOrNull() ?: suspendCatching {
+                    Skeo.resolveStreams(url, fallbackClient)
+                }.getOrNull()
             }?.toSet()
         } }.awaitAll().filterNotNull().flatten().toSet()
         val items = Skeo.filterNotSample(directLinks)
 
         val reachableLinks = Skeo.filterReachable(items, httpClient)
 
-        reachableLinks.map { it }.toSet()
+        reachableLinks.toSet()
     }
 
     data class FoundEpisode(

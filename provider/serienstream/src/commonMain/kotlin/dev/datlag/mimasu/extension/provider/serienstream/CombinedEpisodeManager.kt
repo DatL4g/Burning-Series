@@ -19,9 +19,19 @@ import kotlinx.coroutines.coroutineScope
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
+/**
+ * Resolve Episode and Streams of Series
+ *
+ * @param httpClient Default HttpClient, used for requesting everything
+ * @param fallbackClient Fallback Client, used for requesting streams
+ * @param dohClient DoH HttpClient, used for requesting websites
+ *
+ * Streams are not requested with DoH!
+ */
 class CombinedEpisodeManager(
     private val httpClient: HttpClient,
-    private val fallbackClient: HttpClient?
+    private val fallbackClient: HttpClient,
+    private val dohClient: HttpClient?
 ) {
 
     private val seriesKache = InMemoryKache<String, Series>(
@@ -121,7 +131,7 @@ class CombinedEpisodeManager(
     }
 
     private suspend fun getSeries(link: String, item: SearchItem): Series? {
-        return seriesKache.async(link) ?: (Series.from(item, link, httpClient) ?: fallbackClient?.let {
+        return seriesKache.async(link) ?: (Series.from(item, link, httpClient) ?: dohClient?.let {
             Series.from(item, link, it)
         })?.also { s ->
             seriesKache.async(link) { s }
@@ -173,7 +183,7 @@ class CombinedEpisodeManager(
     ): Document? {
         return suspendCatching {
             Ksoup.parseGet(show.createLink(show.normalize(episode.slug)), httpClient)
-        }.getOrNull() ?: fallbackClient?.let {
+        }.getOrNull() ?: dohClient?.let {
             suspendCatching {
                 Ksoup.parseGet(show.createLink(show.normalize(episode.slug)), it)
             }.getOrNull()
@@ -183,7 +193,11 @@ class CombinedEpisodeManager(
     private suspend fun streams(urls: Collection<String>) = coroutineScope {
         val directLinks = urls.map { url -> async {
             streamKache.async(url) {
-                Skeo.resolveStreams(url, httpClient)
+                suspendCatching {
+                    Skeo.resolveStreams(url, httpClient)
+                }.getOrNull() ?: suspendCatching {
+                    Skeo.resolveStreams(url, fallbackClient)
+                }.getOrNull()
             }?.toSet()
         } }.awaitAll().filterNotNull().flatten().toSet()
         val items = Skeo.filterNotSample(directLinks)

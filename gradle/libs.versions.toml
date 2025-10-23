@@ -35,7 +35,7 @@ sekret = "2.2.10"
 semver = "3.0.0"
 serialization = "1.9.0"
 service = "2.9.4"
-skeo = "0.3.0"
+skeo = "0.3.1"
 tooling = "1.8.2"
 versions = "0.53.0"
 webview = "0.36.0"
@@ -61,6 +61,7 @@ kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein" }
 kodein-compose = { group = "org.kodein.di", name = "kodein-di-framework-compose", version.ref = "kodein" }
 ksoup = { group = "com.fleeksoft.ksoup", name = "ksoup", version.ref = "ksoup" }
 ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
 ktor-jvm = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }

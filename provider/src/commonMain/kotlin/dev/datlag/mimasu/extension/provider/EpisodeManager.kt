@@ -20,21 +20,33 @@ import kotlin.time.Duration.Companion.hours
 import dev.datlag.mimasu.extension.provider.serienstream.model.SearchItem as SerienStreamItem
 import dev.datlag.mimasu.extension.provider.burningseries.model.LanguageInfo as BSLang
 
+/**
+ * Resolve Episode and Streams of Series
+ *
+ * @param httpClient Default HttpClient, used for requesting everything
+ * @param fallbackClient Fallback Client, used for requesting streams
+ * @param dohClient DoH HttpClient, used for requesting websites
+ *
+ * Streams are not requested with DoH!
+ */
 class EpisodeManager(
     val httpClient: HttpClient,
-    val fallbackClient: HttpClient?,
+    val fallbackClient: HttpClient,
+    val dohClient: HttpClient?,
     val firebaseWrapper: FirebaseWrapper?
 ) {
 
     private val burningSeriesEpisodeManager = BSEpisodeManager(
         httpClient = httpClient,
         fallbackClient = fallbackClient,
+        dohClient = dohClient,
         firebaseWrapper = firebaseWrapper
     )
 
     private val serienStreamEpisodeManager = CombinedEpisodeManager(
         httpClient = httpClient,
-        fallbackClient = fallbackClient
+        fallbackClient = fallbackClient,
+        dohClient = dohClient
     )
 
     private val episodeKache = InMemoryKache<EpisodeKey, Boolean>(
