@@ -3,6 +3,7 @@ package dev.datlag.mimasu.extension.provider
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
+import dev.datlag.mimasu.extension.kache.CachePool
 import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.provider.burningseries.BSEpisodeManager
 import dev.datlag.mimasu.extension.provider.burningseries.BurningSeries
@@ -12,6 +13,8 @@ import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.CombinedEpisodeManager
 import dev.datlag.mimasu.extension.provider.serienstream.model.LanguageInfo as SerienStreamLang
 import dev.datlag.skeo.Skeo
+import dev.datlag.tooling.async.suspendCatching
+import dev.datlag.tooling.scopeCatching
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -34,7 +37,7 @@ class EpisodeManager(
     val fallbackClient: HttpClient,
     val dohClient: HttpClient?,
     val firebaseWrapper: FirebaseWrapper?
-) {
+) : CachePool {
 
     private val burningSeriesEpisodeManager = BSEpisodeManager(
         httpClient = httpClient,
@@ -54,6 +57,12 @@ class EpisodeManager(
     ) {
         strategy = KacheStrategy.LRU
         expireAfterWriteDuration = 12.hours
+    }
+
+    override suspend fun clear(): Boolean {
+        return suspendCatching {
+            episodeKache.clear()
+        }.isSuccess && burningSeriesEpisodeManager.clear() && serienStreamEpisodeManager.clear()
     }
 
     suspend fun episodeAvailability(

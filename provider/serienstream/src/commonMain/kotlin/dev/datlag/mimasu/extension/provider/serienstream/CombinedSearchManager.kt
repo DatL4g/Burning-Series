@@ -1,5 +1,6 @@
 package dev.datlag.mimasu.extension.provider.serienstream
 
+import dev.datlag.mimasu.extension.kache.CachePool
 import dev.datlag.mimasu.extension.matcher.MatchResult
 import dev.datlag.mimasu.extension.matcher.SearchMatcher
 import dev.datlag.mimasu.extension.matcher.TokenResult
@@ -18,9 +19,15 @@ class CombinedSearchManager(
     private val fallbackAniWorld: AniWorld?,
     private val httpClient: HttpClient,
     private val fallbackClient: HttpClient?
-) {
+) : CachePool {
 
     private val mappings = mutableMapOf<Int, MatchResult<SearchItem>>()
+
+    override suspend fun clear(): Boolean {
+        return suspendCatching {
+            mappings.clear()
+        }.isSuccess && SearchItem.clear()
+    }
 
     private suspend fun initializeAniWorld(): Set<SearchItem.AniWorld> {
         return SearchItem.AniWorld.searchIndex(httpClient).ifEmpty {

@@ -2,6 +2,7 @@ package dev.datlag.mimasu.extension.provider.serienstream.model
 
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
+import dev.datlag.mimasu.extension.kache.CachePool
 import dev.datlag.mimasu.extension.ksoup.allByTag
 import dev.datlag.mimasu.extension.ksoup.firstByTag
 import dev.datlag.mimasu.extension.ksoup.href
@@ -14,7 +15,6 @@ import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -23,6 +23,7 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.ExperimentalTime
 import kotlinx.datetime.toLocalDateTime
 import kotlin.getValue
+import kotlin.time.Clock
 
 sealed interface SearchItem : SeriesData, TokenAware {
 
@@ -140,7 +141,7 @@ sealed interface SearchItem : SeriesData, TokenAware {
             }
         }
 
-        companion object {
+        companion object : CachePool {
             const val BASE_URL = "https://aniworld.to/"
             private const val SERIES_PREFIX = "anime/stream"
             const val SOURCE_TITLE = "AniWorld"
@@ -167,6 +168,12 @@ sealed interface SearchItem : SeriesData, TokenAware {
                 }
 
             private val searchIndexMutex = Mutex()
+
+            override suspend fun clear(): Boolean {
+                indexedItemsCacheTime = 0L
+
+                return true
+            }
 
             fun normalize(slug: String): String {
                 val regex = "anime\\S+".toRegex(RegexOption.IGNORE_CASE)
@@ -293,7 +300,7 @@ sealed interface SearchItem : SeriesData, TokenAware {
             }
         }
 
-        companion object {
+        companion object : CachePool {
             const val BASE_URL = "https://s.to/"
             private const val SERIES_PREFIX = "serie/stream"
             const val SOURCE_TITLE = "SerienStream"
@@ -320,6 +327,11 @@ sealed interface SearchItem : SeriesData, TokenAware {
                 }
 
             private val searchIndexMutex = Mutex()
+
+            override suspend fun clear(): Boolean {
+                indexedItemsCacheTime = 0L
+                return true
+            }
 
             fun normalize(slug: String): String {
                 val regex = "serie\\S+".toRegex(RegexOption.IGNORE_CASE)
@@ -378,7 +390,7 @@ sealed interface SearchItem : SeriesData, TokenAware {
         }
     }
 
-    companion object {
+    companion object : CachePool {
         private val productionSanitizeRegex = "\\D".toRegex()
         private val seasonRegex = "(staffel|season)[-+]?(\\d+)".toRegex(RegexOption.IGNORE_CASE)
         private val episodeRegex = "(episode|folge|film)[-+]?(\\d+)".toRegex(RegexOption.IGNORE_CASE)
@@ -386,6 +398,10 @@ sealed interface SearchItem : SeriesData, TokenAware {
         @OptIn(ExperimentalTime::class)
         private val currentYear by lazy {
             Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
+        }
+
+        override suspend fun clear(): Boolean {
+            return AniWorld.clear() && SerienStream.clear()
         }
 
         fun createLink(baseUrl: String, slug: String): String {

@@ -1,8 +1,8 @@
 package dev.datlag.mimasu.extension.provider.burningseries
 
-import co.touchlab.kermit.Logger
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
+import dev.datlag.mimasu.extension.kache.CachePool
 import dev.datlag.mimasu.extension.ksoup.allByClass
 import dev.datlag.mimasu.extension.ksoup.allByTag
 import dev.datlag.mimasu.extension.ksoup.firstByClass
@@ -15,20 +15,20 @@ import dev.datlag.mimasu.extension.provider.burningseries.model.Series
 import dev.datlag.mimasu.extension.provider.burningseries.model.SeriesData
 import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
-import io.ktor.client.request.head
-import io.ktor.http.isSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.getValue
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
 
-data object BurningSeries {
+@OptIn(ExperimentalTime::class)
+data object BurningSeries : CachePool {
 
     private const val PROTOCOL_HTTPS = "https://"
     const val HOST = "bs.to"
@@ -62,6 +62,11 @@ data object BurningSeries {
     val reachable = _reachable.asStateFlow()
 
     val homePage = createLink("")
+
+    override suspend fun clear(): Boolean {
+        searchItemsCacheTime = 0L
+        return true
+    }
 
     private fun createLink(href: String): String {
         return if (!href.matches("^\\w+?://.*".toRegex())) {

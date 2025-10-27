@@ -16,6 +16,9 @@
         android:name="android.hardware.touchscreen"
         android:required="false"/>
 
+    <permission android:name="dev.datlag.mimasu.extension.permission.MANAGE_STORAGE"
+        android:protectionLevel="normal" />
+
     <application
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -71,6 +74,14 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="dev.datlag.mimasu.extension.IShowInfoProvider" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".service.SpaceService"
+            android:exported="true"
+            android:permission="dev.datlag.mimasu.extension.permission.MANAGE_STORAGE">
+            <intent-filter>
+                <action android:name="dev.datlag.mimasu.extension.ISpaceProvider" />
             </intent-filter>
         </service>
 

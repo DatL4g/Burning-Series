@@ -4,6 +4,7 @@ import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
+import dev.datlag.mimasu.extension.kache.CachePool
 import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.ksoup.parseGet
 import dev.datlag.mimasu.extension.provider.serienstream.model.LanguageInfo
@@ -32,7 +33,7 @@ class CombinedEpisodeManager(
     private val httpClient: HttpClient,
     private val fallbackClient: HttpClient,
     private val dohClient: HttpClient?
-) {
+) : CachePool {
 
     private val seriesKache = InMemoryKache<String, Series>(
         maxSize = 5L * 1024 * 1024
@@ -53,6 +54,16 @@ class CombinedEpisodeManager(
     ) {
         strategy = KacheStrategy.LRU
         expireAfterWriteDuration = 10.minutes
+    }
+
+    override suspend fun clear(): Boolean {
+        return suspendCatching {
+            streamKache.clear()
+        }.isSuccess && suspendCatching {
+            episodeKache.clear()
+        }.isSuccess && suspendCatching {
+            seriesKache.clear()
+        }.isSuccess
     }
 
     suspend fun episodeAvailable(

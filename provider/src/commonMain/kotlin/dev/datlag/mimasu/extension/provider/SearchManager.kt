@@ -1,6 +1,7 @@
 package dev.datlag.mimasu.extension.provider
 
 import de.jensklingenberg.ktorfit.ktorfit
+import dev.datlag.mimasu.extension.kache.CachePool
 import dev.datlag.mimasu.extension.matcher.MatchResult
 import dev.datlag.mimasu.extension.provider.burningseries.BSSearchManager
 import dev.datlag.mimasu.extension.provider.model.MatchedShowResults
@@ -8,6 +9,7 @@ import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.CombinedSearchManager
 import dev.datlag.mimasu.extension.provider.serienstream.createAniWorld
 import dev.datlag.mimasu.extension.provider.serienstream.createSerienStream
+import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -16,7 +18,7 @@ import dev.datlag.mimasu.extension.provider.serienstream.model.SearchItem as Ser
 class SearchManager(
     val httpClient: HttpClient,
     val fallbackClient: HttpClient?,
-) {
+) : CachePool {
 
     private val serienStream = ktorfit {
         baseUrl(SerienStreamItem.SerienStream.BASE_URL)
@@ -57,6 +59,15 @@ class SearchManager(
     )
 
     private val mappings = mutableMapOf<Int, MatchedShowResults>()
+
+    override suspend fun clear(): Boolean {
+        val result = suspendCatching {
+            mappings.clear()
+        }.isSuccess && burningSeriesSearchManager.clear() && serienStreamSearchManager.clear()
+
+        initialize()
+        return result
+    }
 
     suspend fun initialize() = coroutineScope {
         val burningSeriesSearchIndex = async {

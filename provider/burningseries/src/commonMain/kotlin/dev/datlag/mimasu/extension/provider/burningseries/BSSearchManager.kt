@@ -2,11 +2,13 @@ package dev.datlag.mimasu.extension.provider.burningseries
 
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
+import dev.datlag.mimasu.extension.kache.CachePool
 import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.matcher.MatchResult
 import dev.datlag.mimasu.extension.matcher.SearchMatcher
 import dev.datlag.mimasu.extension.matcher.TokenResult
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
+import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -15,12 +17,18 @@ import kotlinx.coroutines.coroutineScope
 class BSSearchManager(
     private val httpClient: HttpClient,
     private val fallbackClient: HttpClient?,
-) {
+) : CachePool {
 
     private val kache = InMemoryKache<Int, MatchResult<SearchItem>>(
         maxSize = 5L * 1024 * 1024
     ) {
         strategy = KacheStrategy.LRU
+    }
+
+    override suspend fun clear(): Boolean {
+        return suspendCatching {
+            kache.clear()
+        }.isSuccess && BurningSeries.clear()
     }
 
     suspend fun initialize(): Set<SearchItem> {

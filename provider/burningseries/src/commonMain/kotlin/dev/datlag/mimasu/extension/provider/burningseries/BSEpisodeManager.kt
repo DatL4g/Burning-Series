@@ -3,6 +3,7 @@ package dev.datlag.mimasu.extension.provider.burningseries
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
+import dev.datlag.mimasu.extension.kache.CachePool
 import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.provider.burningseries.model.LanguageInfo
 import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
@@ -31,7 +32,7 @@ class BSEpisodeManager(
     private val fallbackClient: HttpClient,
     private val dohClient: HttpClient?,
     private val firebaseWrapper: FirebaseWrapper?
-) {
+) : CachePool {
 
     private val seriesKache = InMemoryKache<String, Series>(
         maxSize = 5L * 1024 * 1024
@@ -45,6 +46,14 @@ class BSEpisodeManager(
     ) {
         strategy = KacheStrategy.LRU
         expireAfterWriteDuration = 10.minutes
+    }
+
+    override suspend fun clear(): Boolean {
+        return suspendCatching {
+            streamKache.clear()
+        }.isSuccess && suspendCatching {
+            seriesKache.clear()
+        }.isSuccess
     }
 
     suspend fun episodeAvailable(
