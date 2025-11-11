@@ -44,7 +44,7 @@ data class Watch(
         }
 
         fun isDeleted(): Boolean {
-            return stream.isBlank() || deleted == 1 || !deletedOn.isNullOrBlank()
+            return deleted || stream.isBlank() || !deletedOn.isNullOrBlank()
         }
     }
 }
