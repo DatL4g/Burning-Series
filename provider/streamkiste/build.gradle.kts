@@ -2,9 +2,11 @@ plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.ktorfit)
 }
 
-val artifact = "dev.datlag.mimasu.extension.provider"
+val artifact = "dev.datlag.mimasu.extension.provider.streamkiste"
 
 kotlin {
     jvmToolchain(21)
@@ -16,21 +18,40 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    macosX64()
+    macosArm64()
+
+    tvosX64()
+    tvosArm64()
+    tvosSimulatorArm64()
+
+    js(IR) {
+        browser()
+        nodejs()
+        binaries.executable()
+    }
+
+    linuxX64()
+    linuxArm64()
+
+    mingwX64()
+
     sourceSets {
         commonMain.dependencies {
             api(libs.coroutines)
-            api(libs.tooling)
+            api(libs.serialization.json)
+            api(libs.ktorfit)
             api(libs.ktor)
-            implementation(libs.serialization.protobuf)
+            api(libs.ktor.content.negotiation)
+            api(libs.ktor.serialization.json)
+            api(libs.tooling)
             implementation(libs.kermit)
             implementation(libs.skeo)
+            implementation(libs.datetime)
 
             implementation(project(":kache"))
-            api(project(":matcher"))
-            api(project(":firebase"))
-            api(project("burningseries"))
-            implementation(project("serienstream"))
-            implementation(project("streamkiste"))
+            implementation(project(":ksoup"))
+            implementation(project(":matcher"))
         }
     }
 }

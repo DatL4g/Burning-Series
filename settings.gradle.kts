@@ -6,7 +6,7 @@ include(":matcher")
 include(":kache")
 include(":ksoup")
 include(":firebase")
-include(":provider", ":provider:serienstream", ":provider:burningseries")
+include(":provider", ":provider:serienstream", ":provider:burningseries", ":provider:streamkiste")
 
 pluginManagement {
     repositories {

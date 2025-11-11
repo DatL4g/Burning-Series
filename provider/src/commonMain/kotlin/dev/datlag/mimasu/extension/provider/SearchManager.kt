@@ -9,6 +9,9 @@ import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.CombinedSearchManager
 import dev.datlag.mimasu.extension.provider.serienstream.createAniWorld
 import dev.datlag.mimasu.extension.provider.serienstream.createSerienStream
+import dev.datlag.mimasu.extension.provider.streamkiste.Streamkiste
+import dev.datlag.mimasu.extension.provider.streamkiste.StreamkisteSearchManager
+import dev.datlag.mimasu.extension.provider.streamkiste.createStreamkiste
 import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
@@ -58,12 +61,32 @@ class SearchManager(
         fallbackClient = fallbackClient
     )
 
-    private val mappings = mutableMapOf<Int, MatchedShowResults>()
+    private val streamkiste = ktorfit {
+        baseUrl(Streamkiste.BASE_URL)
+        httpClient(httpClient)
+    }.createStreamkiste()
+
+    private val fallbackStreamkiste = fallbackClient?.let {
+        ktorfit {
+            baseUrl(Streamkiste.BASE_URL)
+            httpClient(it)
+        }.createStreamkiste()
+    }
+
+    private val streamkisteSearchManager = StreamkisteSearchManager(
+        streamkiste = streamkiste,
+        fallbackStreamkiste = fallbackStreamkiste
+    )
+
+    private val seriesMappings = mutableMapOf<Int, MatchedShowResults>()
 
     override suspend fun clear(): Boolean {
         val result = suspendCatching {
-            mappings.clear()
-        }.isSuccess && burningSeriesSearchManager.clear() && serienStreamSearchManager.clear()
+            seriesMappings.clear()
+        }.isSuccess
+                && burningSeriesSearchManager.clear()
+                && serienStreamSearchManager.clear()
+                && streamkisteSearchManager.clear()
 
         initialize()
         return result
@@ -84,13 +107,13 @@ class SearchManager(
     }
 
     fun matchedShowResults(showId: Int): MatchedShowResults? {
-        return mappings[showId]?.takeUnless { it.isEmpty() }
+        return seriesMappings[showId]?.takeUnless { it.isEmpty() }
     }
 
     suspend fun search(request: Show.Request): Int? = coroutineScope {
         val id = request.tmdbId ?: return@coroutineScope null
 
-        mappings[id]?.let {
+        seriesMappings[id]?.let {
             if (!it.isEmpty()) {
                 return@coroutineScope id
             }
@@ -110,7 +133,7 @@ class SearchManager(
                 releaseYear = request.firstReleaseYear,
                 isAnimation = request.isAnimation
             )?.also {
-                mappings[id]?.plus(MatchedShowResults(serienStream = it))
+                seriesMappings[id]?.plus(MatchedShowResults(serienStream = it))
             }
         }
         val burningSeries = async {
@@ -123,17 +146,35 @@ class SearchManager(
                 releaseYear = request.firstReleaseYear,
                 isAnimation = request.isAnimation
             )?.also {
-                mappings[id]?.plus(MatchedShowResults(burningSeries = it))
+                seriesMappings[id]?.plus(MatchedShowResults(burningSeries = it))
+            }
+        }
+        val streamkiste = async {
+            streamkisteSearchManager.searchSeries(
+                tmdbId = request.tmdbId,
+                titles = listOfNotNull(
+                    request.title,
+                    request.originalTitle
+                ),
+                tokens = listOf(
+                    request.tokenResult,
+                    request.originalTokenResult
+                ),
+                releaseYear = request.firstReleaseYear,
+                isAnimation = request.isAnimation
+            )?.also {
+                seriesMappings[id]?.plus(MatchedShowResults(streamkiste = it))
             }
         }
 
         MatchedShowResults(
             burningSeries = burningSeries.await(),
-            serienStream = serienStream.await()
+            serienStream = serienStream.await(),
+            streamkiste = streamkiste.await()
         ).takeUnless { it.isEmpty() }?.let {
-            mappings[id]?.plus(it) ?: mappings.put(id, it)
+            seriesMappings[id]?.plus(it) ?: seriesMappings.put(id, it)
         }
-        return@coroutineScope if (mappings[id]?.takeUnless { it.isEmpty() } != null) {
+        return@coroutineScope if (seriesMappings[id]?.takeUnless { it.isEmpty() } != null) {
             id
         } else {
             null
