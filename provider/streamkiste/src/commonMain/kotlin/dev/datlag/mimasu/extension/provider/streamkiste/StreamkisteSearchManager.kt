@@ -97,7 +97,7 @@ class StreamkisteSearchManager(
         type: Type
     ) = coroutineScope {
         val allFound = allQueries.map { query -> async {
-            browse(query, releaseYear, type)
+            browse(query, type)
         } }.awaitAll().flatten().toSet()
 
         allFound.singleOrNull()?.let {
@@ -183,23 +183,20 @@ class StreamkisteSearchManager(
 
     private suspend fun browse(
         query: String,
-        releaseYear: Int?,
         type: Type
     ): Set<Browse.Item> = coroutineScope {
         val encodedSearch = async {
             suspendCatching {
                 streamkiste.browseEncoded(
-                    lang = Streamkiste.LANG_EN,
+                    lang = Streamkiste.LANG_DE,
                     keyword = query,
-                    year = releaseYear,
                     type = type.name
                 )
             }.getOrNull()?.all.orEmpty().ifEmpty {
                 suspendCatching {
                     fallbackStreamkiste?.browseEncoded(
-                        lang = Streamkiste.LANG_EN,
+                        lang = Streamkiste.LANG_DE,
                         keyword = query,
-                        year = releaseYear,
                         type = type.name
                     )
                 }.getOrNull()?.all.orEmpty()
@@ -208,17 +205,15 @@ class StreamkisteSearchManager(
         val plainSearch = async {
             suspendCatching {
                 streamkiste.browsePlain(
-                    lang = Streamkiste.LANG_EN,
+                    lang = Streamkiste.LANG_DE,
                     keyword = query,
-                    year = releaseYear,
                     type = type.name
                 )
             }.getOrNull()?.all.orEmpty().ifEmpty {
                 suspendCatching {
                     fallbackStreamkiste?.browsePlain(
-                        lang = Streamkiste.LANG_EN,
+                        lang = Streamkiste.LANG_DE,
                         keyword = query,
-                        year = releaseYear,
                         type = type.name
                     )
                 }.getOrNull()?.all.orEmpty()

@@ -4,6 +4,8 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
 import dev.datlag.mimasu.extension.provider.streamkiste.model.Browse
 import dev.datlag.mimasu.extension.provider.streamkiste.model.Season
+import dev.datlag.mimasu.extension.provider.streamkiste.model.Watch
+import io.ktor.client.statement.HttpResponse
 
 interface Streamkiste {
     
@@ -11,7 +13,6 @@ interface Streamkiste {
     suspend fun browsePlain(
         @Query("lang") lang: Int,
         @Query("keyword", encoded = true) keyword: String,
-        @Query("year") year: Int?,
         @Query("type") type: String?
     ): Browse
 
@@ -19,7 +20,6 @@ interface Streamkiste {
     suspend fun browseEncoded(
         @Query("lang") lang: Int,
         @Query("keyword", encoded = false) keyword: String,
-        @Query("year") year: Int?,
         @Query("type") type: String?
     ): Browse
 
@@ -28,6 +28,11 @@ interface Streamkiste {
         @Query("lang") lang: Int,
         @Query("original_title") originalTitle: String
     ): Set<Season>
+
+    @GET("data/watch")
+    suspend fun watch(
+        @Query("_id") id: String
+    ): Watch
 
     companion object {
         internal const val LANG_EN = 1

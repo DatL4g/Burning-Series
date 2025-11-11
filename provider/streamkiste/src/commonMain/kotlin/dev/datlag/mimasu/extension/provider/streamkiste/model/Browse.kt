@@ -29,9 +29,12 @@ data class Browse(
     data class Item(
         @SerialName("_id") val id: String,
         @SerialName("title") val title: String? = null,
-        @SerialName("year") val year: Int? = null,
+        @SerialName("year") private val _year: Int? = null,
         @SerialName("genres") val genres: String? = null
     ) : TokenAware {
+
+        @Transient
+        val year = _year?.takeIf { it > 0 }
 
         @Transient
         override val tokenResult: TokenResult = Tokenizer.tokenize(title)

@@ -2,6 +2,7 @@ package dev.datlag.mimasu.extension.provider
 
 import com.mayakapps.kache.InMemoryKache
 import com.mayakapps.kache.KacheStrategy
+import de.jensklingenberg.ktorfit.ktorfit
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
 import dev.datlag.mimasu.extension.kache.CachePool
 import dev.datlag.mimasu.extension.kache.async
@@ -11,6 +12,10 @@ import dev.datlag.mimasu.extension.provider.burningseries.model.SearchItem
 import dev.datlag.mimasu.extension.provider.model.MatchedShowResults
 import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.CombinedEpisodeManager
+import dev.datlag.mimasu.extension.provider.streamkiste.Streamkiste
+import dev.datlag.mimasu.extension.provider.streamkiste.StreamkisteEpisodeManager
+import dev.datlag.mimasu.extension.provider.streamkiste.createStreamkiste
+import dev.datlag.mimasu.extension.provider.streamkiste.model.Browse
 import dev.datlag.mimasu.extension.provider.serienstream.model.LanguageInfo as SerienStreamLang
 import dev.datlag.skeo.Skeo
 import dev.datlag.tooling.async.suspendCatching
@@ -52,6 +57,25 @@ class EpisodeManager(
         dohClient = dohClient
     )
 
+    private val streamkiste = ktorfit {
+        baseUrl(Streamkiste.BASE_URL)
+        httpClient(httpClient)
+    }.createStreamkiste()
+
+    private val fallbackStreamkiste = dohClient?.let {
+        ktorfit {
+            baseUrl(Streamkiste.BASE_URL)
+            httpClient(it)
+        }.createStreamkiste()
+    }
+
+    private val streamkisteEpisodeManager = StreamkisteEpisodeManager(
+        streamkiste = streamkiste,
+        fallbackStreamkiste = fallbackStreamkiste,
+        httpClient = httpClient,
+        fallbackClient = fallbackClient
+    )
+
     private val episodeKache = InMemoryKache<EpisodeKey, Boolean>(
         maxSize = 5L * 1024 * 1024
     ) {
@@ -62,7 +86,10 @@ class EpisodeManager(
     override suspend fun clear(): Boolean {
         return suspendCatching {
             episodeKache.clear()
-        }.isSuccess && burningSeriesEpisodeManager.clear() && serienStreamEpisodeManager.clear()
+        }.isSuccess
+                && burningSeriesEpisodeManager.clear()
+                && serienStreamEpisodeManager.clear()
+                && streamkisteEpisodeManager.clear()
     }
 
     suspend fun episodeAvailability(
@@ -97,8 +124,16 @@ class EpisodeManager(
                     )
                 }
             }
+            val streamkiste = async {
+                matchedShowResults.streamkiste?.let {
+                    series(
+                        request = request,
+                        item = it.data
+                    )
+                }
+            }
 
-            listOf(burningSeries, serienStream).awaitAll().any { it == true }
+            listOf(burningSeries, serienStream, streamkiste).awaitAll().any { it == true }
         }
     }
 
@@ -141,18 +176,82 @@ class EpisodeManager(
                 }
             } }
 
+            val streamkiste = async { matchedShowResults.streamkiste?.let {
+                mapOf(
+                    Show.Response.SourceInfo(
+                        sourceTitle = "StreamKiste",
+                        sourceLocale = "German",
+                        locale = "de"
+                    ) to streams(
+                        request = request,
+                        item = it.data
+                    )
+                )
+            } }
+
             buildMap {
-                if (matchedShowResults.burningSeries != null && matchedShowResults.serienStream != null) {
-                    if (matchedShowResults.burningSeries.similarity > matchedShowResults.serienStream.similarity) {
+                val bsBetterThanSS = when {
+                    matchedShowResults.burningSeries != null && matchedShowResults.serienStream != null -> {
+                        matchedShowResults.burningSeries.similarity > matchedShowResults.serienStream.similarity
+                    }
+                    matchedShowResults.burningSeries != null -> true
+                    matchedShowResults.serienStream != null -> false
+                    else -> false
+                }
+                val bsBetterThanSK = when {
+                    matchedShowResults.burningSeries != null && matchedShowResults.streamkiste != null -> {
+                        matchedShowResults.burningSeries.similarity > matchedShowResults.streamkiste.similarity
+                    }
+                    matchedShowResults.burningSeries != null -> true
+                    matchedShowResults.streamkiste != null -> false
+                    else -> false
+                }
+                val ssBetterThanSK = when {
+                    matchedShowResults.serienStream != null && matchedShowResults.streamkiste != null -> {
+                        matchedShowResults.serienStream.similarity > matchedShowResults.streamkiste.similarity
+                    }
+                    matchedShowResults.serienStream != null -> true
+                    matchedShowResults.streamkiste != null -> false
+                    else -> false
+                }
+
+                if (bsBetterThanSS) {
+                    if (bsBetterThanSK) {
                         burningSeries.await()?.let(::putAll)
-                        serienStream.await()?.let(::putAll)
+
+                        if (ssBetterThanSK) {
+                            serienStream.await()?.let(::putAll)
+                            streamkiste.await()?.let(::putAll)
+                        } else {
+                            streamkiste.await()?.let(::putAll)
+                            serienStream.await()?.let(::putAll)
+                        }
                     } else {
-                        serienStream.await()?.let(::putAll)
+                        streamkiste.await()?.let(::putAll)
                         burningSeries.await()?.let(::putAll)
+                        serienStream.await()?.let(::putAll)
                     }
                 } else {
-                    serienStream.await()?.let(::putAll)
-                    burningSeries.await()?.let(::putAll)
+                    if (bsBetterThanSK) {
+                        if (ssBetterThanSK) {
+                            serienStream.await()?.let(::putAll)
+                            burningSeries.await()?.let(::putAll)
+                            streamkiste.await()?.let(::putAll)
+                        } else {
+                            burningSeries.await()?.let(::putAll)
+                            streamkiste.await()?.let(::putAll)
+                            serienStream.await()?.let(::putAll)
+                        }
+                    } else {
+                        if (ssBetterThanSK) {
+                            serienStream.await()?.let(::putAll)
+                            streamkiste.await()?.let(::putAll)
+                        } else {
+                            streamkiste.await()?.let(::putAll)
+                            serienStream.await()?.let(::putAll)
+                        }
+                        burningSeries.await()?.let(::putAll)
+                    }
                 }
             }
         }
@@ -177,6 +276,15 @@ class EpisodeManager(
         season = request.season
     )
 
+    private suspend fun series(
+        request: Show.EpisodeRequest,
+        item: Browse.Item
+    ): Boolean = streamkisteEpisodeManager.episodeAvailable(
+        show = item,
+        episodeNumber = request.episodeNumber,
+        season = request.season
+    )
+
     private suspend fun streams(
         request: Show.EpisodeRequest,
         searchItem: SearchItem
@@ -195,6 +303,15 @@ class EpisodeManager(
         episodeNumber = request.episodeNumber,
         season = request.season,
         appLanguage = request.appLanguage
+    )
+
+    private suspend fun streams(
+        request: Show.EpisodeRequest,
+        item: Browse.Item
+    ): List<String> = streamkisteEpisodeManager.episodeStreams(
+        show = item,
+        episodeNumber = request.episodeNumber,
+        season = request.season,
     )
 
     data class EpisodeKey(
