@@ -30,11 +30,16 @@ data class Browse(
         @SerialName("_id") val id: String,
         @SerialName("title") val title: String? = null,
         @SerialName("year") private val _year: String? = null,
-        @SerialName("genres") val genres: String? = null
+        @SerialName("genres") private val _genres: String? = null
     ) : TokenAware {
 
         @Transient
         val year = _year?.toIntOrNull()?.takeIf { it > 0 }
+
+        @Transient
+        val genres = _genres?.trim()?.split(',').orEmpty().mapNotNull {
+            it.trim().ifBlank { null }
+        }
 
         @Transient
         override val tokenResult: TokenResult = Tokenizer.tokenize(title)
@@ -57,7 +62,7 @@ data class Browse(
         }
 
         @Transient
-        val isAnimation = genres?.ifBlank { null }?.let {
+        val isAnimation = genres.any {
             when {
                 it.equals("anime", ignoreCase = true) -> true
                 it.equals("animation", ignoreCase = true) -> true

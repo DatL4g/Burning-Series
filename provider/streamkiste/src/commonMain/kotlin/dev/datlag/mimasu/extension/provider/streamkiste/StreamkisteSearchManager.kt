@@ -118,14 +118,14 @@ class StreamkisteSearchManager(
                 search(
                     tokens = tokens,
                     releaseYear = releaseYear,
-                    filterItems = allFound.filter { it.isAnimation == true }
+                    filterItems = allFound.filter { it.isAnimation }
                 )
             }
             false -> {
                 search(
                     tokens = tokens,
                     releaseYear = releaseYear,
-                    filterItems = allFound.filter { it.isAnimation == false }
+                    filterItems = allFound.filter { !it.isAnimation }
                 )
             }
             else -> null
@@ -188,14 +188,14 @@ class StreamkisteSearchManager(
         val encodedSearch = async {
             suspendCatching {
                 streamkiste.browseEncoded(
-                    lang = Streamkiste.LANG_DE,
+                    lang = Streamkiste.LANG_ALL,
                     keyword = query,
                     type = type.name
                 )
             }.getOrNull()?.all.orEmpty().ifEmpty {
                 suspendCatching {
                     fallbackStreamkiste?.browseEncoded(
-                        lang = Streamkiste.LANG_DE,
+                        lang = Streamkiste.LANG_ALL,
                         keyword = query,
                         type = type.name
                     )
@@ -205,14 +205,14 @@ class StreamkisteSearchManager(
         val plainSearch = async {
             suspendCatching {
                 streamkiste.browsePlain(
-                    lang = Streamkiste.LANG_DE,
+                    lang = Streamkiste.LANG_ALL,
                     keyword = query,
                     type = type.name
                 )
             }.getOrNull()?.all.orEmpty().ifEmpty {
                 suspendCatching {
                     fallbackStreamkiste?.browsePlain(
-                        lang = Streamkiste.LANG_DE,
+                        lang = Streamkiste.LANG_ALL,
                         keyword = query,
                         type = type.name
                     )

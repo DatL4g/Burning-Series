@@ -11,21 +11,21 @@ interface Streamkiste {
     
     @GET("data/browse")
     suspend fun browsePlain(
-        @Query("lang") lang: Int,
+        @Query("lang") lang: String,
         @Query("keyword", encoded = true) keyword: String,
         @Query("type") type: String?
     ): Browse
 
     @GET("data/browse")
     suspend fun browseEncoded(
-        @Query("lang") lang: Int,
+        @Query("lang") lang: String,
         @Query("keyword", encoded = false) keyword: String,
         @Query("type") type: String?
     ): Browse
 
     @GET("data/seasons")
     suspend fun seasons(
-        @Query("lang") lang: Int,
+        @Query("lang") lang: String,
         @Query("original_title") originalTitle: String
     ): Set<Season>
 
@@ -35,8 +35,9 @@ interface Streamkiste {
     ): Watch
 
     companion object {
-        internal const val LANG_EN = 1
-        internal const val LANG_DE = 2
+        internal const val LANG_EN = "1"
+        internal const val LANG_DE = "2"
+        internal const val LANG_ALL = "all"
 
         const val BASE_URL = "https://streamkiste.sx/"
     }

@@ -77,6 +77,13 @@
             </intent-filter>
         </service>
 
+        <service android:name=".service.MovieService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="dev.datlag.mimasu.extension.IMovieProvider" />
+            </intent-filter>
+        </service>
+
         <service android:name=".service.SpaceService"
             android:exported="true"
             android:permission="dev.datlag.mimasu.extension.permission.MANAGE_STORAGE">

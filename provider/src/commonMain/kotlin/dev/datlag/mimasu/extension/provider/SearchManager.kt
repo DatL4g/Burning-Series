@@ -4,7 +4,9 @@ import de.jensklingenberg.ktorfit.ktorfit
 import dev.datlag.mimasu.extension.kache.CachePool
 import dev.datlag.mimasu.extension.matcher.MatchResult
 import dev.datlag.mimasu.extension.provider.burningseries.BSSearchManager
+import dev.datlag.mimasu.extension.provider.model.MatchedMovieResults
 import dev.datlag.mimasu.extension.provider.model.MatchedShowResults
+import dev.datlag.mimasu.extension.provider.model.Movie
 import dev.datlag.mimasu.extension.provider.model.Show
 import dev.datlag.mimasu.extension.provider.serienstream.CombinedSearchManager
 import dev.datlag.mimasu.extension.provider.serienstream.createAniWorld
@@ -79,6 +81,7 @@ class SearchManager(
     )
 
     private val seriesMappings = mutableMapOf<Int, MatchedShowResults>()
+    private val movieMappings = mutableMapOf<Int, MatchedMovieResults>()
 
     override suspend fun clear(): Boolean {
         val result = suspendCatching {
@@ -110,6 +113,10 @@ class SearchManager(
         return seriesMappings[showId]?.takeUnless { it.isEmpty() }
     }
 
+    fun matchedMovieResults(movieId: Int): MatchedMovieResults? {
+        return movieMappings[movieId]?.takeUnless { it.isEmpty() }
+    }
+
     suspend fun search(request: Show.Request): Int? = coroutineScope {
         val id = request.tmdbId ?: return@coroutineScope null
 
@@ -122,7 +129,7 @@ class SearchManager(
         val serienStream = async {
             serienStreamSearchManager.search(
                 tmdbId = request.tmdbId,
-                titles = listOfNotNull(
+                titles = setOfNotNull(
                     request.title,
                     request.originalTitle
                 ),
@@ -152,7 +159,7 @@ class SearchManager(
         val streamkiste = async {
             streamkisteSearchManager.searchSeries(
                 tmdbId = request.tmdbId,
-                titles = listOfNotNull(
+                titles = setOfNotNull(
                     request.title,
                     request.originalTitle
                 ),
@@ -175,6 +182,46 @@ class SearchManager(
             seriesMappings[id]?.plus(it) ?: seriesMappings.put(id, it)
         }
         return@coroutineScope if (seriesMappings[id]?.takeUnless { it.isEmpty() } != null) {
+            id
+        } else {
+            null
+        }
+    }
+
+    suspend fun search(request: Movie.Request): Int? = coroutineScope {
+        val id = request.tmdbId ?: return@coroutineScope null
+
+        movieMappings[id]?.let {
+            if (!it.isEmpty()) {
+                return@coroutineScope id
+            }
+        }
+
+        val streamkiste = async {
+            streamkisteSearchManager.searchMovie(
+                tmdbId = request.tmdbId,
+                titles = setOfNotNull(
+                    request.title,
+                    request.originalTitle
+                ),
+                tokens = listOf(
+                    request.tokenResult,
+                    request.originalTokenResult
+                ),
+                releaseYear = request.firstReleaseYear,
+                isAnimation = request.isAnimation
+            )?.also {
+                movieMappings[id]?.plus(MatchedMovieResults(streamkiste = it))
+            }
+        }
+
+        MatchedMovieResults(
+            streamkiste = streamkiste.await()
+        ).takeUnless { it.isEmpty() }?.let {
+            movieMappings[id]?.plus(it) ?: movieMappings.put(id, it)
+        }
+
+        return@coroutineScope if (movieMappings[id]?.takeUnless { it.isEmpty() } != null) {
             id
         } else {
             null
