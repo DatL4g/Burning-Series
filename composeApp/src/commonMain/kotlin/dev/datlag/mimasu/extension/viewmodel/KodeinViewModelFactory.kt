@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.datlag.mimasu.extension.common.typeOf
 import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
+import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import org.kodein.di.DI
 import org.kodein.di.DirectDI
@@ -32,7 +33,8 @@ class KodeinViewModelFactory(private val di: DirectDI) : ViewModelProvider.Facto
 
                 val model = BurningSeriesViewModel(
                     firebaseWrapper = firebaseWrapper,
-                    json = json
+                    json = json,
+                    client = di.instanceOrNull<HttpClient>()
                 )
 
                 (model as? T) ?: super.create(modelClass, extras)

@@ -26,25 +26,21 @@ class SearchManager(
 ) : CachePool {
 
     private val serienStream = ktorfit {
-        baseUrl(SerienStreamItem.SerienStream.BASE_URL)
         httpClient(httpClient)
     }.createSerienStream()
 
     private val fallbackSerienStream = fallbackClient?.let {
         ktorfit {
-            baseUrl(SerienStreamItem.SerienStream.BASE_URL)
             httpClient(it)
         }.createSerienStream()
     }
 
     private val aniWorld = ktorfit {
-        baseUrl(SerienStreamItem.AniWorld.BASE_URL)
         httpClient(httpClient)
     }.createAniWorld()
 
     private val fallbackAniWorld = fallbackClient?.let {
         ktorfit {
-            baseUrl(SerienStreamItem.AniWorld.BASE_URL)
             httpClient(it)
         }.createAniWorld()
     }

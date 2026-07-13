@@ -9,17 +9,21 @@ import dev.datlag.mimasu.extension.firebase.FirebaseWrapper
 import dev.datlag.mimasu.extension.firebase.model.ScrapedData
 import dev.datlag.mimasu.extension.kache.async
 import dev.datlag.mimasu.extension.kache.asyncPutAndGet
+import dev.datlag.mimasu.extension.provider.burningseries.BurningSeries
 import dev.datlag.tooling.async.launchIO
 import dev.datlag.tooling.async.suspendCatching
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.hours
 
 class BurningSeriesViewModel(
     private val firebaseWrapper: FirebaseWrapper?,
-    private val json: Json
+    private val json: Json,
+    private val client: HttpClient?
 ) : ViewModel() {
 
     private val _enabled = MutableStateFlow(firebaseWrapper != null && firebaseWrapper.auth.isSignedIn)
@@ -35,6 +39,9 @@ class BurningSeriesViewModel(
         expireAfterWriteDuration = 12.hours
     }
 
+    private val _homePage = MutableStateFlow(BurningSeries.fallbackHomePage())
+    val homePage = _homePage.asStateFlow()
+
     init {
         if (firebaseWrapper != null) {
             viewModelScope.launchIO {
@@ -46,6 +53,9 @@ class BurningSeriesViewModel(
                     }
                 }
             }
+        }
+        viewModelScope.launchIO {
+            _homePage.update { BurningSeries.getHomePage(client) }
         }
     }
 

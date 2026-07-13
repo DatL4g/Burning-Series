@@ -15,6 +15,9 @@ import dev.datlag.mimasu.extension.provider.burningseries.model.Series
 import dev.datlag.mimasu.extension.provider.burningseries.model.SeriesData
 import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -31,9 +34,18 @@ import kotlin.time.ExperimentalTime
 data object BurningSeries : CachePool {
 
     private const val PROTOCOL_HTTPS = "https://"
-    const val HOST = "bs.to"
     private const val SEARCH_PATH = "andere-serien"
     const val TITLE = "Burning Series"
+
+    val DOMAINS = setOf(
+        "bs.to",
+        "bs.cine.to",
+        "burningseries.ac",
+        "burningseries.cx"
+    )
+
+    private var activeHost: String? = null
+    private val hostMutex = Mutex()
 
     internal val currentYear by lazy {
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
@@ -61,21 +73,60 @@ data object BurningSeries : CachePool {
     private val _reachable = MutableStateFlow(false)
     val reachable = _reachable.asStateFlow()
 
-    val homePage = createLink("")
-
     override suspend fun clear(): Boolean {
         searchItemsCacheTime = 0L
+        activeHost = null
         return true
     }
 
-    private fun createLink(href: String): String {
+    suspend fun getHomePage(client: HttpClient?): String {
+        return client?.let { resolveHost(client) } ?: fallbackHomePage()
+    }
+
+    fun fallbackHomePage(): String {
+        return "$PROTOCOL_HTTPS${activeHost ?: DOMAINS.first()}"
+    }
+
+    private suspend fun resolveHost(client: HttpClient): String {
+        activeHost?.let { return it }
+
+        return hostMutex.withLock {
+            activeHost?.let { return it }
+
+            val validDomains = coroutineScope {
+                DOMAINS.map { domain ->
+                    async {
+                        val start = Clock.System.now().toEpochMilliseconds()
+                        val url = "$PROTOCOL_HTTPS$domain/$SEARCH_PATH"
+                        val isValid = suspendCatching {
+                            val doc = Ksoup.parseGet(url, client)
+                            doc?.getElementById("seriesContainer") != null
+                        }.getOrDefault(false)
+
+                        if (isValid) {
+                            domain to (Clock.System.now().toEpochMilliseconds() - start)
+                        } else {
+                            null
+                        }
+                    }
+                }.awaitAll().filterNotNull()
+            }
+
+            val best = validDomains.minByOrNull { it.second }?.first ?: DOMAINS.first()
+            activeHost = best
+            best
+        }
+    }
+
+    private suspend fun createLink(client: HttpClient, href: String): String {
+        val host = resolveHost(client)
         return if (!href.matches("^\\w+?://.*".toRegex())) {
             if (!href.startsWith('/')) {
-                "$PROTOCOL_HTTPS$HOST/$href"
+                "$PROTOCOL_HTTPS$host/$href"
             } else {
                 val part = "(?!:|/{2,})(/.*)".toRegex().find(href)?.value?.ifBlank { null } ?: href
 
-                "$PROTOCOL_HTTPS$HOST${part}"
+                "$PROTOCOL_HTTPS$host${part}"
             }
         } else {
             href
@@ -126,7 +177,7 @@ data object BurningSeries : CachePool {
         href: String,
     ): Document? = suspendCatching {
         Ksoup.parseGet(
-            url = createLink(href),
+            url = createLink(client, href),
             client = client
         )
     }.getOrNull()

@@ -5,8 +5,11 @@ internal data object Constants {
     const val PROTOCOL_HTTPS = "https://"
 
     data object SerienStream {
-        const val BASE_URL = "${PROTOCOL_HTTPS}s.to/"
-        const val ALTERNATIVE_BASE_URL = "${PROTOCOL_HTTPS}serienstream.to/"
+        val DOMAINS = setOf(
+            "s.to",
+            "serienstream.to",
+            "serienstream.cx",
+        )
 
         const val SERIES_PATH = "serie/stream/"
         const val SEASON_PATH = "staffel-"
@@ -15,7 +18,10 @@ internal data object Constants {
     }
 
     data object AniWorld {
-        const val BASE_URL = "${PROTOCOL_HTTPS}aniworld.to/"
+        val DOMAINS = setOf(
+            "aniworld.to",
+            "aniworld.cc"
+        )
 
         const val ANIME_PATH = "anime/stream/"
         const val SEASON_PATH = "staffel-"

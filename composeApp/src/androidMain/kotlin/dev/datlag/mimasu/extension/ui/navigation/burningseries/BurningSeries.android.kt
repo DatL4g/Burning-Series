@@ -150,7 +150,8 @@ actual fun BurningSeries(onBack: () -> Unit) {
             }
         }
     ) { contentPadding ->
-        val state = rememberWebViewState(BurningSeries.homePage)
+        val homePageUrl by viewModel.homePage.collectAsStateWithLifecycle()
+        val state = rememberWebViewState(homePageUrl)
         val scope = rememberCoroutineScope()
 
         if (enabled) {
@@ -159,7 +160,7 @@ actual fun BurningSeries(onBack: () -> Unit) {
                 modifier = Modifier.padding(contentPadding).fillMaxSize(),
                 captureBackPresses = true,
                 client = WebViewClient(
-                    allowedHosts = setOf(BurningSeries.HOST)
+                    allowedHosts = BurningSeries.DOMAINS
                 ),
                 onCreated = {
                     it.settings.allowFileAccess = false

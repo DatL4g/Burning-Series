@@ -30,13 +30,13 @@ class CombinedSearchManager(
     }
 
     private suspend fun initializeAniWorld(): Set<SearchItem.AniWorld> {
-        return SearchItem.AniWorld.searchIndex(httpClient).ifEmpty {
+        return SearchItem.AniWorld.searchIndex(httpClient, fallbackClient).ifEmpty {
             fallbackClient?.let { SearchItem.AniWorld.searchIndex(it) }
         }.orEmpty()
     }
 
     private suspend fun initializeSerienStream(): Set<SearchItem.SerienStream> {
-        return SearchItem.SerienStream.searchIndex(httpClient).ifEmpty {
+        return SearchItem.SerienStream.searchIndex(httpClient, fallbackClient).ifEmpty {
             fallbackClient?.let { SearchItem.SerienStream.searchIndex(it) }
         }.orEmpty()
     }
@@ -180,18 +180,21 @@ class CombinedSearchManager(
     private suspend fun searchDefault(
         query: String
     ): Set<SearchItem> = coroutineScope {
+        val host = SearchItem.SerienStream.resolveHost(httpClient, fallbackClient)
+        val searchUrl = "${Constants.PROTOCOL_HTTPS}$host/ajax/seriesSearch"
+
         val encodedSearch = async {
             suspendCatching {
-                serienStream.searchEncoded(query)
+                serienStream.searchEncoded(searchUrl, query)
             }.getOrNull().orEmpty().ifEmpty { suspendCatching {
-                fallbackSerienStream?.searchEncoded(query)
+                fallbackSerienStream?.searchEncoded(searchUrl, query)
             }.getOrNull().orEmpty() }
         }
         val plainSearch = async {
             suspendCatching {
-                serienStream.searchPlain(query)
+                serienStream.searchPlain(searchUrl, query)
             }.getOrNull().orEmpty().ifEmpty { suspendCatching {
-                fallbackSerienStream?.searchPlain(query)
+                fallbackSerienStream?.searchPlain(searchUrl, query)
             }.getOrNull().orEmpty() }
         }
 
@@ -204,18 +207,21 @@ class CombinedSearchManager(
     private suspend fun searchAnimation(
         query: String
     ): Set<SearchItem> = coroutineScope {
+        val host = SearchItem.AniWorld.resolveHost(httpClient, fallbackClient)
+        val searchUrl = "${Constants.PROTOCOL_HTTPS}$host/ajax/seriesSearch"
+
         val encodedSearch = async {
             suspendCatching {
-                aniWorld.searchEncoded(query)
+                aniWorld.searchEncoded(searchUrl, query)
             }.getOrNull().orEmpty().ifEmpty { suspendCatching {
-                fallbackAniWorld?.searchEncoded(query)
+                fallbackAniWorld?.searchEncoded(searchUrl, query)
             }.getOrNull().orEmpty() }
         }
         val plainSearch = async {
             suspendCatching {
-                aniWorld.searchPlain(query)
+                aniWorld.searchPlain(searchUrl, query)
             }.getOrNull().orEmpty().ifEmpty { suspendCatching {
-                fallbackAniWorld?.searchPlain(query)
+                fallbackAniWorld?.searchPlain(searchUrl, query)
             }.getOrNull().orEmpty() }
         }
 

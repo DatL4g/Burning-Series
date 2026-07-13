@@ -11,8 +11,12 @@ import dev.datlag.mimasu.extension.ksoup.title
 import dev.datlag.mimasu.extension.matcher.TokenAware
 import dev.datlag.mimasu.extension.matcher.TokenResult
 import dev.datlag.mimasu.extension.matcher.Tokenizer
+import dev.datlag.mimasu.extension.provider.serienstream.Constants
 import dev.datlag.tooling.async.suspendCatching
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.TimeZone
@@ -111,8 +115,8 @@ sealed interface SearchItem : SeriesData, TokenAware {
             )
         }
 
-        @Transient
-        override val baseUrl: String = BASE_URL
+        override val baseUrl: String
+            get() = activeBaseUrl
 
         @Transient
         override val sourceTitle: String = SOURCE_TITLE
@@ -142,12 +146,17 @@ sealed interface SearchItem : SeriesData, TokenAware {
         }
 
         companion object : CachePool {
-            const val BASE_URL = "https://aniworld.to/"
             private const val SERIES_PREFIX = "anime/stream"
             const val SOURCE_TITLE = "AniWorld"
             private const val SEARCH_HREF = "animes"
 
             private var indexedItemsCacheTime = 0L
+
+            private var activeHost: String? = null
+            private val hostMutex = Mutex()
+
+            val activeBaseUrl: String
+                get() = "${Constants.PROTOCOL_HTTPS}${activeHost ?: Constants.AniWorld.DOMAINS.first()}/"
 
             @OptIn(ExperimentalTime::class)
             private var indexedSearchItems = setOf<AniWorld>()
@@ -171,8 +180,47 @@ sealed interface SearchItem : SeriesData, TokenAware {
 
             override suspend fun clear(): Boolean {
                 indexedItemsCacheTime = 0L
-
+                activeHost = null
                 return true
+            }
+
+            @OptIn(ExperimentalTime::class)
+            suspend fun resolveHost(client: HttpClient, fallbackClient: HttpClient?): String {
+                activeHost?.let { return it }
+
+                return hostMutex.withLock {
+                    activeHost?.let { return it }
+
+                    val validDomains = coroutineScope {
+                        Constants.AniWorld.DOMAINS.map { domain ->
+                            async {
+                                val start = Clock.System.now().toEpochMilliseconds()
+                                val urlBase = "${Constants.PROTOCOL_HTTPS}$domain/"
+                                var isValid = suspendCatching {
+                                    val doc = document(client, urlBase, SEARCH_HREF)
+                                    doc?.getElementById("seriesContainer") != null
+                                }.getOrDefault(false)
+
+                                if (!isValid && fallbackClient != null) {
+                                    isValid = suspendCatching {
+                                        val doc = document(fallbackClient, urlBase, SEARCH_HREF)
+                                        doc?.getElementById("seriesContainer") != null
+                                    }.getOrDefault(false)
+                                }
+
+                                if (isValid) {
+                                    domain to (Clock.System.now().toEpochMilliseconds() - start)
+                                } else {
+                                    null
+                                }
+                            }
+                        }.awaitAll().filterNotNull()
+                    }
+
+                    val best = validDomains.minByOrNull { it.second }?.first ?: Constants.AniWorld.DOMAINS.first()
+                    activeHost = best
+                    best
+                }
             }
 
             fun normalize(slug: String): String {
@@ -188,26 +236,27 @@ sealed interface SearchItem : SeriesData, TokenAware {
                 }
             }
 
-            suspend fun searchIndex(client: HttpClient): Set<AniWorld> {
+            suspend fun searchIndex(client: HttpClient, fallbackClient: HttpClient? = null): Set<AniWorld> {
                 indexedSearchItems.also {
                     if (it.isNotEmpty()) {
                         return it
                     }
                 }
 
-                return atomicSearch(client)
+                return atomicSearch(client, fallbackClient)
             }
 
-            private suspend fun atomicSearch(client: HttpClient): Set<AniWorld> = searchIndexMutex.withLock {
+            private suspend fun atomicSearch(client: HttpClient, fallbackClient: HttpClient?): Set<AniWorld> = searchIndexMutex.withLock {
                 indexedSearchItems.also {
                     if (it.isNotEmpty()) {
                         return it
                     }
                 }
 
+                val host = resolveHost(client, fallbackClient)
                 val doc = document(
                     client = client,
-                    baseUrl = BASE_URL,
+                    baseUrl = "${Constants.PROTOCOL_HTTPS}$host/",
                     href = SEARCH_HREF
                 ) ?: return emptySet()
 
@@ -270,8 +319,8 @@ sealed interface SearchItem : SeriesData, TokenAware {
             )
         }
 
-        @Transient
-        override val baseUrl: String = BASE_URL
+        override val baseUrl: String
+            get() = activeBaseUrl
 
         @Transient
         override val sourceTitle: String = SOURCE_TITLE
@@ -301,12 +350,17 @@ sealed interface SearchItem : SeriesData, TokenAware {
         }
 
         companion object : CachePool {
-            const val BASE_URL = "https://s.to/"
             private const val SERIES_PREFIX = "serie/stream"
             const val SOURCE_TITLE = "SerienStream"
             private const val SEARCH_HREF = "serien"
 
             private var indexedItemsCacheTime = 0L
+
+            private var activeHost: String? = null
+            private val hostMutex = Mutex()
+
+            val activeBaseUrl: String
+                get() = "${Constants.PROTOCOL_HTTPS}${activeHost ?: Constants.SerienStream.DOMAINS.first()}/"
 
             @OptIn(ExperimentalTime::class)
             private var indexedSearchItems = setOf<SerienStream>()
@@ -330,7 +384,47 @@ sealed interface SearchItem : SeriesData, TokenAware {
 
             override suspend fun clear(): Boolean {
                 indexedItemsCacheTime = 0L
+                activeHost = null
                 return true
+            }
+
+            @OptIn(ExperimentalTime::class)
+            suspend fun resolveHost(client: HttpClient, fallbackClient: HttpClient?): String {
+                activeHost?.let { return it }
+
+                return hostMutex.withLock {
+                    activeHost?.let { return it }
+
+                    val validDomains = coroutineScope {
+                        Constants.SerienStream.DOMAINS.map { domain ->
+                            async {
+                                val start = Clock.System.now().toEpochMilliseconds()
+                                val urlBase = "${Constants.PROTOCOL_HTTPS}$domain/"
+                                var isValid = suspendCatching {
+                                    val doc = document(client, urlBase, SEARCH_HREF)
+                                    doc?.getElementById("seriesContainer") != null
+                                }.getOrDefault(false)
+
+                                if (!isValid && fallbackClient != null) {
+                                    isValid = suspendCatching {
+                                        val doc = document(fallbackClient, urlBase, SEARCH_HREF)
+                                        doc?.getElementById("seriesContainer") != null
+                                    }.getOrDefault(false)
+                                }
+
+                                if (isValid) {
+                                    domain to (Clock.System.now().toEpochMilliseconds() - start)
+                                } else {
+                                    null
+                                }
+                            }
+                        }.awaitAll().filterNotNull()
+                    }
+
+                    val best = validDomains.minByOrNull { it.second }?.first ?: Constants.SerienStream.DOMAINS.first()
+                    activeHost = best
+                    best
+                }
             }
 
             fun normalize(slug: String): String {
@@ -346,26 +440,27 @@ sealed interface SearchItem : SeriesData, TokenAware {
                 }
             }
 
-            suspend fun searchIndex(client: HttpClient): Set<SerienStream> {
+            suspend fun searchIndex(client: HttpClient, fallbackClient: HttpClient? = null): Set<SerienStream> {
                 indexedSearchItems.also {
                     if (it.isNotEmpty()) {
                         return it
                     }
                 }
 
-                return atomicSearch(client)
+                return atomicSearch(client, fallbackClient)
             }
 
-            private suspend fun atomicSearch(client: HttpClient): Set<SerienStream> = searchIndexMutex.withLock {
+            private suspend fun atomicSearch(client: HttpClient, fallbackClient: HttpClient?): Set<SerienStream> = searchIndexMutex.withLock {
                 indexedSearchItems.also {
                     if (it.isNotEmpty()) {
                         return it
                     }
                 }
 
+                val host = resolveHost(client, fallbackClient)
                 val doc = document(
                     client = client,
-                    baseUrl = BASE_URL,
+                    baseUrl = "${Constants.PROTOCOL_HTTPS}$host/",
                     href = SEARCH_HREF
                 ) ?: return emptySet()
 
