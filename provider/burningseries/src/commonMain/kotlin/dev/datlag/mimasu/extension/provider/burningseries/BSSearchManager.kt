@@ -32,8 +32,8 @@ class BSSearchManager(
     }
 
     suspend fun initialize(): Set<SearchItem> {
-        return BurningSeries.search(httpClient, updateReachable = true).ifEmpty {
-            fallbackClient?.let { BurningSeries.search(it) }
+        return BurningSeries.search(httpClient, fallbackClient, updateReachable = true).ifEmpty {
+            fallbackClient?.let { BurningSeries.search(it, null) }
         }.orEmpty()
     }
 

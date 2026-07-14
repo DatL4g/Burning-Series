@@ -159,8 +159,8 @@ class BSEpisodeManager(
     }
 
     private suspend fun getSeries(link: String): Series? {
-        return seriesKache.async(link) ?:  (BurningSeries.series(httpClient, link) ?: dohClient?.let {
-            BurningSeries.series(it, link)
+        return seriesKache.async(link) ?:  (BurningSeries.series(httpClient, dohClient, link) ?: dohClient?.let {
+            BurningSeries.series(it, null, link)
         })?.also { s ->
             seriesKache.async(link) { s }
         }

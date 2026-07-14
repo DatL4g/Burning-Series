@@ -80,14 +80,14 @@ data object BurningSeries : CachePool {
     }
 
     suspend fun getHomePage(client: HttpClient?): String {
-        return client?.let { resolveHost(client) } ?: fallbackHomePage()
+        return client?.let { resolveHost(client, null) } ?: fallbackHomePage()
     }
 
     fun fallbackHomePage(): String {
         return "$PROTOCOL_HTTPS${activeHost ?: DOMAINS.first()}"
     }
 
-    private suspend fun resolveHost(client: HttpClient): String {
+    private suspend fun resolveHost(client: HttpClient, fallbackClient: HttpClient?): String {
         activeHost?.let { return it }
 
         return hostMutex.withLock {
@@ -98,10 +98,17 @@ data object BurningSeries : CachePool {
                     async {
                         val start = Clock.System.now().toEpochMilliseconds()
                         val url = "$PROTOCOL_HTTPS$domain/$SEARCH_PATH"
-                        val isValid = suspendCatching {
+                        var isValid = suspendCatching {
                             val doc = Ksoup.parseGet(url, client)
                             doc?.getElementById("seriesContainer") != null
                         }.getOrDefault(false)
+
+                        if (!isValid && fallbackClient != null) {
+                            isValid = suspendCatching {
+                                val doc = Ksoup.parseGet(url, client)
+                                doc?.getElementById("seriesContainer") != null
+                            }.getOrDefault(false)
+                        }
 
                         if (isValid) {
                             domain to (Clock.System.now().toEpochMilliseconds() - start)
@@ -118,8 +125,8 @@ data object BurningSeries : CachePool {
         }
     }
 
-    private suspend fun createLink(client: HttpClient, href: String): String {
-        val host = resolveHost(client)
+    private suspend fun createLink(client: HttpClient, fallbackClient: HttpClient?, href: String): String {
+        val host = resolveHost(client, fallbackClient)
         return if (!href.matches("^\\w+?://.*".toRegex())) {
             if (!href.startsWith('/')) {
                 "$PROTOCOL_HTTPS$host/$href"
@@ -174,26 +181,27 @@ data object BurningSeries : CachePool {
 
     private suspend fun document(
         client: HttpClient,
+        fallbackClient: HttpClient?,
         href: String,
     ): Document? = suspendCatching {
         Ksoup.parseGet(
-            url = createLink(client, href),
+            url = createLink(client, fallbackClient, href),
             client = client
         )
     }.getOrNull()
 
-    internal suspend fun search(client: HttpClient, updateReachable: Boolean = false): Set<SearchItem> {
+    internal suspend fun search(client: HttpClient, fallbackClient: HttpClient?, updateReachable: Boolean = false): Set<SearchItem> {
         cachedSearchItems.also {
             if (it.isNotEmpty()) {
                 return it
             }
         }
 
-        return atomicSearch(client, updateReachable)
+        return atomicSearch(client, fallbackClient, updateReachable)
     }
 
-    internal suspend fun series(client: HttpClient, href: String): Series? {
-        val doc = document(client, fixSeriesHref(href)) ?: return null
+    internal suspend fun series(client: HttpClient, fallbackClient: HttpClient?, href: String): Series? {
+        val doc = document(client, fallbackClient, fixSeriesHref(href)) ?: return null
 
         val seasons = doc.firstByClass("serie")
             ?.getElementById("seasons")
@@ -276,14 +284,14 @@ data object BurningSeries : CachePool {
         )
     }
 
-    private suspend fun atomicSearch(client: HttpClient, updateReachable: Boolean): Set<SearchItem> = searchMutex.withLock {
+    private suspend fun atomicSearch(client: HttpClient, fallbackClient: HttpClient?, updateReachable: Boolean): Set<SearchItem> = searchMutex.withLock {
         cachedSearchItems.also {
             if (it.isNotEmpty()) {
                 return it
             }
         }
 
-        val doc = document(client, SEARCH_PATH) ?: return emptySet()
+        val doc = document(client, fallbackClient, SEARCH_PATH) ?: return emptySet()
 
         return doc.getElementById("seriesContainer")?.allByClass("genre")?.map { element ->
             val genre = element.firstByTag("strong")?.text()?.ifBlank { null }?.trim()
